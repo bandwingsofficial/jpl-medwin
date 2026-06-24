@@ -1,0 +1,12 @@
+export const PAYMENT_PROVIDER = {
+  RAZORPAY: "RAZORPAY",
+} as const;
+
+export const PAYMENT_STATUS = {
+  CREATED: "CREATED",
+  PENDING: "PENDING",
+  SUCCESS: "SUCCESS",
+  FAILED: "FAILED",
+  CANCELLED: "CANCELLED",
+  REFUNDED: "REFUNDED",
+} as const;

@@ -1,0 +1,133 @@
+name: 🚀 Deploy Customer Web
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+    paths:
+      - "apps/customer-web/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
+      - "pnpm-workspace.yaml"
+      - "package.json"
+      - "turbo.json"
+      - ".github/workflows/deploy-customer.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-customer-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 22
+  PNPM_VERSION: 10
+
+jobs:
+  deploy:
+
+    name: Deploy Customer
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
+    environment:
+      name: production
+
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Install Dependencies
+        run: |
+          pnpm install --frozen-lockfile
+
+      - name: Restore Turbo Cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            turbo-${{ runner.os }}-
+
+      - name: Build Customer Web
+        run: |
+          pnpm turbo run build --filter=customer-web
+
+      - name: Install Vercel CLI
+        run: |
+          npm install --global vercel@latest
+
+      - name: Pull Vercel Environment
+        working-directory: apps/customer-web
+        env:
+          VERCEL_ORG_ID: ${{ secrets.CUSTOMER_VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.CUSTOMER_VERCEL_PROJECT_ID }}
+        run: |
+          vercel pull \
+            --yes \
+            --environment=production \
+            --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build Vercel Output
+        working-directory: apps/customer-web
+        env:
+          VERCEL_ORG_ID: ${{ secrets.CUSTOMER_VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.CUSTOMER_VERCEL_PROJECT_ID }}
+        run: |
+          vercel build \
+            --prod \
+            --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel
+        working-directory: apps/customer-web
+        env:
+          VERCEL_ORG_ID: ${{ secrets.CUSTOMER_VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.CUSTOMER_VERCEL_PROJECT_ID }}
+        run: |
+          vercel deploy \
+            --prebuilt \
+            --prod \
+            --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Upload Deployment Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: customer-deployment-logs
+          path: |
+            .vercel
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Deployment Summary
+        run: |
+          echo "## 🚀 Customer Web Deployment" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Checkout | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Install Dependencies | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Turbo Build | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Vercel Build | ✅ |" >> $GITHUB_STEP_SUMMARY
+          echo "| Production Deploy | ✅ |" >> $GITHUB_STEP_SUMMARY

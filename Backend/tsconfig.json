@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "moduleResolution": "node",
+
+    "target": "ES2021",
+    "outDir": "./dist",
+
+    "baseUrl": "./",
+    "paths": {
+      "@/*": ["src/*"],
+      "@common/*": ["src/common/*"],
+      "@modules/*": ["src/modules/*"],
+      "@/domain/*": ["src/modules/auth/domain/*"],
+      "@/application/*": ["src/modules/auth/application/*"],
+      "@/presentation/*": ["src/modules/auth/presentation/*"],
+      "@/infrastructure/*": ["src/modules/auth/infrastructure/*"]
+    },
+
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+
+    "sourceMap": true,
+    "declaration": true,
+    "removeComments": true,
+
+    "isolatedModules": true,
+    "incremental": false,
+
+    "skipLibCheck": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+
+    "noImplicitAny": false,
+
+    "ignoreDeprecations": "6.0" 
+  }
+}

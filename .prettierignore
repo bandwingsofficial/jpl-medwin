@@ -1,0 +1,50 @@
+# Dependencies
+node_modules
+
+# Build
+.next
+dist
+build
+out
+
+# Coverage
+coverage
+
+# Turbo
+.turbo
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Lock Files
+package-lock.json
+yarn.lock
+
+# Generated Files
+*.generated.ts
+*.generated.js
+
+# Prisma Generated Client
+temp-akshay/prisma/generated
+
+# Vercel
+.vercel
+
+# Docker
+docker-data
+
+# Git
+.git
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,11 @@
+export enum ReturnStatus {
+  REQUESTED = 'REQUESTED',
+
+  APPROVED = 'APPROVED',
+
+  REJECTED = 'REJECTED',
+
+  PICKED_UP = 'PICKED_UP',
+
+  COMPLETED = 'COMPLETED',
+}

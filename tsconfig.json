@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    /* =========================
+       MODULE SYSTEM
+    ========================= */
+    "module": "NodeNext",
+    "moduleResolution": "node16",
+    "target": "ES2022",
+    "lib": ["ES2022"],
+
+    /* =========================
+       PATHS (MONOREPO)
+    ========================= */
+    "baseUrl": ".",
+    "paths": {
+      "@repo/design-tokens": ["packages/design-tokens/src/index.ts"],
+      "@repo/design-tokens/*": ["packages/design-tokens/src/*"]
+    },
+
+    /* =========================
+       TYPE SAFETY
+    ========================= */
+    "strict": true,
+    "skipLibCheck": true,
+
+    /* =========================
+       COMPATIBILITY
+    ========================= */
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* =========================
+       DEV QUALITY
+    ========================= */
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+
+    /* =========================
+       TS 5+
+    ========================= */
+    "ignoreDeprecations": "6.0"
+  },
+
+  "include": ["packages/**/*", "apps/**/*"],
+  "exclude": ["node_modules"]
+}

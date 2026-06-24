@@ -1,0 +1,56 @@
+# Dependencies
+node_modules
+
+# Next.js
+.next
+out
+
+# NestJS
+dist
+
+# Coverage
+coverage
+
+# Turbo
+.turbo
+
+# Logs
+*.log
+
+# Git
+.git
+.github
+
+# IDE
+.vscode
+.idea
+
+# Environment
+.env
+.env.*
+
+# Docker
+docker-compose.yml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Vercel
+.vercel
+
+# Documentation
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+SECURITY.md
+
+# Tests
+test
+tests
+__tests__
+
+# Misc
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
