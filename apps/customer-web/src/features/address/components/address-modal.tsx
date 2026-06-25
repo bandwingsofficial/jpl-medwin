@@ -14,6 +14,10 @@ interface Props {
   onClose: () => void;
 
   initialData?: SavedAddress | null;
+  
+  onAddressCreated?: (
+  address: SavedAddress
+) => void;
 }
 
 export function AddressModal({

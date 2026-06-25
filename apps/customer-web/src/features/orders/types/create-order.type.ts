@@ -11,9 +11,11 @@ export interface AddressPayload {
 export interface CreateOrderPayload {
   checkoutSessionId: string;
 
-  shippingAddress: AddressPayload;
+  shippingAddressId: string;
 
-  billingAddress: AddressPayload;
+  billingAddressId: string;
+
+  isBillingSameAsShipping: boolean;
 
   customerNote?: string;
 }

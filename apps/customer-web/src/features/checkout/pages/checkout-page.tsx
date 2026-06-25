@@ -44,7 +44,15 @@ import { SavedAddress } from "@/features/address/types/address.type";
 
 export function CheckoutPage() {
   const router = useRouter();
+const [
+  selectedBillingAddress,
+  setSelectedBillingAddress,
+] = useState<SavedAddress | null>(null);
 
+const [
+  isBillingSameAsShipping,
+  setIsBillingSameAsShipping,
+] = useState(true);
 
   /*
    |--------------------------------------------------------------------------
@@ -534,13 +542,13 @@ export function CheckoutPage() {
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_420px]">
           <div className="space-y-6">
             <DeliveryAddress
-              selectedAddress={
-                selectedAddress
-              }
-              onSelectAddress={
-                setSelectedAddress
-              }
-            />
+  selectedAddress={selectedAddress}
+  onSelectAddress={setSelectedAddress}
+  selectedBillingAddress={selectedBillingAddress}
+  onSelectBillingAddress={setSelectedBillingAddress}
+  isBillingSameAsShipping={isBillingSameAsShipping}
+  onBillingSameChange={setIsBillingSameAsShipping}
+/>
 
 
             <CheckoutItems
@@ -554,11 +562,11 @@ export function CheckoutPage() {
 
           <div>
             <CheckoutSummary
-              checkout={checkout}
-              selectedAddress={
-                selectedAddress
-              }
-            />
+  checkout={checkout}
+  selectedAddress={selectedAddress}
+  selectedBillingAddress={selectedBillingAddress}
+  isBillingSameAsShipping={isBillingSameAsShipping}
+/>
           </div>
         </div>
       </div>

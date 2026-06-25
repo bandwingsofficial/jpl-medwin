@@ -85,7 +85,7 @@ export function RedeemCard({
 
   return (
     /* 👉 UI ENHANCEMENT: Upgraded container into a clean, modern card shell component */
-    <div className="w-full bg-white rounded-xl border border-gray-100 p-4 shadow-sm select-none">
+    <div className="w-full bg-white rounded-xl border border-gray-100 p-4 my-5 shadow-sm select-none">
       
       {/* HEADER SECTION */}
       <div className="flex items-start gap-2.5 mb-4">

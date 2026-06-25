@@ -26,12 +26,18 @@ interface CheckoutSummaryProps {
 
   selectedAddress?: SavedAddress | null;
 
+  selectedBillingAddress?: SavedAddress | null;
+
+  isBillingSameAsShipping: boolean;
+
   customerNote?: string;
 }
 
 export function CheckoutSummary({
   checkout,
   selectedAddress,
+  selectedBillingAddress,
+  isBillingSameAsShipping,
   customerNote,
 }: CheckoutSummaryProps) {
   /*
@@ -125,39 +131,7 @@ export function CheckoutSummary({
    |--------------------------------------------------------------------------
    */
 
-  const formattedAddress =
-    selectedAddress
-      ? {
-          name:
-            selectedAddress.fullName ||
-            "",
-
-          phone:
-            selectedAddress.phoneNumber ||
-            "",
-
-          line1:
-            selectedAddress.addressLine1 ||
-            "",
-
-          city:
-            selectedAddress.city ||
-            "",
-
-          state:
-            selectedAddress.state ||
-            "",
-
-          postalCode:
-            selectedAddress.postalCode ||
-            "",
-
-          country:
-            selectedAddress.country ||
-            "India",
-        }
-      : null;
-
+ 
   /*
    |--------------------------------------------------------------------------
    | HANDLERS
@@ -240,13 +214,13 @@ export function CheckoutSummary({
          |--------------------------------------------------------------------------
          */
 
-        if (!formattedAddress) {
-          showError(
-            "Please select a shipping address"
-          );
+       if (!selectedAddress?.id) {
+  showError(
+    "Please select a shipping address"
+  );
 
-          return;
-        }
+  return;
+}
 
         setIsRedirecting(true);
 
@@ -257,21 +231,19 @@ export function CheckoutSummary({
          */
 
         const response =
-          await createOrderMutation.mutateAsync(
-            {
-              checkoutSessionId:
-                checkout.id,
+  await createOrderMutation.mutateAsync({
+  checkoutSessionId: checkout.id,
 
-              shippingAddress:
-                formattedAddress,
+  shippingAddressId: selectedAddress.id,
 
-              billingAddress:
-                formattedAddress,
+  billingAddressId: isBillingSameAsShipping
+    ? selectedAddress.id
+    : selectedBillingAddress!.id,
 
-              customerNote,
-            }
-          );
+  isBillingSameAsShipping,
 
+  customerNote,
+});
         /*
          |--------------------------------------------------------------------------
          | EXTRACT ORDER
