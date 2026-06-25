@@ -7,10 +7,9 @@ import { ParsedProduct } from '../types/product-import.types';
 @Injectable()
 export class ProductExportFlattenerService {
   flatten(products: ParsedProduct[]): any[] {
-    const rows: any[] = []
+    const rows: any[] = [];
 
     for (const product of products) {
-
       for (const variant of product.variants) {
         rows.push({
           Group_name: product.name,
@@ -23,105 +22,54 @@ export class ProductExportFlattenerService {
 
           Brand: product.brand,
 
-          Description:
-            product.shortDescription ??
-            product.longDescription ??
-            '',
+          Description: product.shortDescription ?? product.longDescription ?? '',
 
-          Features:
-            product.features
-              ?.filter(Boolean)
-              .join('\n') ?? '',
+          Features: product.features?.filter(Boolean).join('\n') ?? '',
 
-          Tags:
-            product.tags
-              ?.filter(Boolean)
-              .join(', ') ?? '',
+          Tags: product.tags?.filter(Boolean).join(', ') ?? '',
 
-          'Display note':
-            product.displayNotes
-              ?.filter(Boolean)
-              .join('\n') ?? '',
+          'Display note': product.displayNotes?.filter(Boolean).join('\n') ?? '',
 
           'Key Specification':
-            product.specifications
-              ?.map(
-                (spec) =>
-                  `${spec.key}: ${spec.value}`,
-              )
-              .join('\n') ?? '',
+            product.specifications?.map((spec) => `${spec.key}: ${spec.value}`).join('\n') ?? '',
 
-          Packing:
-            product.packing
-              ?.filter(Boolean)
-              .join('\n') ?? '',
+          Packing: product.packing?.filter(Boolean).join('\n') ?? '',
 
-          'Direction Of Use':
-            product.directionOfUse
-              ?.filter(Boolean)
-              .join('\n') ?? '',
+          'Direction Of Use': product.directionOfUse?.filter(Boolean).join('\n') ?? '',
 
-          'Additional Info':
-            product.additionalInfo
-              ?.filter(Boolean)
-              .join('\n') ?? '',
+          'Additional Info': product.additionalInfo?.filter(Boolean).join('\n') ?? '',
 
-          FAQ:
-            product.faq
-              ?.map(
-                (faq) =>
-                  `Q: ${faq.question}\nA: ${faq.answer}`,
-              )
-              .join('\n\n') ?? '',
+          FAQ: product.faq?.map((faq) => `Q: ${faq.question}\nA: ${faq.answer}`).join('\n\n') ?? '',
 
-          Image:
-            variant.images.main ??
-            product.images.main ??
-            '',
+          Image: variant.images.main ?? product.images.main ?? '',
 
-          'Gallery Images':
-            [
-              ...(variant.images.gallery ??
-                []),
-            ].join('\n'),
+          'Gallery Images': [...(variant.images.gallery ?? [])].join('\n'),
 
           SKU: variant.sku,
 
           Variant_name: variant.name,
 
-          'Purchase Price':
-            variant.purchasePrice,
+          'Purchase Price': variant.purchasePrice,
 
-          'Selling Price':
-            variant.sellingPrice,
+          'Selling Price': variant.sellingPrice,
 
           MRP: variant.mrp,
 
           Quantity: variant.quantity,
 
-          Color:
-            variant.attributes?.color ??
-            '',
+          Color: variant.attributes?.color ?? '',
 
-          Size:
-            variant.attributes?.size ??
-            '',
+          Size: variant.attributes?.size ?? '',
 
-          Storage:
-            variant.attributes?.storage ??
-            '',
+          Storage: variant.attributes?.storage ?? '',
 
-          'Average Rating':
-            variant.averageRating,
+          'Average Rating': variant.averageRating,
 
-          'Review Count':
-            variant.reviewCount,
+          'Review Count': variant.reviewCount,
 
-          'Weighted product':
-            variant.isWeighted,
+          'Weighted product': variant.isWeighted,
 
-          Warranty:
-            variant.warrantyMonths,
+          Warranty: variant.warrantyMonths,
         });
       }
     }

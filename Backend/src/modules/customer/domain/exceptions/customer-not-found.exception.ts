@@ -7,9 +7,7 @@ import { BaseException } from '@/common/exceptions/base.exception';
 import { ErrorCode } from '@/common/constants/error-codes';
 
 export class CustomerNotFoundException extends BaseException {
-  constructor(details?: {
-    userId?: string;
-  }) {
+  constructor(details?: { userId?: string }) {
     super(
       'Customer not found',
 

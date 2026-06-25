@@ -5,11 +5,6 @@ import { ErrorCode } from '@/common/constants/error-codes';
 
 export class InvalidSearchQueryException extends BaseException {
   constructor(details?: Record<string, any>) {
-    super(
-      'Invalid search query',
-      ErrorCode.SEARCH.INVALID_QUERY,
-      HttpStatus.BAD_REQUEST,
-      details,
-    );
+    super('Invalid search query', ErrorCode.SEARCH.INVALID_QUERY, HttpStatus.BAD_REQUEST, details);
   }
 }

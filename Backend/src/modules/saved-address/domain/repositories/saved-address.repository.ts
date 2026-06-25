@@ -40,6 +40,8 @@ export interface SavedAddressRepository {
 
   existsDefaultAddress(userId: string): Promise<boolean>;
 
+  countOrderReferences(addressId: string): Promise<number>;
+
   // =======================
   // ✍️ WRITE
   // =======================
@@ -62,7 +64,5 @@ export interface SavedAddressRepository {
 
   restore(id: string): Promise<void>;
 
-findAllByPhoneNumber(
-  phoneNumber: string,
-): Promise<SavedAddress[]>;
+  findAllByPhoneNumber(phoneNumber: string): Promise<SavedAddress[]>;
 }

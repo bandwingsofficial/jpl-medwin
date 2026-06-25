@@ -1,11 +1,6 @@
 // src/modules/collection/presentation/controllers/public-collection.controller.ts
 
-import {
-  Controller,
-  Get,
-  Param,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 
 import { CollectionStatus } from '../../domain/enums/collection-status.enum';
 

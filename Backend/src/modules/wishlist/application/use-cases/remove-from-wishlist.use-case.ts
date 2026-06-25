@@ -24,11 +24,7 @@ export class RemoveFromWishlistUseCase {
     // ❤️ FIND
     // =======================
 
-    const wishlist =
-      await this.wishlistRepo.findByUserAndProduct(
-        input.userId,
-        input.productId,
-      );
+    const wishlist = await this.wishlistRepo.findByUserAndProduct(input.userId, input.productId);
 
     if (!wishlist || wishlist.isDeleted()) {
       throw new WishlistNotFoundException({

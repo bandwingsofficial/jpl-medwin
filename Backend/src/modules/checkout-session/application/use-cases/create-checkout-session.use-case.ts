@@ -92,8 +92,7 @@ export class CreateCheckoutSessionUseCase {
     // 🔁 EXISTING ACTIVE SESSION
     // =======================
 
-    const existingSession =
-      await this.checkoutSessionRepo.findActiveByCartId(cart.id);
+    const existingSession = await this.checkoutSessionRepo.findActiveByCartId(cart.id);
 
     if (existingSession) {
       // =======================
@@ -109,44 +108,40 @@ export class CreateCheckoutSessionUseCase {
         cart.unlock();
       } else {
         // =======================
-// 📦 EXISTING ITEMS
-// =======================
+        // 📦 EXISTING ITEMS
+        // =======================
 
-const existingItems =
-  await this.checkoutSessionItemRepo.findByCheckoutSessionId(
-    existingSession.id,
-  );
+        const existingItems = await this.checkoutSessionItemRepo.findByCheckoutSessionId(
+          existingSession.id,
+        );
 
-// =======================
-// ♻️ RESET STALE DISCOUNTS
-// =======================
+        // =======================
+        // ♻️ RESET STALE DISCOUNTS
+        // =======================
 
-existingSession.couponCode = undefined;
+        existingSession.couponCode = undefined;
 
-existingSession.couponDiscount = 0;
+        existingSession.couponDiscount = 0;
 
-existingSession.rewardCoinsUsed = 0;
+        existingSession.rewardCoinsUsed = 0;
 
-existingSession.rewardDiscount = 0;
+        existingSession.rewardDiscount = 0;
 
-await this.checkoutSessionRepo.update(
-  existingSession,
-);
+        await this.checkoutSessionRepo.update(existingSession);
 
         // =======================
         // 💰 SUMMARY
         // =======================
 
-        const summary =
-  this.checkoutSummaryService.build({
-    items: existingItems,
+        const summary = await this.checkoutSummaryService.build({
+          items: existingItems,
 
-    couponDiscount: 0,
+          couponDiscount: 0,
 
-    rewardDiscount: 0,
+          rewardDiscount: 0,
 
-    tax: 0,
-});
+          tax: 0,
+        });
 
         // =======================
         // 🔁 REUSE RESPONSE
@@ -262,9 +257,7 @@ await this.checkoutSessionRepo.update(
           throw new Error(`Product not found: ${item.productName}`);
         }
 
-        const variant = product.variants.find(
-          (v) => v.id === item.variantId,
-        );
+        const variant = product.variants.find((v) => v.id === item.variantId);
 
         if (!variant) {
           throw new Error(`Variant not found: ${item.variantId}`);
@@ -314,60 +307,59 @@ await this.checkoutSessionRepo.update(
         ),
     );
 
-    const summary = this.checkoutSummaryService.build({
-  items: checkoutItemsPreview,
+    const summary = await this.checkoutSummaryService.build({
+      items: checkoutItemsPreview,
 
-  couponDiscount: cart.couponDiscount ?? 0,
+      couponDiscount: cart.couponDiscount ?? 0,
 
-  rewardDiscount: 0,
+      rewardDiscount: 0,
 
-  tax: 0,
-});
+      tax: 0,
+    });
 
     // =======================
     // 🎟 CREATE SESSION
     // =======================
 
     const checkoutSession = new CheckoutSession(
-  crypto.randomUUID(),
+      crypto.randomUUID(),
 
-  cart.id,
+      cart.id,
 
-  cart.userId,
+      cart.userId,
 
-  cart.guestId,
+      cart.guestId,
 
-  CheckoutSessionStatus.ACTIVE,
+      CheckoutSessionStatus.ACTIVE,
 
-  cart.couponCode,
+      cart.couponCode,
 
-  summary.subtotal,
+      summary.subtotal,
 
-  summary.couponDiscount,
+      summary.couponDiscount,
 
-  0, // rewardCoinsUsed
+      0, // rewardCoinsUsed
 
-  0, // rewardDiscount
+      0, // rewardDiscount
 
-  summary.shipping,
+      summary.shipping,
 
-  0,
+      0,
 
-  summary.grandTotal,
+      summary.grandTotal,
 
-  summary.totalSavings,
+      summary.totalSavings,
 
-  this.checkoutSessionDomainService.calculateExpiryDate(15),
+      this.checkoutSessionDomainService.calculateExpiryDate(15),
 
-  {},
-);
+      {},
+    );
 
     // =======================
     // 💾 SAVE SESSION
     // =======================
 
-    const savedSession =
-      await this.checkoutSessionRepo.create(checkoutSession);
+    const savedSession = await this.checkoutSessionRepo.create(checkoutSession);
 
     // =======================
     // 📦 CREATE SESSION ITEMS

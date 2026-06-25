@@ -5,13 +5,9 @@ import { SearchRankingService } from './search-ranking.service';
 
 @Injectable()
 export class SearchBuilderService {
-  constructor(
-    private readonly searchRankingService: SearchRankingService,
-  ) {}
+  constructor(private readonly searchRankingService: SearchRankingService) {}
 
-  build(
-    results: SearchResult[],
-  ): SearchResult[] {
+  build(results: SearchResult[]): SearchResult[] {
     return this.searchRankingService.rank(results);
   }
 }

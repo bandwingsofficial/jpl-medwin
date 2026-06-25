@@ -3,11 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { Order } from '../../domain/entities/order.entity';
 import { OrderItem } from '../../domain/entities/order-item.entity';
 
+import { OrderAddressResponseMapper } from '@/modules/order/application/mappers/order-address-response.mapper';
+
 @Injectable()
 export class OrderResponseBuilderService {
-  buildReplacementOrder(
-    order: Order | null,
-  ) {
+  buildReplacementOrder(order: Order | null) {
     if (!order) {
       return null;
     }
@@ -41,6 +41,8 @@ export class OrderResponseBuilderService {
         earnedCoins: order.earnedCoins,
       },
 
+      ...OrderAddressResponseMapper.toOrderAddressFields(order),
+
       shipment: {
         trackingId: order.trackingId,
 
@@ -57,9 +59,7 @@ export class OrderResponseBuilderService {
     };
   }
 
-  buildPreviewItems(
-    items: OrderItem[],
-  ) {
+  buildPreviewItems(items: OrderItem[]) {
     return items.map((item) => ({
       id: item.id,
 

@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -37,19 +34,11 @@ export class TopProductDashboardService {
 
     to?: string;
   }) {
-    const orders =
-      await this.fetchOrders(
-        params,
-      );
+    const orders = await this.fetchOrders(params);
 
-    const items =
-      await this.fetchOrderItems(
-        orders,
-      );
+    const items = await this.fetchOrderItems(orders);
 
-    return this.calculateTopProducts(
-      items,
-    );
+    return this.calculateTopProducts(items);
   }
 
   /**
@@ -62,68 +51,42 @@ export class TopProductDashboardService {
 
     to?: string;
   }): Promise<Order[]> {
-    let startDate:
-      | Date
-      | undefined;
+    let startDate: Date | undefined;
 
-    let endDate:
-      | Date
-      | undefined;
+    let endDate: Date | undefined;
 
     // =======================
     // 📅 CUSTOM RANGE
     // =======================
-    if (
-      params.from &&
-      params.to
-    ) {
-      startDate = new Date(
-        params.from,
-      );
+    if (params.from && params.to) {
+      startDate = new Date(params.from);
 
-      endDate = new Date(
-        params.to,
-      );
+      endDate = new Date(params.to);
 
       // Include entire end day
-      endDate.setHours(
-        23,
-        59,
-        59,
-        999,
-      );
+      endDate.setHours(23, 59, 59, 999);
     }
 
     // =======================
     // 📅 PREDEFINED PERIOD
     // =======================
     else {
-      const range =
-        DashboardPeriodUtil.getRange(
-          params.period ??
-            DashboardPeriod.OVERALL,
-        );
+      const range = DashboardPeriodUtil.getRange(params.period ?? DashboardPeriod.OVERALL);
 
-      startDate =
-        range.startDate;
+      startDate = range.startDate;
 
-      endDate =
-        range.endDate;
+      endDate = range.endDate;
     }
 
-    const {
-      data,
-    } =
-      await this.orderRepo.findMany({
-        page: 1,
+    const { data } = await this.orderRepo.findMany({
+      page: 1,
 
-        limit:
-          Number.MAX_SAFE_INTEGER,
+      limit: Number.MAX_SAFE_INTEGER,
 
-        from: startDate,
+      from: startDate,
 
-        to: endDate,
-      });
+      to: endDate,
+    });
 
     return data;
   }
@@ -131,26 +94,18 @@ export class TopProductDashboardService {
   /**
    * 📦 Fetch items
    */
-  private async fetchOrderItems(
-    orders: Order[],
-  ): Promise<OrderItem[]> {
+  private async fetchOrderItems(orders: Order[]): Promise<OrderItem[]> {
     if (!orders.length) {
       return [];
     }
 
-    return this.orderItemRepo.findByOrderIds(
-      orders.map(
-        (order) => order.id,
-      ),
-    );
+    return this.orderItemRepo.findByOrderIds(orders.map((order) => order.id));
   }
 
   /**
    * 📊 Calculate top products
    */
-  private calculateTopProducts(
-    items: OrderItem[],
-  ) {
+  private calculateTopProducts(items: OrderItem[]) {
     const map = new Map<
       string,
       {
@@ -165,51 +120,27 @@ export class TopProductDashboardService {
     >();
 
     for (const item of items) {
-      const existing =
-        map.get(
-          item.productId,
-        );
+      const existing = map.get(item.productId);
 
       if (existing) {
-        existing.quantitySold +=
-          item.quantity;
+        existing.quantitySold += item.quantity;
 
-        existing.revenue +=
-          item.totalPrice;
+        existing.revenue += item.totalPrice;
       } else {
-        map.set(
-          item.productId,
-          {
-            productId:
-              item.productId,
+        map.set(item.productId, {
+          productId: item.productId,
 
-            productName:
-              item.productName,
+          productName: item.productName,
 
-            quantitySold:
-              item.quantity,
+          quantitySold: item.quantity,
 
-            revenue:
-              item.totalPrice,
-          },
-        );
+          revenue: item.totalPrice,
+        });
       }
     }
 
-    return Array.from(
-      map.values(),
-    )
-      .sort(
-        (
-          a,
-          b,
-        ) =>
-          b.quantitySold -
-          a.quantitySold,
-      )
-      .slice(
-        0,
-        10,
-      );
+    return Array.from(map.values())
+      .sort((a, b) => b.quantitySold - a.quantitySold)
+      .slice(0, 10);
   }
 }

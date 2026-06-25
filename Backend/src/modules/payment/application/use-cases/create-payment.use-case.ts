@@ -47,10 +47,7 @@ export class CreatePaymentUseCase {
     // 🔍 FIND ORDER
     // =======================
 
-    const order =
-      await this.orderRepo.findById(
-        input.orderId,
-      );
+    const order = await this.orderRepo.findById(input.orderId);
 
     if (!order) {
       throw new OrderNotFoundException({
@@ -75,8 +72,7 @@ export class CreatePaymentUseCase {
       status: PaymentStatus.PENDING,
 
       metadata: {
-        orderNumber:
-          order.orderNumber,
+        orderNumber: order.orderNumber,
       },
     });
 
@@ -84,83 +80,57 @@ export class CreatePaymentUseCase {
     // 🛡 VALIDATE
     // =======================
 
-    this.paymentDomainService.ensureCanCreate(
-      payment,
-    );
+    this.paymentDomainService.ensureCanCreate(payment);
 
     // =======================
     // 💳 PROVIDER ORDER
     // =======================
 
-    let providerOrderId:
-      | string
-      | undefined;
+    let providerOrderId: string | undefined;
 
-    let providerResponse:
-      | Record<string, any>
-      | undefined;
+    let providerResponse: Record<string, any> | undefined;
 
     // =======================
     // 🟦 RAZORPAY
     // =======================
 
-    if (
-      input.provider ===
-      PaymentProvider.RAZORPAY
-    ) {
-      const razorpayOrder =
-        await this.razorpayService.createOrder(
-          {
-            // SEND INR
-            // SERVICE WILL CONVERT TO PAISE
-            amount:
-              order.grandTotal,
+    if (input.provider === PaymentProvider.RAZORPAY) {
+      const razorpayOrder = await this.razorpayService.createOrder({
+        // SEND INR
+        // SERVICE WILL CONVERT TO PAISE
+        amount: order.grandTotal,
 
-            currency: 'INR',
+        currency: 'INR',
 
-            receipt:
-              order.orderNumber,
+        receipt: order.orderNumber,
 
-            notes: {
-              orderId: order.id,
-            },
-          },
-        );
+        notes: {
+          orderId: order.id,
+        },
+      });
 
-      providerOrderId =
-        razorpayOrder.id;
+      providerOrderId = razorpayOrder.id;
 
-      providerResponse =
-        razorpayOrder;
+      providerResponse = razorpayOrder;
     }
 
     // =======================
     // 🟪 STRIPE
     // =======================
+    else if (input.provider === PaymentProvider.STRIPE) {
+      const paymentIntent = await this.stripeService.createPaymentIntent({
+        amount: order.grandTotal,
 
-    else if (
-      input.provider ===
-      PaymentProvider.STRIPE
-    ) {
-      const paymentIntent =
-        await this.stripeService.createPaymentIntent(
-          {
-            amount:
-              order.grandTotal,
+        currency: 'INR',
 
-            currency: 'INR',
+        metadata: {
+          orderId: order.id,
+        },
+      });
 
-            metadata: {
-              orderId: order.id,
-            },
-          },
-        );
+      providerOrderId = paymentIntent.id;
 
-      providerOrderId =
-        paymentIntent.id;
-
-      providerResponse =
-        paymentIntent;
+      providerResponse = paymentIntent;
     }
 
     // =======================
@@ -175,10 +145,7 @@ export class CreatePaymentUseCase {
     // 💾 SAVE
     // =======================
 
-    const created =
-      await this.paymentRepo.create(
-        payment,
-      );
+    const created = await this.paymentRepo.create(payment);
 
     // =======================
     // 🚀 RESPONSE
@@ -198,13 +165,11 @@ export class CreatePaymentUseCase {
 
       currency: created.currency,
 
-      providerOrderId:
-        created.providerOrderId,
+      providerOrderId: created.providerOrderId,
 
       providerResponse,
 
-      createdAt:
-        created.createdAt,
+      createdAt: created.createdAt,
     };
   }
 }

@@ -61,11 +61,10 @@ export class CreditCoinsUseCase {
     this.coinsDomainService.validateCoins(input.coins);
 
     if (input.idempotencyKey) {
-      const existingTransaction =
-        await this.transactionRepository.findByIdempotencyKey(
-          input.idempotencyKey,
-          tx,
-        );
+      const existingTransaction = await this.transactionRepository.findByIdempotencyKey(
+        input.idempotencyKey,
+        tx,
+      );
 
       if (existingTransaction) {
         return {
@@ -76,9 +75,7 @@ export class CreditCoinsUseCase {
       }
     }
 
-    const user = await this.userRepository.findById(
-      input.userId,
-    );
+    const user = await this.userRepository.findById(input.userId);
 
     if (!user) {
       throw new UserNotFoundException({
@@ -86,27 +83,12 @@ export class CreditCoinsUseCase {
       });
     }
 
-    let wallet =
-      await this.walletRepository.findByUserId(
-        input.userId,
-        tx,
-      );
+    let wallet = await this.walletRepository.findByUserId(input.userId, tx);
 
     if (!wallet) {
-      wallet = new CoinWallet(
-        randomUUID(),
-        input.userId,
-        0,
-        0,
-        0,
-        0,
-        0,
-      );
+      wallet = new CoinWallet(randomUUID(), input.userId, 0, 0, 0, 0, 0);
 
-      wallet = await this.walletRepository.create(
-        wallet,
-        tx,
-      );
+      wallet = await this.walletRepository.create(wallet, tx);
     }
 
     const balanceBefore = wallet.balance;
@@ -116,20 +98,14 @@ export class CreditCoinsUseCase {
       transactionType: input.type,
     });
 
-    const updatedWallet =
-      await this.walletRepository.update(
-        wallet,
-        tx,
-      );
+    const updatedWallet = await this.walletRepository.update(wallet, tx);
 
     const remainingCoins =
       input.type === CoinTransactionType.EARNED ||
       input.type === CoinTransactionType.BONUS ||
       input.type === CoinTransactionType.REFUNDED ||
-      input.type ===
-        CoinTransactionType.REDEEM_REVERSED ||
-      input.type ===
-        CoinTransactionType.ADMIN_CREDIT
+      input.type === CoinTransactionType.REDEEM_REVERSED ||
+      input.type === CoinTransactionType.ADMIN_CREDIT
         ? input.coins
         : undefined;
 
@@ -155,25 +131,17 @@ export class CreditCoinsUseCase {
       input.idempotencyKey,
     );
 
-    const createdTransaction =
-      await this.transactionRepository.create(
-        transaction,
-        tx,
-      );
+    const createdTransaction = await this.transactionRepository.create(transaction, tx);
 
     return {
       wallet: {
         id: updatedWallet.id,
         userId: updatedWallet.userId,
         balance: updatedWallet.balance,
-        lifetimeEarned:
-          updatedWallet.lifetimeEarned,
-        lifetimeRedeemed:
-          updatedWallet.lifetimeRedeemed,
-        lifetimeExpired:
-          updatedWallet.lifetimeExpired,
-        lifetimeRefunded:
-          updatedWallet.lifetimeRefunded,
+        lifetimeEarned: updatedWallet.lifetimeEarned,
+        lifetimeRedeemed: updatedWallet.lifetimeRedeemed,
+        lifetimeExpired: updatedWallet.lifetimeExpired,
+        lifetimeRefunded: updatedWallet.lifetimeRefunded,
         updatedAt: updatedWallet.updatedAt,
       },
 
@@ -182,18 +150,12 @@ export class CreditCoinsUseCase {
         type: createdTransaction.type,
         status: createdTransaction.status,
         coins: createdTransaction.coins,
-        balanceBefore:
-          createdTransaction.balanceBefore,
-        balanceAfter:
-          createdTransaction.balanceAfter,
-        sourceType:
-          createdTransaction.sourceType,
-        remainingCoins:
-          createdTransaction.remainingCoins,
-        description:
-          createdTransaction.description,
-        createdAt:
-          createdTransaction.createdAt,
+        balanceBefore: createdTransaction.balanceBefore,
+        balanceAfter: createdTransaction.balanceAfter,
+        sourceType: createdTransaction.sourceType,
+        remainingCoins: createdTransaction.remainingCoins,
+        description: createdTransaction.description,
+        createdAt: createdTransaction.createdAt,
       },
 
       duplicated: false,

@@ -1,8 +1,4 @@
-import {
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsOptional, IsString, Min } from 'class-validator';
 
 export class AddBannerImageDto {
   @IsOptional()

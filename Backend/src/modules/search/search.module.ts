@@ -40,13 +40,9 @@ import { PrismaSearchRepository } from './infrastructure/persistence/prisma/repo
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-  ],
+  imports: [PrismaModule],
 
-  controllers: [
-    SearchController,
-  ],
+  controllers: [SearchController],
 
   providers: [
     // =======================
@@ -72,8 +68,6 @@ import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
     },
   ],
 
-  exports: [
-    TOKENS.SEARCH_REPOSITORY,
-  ],
+  exports: [TOKENS.SEARCH_REPOSITORY],
 })
 export class SearchModule {}

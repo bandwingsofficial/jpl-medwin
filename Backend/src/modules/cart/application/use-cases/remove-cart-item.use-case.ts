@@ -199,7 +199,7 @@ export class RemoveCartItemUseCase {
     // 💰 SUMMARY
     // =======================
 
-    const summary = this.summaryService.build({
+    const summary = await this.summaryService.build({
       items: cartItems,
     });
 

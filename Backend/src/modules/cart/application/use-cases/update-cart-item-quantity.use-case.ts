@@ -193,7 +193,7 @@ export class UpdateCartItemQuantityUseCase {
     // 💰 SUMMARY
     // =======================
 
-    const summary = this.summaryService.build({
+    const summary = await this.summaryService.build({
       items: cartItems,
     });
 

@@ -44,30 +44,17 @@ export class ExportProductsUseCase {
     // 📁 GENERATE EXCEL
     // =======================
 
-   const buffer =
-  await this.excelService.generate(
-    rows,
-  );
+    const buffer = await this.excelService.generate(rows);
 
     // =======================
     // 📊 COUNTS
     // =======================
 
-    const totalVariants = products.reduce(
-      (acc, product) =>
-        acc + product.variants.length,
-      0,
-    );
+    const totalVariants = products.reduce((acc, product) => acc + product.variants.length, 0);
 
-    const simpleProducts =
-      products.filter(
-        (p) => p.type === 'SIMPLE',
-      ).length;
+    const simpleProducts = products.filter((p) => p.type === 'SIMPLE').length;
 
-    const variableProducts =
-      products.filter(
-        (p) => p.type === 'VARIABLE',
-      ).length;
+    const variableProducts = products.filter((p) => p.type === 'VARIABLE').length;
 
     // =======================
     // ✅ RESPONSE
@@ -76,8 +63,7 @@ export class ExportProductsUseCase {
     return {
       success: true,
 
-      message:
-        'Products exported successfully',
+      message: 'Products exported successfully',
 
       summary: {
         totalRows: rows.length,
@@ -94,8 +80,7 @@ export class ExportProductsUseCase {
       file: {
         name: `products-${Date.now()}.xlsx`,
 
-        mimeType:
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 
         size: buffer.length,
       },

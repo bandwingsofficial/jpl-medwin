@@ -48,10 +48,7 @@ export class Collection {
   // =======================
 
   isActive(): boolean {
-    return (
-      this.status === CollectionStatus.ACTIVE &&
-      !this.deletedAt
-    );
+    return this.status === CollectionStatus.ACTIVE && !this.deletedAt;
   }
 
   isInactive(): boolean {

@@ -9,9 +9,6 @@ export class ReturnOwnershipService {
 
     userId: string;
   }): boolean {
-    return (
-      params.returnRequest.userId ===
-      params.userId
-    );
+    return params.returnRequest.userId === params.userId;
   }
 }

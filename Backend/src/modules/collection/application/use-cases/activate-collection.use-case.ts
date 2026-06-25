@@ -17,23 +17,16 @@ export class ActivateCollectionUseCase {
     private readonly domainService: CollectionDomainService,
   ) {}
 
-  async execute(input: {
-    collectionId: string;
-  }) {
+  async execute(input: { collectionId: string }) {
     // =======================
     // 🔍 COLLECTION
     // =======================
 
-    const collection =
-      this.domainService.ensureExists({
-        collection:
-          await this.collectionRepo.findById(
-            input.collectionId,
-          ),
+    const collection = this.domainService.ensureExists({
+      collection: await this.collectionRepo.findById(input.collectionId),
 
-        collectionId:
-          input.collectionId,
-      });
+      collectionId: input.collectionId,
+    });
 
     // =======================
     // 🟢 ACTIVATE
@@ -45,10 +38,7 @@ export class ActivateCollectionUseCase {
     // 💾 SAVE
     // =======================
 
-    const updated =
-      await this.collectionRepo.update(
-        collection,
-      );
+    const updated = await this.collectionRepo.update(collection);
 
     // =======================
     // 🚀 RESPONSE
@@ -63,8 +53,7 @@ export class ActivateCollectionUseCase {
 
       status: updated.status,
 
-      updatedAt:
-        updated.updatedAt,
+      updatedAt: updated.updatedAt,
     };
   }
 }

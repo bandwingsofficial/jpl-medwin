@@ -2,10 +2,7 @@
 // 📁 preview-product-import.use-case.ts
 // =======================
 
-import {
-  Injectable,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 
 import { ExcelParserHelper } from '../utils/excel-parser.helper';
 
@@ -20,35 +17,27 @@ export class PreviewProductImportUseCase {
     private readonly validator: ProductImportValidatorService,
   ) {}
 
-  async execute(
-    file: Express.Multer.File,
-  ) {
+  async execute(file: Express.Multer.File) {
     // =======================
     // 🚫 FILE CHECK
     // =======================
 
     if (!file?.buffer) {
-      throw new BadRequestException(
-        'Excel file is required',
-      );
+      throw new BadRequestException('Excel file is required');
     }
 
     // =======================
     // 📖 PARSE EXCEL
     // =======================
 
-    const rows = ExcelParserHelper.cleanRows(
-      ExcelParserHelper.parse(file.buffer),
-    );
+    const rows = ExcelParserHelper.cleanRows(ExcelParserHelper.parse(file.buffer));
 
     // =======================
     // 🚫 EMPTY FILE
     // =======================
 
     if (!rows.length) {
-      throw new BadRequestException(
-        'Excel file is empty',
-      );
+      throw new BadRequestException('Excel file is empty');
     }
 
     // =======================
@@ -61,28 +50,17 @@ export class PreviewProductImportUseCase {
     // ✅ VALIDATE
     // =======================
 
-    const validation =
-      this.validator.validate(products);
+    const validation = this.validator.validate(products);
 
     // =======================
     // 📊 COUNTS
     // =======================
 
-    const totalVariants = products.reduce(
-      (acc, product) =>
-        acc + product.variants.length,
-      0,
-    );
+    const totalVariants = products.reduce((acc, product) => acc + product.variants.length, 0);
 
-    const simpleProducts =
-      products.filter(
-        (p) => p.type === 'SIMPLE',
-      ).length;
+    const simpleProducts = products.filter((p) => p.type === 'SIMPLE').length;
 
-    const variableProducts =
-      products.filter(
-        (p) => p.type === 'VARIABLE',
-      ).length;
+    const variableProducts = products.filter((p) => p.type === 'VARIABLE').length;
 
     // =======================
     // ✅ RESPONSE
@@ -106,8 +84,7 @@ export class PreviewProductImportUseCase {
 
         variableProducts,
 
-        totalErrors:
-          validation.totalErrors,
+        totalErrors: validation.totalErrors,
       },
 
       validation,
@@ -116,4 +93,3 @@ export class PreviewProductImportUseCase {
     };
   }
 }
-

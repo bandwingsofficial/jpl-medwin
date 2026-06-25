@@ -76,19 +76,17 @@ export class CompleteReturnUseCase {
 
     let replacementOrder: any = null;
 
-if (returnRequest.type === ReturnType.REPLACEMENT) {
-  const replacement =
-    await this.createReplacementOrderUseCase.execute({
-      returnId: returnRequest.id,
-    });
+    if (returnRequest.type === ReturnType.REPLACEMENT) {
+      const replacement = await this.createReplacementOrderUseCase.execute({
+        returnId: returnRequest.id,
+      });
 
-  if (replacement.replacementOrder) {
-    replacementOrder = replacement.replacementOrder;
+      if (replacement.replacementOrder) {
+        replacementOrder = replacement.replacementOrder;
 
-    replacementOrderId =
-      replacement.replacementOrder.id;
-  }
-}
+        replacementOrderId = replacement.replacementOrder.id;
+      }
+    }
     // =======================
     // ✅ COMPLETE RETURN
     // =======================
@@ -107,20 +105,20 @@ if (returnRequest.type === ReturnType.REPLACEMENT) {
     // 🚀 RESPONSE
     // =======================
 
-return {
-  id: updated.id,
+    return {
+      id: updated.id,
 
-  orderId: updated.orderId,
+      orderId: updated.orderId,
 
-  type: updated.type,
+      type: updated.type,
 
-  status: updated.status,
+      status: updated.status,
 
-  replacementOrder,
+      replacementOrder,
 
-  completedAt: updated.completedAt,
+      completedAt: updated.completedAt,
 
-  updatedAt: updated.updatedAt,
-};
+      updatedAt: updated.updatedAt,
+    };
   }
 }

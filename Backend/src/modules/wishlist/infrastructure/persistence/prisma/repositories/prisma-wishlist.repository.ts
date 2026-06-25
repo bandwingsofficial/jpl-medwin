@@ -12,17 +12,13 @@ import { WishlistMapper } from '../mappers/wishlist.mapper';
 
 @Injectable()
 export class PrismaWishlistRepository implements WishlistRepository {
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   // =======================
   // 🔍 FIND
   // =======================
 
-  async findById(
-    id: string,
-  ): Promise<Wishlist | null> {
+  async findById(id: string): Promise<Wishlist | null> {
     const data = await this.prisma.wishlist.findFirst({
       where: {
         id,
@@ -30,71 +26,52 @@ export class PrismaWishlistRepository implements WishlistRepository {
       },
     });
 
-    return data
-      ? WishlistMapper.toDomain(data)
-      : null;
+    return data ? WishlistMapper.toDomain(data) : null;
   }
 
-  async findByUserId(
-    userId: string,
-  ): Promise<Wishlist[]> {
-    const data =
-      await this.prisma.wishlist.findMany({
-        where: {
-          userId,
-          deletedAt: null,
-        },
+  async findByUserId(userId: string): Promise<Wishlist[]> {
+    const data = await this.prisma.wishlist.findMany({
+      where: {
+        userId,
+        deletedAt: null,
+      },
 
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-    return data.map((item) =>
-      WishlistMapper.toDomain(item),
-    );
+    return data.map((item) => WishlistMapper.toDomain(item));
   }
 
-  async findByUserAndProduct(
-  userId: string,
-  productId: string,
-): Promise<Wishlist | null> {
-  const data =
-    await this.prisma.wishlist.findFirst({
+  async findByUserAndProduct(userId: string, productId: string): Promise<Wishlist | null> {
+    const data = await this.prisma.wishlist.findFirst({
       where: {
         userId,
         productId,
       },
     });
 
-  return data
-    ? WishlistMapper.toDomain(data)
-    : null;
-}
+    return data ? WishlistMapper.toDomain(data) : null;
+  }
 
   // =======================
   // 🧠 CHECKS
   // =======================
 
-  async exists(
-    userId: string,
-    productId: string,
-  ): Promise<boolean> {
-    const count =
-      await this.prisma.wishlist.count({
-        where: {
-          userId,
-          productId,
-          deletedAt: null,
-        },
-      });
+  async exists(userId: string, productId: string): Promise<boolean> {
+    const count = await this.prisma.wishlist.count({
+      where: {
+        userId,
+        productId,
+        deletedAt: null,
+      },
+    });
 
     return count > 0;
   }
 
-  async countByUserId(
-    userId: string,
-  ): Promise<number> {
+  async countByUserId(userId: string): Promise<number> {
     return this.prisma.wishlist.count({
       where: {
         userId,
@@ -107,32 +84,22 @@ export class PrismaWishlistRepository implements WishlistRepository {
   // ✍️ WRITE
   // =======================
 
-  async create(
-    wishlist: Wishlist,
-  ): Promise<Wishlist> {
-    const data =
-      await this.prisma.wishlist.create({
-        data: WishlistMapper.toPersistence(
-          wishlist,
-        ),
-      });
+  async create(wishlist: Wishlist): Promise<Wishlist> {
+    const data = await this.prisma.wishlist.create({
+      data: WishlistMapper.toPersistence(wishlist),
+    });
 
     return WishlistMapper.toDomain(data);
   }
 
-  async update(
-    wishlist: Wishlist,
-  ): Promise<Wishlist> {
-    const data =
-      await this.prisma.wishlist.update({
-        where: {
-          id: wishlist.id,
-        },
+  async update(wishlist: Wishlist): Promise<Wishlist> {
+    const data = await this.prisma.wishlist.update({
+      where: {
+        id: wishlist.id,
+      },
 
-        data: WishlistMapper.toPersistence(
-          wishlist,
-        ),
-      });
+      data: WishlistMapper.toPersistence(wishlist),
+    });
 
     return WishlistMapper.toDomain(data);
   }
@@ -141,9 +108,7 @@ export class PrismaWishlistRepository implements WishlistRepository {
   // ❌ DELETE
   // =======================
 
-  async softDelete(
-    id: string,
-  ): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     await this.prisma.wishlist.update({
       where: { id },
 
@@ -153,9 +118,7 @@ export class PrismaWishlistRepository implements WishlistRepository {
     });
   }
 
-  async restore(
-    id: string,
-  ): Promise<void> {
+  async restore(id: string): Promise<void> {
     await this.prisma.wishlist.update({
       where: { id },
 

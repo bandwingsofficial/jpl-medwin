@@ -21,9 +21,6 @@ export class CreateSavedAddressDto {
   @IsEnum(AddressType)
   type!: AddressType;
 
-
-  
-
   @IsOptional()
   @IsString()
   @MaxLength(100)

@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 
 import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
 
@@ -33,10 +28,7 @@ import { GetDashboardOverviewUseCase } from '../../application/use-cases/get-das
 import { GetLastFiveMonthsDashboardUseCase } from '../../application/use-cases/get-last-five-months-dashboard.use-case';
 
 @Controller('admin/dashboard')
-@UseGuards(
-  JwtAuthGuard,
-  RolesGuard,
-)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 export class DashboardController {
   constructor(
@@ -65,14 +57,10 @@ export class DashboardController {
     @Query()
     query: DashboardFilterDto,
   ) {
-    const data =
-      await this.getOrderDashboardUseCase.execute(
-        query,
-      );
+    const data = await this.getOrderDashboardUseCase.execute(query);
 
     return {
-      message:
-        'Order dashboard fetched successfully',
+      message: 'Order dashboard fetched successfully',
 
       ...data,
     };
@@ -87,14 +75,10 @@ export class DashboardController {
     @Query()
     query: DashboardFilterDto,
   ) {
-    const data =
-      await this.getOrderStatusDashboardUseCase.execute(
-        query,
-      );
+    const data = await this.getOrderStatusDashboardUseCase.execute(query);
 
     return {
-      message:
-        'Order status dashboard fetched successfully',
+      message: 'Order status dashboard fetched successfully',
 
       ...data,
     };
@@ -109,14 +93,10 @@ export class DashboardController {
     @Query()
     query: DashboardFilterDto,
   ) {
-    const data =
-      await this.getRevenueDashboardUseCase.execute(
-        query,
-      );
+    const data = await this.getRevenueDashboardUseCase.execute(query);
 
     return {
-      message:
-        'Revenue dashboard fetched successfully',
+      message: 'Revenue dashboard fetched successfully',
 
       ...data,
     };
@@ -131,14 +111,10 @@ export class DashboardController {
     @Query()
     query: DashboardFilterDto,
   ) {
-    const data =
-      await this.getRecentOrderDashboardUseCase.execute(
-        query,
-      );
+    const data = await this.getRecentOrderDashboardUseCase.execute(query);
 
     return {
-      message:
-        'Recent orders fetched successfully',
+      message: 'Recent orders fetched successfully',
 
       ...data,
     };
@@ -153,14 +129,10 @@ export class DashboardController {
     @Query()
     query: DashboardFilterDto,
   ) {
-    const data =
-      await this.getTopProductDashboardUseCase.execute(
-        query,
-      );
+    const data = await this.getTopProductDashboardUseCase.execute(query);
 
     return {
-      message:
-        'Top products fetched successfully',
+      message: 'Top products fetched successfully',
 
       ...data,
     };
@@ -175,76 +147,62 @@ export class DashboardController {
     @Query()
     query: DashboardFilterDto,
   ) {
-    const data =
-      await this.getTopCustomerDashboardUseCase.execute(
-        query,
-      );
+    const data = await this.getTopCustomerDashboardUseCase.execute(query);
 
     return {
-      message:
-        'Top customers fetched successfully',
+      message: 'Top customers fetched successfully',
 
       ...data,
     };
   }
 
   // =======================
-// 👥 CUSTOMER METRICS
-// =======================
+  // 👥 CUSTOMER METRICS
+  // =======================
 
-@Get('customers')
-async getCustomers(
-  @Query()
-  query: DashboardFilterDto,
-) {
-  const data =
-    await this.getCustomerDashboardUseCase.execute(
-      query,
-    );
+  @Get('customers')
+  async getCustomers(
+    @Query()
+    query: DashboardFilterDto,
+  ) {
+    const data = await this.getCustomerDashboardUseCase.execute(query);
 
-  return {
-    message:
-      'Customer dashboard fetched successfully',
+    return {
+      message: 'Customer dashboard fetched successfully',
 
-    ...data,
-  };
-}
+      ...data,
+    };
+  }
 
-// =======================
-// 📊 DASHBOARD OVERVIEW
-// =======================
+  // =======================
+  // 📊 DASHBOARD OVERVIEW
+  // =======================
 
-@Get()
-async getDashboard(
-  @Query()
-  query: DashboardFilterDto,
-) {
-  const data =
-    await this.getDashboardOverviewUseCase.execute(
-      query,
-    );
+  @Get()
+  async getDashboard(
+    @Query()
+    query: DashboardFilterDto,
+  ) {
+    const data = await this.getDashboardOverviewUseCase.execute(query);
 
-  return {
-    message:
-      'Dashboard fetched successfully',
+    return {
+      message: 'Dashboard fetched successfully',
 
-    ...data,
-  };
-}
-// =======================
-// 📅 LAST 5 MONTHS DASHBOARD
-// =======================
+      ...data,
+    };
+  }
+  // =======================
+  // 📅 LAST 5 MONTHS DASHBOARD
+  // =======================
 
-@Get('last-five-months')
-async getLastFiveMonthsDashboard() {
-  const data =
-    await this.getLastFiveMonthsDashboardUseCase.execute();
+  @Get('last-five-months')
+  async getLastFiveMonthsDashboard() {
+    const data = await this.getLastFiveMonthsDashboardUseCase.execute();
 
-  return {
-    message:
-      'Last five months dashboard fetched successfully',
+    return {
+      message: 'Last five months dashboard fetched successfully',
 
-    ...data,
-  };
-}
+      ...data,
+    };
+  }
 }

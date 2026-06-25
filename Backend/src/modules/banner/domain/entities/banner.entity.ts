@@ -41,10 +41,7 @@ export class Banner {
   // =======================
 
   isActive(): boolean {
-    return (
-      this.status === BannerStatus.ACTIVE &&
-      !this.deletedAt
-    );
+    return this.status === BannerStatus.ACTIVE && !this.deletedAt;
   }
 
   isInactive(): boolean {

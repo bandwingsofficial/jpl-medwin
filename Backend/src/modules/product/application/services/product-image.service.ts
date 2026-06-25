@@ -33,6 +33,8 @@ export class ProductImageService {
 
     tx?: any,
   ) {
+    console.log('Creating images with:', input.mainImage);
+
     let productMainImageId: string | null = null;
 
     // Main image
@@ -89,11 +91,7 @@ export class ProductImageService {
 
     // Set main image
     if (productMainImageId) {
-      await this.imageRepo.setMainImageForProduct(
-        product.id,
-        productMainImageId,
-        tx,
-      );
+      await this.imageRepo.setMainImageForProduct(product.id, productMainImageId, tx);
     }
   }
 }

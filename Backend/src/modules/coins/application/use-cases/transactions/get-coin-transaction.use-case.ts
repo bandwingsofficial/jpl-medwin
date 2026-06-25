@@ -13,18 +13,12 @@ export class GetCoinTransactionUseCase {
     private readonly transactionRepo: CoinTransactionRepository,
   ) {}
 
-  async execute(input: {
-    transactionId: string;
-  }) {
-    const transaction =
-      await this.transactionRepo.findById(
-        input.transactionId,
-      );
+  async execute(input: { transactionId: string }) {
+    const transaction = await this.transactionRepo.findById(input.transactionId);
 
     if (!transaction) {
       throw new InvalidRedemptionException({
-        message:
-          'Coin transaction not found',
+        message: 'Coin transaction not found',
       });
     }
 
@@ -39,57 +33,41 @@ export class GetCoinTransactionUseCase {
 
       status: transaction.status,
 
-      sourceType:
-        transaction.sourceType,
+      sourceType: transaction.sourceType,
 
       coins: transaction.coins,
 
-      balanceBefore:
-        transaction.balanceBefore,
+      balanceBefore: transaction.balanceBefore,
 
-      balanceAfter:
-        transaction.balanceAfter,
+      balanceAfter: transaction.balanceAfter,
 
       orderId: transaction.orderId,
 
       paymentId: transaction.paymentId,
 
-      redemptionId:
-        transaction.redemptionId,
+      redemptionId: transaction.redemptionId,
 
-      description:
-        transaction.description,
+      description: transaction.description,
 
       metadata: transaction.metadata,
 
-      expiresAt:
-        transaction.expiresAt,
+      expiresAt: transaction.expiresAt,
 
-      expiredAt:
-        transaction.expiredAt,
+      expiredAt: transaction.expiredAt,
 
-      remainingCoins:
-        transaction.remainingCoins,
+      remainingCoins: transaction.remainingCoins,
 
-      createdByAdminId:
-        transaction.createdByAdminId,
+      createdByAdminId: transaction.createdByAdminId,
 
-      idempotencyKey:
-        transaction.idempotencyKey,
+      idempotencyKey: transaction.idempotencyKey,
 
       createdAt: transaction.createdAt,
 
+      isExpired: !!transaction.expiredAt,
 
-      isExpired:
-        !!transaction.expiredAt,
+      isPending: transaction.status === 'PENDING',
 
-      isPending:
-        transaction.status ===
-        'PENDING',
-
-      isSuccessful:
-        transaction.status ===
-        'SUCCESS',
+      isSuccessful: transaction.status === 'SUCCESS',
     };
   }
 }

@@ -52,39 +52,36 @@ export class CoinWallet {
     this.validate();
   }
 
-  debitCoins(params: {
-  coins: number;
-  transactionType: CoinTransactionType;
-}) {
-  const { coins, transactionType } = params;
+  debitCoins(params: { coins: number; transactionType: CoinTransactionType }) {
+    const { coins, transactionType } = params;
 
-  this.ensureValidCoins(coins);
+    this.ensureValidCoins(coins);
 
-  this.ensureSufficientBalance(coins);
+    this.ensureSufficientBalance(coins);
 
-  this.balance -= coins;
+    this.balance -= coins;
 
-  if (this.balance < 0) {
-    throw new NegativeWalletBalanceException({
-      walletId: this.id,
-      balance: this.balance,
-    });
+    if (this.balance < 0) {
+      throw new NegativeWalletBalanceException({
+        walletId: this.id,
+        balance: this.balance,
+      });
+    }
+
+    switch (transactionType) {
+      case CoinTransactionType.REDEEMED:
+        this.lifetimeRedeemed += coins;
+        break;
+
+      case CoinTransactionType.EXPIRED:
+        this.lifetimeExpired += coins;
+        break;
+    }
+
+    this.touch();
+
+    this.validate();
   }
-
-  switch (transactionType) {
-    case CoinTransactionType.REDEEMED:
-      this.lifetimeRedeemed += coins;
-      break;
-
-    case CoinTransactionType.EXPIRED:
-      this.lifetimeExpired += coins;
-      break;
-  }
-
-  this.touch();
-
-  this.validate();
-}
 
   expireCoins(params: { coins: number }) {
     const { coins } = params;

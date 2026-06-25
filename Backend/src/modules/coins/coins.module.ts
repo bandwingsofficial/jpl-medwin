@@ -119,7 +119,6 @@ import { PrismaRewardConfigRepository } from './infrastructure/persistence/prism
 import { PrismaRewardTierRepository } from './infrastructure/persistence/prisma/repositories/prisma-reward-tier.repository';
 import { PrismaRewardCampaignRepository } from './infrastructure/persistence/prisma/repositories/prisma-reward-campaign.repository';
 
-
 import { PrismaUserRepository } from '@/modules/auth/infrastructure/persistence/prisma/repositories/user.repository';
 
 @Module({
@@ -228,9 +227,9 @@ import { PrismaUserRepository } from '@/modules/auth/infrastructure/persistence/
     // REPOSITORIES
     // =======================
     {
-  provide: TOKENS.USER_REPO,
-  useClass: PrismaUserRepository,
-},
+      provide: TOKENS.USER_REPO,
+      useClass: PrismaUserRepository,
+    },
 
     {
       provide: TOKENS.COIN_WALLET_REPO,

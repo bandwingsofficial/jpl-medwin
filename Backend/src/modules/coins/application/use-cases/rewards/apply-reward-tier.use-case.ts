@@ -19,15 +19,8 @@ export class ApplyRewardTierUseCase {
     private readonly rewardsDomainService: RewardsDomainService,
   ) {}
 
-  async execute(input: {
-    tierId: string;
-    baseCoins: number;
-    lifetimeSpend: number;
-  }) {
-    const rewardTier: RewardTier | null =
-      await this.rewardTierRepo.findById(
-        input.tierId,
-      );
+  async execute(input: { tierId: string; baseCoins: number; lifetimeSpend: number }) {
+    const rewardTier: RewardTier | null = await this.rewardTierRepo.findById(input.tierId);
 
     if (!rewardTier) {
       throw new RewardTierNotFoundException({
@@ -35,24 +28,17 @@ export class ApplyRewardTierUseCase {
       });
     }
 
-    this.rewardsDomainService.validateTierEligibility(
-      {
-        rewardTier,
-        lifetimeSpend:
-          input.lifetimeSpend,
-      },
-    );
+    this.rewardsDomainService.validateTierEligibility({
+      rewardTier,
+      lifetimeSpend: input.lifetimeSpend,
+    });
 
-    const finalCoins =
-      this.rewardsDomainService.applyTierMultiplier(
-        {
-          baseCoins: input.baseCoins,
-          rewardTier,
-        },
-      );
+    const finalCoins = this.rewardsDomainService.applyTierMultiplier({
+      baseCoins: input.baseCoins,
+      rewardTier,
+    });
 
-    const bonusCoins =
-      finalCoins - input.baseCoins;
+    const bonusCoins = finalCoins - input.baseCoins;
 
     return {
       tier: {
@@ -60,22 +46,17 @@ export class ApplyRewardTierUseCase {
 
         name: rewardTier.name,
 
-        description:
-          rewardTier.description,
+        description: rewardTier.description,
 
         status: rewardTier.status,
 
-        coinMultiplier:
-          rewardTier.coinMultiplier,
+        coinMultiplier: rewardTier.coinMultiplier,
 
-        minimumLifetimeSpend:
-          rewardTier.minimumLifetimeSpend,
+        minimumLifetimeSpend: rewardTier.minimumLifetimeSpend,
 
-        badgeImage:
-          rewardTier.badgeImage,
+        badgeImage: rewardTier.badgeImage,
 
-        isActive:
-          rewardTier.isActive(),
+        isActive: rewardTier.isActive(),
       },
 
       rewards: {
@@ -85,18 +66,15 @@ export class ApplyRewardTierUseCase {
 
         bonusCoins,
 
-        multiplier:
-          rewardTier.coinMultiplier,
+        multiplier: rewardTier.coinMultiplier,
       },
 
       eligibility: {
         eligible: true,
 
-        lifetimeSpend:
-          input.lifetimeSpend,
+        lifetimeSpend: input.lifetimeSpend,
 
-        minimumRequiredSpend:
-          rewardTier.minimumLifetimeSpend,
+        minimumRequiredSpend: rewardTier.minimumLifetimeSpend,
       },
     };
   }

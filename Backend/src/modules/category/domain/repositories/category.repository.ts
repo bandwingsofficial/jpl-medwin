@@ -12,10 +12,7 @@ export interface CategoryRepository {
 
   findAll(): Promise<Category[]>; // ✅ added
 
-    findByName(
-    name: string,
-  ): Promise<Category | null>;
-
+  findByName(name: string): Promise<Category | null>;
 
   // =======================
   // 🧠 CHECKS

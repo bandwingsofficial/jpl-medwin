@@ -49,22 +49,22 @@ export class Return {
   ) {}
 
   static create(params: {
-  orderId: string;
-  userId: string;
-  type: ReturnType;
-  reason: ReturnReason;
-  description?: string;
-}) {
-  return new Return(
-    crypto.randomUUID(),
-    params.orderId,
-    params.userId,
-    params.type,
-    params.reason,
-    ReturnStatus.REQUESTED,
-    params.description,
-  );
-}
+    orderId: string;
+    userId: string;
+    type: ReturnType;
+    reason: ReturnReason;
+    description?: string;
+  }) {
+    return new Return(
+      crypto.randomUUID(),
+      params.orderId,
+      params.userId,
+      params.type,
+      params.reason,
+      ReturnStatus.REQUESTED,
+      params.description,
+    );
+  }
 
   // =======================
   // 🧠 STATE
@@ -162,9 +162,7 @@ export class Return {
   // 📦 PICKUP
   // =======================
 
-  pickup(params?: {
-    trackingId?: string;
-  }) {
+  pickup(params?: { trackingId?: string }) {
     if (!this.isApproved()) {
       throw new ReturnNotApprovedException({
         returnId: this.id,
@@ -196,47 +194,39 @@ export class Return {
   // 🎉 COMPLETE
   // =======================
 
-  complete(params?: {
-  replacementOrderId?: string;
-}) {
-  if (this.isCompleted()) {
-    throw new ReturnAlreadyCompletedException({
-      returnId: this.id,
-    });
+  complete(params?: { replacementOrderId?: string }) {
+    if (this.isCompleted()) {
+      throw new ReturnAlreadyCompletedException({
+        returnId: this.id,
+      });
+    }
+
+    if (!this.isPickedUp()) {
+      throw new InvalidReturnOperationException({
+        returnId: this.id,
+        operation: 'complete',
+        reason: 'Return must be picked up before completion',
+      });
+    }
+
+    if (this.type === ReturnType.REPLACEMENT && !params?.replacementOrderId) {
+      throw new InvalidReturnOperationException({
+        returnId: this.id,
+        operation: 'complete',
+        reason: 'Replacement order id is required',
+      });
+    }
+
+    this.status = ReturnStatus.COMPLETED;
+
+    if (params?.replacementOrderId) {
+      this.replacementOrderId = params.replacementOrderId;
+    }
+
+    this.completedAt = new Date();
+
+    this.touch();
   }
-
-  if (!this.isPickedUp()) {
-    throw new InvalidReturnOperationException({
-      returnId: this.id,
-      operation: 'complete',
-      reason:
-        'Return must be picked up before completion',
-    });
-  }
-
-  if (
-    this.type === ReturnType.REPLACEMENT &&
-    !params?.replacementOrderId
-  ) {
-    throw new InvalidReturnOperationException({
-      returnId: this.id,
-      operation: 'complete',
-      reason:
-        'Replacement order id is required',
-    });
-  }
-
-  this.status = ReturnStatus.COMPLETED;
-
-  if (params?.replacementOrderId) {
-    this.replacementOrderId =
-      params.replacementOrderId;
-  }
-
-  this.completedAt = new Date();
-
-  this.touch();
-}
 
   // =======================
   // 🕒 INTERNAL

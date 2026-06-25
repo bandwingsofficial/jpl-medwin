@@ -38,10 +38,7 @@ export class CreateBannerUseCase {
     // 🔍 INCLUDING DELETED
     // =======================
 
-    const existing =
-      await this.bannerRepo.findByNameIncludingDeleted(
-        input.name,
-      );
+    const existing = await this.bannerRepo.findByNameIncludingDeleted(input.name);
 
     // =======================
     // ♻️ RESTORE
@@ -54,13 +51,9 @@ export class CreateBannerUseCase {
 
       existing.type = input.type;
 
-      existing.status =
-        BannerStatus.ACTIVE;
+      existing.status = BannerStatus.ACTIVE;
 
-      const restored =
-        await this.bannerRepo.update(
-          existing,
-        );
+      const restored = await this.bannerRepo.update(existing);
 
       return {
         id: restored.id,
@@ -101,38 +94,29 @@ export class CreateBannerUseCase {
       BannerStatus.ACTIVE,
     );
 
-    const createdBanner =
-      await this.bannerRepo.create(
-        banner,
-      );
+    const createdBanner = await this.bannerRepo.create(banner);
 
     // =======================
     // 🖼️ CREATE IMAGES
     // =======================
 
-    const createdImages =
-      await Promise.all(
-        input.images.map(
-          async (image) => {
-            const bannerImage =
-              new BannerImage(
-                crypto.randomUUID(),
+    const createdImages = await Promise.all(
+      input.images.map(async (image) => {
+        const bannerImage = new BannerImage(
+          crypto.randomUUID(),
 
-                createdBanner.id,
+          createdBanner.id,
 
-                image.imageUrl,
+          image.imageUrl,
 
-                image.productId,
+          image.productId,
 
-                image.sortOrder ?? 0,
-              );
+          image.sortOrder ?? 0,
+        );
 
-            return this.bannerImageRepo.create(
-              bannerImage,
-            );
-          },
-        ),
-      );
+        return this.bannerImageRepo.create(bannerImage);
+      }),
+    );
 
     // =======================
     // 🚀 RESPONSE
@@ -145,31 +129,21 @@ export class CreateBannerUseCase {
 
       type: createdBanner.type,
 
-      status:
-        createdBanner.status,
+      status: createdBanner.status,
 
-      images:
-        createdImages.map(
-          (image) => ({
-            id: image.id,
+      images: createdImages.map((image) => ({
+        id: image.id,
 
-            imageUrl:
-              image.imageUrl,
+        imageUrl: image.imageUrl,
 
-            productId:
-              image.productId ??
-              null,
+        productId: image.productId ?? null,
 
-            sortOrder:
-              image.sortOrder,
-          }),
-        ),
+        sortOrder: image.sortOrder,
+      })),
 
-      createdAt:
-        createdBanner.createdAt,
+      createdAt: createdBanner.createdAt,
 
-      updatedAt:
-        createdBanner.updatedAt,
+      updatedAt: createdBanner.updatedAt,
     };
   }
 }

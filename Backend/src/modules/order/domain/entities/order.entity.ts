@@ -14,6 +14,10 @@ import { OrderAlreadyShippedException } from '../exceptions/order-already-shippe
 
 import { OrderCancelledException } from '../exceptions/order-cancelled.exception';
 
+import { SavedAddress } from '@/modules/saved-address/domain/entities/saved-address.entity';
+
+import { OrderAddressSnapshotStored } from '../types/order-address-snapshot.type';
+
 export class Order {
   constructor(
     public readonly id: string,
@@ -54,13 +58,23 @@ export class Order {
 
     public redeemedAmount: number = 0,
 
-    public shippingAddress: Record<string, any> = {},
+    public shippingAddressId?: string,
 
-    public billingAddress: Record<string, any> = {},
+    public billingAddressId?: string,
+
+    public isBillingSameAsShipping: boolean = true,
+
+    public shippingAddress?: SavedAddress,
+
+    public billingAddress?: SavedAddress,
+
+    public shippingAddressSnapshot?: OrderAddressSnapshotStored,
+
+    public billingAddressSnapshot?: OrderAddressSnapshotStored,
 
     public trackingId?: string,
 
-public courierName?: string,
+    public courierName?: string,
 
     public shippedAt?: Date,
 
@@ -114,8 +128,7 @@ public courierName?: string,
 
   isPaid(): boolean {
     return (
-      this.paymentStatus === PaymentStatus.SUCCESS ||
-      this.paymentStatus === PaymentStatus.CAPTURED
+      this.paymentStatus === PaymentStatus.SUCCESS || this.paymentStatus === PaymentStatus.CAPTURED
     );
   }
 
@@ -134,10 +147,7 @@ public courierName?: string,
   // 🪙 COINS
   // =======================
 
-  applyCoinRedemption(params: {
-    redeemedCoins: number;
-    redeemedAmount: number;
-  }) {
+  applyCoinRedemption(params: { redeemedCoins: number; redeemedAmount: number }) {
     this.redeemedCoins = params.redeemedCoins;
 
     this.redeemedAmount = params.redeemedAmount;
@@ -188,14 +198,14 @@ public courierName?: string,
   }
 
   markRewardRefunded() {
-  this.rewardRefunded = true;
+    this.rewardRefunded = true;
 
-  this.touch();
-}
+    this.touch();
+  }
 
-isRewardRefunded(): boolean {
-  return this.rewardRefunded;
-}
+  isRewardRefunded(): boolean {
+    return this.rewardRefunded;
+  }
 
   // =======================
   // 📦 ORDER STATUS
@@ -240,42 +250,42 @@ isRewardRefunded(): boolean {
   }
 
   ship(params?: {
-  trackingId?: string;
+    trackingId?: string;
 
-  courierName?: string;
-}) {
-  if (this.isCancelled()) {
-    throw new OrderCancelledException({
-      orderId: this.id,
-    });
+    courierName?: string;
+  }) {
+    if (this.isCancelled()) {
+      throw new OrderCancelledException({
+        orderId: this.id,
+      });
+    }
+
+    if (this.status !== OrderStatus.PROCESSING) {
+      throw new InvalidOrderOperationException({
+        orderId: this.id,
+
+        operation: 'ship',
+
+        reason: 'Only processing orders can be shipped',
+      });
+    }
+
+    if (this.isShipped()) {
+      throw new OrderAlreadyShippedException({
+        orderId: this.id,
+      });
+    }
+
+    this.status = OrderStatus.SHIPPED;
+
+    this.trackingId = params?.trackingId;
+
+    this.courierName = params?.courierName;
+
+    this.shippedAt = new Date();
+
+    this.touch();
   }
-
-  if (this.status !== OrderStatus.PROCESSING) {
-    throw new InvalidOrderOperationException({
-      orderId: this.id,
-
-      operation: 'ship',
-
-      reason: 'Only processing orders can be shipped',
-    });
-  }
-
-  if (this.isShipped()) {
-    throw new OrderAlreadyShippedException({
-      orderId: this.id,
-    });
-  }
-
-  this.status = OrderStatus.SHIPPED;
-
-  this.trackingId = params?.trackingId;
-
-  this.courierName = params?.courierName;
-
-  this.shippedAt = new Date();
-
-  this.touch();
-}
 
   deliver() {
     if (this.isDelivered()) {
@@ -307,14 +317,14 @@ isRewardRefunded(): boolean {
     this.cancelledAt = new Date();
 
     if (reason) {
-        this.metadata = {
-            ...this.metadata,
-            cancellationReason: reason,
-        };
+      this.metadata = {
+        ...this.metadata,
+        cancellationReason: reason,
+      };
     }
 
     this.touch();
-}
+  }
 
   refund() {
     this.paymentStatus = PaymentStatus.REFUNDED;

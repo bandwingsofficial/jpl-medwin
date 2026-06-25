@@ -21,11 +21,9 @@ export class CollectionProductDomainService {
   }): void {
     if (params.exists) {
       throw new CollectionProductAlreadyExistsException({
-        collectionId:
-          params.collectionId,
+        collectionId: params.collectionId,
 
-        productId:
-          params.productId,
+        productId: params.productId,
       });
     }
   }
@@ -43,11 +41,9 @@ export class CollectionProductDomainService {
   }): void {
     if (!params.exists) {
       throw new CollectionProductNotFoundException({
-        collectionId:
-          params.collectionId,
+        collectionId: params.collectionId,
 
-        productId:
-          params.productId,
+        productId: params.productId,
       });
     }
   }
@@ -65,11 +61,9 @@ export class CollectionProductDomainService {
   }): void {
     if (!params.exists) {
       throw new CollectionProductNotFoundException({
-        collectionId:
-          params.collectionId,
+        collectionId: params.collectionId,
 
-        productId:
-          params.productId,
+        productId: params.productId,
       });
     }
   }

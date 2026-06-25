@@ -23,31 +23,25 @@ export class CreateCollectionUseCase {
   ) {}
 
   async execute(input: {
-  name: string;
+    name: string;
 
-  imageUrl?: string;
+    imageUrl?: string;
 
-  description?: string;
+    description?: string;
 
-  metaDescription?: string;
-}){
+    metaDescription?: string;
+  }) {
     // =======================
-// 🔗 SLUG
-// =======================
+    // 🔗 SLUG
+    // =======================
 
-const slug =
-  this.collectionDomainService.generateSlug(
-    input.name,
-  );
+    const slug = this.collectionDomainService.generateSlug(input.name);
 
-  // =======================
-// 📝 META
-// =======================
+    // =======================
+    // 📝 META
+    // =======================
 
-const metaDescription =
-  input.metaDescription?.trim() ??
-  input.description?.trim();
-
+    const metaDescription = input.metaDescription?.trim() ?? input.description?.trim();
 
     // =======================
     // 🔍 INCLUDING DELETED
@@ -55,10 +49,7 @@ const metaDescription =
 
     const existingByName = await this.collectionRepo.findByNameIncludingDeleted(input.name);
 
-    const existingBySlug =
-  await this.collectionRepo.findBySlugIncludingDeleted(
-    slug,
-  );
+    const existingBySlug = await this.collectionRepo.findBySlugIncludingDeleted(slug);
 
     // =======================
     // ♻️ RESTORE
@@ -69,8 +60,6 @@ const metaDescription =
       : existingBySlug?.isDeleted()
         ? existingBySlug
         : null;
-
-
 
     if (deletedCollection) {
       deletedCollection.restore();

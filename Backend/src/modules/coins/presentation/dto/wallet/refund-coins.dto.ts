@@ -1,11 +1,6 @@
 // dto/wallet/refund-coins.dto.ts
 
-import {
-  IsInt,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class RefundCoinsDto {
   @IsString()

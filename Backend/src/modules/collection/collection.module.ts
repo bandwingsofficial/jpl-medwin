@@ -52,17 +52,9 @@ import { PrismaCollectionProductRepository } from './infrastructure/persistence/
 import { ProductModule } from '@/modules/product/product.module';
 
 @Module({
-  imports: [
-    PrismaModule,
-    AuthModule,
-    UploadModule,
-    ProductModule,
-  ],
+  imports: [PrismaModule, AuthModule, UploadModule, ProductModule],
 
-  controllers: [
-    AdminCollectionController,
-    PublicCollectionController,
-  ],
+  controllers: [AdminCollectionController, PublicCollectionController],
 
   providers: [
     // =======================
@@ -105,9 +97,6 @@ import { ProductModule } from '@/modules/product/product.module';
     },
   ],
 
-  exports: [
-    TOKENS.COLLECTION_REPO,
-    TOKENS.COLLECTION_PRODUCT_REPO,
-  ],
+  exports: [TOKENS.COLLECTION_REPO, TOKENS.COLLECTION_PRODUCT_REPO],
 })
 export class CollectionModule {}

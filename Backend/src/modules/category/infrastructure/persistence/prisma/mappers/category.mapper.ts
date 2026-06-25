@@ -24,7 +24,11 @@ export class CategoryMapper {
       case PrismaCategoryStatus.INACTIVE:
         return CategoryStatus.INACTIVE;
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Prisma status', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Prisma status',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -35,7 +39,11 @@ export class CategoryMapper {
       case CategoryStatus.INACTIVE:
         return PrismaCategoryStatus.INACTIVE;
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Domain status', value: status, direction: 'domain_to_prisma' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Domain status',
+          value: status,
+          direction: 'domain_to_prisma',
+        });
     }
   }
 

@@ -14,10 +14,7 @@ export class GetWishlistCountUseCase {
   ) {}
 
   async execute(userId: string) {
-    const count =
-      await this.wishlistRepo.countByUserId(
-        userId,
-      );
+    const count = await this.wishlistRepo.countByUserId(userId);
 
     return {
       count,

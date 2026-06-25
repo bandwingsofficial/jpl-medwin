@@ -48,7 +48,11 @@ export class CoinTransactionMapper {
         return CoinTransactionType.ADJUSTED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Prisma coin transaction type', value: type, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Prisma coin transaction type',
+          value: type,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -85,7 +89,11 @@ export class CoinTransactionMapper {
         return PrismaCoinTransactionType.ADJUSTED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Domain coin transaction type', value: type, direction: 'domain_to_prisma' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Domain coin transaction type',
+          value: type,
+          direction: 'domain_to_prisma',
+        });
     }
   }
 
@@ -104,7 +112,11 @@ export class CoinTransactionMapper {
         return CoinTransactionStatus.CANCELLED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Prisma coin transaction status', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Prisma coin transaction status',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -123,7 +135,11 @@ export class CoinTransactionMapper {
         return PrismaCoinTransactionStatus.CANCELLED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Domain coin transaction status', value: status, direction: 'domain_to_prisma' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Domain coin transaction status',
+          value: status,
+          direction: 'domain_to_prisma',
+        });
     }
   }
 
@@ -157,7 +173,11 @@ export class CoinTransactionMapper {
         return RewardSourceType.SYSTEM;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Prisma reward source type', value: sourceType, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Prisma reward source type',
+          value: sourceType,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -191,7 +211,11 @@ export class CoinTransactionMapper {
         return PrismaRewardSourceType.SYSTEM;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Domain reward source type', value: sourceType, direction: 'domain_to_prisma' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Domain reward source type',
+          value: sourceType,
+          direction: 'domain_to_prisma',
+        });
     }
   }
 

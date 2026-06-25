@@ -60,9 +60,9 @@ export class ShipOrderUseCase {
     // =======================
 
     order.ship({
-  trackingId: input.trackingId,
-  courierName: input.courierName,
-});
+      trackingId: input.trackingId,
+      courierName: input.courierName,
+    });
 
     // =======================
     // 💾 SAVE
@@ -81,57 +81,47 @@ export class ShipOrderUseCase {
     // =======================
 
     return {
-  id: updated.id,
+      id: updated.id,
 
-  orderNumber: updated.orderNumber,
+      orderNumber: updated.orderNumber,
 
-  status: updated.status,
+      status: updated.status,
 
-  paymentStatus: updated.paymentStatus,
+      paymentStatus: updated.paymentStatus,
 
- shipment: {
-  trackingId: updated.trackingId,
+      shipment: {
+        trackingId: updated.trackingId,
 
-  courierName: updated.courierName,
+        courierName: updated.courierName,
 
-  shippedAt: updated.shippedAt,
-},
+        shippedAt: updated.shippedAt,
+      },
 
-  totals: {
-    subtotal: updated.subtotal,
+      totals: {
+        subtotal: updated.subtotal,
 
-    couponDiscount:
-      updated.couponDiscount,
+        couponDiscount: updated.couponDiscount,
 
-    shippingCharge:
-      updated.shippingCharge,
+        shippingCharge: updated.shippingCharge,
 
-    tax: updated.tax,
+        tax: updated.tax,
 
-    redeemedCoins:
-      updated.redeemedCoins,
+        redeemedCoins: updated.redeemedCoins,
 
-    redeemedAmount:
-      updated.redeemedAmount,
+        redeemedAmount: updated.redeemedAmount,
 
-    earnedCoins:
-      updated.earnedCoins,
+        earnedCoins: updated.earnedCoins,
 
-    grandTotal:
-      updated.grandTotal,
+        grandTotal: updated.grandTotal,
 
-    totalSavings:
-      updated.totalSavings,
-  },
+        totalSavings: updated.totalSavings,
+      },
 
-  itemCount:
-  this.domainService.calculateTotalProducts(items),
+      itemCount: this.domainService.calculateTotalProducts(items),
 
-totalQuantity:
-  this.domainService.calculateTotalQuantity(items),
-  
-  updatedAt:
-    updated.updatedAt,
-};
+      totalQuantity: this.domainService.calculateTotalQuantity(items),
+
+      updatedAt: updated.updatedAt,
+    };
   }
 }

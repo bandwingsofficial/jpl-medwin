@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -32,51 +29,24 @@ export class OrderStatusDashboardService {
 
     to?: string;
   }) {
-    const orders =
-      await this.fetchOrders(
-        params,
-      );
+    const orders = await this.fetchOrders(params);
 
     return {
-      pending:
-        this.calculatePendingOrders(
-          orders,
-        ),
+      pending: this.calculatePendingOrders(orders),
 
-      confirmed:
-        this.calculateConfirmedOrders(
-          orders,
-        ),
+      confirmed: this.calculateConfirmedOrders(orders),
 
-      processing:
-        this.calculateProcessingOrders(
-          orders,
-        ),
+      processing: this.calculateProcessingOrders(orders),
 
-      shipped:
-        this.calculateShippedOrders(
-          orders,
-        ),
+      shipped: this.calculateShippedOrders(orders),
 
-      delivered:
-        this.calculateDeliveredOrders(
-          orders,
-        ),
+      delivered: this.calculateDeliveredOrders(orders),
 
-      cancelled:
-        this.calculateCancelledOrders(
-          orders,
-        ),
+      cancelled: this.calculateCancelledOrders(orders),
 
-      refunded:
-        this.calculateRefundedOrders(
-          orders,
-        ),
+      refunded: this.calculateRefundedOrders(orders),
 
-      returned:
-        this.calculateReturnedOrders(
-          orders,
-        ),
+      returned: this.calculateReturnedOrders(orders),
     };
   }
 
@@ -90,68 +60,42 @@ export class OrderStatusDashboardService {
 
     to?: string;
   }): Promise<Order[]> {
-    let startDate:
-      | Date
-      | undefined;
+    let startDate: Date | undefined;
 
-    let endDate:
-      | Date
-      | undefined;
+    let endDate: Date | undefined;
 
     // =======================
     // 📅 CUSTOM RANGE
     // =======================
-    if (
-      params.from &&
-      params.to
-    ) {
-      startDate = new Date(
-        params.from,
-      );
+    if (params.from && params.to) {
+      startDate = new Date(params.from);
 
-      endDate = new Date(
-        params.to,
-      );
+      endDate = new Date(params.to);
 
       // Include entire end day
-      endDate.setHours(
-        23,
-        59,
-        59,
-        999,
-      );
+      endDate.setHours(23, 59, 59, 999);
     }
 
     // =======================
     // 📅 PREDEFINED PERIOD
     // =======================
     else {
-      const range =
-        DashboardPeriodUtil.getRange(
-          params.period ??
-            DashboardPeriod.OVERALL,
-        );
+      const range = DashboardPeriodUtil.getRange(params.period ?? DashboardPeriod.OVERALL);
 
-      startDate =
-        range.startDate;
+      startDate = range.startDate;
 
-      endDate =
-        range.endDate;
+      endDate = range.endDate;
     }
 
-    const {
-      data,
-    } =
-      await this.orderRepo.findMany({
-        page: 1,
+    const { data } = await this.orderRepo.findMany({
+      page: 1,
 
-        limit:
-          Number.MAX_SAFE_INTEGER,
+      limit: Number.MAX_SAFE_INTEGER,
 
-        from: startDate,
+      from: startDate,
 
-        to: endDate,
-      });
+      to: endDate,
+    });
 
     return data;
   }
@@ -159,104 +103,56 @@ export class OrderStatusDashboardService {
   /**
    * ⏳ Pending payment
    */
-  private calculatePendingOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.PENDING_PAYMENT,
-    ).length;
+  private calculatePendingOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.PENDING_PAYMENT).length;
   }
 
   /**
    * ✅ Confirmed
    */
-  private calculateConfirmedOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.CONFIRMED,
-    ).length;
+  private calculateConfirmedOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.CONFIRMED).length;
   }
 
   /**
    * ⚙️ Processing
    */
-  private calculateProcessingOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.PROCESSING,
-    ).length;
+  private calculateProcessingOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.PROCESSING).length;
   }
 
   /**
    * 🚚 Shipped
    */
-  private calculateShippedOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.SHIPPED,
-    ).length;
+  private calculateShippedOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.SHIPPED).length;
   }
 
   /**
    * 📦 Delivered
    */
-  private calculateDeliveredOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.DELIVERED,
-    ).length;
+  private calculateDeliveredOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.DELIVERED).length;
   }
 
   /**
    * ❌ Cancelled
    */
-  private calculateCancelledOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.CANCELLED,
-    ).length;
+  private calculateCancelledOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.CANCELLED).length;
   }
 
   /**
    * 💸 Refunded
    */
-  private calculateRefundedOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.REFUNDED,
-    ).length;
+  private calculateRefundedOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.REFUNDED).length;
   }
 
   /**
    * ↩️ Returned
    */
-  private calculateReturnedOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.RETURNED,
-    ).length;
+  private calculateReturnedOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.RETURNED).length;
   }
 }

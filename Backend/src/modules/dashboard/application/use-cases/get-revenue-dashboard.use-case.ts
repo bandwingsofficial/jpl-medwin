@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { DashboardPeriod } from '../../domain/enums/dashboard-period.enum';
 
@@ -8,9 +6,7 @@ import { RevenueDashboardService } from '../services/revenue-dashboard.service';
 
 @Injectable()
 export class GetRevenueDashboardUseCase {
-  constructor(
-    private readonly revenueDashboardService: RevenueDashboardService,
-  ) {}
+  constructor(private readonly revenueDashboardService: RevenueDashboardService) {}
 
   async execute(params?: {
     period?: DashboardPeriod;
@@ -23,26 +19,19 @@ export class GetRevenueDashboardUseCase {
     // 📅 PERIOD
     // =======================
 
-    const period =
-      params?.period ??
-      DashboardPeriod.OVERALL;
+    const period = params?.period ?? DashboardPeriod.OVERALL;
 
     // =======================
     // 💰 REVENUE
     // =======================
 
-    const data =
-      await this.revenueDashboardService.getRevenueStats(
-        {
-          period,
+    const data = await this.revenueDashboardService.getRevenueStats({
+      period,
 
-          from:
-            params?.from,
+      from: params?.from,
 
-          to:
-            params?.to,
-        },
-      );
+      to: params?.to,
+    });
 
     // =======================
     // 🚀 RESPONSE
@@ -51,11 +40,9 @@ export class GetRevenueDashboardUseCase {
     return {
       period,
 
-      from:
-        params?.from,
+      from: params?.from,
 
-      to:
-        params?.to,
+      to: params?.to,
 
       ...data,
     };

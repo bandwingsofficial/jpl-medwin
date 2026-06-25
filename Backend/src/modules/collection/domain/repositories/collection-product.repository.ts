@@ -7,17 +7,11 @@ export interface CollectionProductRepository {
   // 🔍 FIND
   // =======================
 
-  findById(
-    id: string,
-  ): Promise<CollectionProduct | null>;
+  findById(id: string): Promise<CollectionProduct | null>;
 
-  findByCollectionId(
-    collectionId: string,
-  ): Promise<CollectionProduct[]>;
+  findByCollectionId(collectionId: string): Promise<CollectionProduct[]>;
 
-  findByProductId(
-    productId: string,
-  ): Promise<CollectionProduct[]>;
+  findByProductId(productId: string): Promise<CollectionProduct[]>;
 
   findByCollectionAndProduct(params: {
     collectionId: string;
@@ -39,21 +33,15 @@ export interface CollectionProductRepository {
   // ✍️ WRITE
   // =======================
 
-  create(
-    item: CollectionProduct,
-  ): Promise<CollectionProduct>;
+  create(item: CollectionProduct): Promise<CollectionProduct>;
 
-  createMany(
-    items: CollectionProduct[],
-  ): Promise<void>;
+  createMany(items: CollectionProduct[]): Promise<void>;
 
   // =======================
   // ❌ DELETE
   // =======================
 
-  delete(
-    id: string,
-  ): Promise<void>;
+  delete(id: string): Promise<void>;
 
   deleteByCollectionAndProduct(params: {
     collectionId: string;
@@ -61,11 +49,7 @@ export interface CollectionProductRepository {
     productId: string;
   }): Promise<void>;
 
-  deleteByCollectionId(
-    collectionId: string,
-  ): Promise<void>;
+  deleteByCollectionId(collectionId: string): Promise<void>;
 
-  deleteByProductId(
-    productId: string,
-  ): Promise<void>;
+  deleteByProductId(productId: string): Promise<void>;
 }

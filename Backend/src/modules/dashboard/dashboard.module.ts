@@ -52,14 +52,9 @@ import { OrderModule } from '../order/order.module';
 import { CustomerModule } from '../customer/customer.module';
 
 @Module({
-  imports: [
-    OrderModule,
-    CustomerModule,
-  ],
+  imports: [OrderModule, CustomerModule],
 
-  controllers: [
-    DashboardController,
-  ],
+  controllers: [DashboardController],
 
   providers: [
     // =======================

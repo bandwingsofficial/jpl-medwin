@@ -1,15 +1,8 @@
 // redeem-coins.dto.ts
 
-import {
-  IsInt,
-  IsObject,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsInt, IsObject, IsOptional, IsString, Min } from 'class-validator';
 
 export class RedeemCoinsDto {
-
   @IsString()
   orderId!: string;
 

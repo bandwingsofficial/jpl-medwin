@@ -26,7 +26,11 @@ export class CoinRedemptionMapper {
         return CoinRedemptionStatus.FAILED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Prisma redemption status', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Prisma redemption status',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -45,7 +49,11 @@ export class CoinRedemptionMapper {
         return PrismaCoinRedemptionStatus.FAILED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Domain redemption status', value: status, direction: 'domain_to_prisma' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Domain redemption status',
+          value: status,
+          direction: 'domain_to_prisma',
+        });
     }
   }
 

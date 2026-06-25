@@ -4,18 +4,10 @@ import { DashboardPeriod } from '../domain/enums/dashboard-period.enum';
 import { DashboardPeriodUtil } from './dashboard-period.util';
 
 export class PrismaDateFilterUtil {
-  static build(
-    period: DashboardPeriod,
-  ) {
-    const range =
-      DashboardPeriodUtil.getRange(
-        period,
-      );
+  static build(period: DashboardPeriod) {
+    const range = DashboardPeriodUtil.getRange(period);
 
-    if (
-      !range.startDate ||
-      !range.endDate
-    ) {
+    if (!range.startDate || !range.endDate) {
       return {};
     }
 

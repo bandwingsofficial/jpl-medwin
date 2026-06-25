@@ -6,9 +6,7 @@ import { CouponApplicationService } from '../services/coupon-application.service
 
 @Injectable()
 export class RedeemCouponUseCase {
-  constructor(
-    private readonly couponApplicationService: CouponApplicationService,
-  ) {}
+  constructor(private readonly couponApplicationService: CouponApplicationService) {}
 
   async execute(input: {
     couponId: string;

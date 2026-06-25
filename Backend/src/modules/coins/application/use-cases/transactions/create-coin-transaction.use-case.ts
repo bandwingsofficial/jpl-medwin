@@ -55,63 +55,40 @@ export class CreateCoinTransactionUseCase {
     tx?: Prisma.TransactionClient,
   ) {
     if (input.idempotencyKey) {
-      const existingTransaction =
-        await this.transactionRepo.findByIdempotencyKey(
-          input.idempotencyKey,
-          tx,
-        );
+      const existingTransaction = await this.transactionRepo.findByIdempotencyKey(
+        input.idempotencyKey,
+        tx,
+      );
 
       if (existingTransaction) {
         return {
           id: existingTransaction.id,
-          walletId:
-            existingTransaction.walletId,
-          userId:
-            existingTransaction.userId,
+          walletId: existingTransaction.walletId,
+          userId: existingTransaction.userId,
           type: existingTransaction.type,
-          status:
-            existingTransaction.status,
-          sourceType:
-            existingTransaction.sourceType,
-          coins:
-            existingTransaction.coins,
-          balanceBefore:
-            existingTransaction.balanceBefore,
-          balanceAfter:
-            existingTransaction.balanceAfter,
-          orderId:
-            existingTransaction.orderId,
-          paymentId:
-            existingTransaction.paymentId,
-          redemptionId:
-            existingTransaction.redemptionId,
-          description:
-            existingTransaction.description,
-          metadata:
-            existingTransaction.metadata,
-          expiresAt:
-            existingTransaction.expiresAt,
-          expiredAt:
-            existingTransaction.expiredAt,
-          remainingCoins:
-            existingTransaction.remainingCoins,
-          createdByAdminId:
-            existingTransaction.createdByAdminId,
-          idempotencyKey:
-            existingTransaction.idempotencyKey,
-          createdAt:
-            existingTransaction.createdAt,
+          status: existingTransaction.status,
+          sourceType: existingTransaction.sourceType,
+          coins: existingTransaction.coins,
+          balanceBefore: existingTransaction.balanceBefore,
+          balanceAfter: existingTransaction.balanceAfter,
+          orderId: existingTransaction.orderId,
+          paymentId: existingTransaction.paymentId,
+          redemptionId: existingTransaction.redemptionId,
+          description: existingTransaction.description,
+          metadata: existingTransaction.metadata,
+          expiresAt: existingTransaction.expiresAt,
+          expiredAt: existingTransaction.expiredAt,
+          remainingCoins: existingTransaction.remainingCoins,
+          createdByAdminId: existingTransaction.createdByAdminId,
+          idempotencyKey: existingTransaction.idempotencyKey,
+          createdAt: existingTransaction.createdAt,
 
           duplicated: true,
         };
       }
     }
 
-    const wallet: CoinWallet | null =
-      await this.walletRepo.findByUserId(
-        input.userId,
-        tx,
-      );
+    const wallet: CoinWallet | null = await this.walletRepo.findByUserId(input.userId, tx);
 
     if (!wallet) {
       throw new WalletNotFoundException({
@@ -124,13 +101,11 @@ export class CreateCoinTransactionUseCase {
       wallet.id,
       wallet.userId,
       input.type,
-      input.status ??
-        CoinTransactionStatus.SUCCESS,
+      input.status ?? CoinTransactionStatus.SUCCESS,
       input.coins,
       input.balanceBefore,
       input.balanceAfter,
-      input.sourceType ??
-        RewardSourceType.SYSTEM,
+      input.sourceType ?? RewardSourceType.SYSTEM,
       input.orderId,
       input.paymentId,
       input.redemptionId,
@@ -143,11 +118,7 @@ export class CreateCoinTransactionUseCase {
       input.idempotencyKey,
     );
 
-    const created =
-      await this.transactionRepo.create(
-        transaction,
-        tx,
-      );
+    const created = await this.transactionRepo.create(transaction, tx);
 
     return {
       id: created.id,
@@ -164,21 +135,17 @@ export class CreateCoinTransactionUseCase {
 
       coins: created.coins,
 
-      balanceBefore:
-        created.balanceBefore,
+      balanceBefore: created.balanceBefore,
 
-      balanceAfter:
-        created.balanceAfter,
+      balanceAfter: created.balanceAfter,
 
       orderId: created.orderId,
 
       paymentId: created.paymentId,
 
-      redemptionId:
-        created.redemptionId,
+      redemptionId: created.redemptionId,
 
-      description:
-        created.description,
+      description: created.description,
 
       metadata: created.metadata,
 
@@ -186,14 +153,11 @@ export class CreateCoinTransactionUseCase {
 
       expiredAt: created.expiredAt,
 
-      remainingCoins:
-        created.remainingCoins,
+      remainingCoins: created.remainingCoins,
 
-      createdByAdminId:
-        created.createdByAdminId,
+      createdByAdminId: created.createdByAdminId,
 
-      idempotencyKey:
-        created.idempotencyKey,
+      idempotencyKey: created.idempotencyKey,
 
       createdAt: created.createdAt,
 

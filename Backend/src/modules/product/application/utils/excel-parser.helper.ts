@@ -12,12 +12,9 @@ export class ExcelParserHelper {
 
     const sheetName = workbook.SheetNames[0];
 
-    return XLSX.utils.sheet_to_json(
-      workbook.Sheets[sheetName],
-      {
-        defval: '',
-      },
-    );
+    return XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
+      defval: '',
+    });
   }
 
   // =======================
@@ -28,10 +25,7 @@ export class ExcelParserHelper {
     return rows.filter((row: any) => {
       // Skip completely empty rows
       const hasValues = Object.values(row).some(
-        (value) =>
-          value !== null &&
-          value !== undefined &&
-          String(value).trim() !== '',
+        (value) => value !== null && value !== undefined && String(value).trim() !== '',
       );
 
       if (!hasValues) {
@@ -39,9 +33,7 @@ export class ExcelParserHelper {
       }
 
       // Skip helper rows
-      const sku = this.normalizeText(
-        row['SKU'],
-      ).toUpperCase();
+      const sku = this.normalizeText(row['SKU']).toUpperCase();
 
       if (sku.includes('COMPANY+BRAND')) {
         return false;
@@ -73,12 +65,7 @@ export class ExcelParserHelper {
 
     return String(value)
       .split('\n')
-      .map((v) =>
-        v
-          .replace(/•/g, '')
-          .replace(/-/g, '')
-          .trim(),
-      )
+      .map((v) => v.replace(/•/g, '').replace(/-/g, '').trim())
       .filter(Boolean);
   }
 
@@ -94,10 +81,7 @@ export class ExcelParserHelper {
     return String(value)
       .split('\n')
       .map((line) => {
-        const cleaned = line
-          .replace(/•/g, '')
-          .replace(/-/g, '')
-          .trim();
+        const cleaned = line.replace(/•/g, '').replace(/-/g, '').trim();
 
         const [key, ...rest] = cleaned.split(':');
 
@@ -121,10 +105,7 @@ export class ExcelParserHelper {
     return String(value)
       .split('\n')
       .map((line) => {
-        const cleaned = line
-          .replace(/•/g, '')
-          .replace(/-/g, '')
-          .trim();
+        const cleaned = line.replace(/•/g, '').replace(/-/g, '').trim();
 
         const [question, ...rest] = cleaned.split(':');
 
@@ -140,26 +121,14 @@ export class ExcelParserHelper {
   // 🔢 NUMBER PARSER
   // =======================
 
-  static parseNumber(
-    value: any,
-  ): number | undefined {
-    if (
-      value === null ||
-      value === undefined ||
-      value === ''
-    ) {
+  static parseNumber(value: any): number | undefined {
+    if (value === null || value === undefined || value === '') {
       return undefined;
     }
 
-    const parsed = Number(
-      String(value)
-        .replace(/,/g, '')
-        .trim(),
-    );
+    const parsed = Number(String(value).replace(/,/g, '').trim());
 
-    return Number.isNaN(parsed)
-      ? undefined
-      : parsed;
+    return Number.isNaN(parsed) ? undefined : parsed;
   }
 
   // =======================
@@ -171,15 +140,7 @@ export class ExcelParserHelper {
       .trim()
       .toLowerCase();
 
-    return [
-      'true',
-      '1',
-      'yes',
-      'y',
-      'active',
-      'enabled',
-      'on',
-    ].includes(normalized);
+    return ['true', '1', 'yes', 'y', 'active', 'enabled', 'on'].includes(normalized);
   }
 
   // =======================
@@ -225,8 +186,6 @@ export class ExcelParserHelper {
   // =======================
 
   static isValidSku(sku: string): boolean {
-    return /^[A-Z0-9-]+$/i.test(
-      this.normalizeText(sku),
-    );
+    return /^[A-Z0-9-]+$/i.test(this.normalizeText(sku));
   }
 }

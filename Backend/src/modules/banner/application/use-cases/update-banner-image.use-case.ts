@@ -26,15 +26,11 @@ export class UpdateBannerImageUseCase {
     // 🔍 FIND
     // =======================
 
-    const image =
-      await this.bannerImageRepo.findById(
-        input.bannerImageId,
-      );
+    const image = await this.bannerImageRepo.findById(input.bannerImageId);
 
     if (!image) {
       throw new BannerImageNotFoundException({
-        bannerImageId:
-          input.bannerImageId,
+        bannerImageId: input.bannerImageId,
       });
     }
 
@@ -43,9 +39,7 @@ export class UpdateBannerImageUseCase {
     // =======================
 
     if (input.imageUrl !== undefined) {
-      image.updateImage(
-        input.imageUrl,
-      );
+      image.updateImage(input.imageUrl);
     }
 
     // =======================
@@ -53,9 +47,7 @@ export class UpdateBannerImageUseCase {
     // =======================
 
     if (input.productId !== undefined) {
-      image.updateProduct(
-        input.productId,
-      );
+      image.updateProduct(input.productId);
     }
 
     // =======================
@@ -63,19 +55,14 @@ export class UpdateBannerImageUseCase {
     // =======================
 
     if (input.sortOrder !== undefined) {
-      image.updateSortOrder(
-        input.sortOrder,
-      );
+      image.updateSortOrder(input.sortOrder);
     }
 
     // =======================
     // 💾 SAVE
     // =======================
 
-    const updated =
-      await this.bannerImageRepo.update(
-        image,
-      );
+    const updated = await this.bannerImageRepo.update(image);
 
     // =======================
     // 🚀 RESPONSE
@@ -88,17 +75,13 @@ export class UpdateBannerImageUseCase {
 
       imageUrl: updated.imageUrl,
 
-      productId:
-        updated.productId ?? null,
+      productId: updated.productId ?? null,
 
-      sortOrder:
-        updated.sortOrder,
+      sortOrder: updated.sortOrder,
 
-      createdAt:
-        updated.createdAt,
+      createdAt: updated.createdAt,
 
-      updatedAt:
-        updated.updatedAt,
+      updatedAt: updated.updatedAt,
     };
   }
 }

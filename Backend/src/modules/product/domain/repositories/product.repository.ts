@@ -62,10 +62,7 @@ export interface ProductRepository {
     tx?: Prisma.TransactionClient,
   ): Promise<Product | null>;
 
-  findByIds(
-  ids: string[],
-  tx?: Prisma.TransactionClient,
-): Promise<Product[]>;
+  findByIds(ids: string[], tx?: Prisma.TransactionClient): Promise<Product[]>;
 
   findFullById(id: string, tx?: Prisma.TransactionClient): Promise<FullProduct | null>;
 
@@ -84,9 +81,7 @@ export interface ProductRepository {
 
   count(where?: Prisma.ProductWhereInput): Promise<number>;
 
-  filter(
-  filters: ProductFilters,
-): Promise<FullProduct[]>;
+  filter(filters: ProductFilters): Promise<FullProduct[]>;
 
   // =======================
   // 🧠 CHECKS

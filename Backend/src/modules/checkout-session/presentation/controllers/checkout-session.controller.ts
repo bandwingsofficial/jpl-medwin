@@ -1,15 +1,6 @@
 // src/modules/checkout-session/presentation/controllers/checkout-session.controller.ts
 
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
 
 import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
 
@@ -59,19 +50,14 @@ export class CheckoutSessionController {
     @Query('guestId')
     guestId?: string,
   ) {
-    const data =
-      await this.createCheckoutSessionUseCase.execute(
-        {
-          userId:
-            req.user.userId,
+    const data = await this.createCheckoutSessionUseCase.execute({
+      userId: req.user.userId,
 
-          guestId,
-        },
-      );
+      guestId,
+    });
 
     return {
-      message:
-        'Checkout session created successfully',
+      message: 'Checkout session created successfully',
 
       ...data,
     };
@@ -92,21 +78,16 @@ export class CheckoutSessionController {
     @Query('guestId')
     guestId?: string,
   ) {
-    const data =
-      await this.getCheckoutSessionUseCase.execute(
-        {
-          checkoutSessionId,
+    const data = await this.getCheckoutSessionUseCase.execute({
+      checkoutSessionId,
 
-          userId:
-            req.user.userId,
+      userId: req.user.userId,
 
-          guestId,
-        },
-      );
+      guestId,
+    });
 
     return {
-      message:
-        'Checkout session fetched successfully',
+      message: 'Checkout session fetched successfully',
 
       ...data,
     };
@@ -129,22 +110,16 @@ export class CheckoutSessionController {
       coins: number;
     },
   ) {
-    const data =
-      await this.applyRewardsToCheckoutUseCase.execute(
-        {
-          checkoutSessionId,
+    const data = await this.applyRewardsToCheckoutUseCase.execute({
+      checkoutSessionId,
 
-          userId:
-            req.user.userId,
+      userId: req.user.userId,
 
-          coins:
-            body.coins,
-        },
-      );
+      coins: body.coins,
+    });
 
     return {
-      message:
-        'Rewards applied successfully',
+      message: 'Rewards applied successfully',
 
       ...data,
     };
@@ -160,16 +135,12 @@ export class CheckoutSessionController {
     @Param('checkoutSessionId')
     checkoutSessionId: string,
   ) {
-    const data =
-      await this.removeRewardsFromCheckoutUseCase.execute(
-        {
-          checkoutSessionId,
-        },
-      );
+    const data = await this.removeRewardsFromCheckoutUseCase.execute({
+      checkoutSessionId,
+    });
 
     return {
-      message:
-        'Rewards removed successfully',
+      message: 'Rewards removed successfully',
 
       ...data,
     };
@@ -185,16 +156,12 @@ export class CheckoutSessionController {
     @Param('checkoutSessionId')
     checkoutSessionId: string,
   ) {
-    const data =
-      await this.expireCheckoutSessionUseCase.execute(
-        {
-          checkoutSessionId,
-        },
-      );
+    const data = await this.expireCheckoutSessionUseCase.execute({
+      checkoutSessionId,
+    });
 
     return {
-      message:
-        'Checkout session expired successfully',
+      message: 'Checkout session expired successfully',
 
       ...data,
     };
@@ -216,20 +183,16 @@ export class CheckoutSessionController {
     @Query('paymentProvider')
     paymentProvider?: string,
   ) {
-    const data =
-      await this.completeCheckoutSessionUseCase.execute(
-        {
-          checkoutSessionId,
+    const data = await this.completeCheckoutSessionUseCase.execute({
+      checkoutSessionId,
 
-          paymentId,
+      paymentId,
 
-          paymentProvider,
-        },
-      );
+      paymentProvider,
+    });
 
     return {
-      message:
-        'Checkout session completed successfully',
+      message: 'Checkout session completed successfully',
 
       ...data,
     };

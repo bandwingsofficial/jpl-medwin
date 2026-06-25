@@ -28,18 +28,12 @@ export class AdminCancelOrderUseCase {
     private readonly refundCoinsUseCase: RefundCoinsUseCase,
   ) {}
 
-  async execute(input: {
-    orderId: string;
-    reason?: string;
-    adminId?: string;
-  }) {
+  async execute(input: { orderId: string; reason?: string; adminId?: string }) {
     // =======================
     // FIND ORDER
     // =======================
 
-    const order = await this.orderRepo.findById(
-      input.orderId,
-    );
+    const order = await this.orderRepo.findById(input.orderId);
 
     if (!order) {
       throw new OrderNotFoundException({
@@ -47,13 +41,13 @@ export class AdminCancelOrderUseCase {
       });
     }
 
-  // =======================
-// VALIDATE
-// =======================
+    // =======================
+    // VALIDATE
+    // =======================
 
-this.domainService.ensureOrderUsable(order);
+    this.domainService.ensureOrderUsable(order);
 
-this.domainService.ensureCanAdminCancel(order);
+    this.domainService.ensureCanAdminCancel(order);
 
     // =======================
     // DELIVERED ORDERS
@@ -65,8 +59,7 @@ this.domainService.ensureCanAdminCancel(order);
 
         operation: 'admin_cancel',
 
-        reason:
-          'Delivered orders cannot be cancelled. Use return/refund flow.',
+        reason: 'Delivered orders cannot be cancelled. Use return/refund flow.',
       });
     }
 
@@ -80,8 +73,7 @@ this.domainService.ensureCanAdminCancel(order);
 
         operation: 'admin_cancel',
 
-        reason:
-          'Refunded orders cannot be cancelled.',
+        reason: 'Refunded orders cannot be cancelled.',
       });
     }
 
@@ -89,24 +81,15 @@ this.domainService.ensureCanAdminCancel(order);
     // CANCEL ORDER
     // =======================
 
-    order.cancel(
-      input.reason ??
-        'Cancelled by administrator',
-    );
+    order.cancel(input.reason ?? 'Cancelled by administrator');
 
-    const updated = await this.orderRepo.update(
-      order,
-    );
+    const updated = await this.orderRepo.update(order);
 
     // =======================
     // REFUND REDEEMED COINS
     // =======================
 
-    if (
-      updated.redeemedCoins > 0 &&
-      updated.userId &&
-      !updated.rewardRefunded
-    ) {
+    if (updated.redeemedCoins > 0 && updated.userId && !updated.rewardRefunded) {
       try {
         await this.refundCoinsUseCase.execute({
           userId: updated.userId,
@@ -115,9 +98,7 @@ this.domainService.ensureCanAdminCancel(order);
 
           coins: updated.redeemedCoins,
 
-          reason:
-            input.reason ??
-            `Admin cancelled order ${updated.orderNumber}`,
+          reason: input.reason ?? `Admin cancelled order ${updated.orderNumber}`,
         });
 
         updated.markRewardRefunded();
@@ -126,9 +107,7 @@ this.domainService.ensureCanAdminCancel(order);
       } catch (error) {
         console.warn(
           'Reward refund skipped:',
-          error instanceof Error
-            ? error.message
-            : String(error),
+          error instanceof Error ? error.message : String(error),
         );
       }
     }
@@ -137,10 +116,7 @@ this.domainService.ensureCanAdminCancel(order);
     // ITEMS
     // =======================
 
-    const items =
-      await this.orderItemRepo.findByOrderId(
-        updated.id,
-      );
+    const items = await this.orderItemRepo.findByOrderId(updated.id);
 
     // =======================
     // RESPONSE
@@ -156,49 +132,35 @@ this.domainService.ensureCanAdminCancel(order);
 
         status: updated.status,
 
-        paymentStatus:
-          updated.paymentStatus,
+        paymentStatus: updated.paymentStatus,
 
-        cancelledAt:
-          updated.cancelledAt,
+        cancelledAt: updated.cancelledAt,
 
-        cancellationReason:
-          input.reason,
+        cancellationReason: input.reason,
 
         totals: {
           subtotal: updated.subtotal,
 
-          couponDiscount:
-            updated.couponDiscount,
+          couponDiscount: updated.couponDiscount,
 
-          shippingCharge:
-            updated.shippingCharge,
+          shippingCharge: updated.shippingCharge,
 
           tax: updated.tax,
 
-          grandTotal:
-            updated.grandTotal,
+          grandTotal: updated.grandTotal,
 
-          totalSavings:
-            updated.totalSavings,
+          totalSavings: updated.totalSavings,
 
-          redeemedCoins:
-            updated.redeemedCoins,
+          redeemedCoins: updated.redeemedCoins,
 
-          redeemedAmount:
-            updated.redeemedAmount,
+          redeemedAmount: updated.redeemedAmount,
 
-          earnedCoins:
-            updated.earnedCoins,
+          earnedCoins: updated.earnedCoins,
         },
 
         itemCount: items.length,
 
-        totalQuantity: items.reduce(
-          (total, item) =>
-            total + item.quantity,
-          0,
-        ),
+        totalQuantity: items.reduce((total, item) => total + item.quantity, 0),
 
         updatedAt: updated.updatedAt,
       },

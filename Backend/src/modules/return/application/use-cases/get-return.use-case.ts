@@ -25,19 +25,12 @@ export class GetReturnUseCase {
     private readonly orderResponseBuilder: OrderResponseBuilderService,
   ) {}
 
-  async execute(input: {
-    returnId: string;
-    userId: string;
-    isAdmin?: boolean;
-  }) {
+  async execute(input: { returnId: string; userId: string; isAdmin?: boolean }) {
     // =======================
     // 🔍 FIND RETURN
     // =======================
 
-    const returnRequest =
-      await this.returnRepo.findById(
-        input.returnId,
-      );
+    const returnRequest = await this.returnRepo.findById(input.returnId);
 
     // =======================
     // ❌ NOT FOUND
@@ -54,11 +47,10 @@ export class GetReturnUseCase {
     // =======================
 
     if (!input.isAdmin) {
-      const canAccess =
-        this.ownershipService.canAccess({
-          returnRequest,
-          userId: input.userId,
-        });
+      const canAccess = this.ownershipService.canAccess({
+        returnRequest,
+        userId: input.userId,
+      });
 
       if (!canAccess) {
         throw new InvalidReturnOperationException({
@@ -66,8 +58,7 @@ export class GetReturnUseCase {
 
           operation: 'view',
 
-          reason:
-            'Unauthorized access to return',
+          reason: 'Unauthorized access to return',
         });
       }
     }
@@ -76,12 +67,9 @@ export class GetReturnUseCase {
     // 🔄 REPLACEMENT ORDER
     // =======================
 
-    const replacementOrder =
-      returnRequest.replacementOrderId
-        ? await this.orderRepo.findById(
-            returnRequest.replacementOrderId,
-          )
-        : null;
+    const replacementOrder = returnRequest.replacementOrderId
+      ? await this.orderRepo.findById(returnRequest.replacementOrderId)
+      : null;
 
     // =======================
     // 🚀 RESPONSE
@@ -100,42 +88,29 @@ export class GetReturnUseCase {
 
       reason: returnRequest.reason,
 
-      description:
-        returnRequest.description,
+      description: returnRequest.description,
 
-      adminRemark:
-        returnRequest.adminRemark,
+      adminRemark: returnRequest.adminRemark,
 
-      rejectionReason:
-        returnRequest.rejectionReason,
+      rejectionReason: returnRequest.rejectionReason,
 
-      pickupTrackingId:
-        returnRequest.pickupTrackingId,
+      pickupTrackingId: returnRequest.pickupTrackingId,
 
-      replacementOrder:
-        this.orderResponseBuilder.buildReplacementOrder(
-          replacementOrder,
-        ),
+      replacementOrder: this.orderResponseBuilder.buildReplacementOrder(replacementOrder),
 
-      approvedAt:
-        returnRequest.approvedAt,
+      approvedAt: returnRequest.approvedAt,
 
-      rejectedAt:
-        returnRequest.rejectedAt,
+      rejectedAt: returnRequest.rejectedAt,
 
-      pickedUpAt:
-        returnRequest.pickedUpAt,
+      pickedUpAt: returnRequest.pickedUpAt,
 
-      completedAt:
-        returnRequest.completedAt,
+      completedAt: returnRequest.completedAt,
 
       metadata: returnRequest.metadata,
 
-      createdAt:
-        returnRequest.createdAt,
+      createdAt: returnRequest.createdAt,
 
-      updatedAt:
-        returnRequest.updatedAt,
+      updatedAt: returnRequest.updatedAt,
     };
   }
 }

@@ -78,10 +78,10 @@ export interface CartItemRepository {
   delete(itemId: string): Promise<void>;
 
   // =======================
-// ❌ DELETE BY RELATION
-// =======================
+  // ❌ DELETE BY RELATION
+  // =======================
 
-deleteByVariantId(variantId: string): Promise<void>;
+  deleteByVariantId(variantId: string): Promise<void>;
 
-deleteByProductId(productId: string): Promise<void>;
+  deleteByProductId(productId: string): Promise<void>;
 }

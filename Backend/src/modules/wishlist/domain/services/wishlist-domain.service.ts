@@ -32,23 +32,15 @@ export class WishlistDomainService {
   // 📊 COUNT
   // =======================
 
-  calculateTotalItems(
-    wishlists: Wishlist[],
-  ): number {
-    return wishlists.filter(
-      (wishlist) => !wishlist.isDeleted(),
-    ).length;
+  calculateTotalItems(wishlists: Wishlist[]): number {
+    return wishlists.filter((wishlist) => !wishlist.isDeleted()).length;
   }
 
   // =======================
   // 🧹 FILTER ACTIVE
   // =======================
 
-  filterActive(
-    wishlists: Wishlist[],
-  ): Wishlist[] {
-    return wishlists.filter(
-      (wishlist) => !wishlist.isDeleted(),
-    );
+  filterActive(wishlists: Wishlist[]): Wishlist[] {
+    return wishlists.filter((wishlist) => !wishlist.isDeleted());
   }
 }

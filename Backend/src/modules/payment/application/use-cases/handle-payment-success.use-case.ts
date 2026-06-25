@@ -24,12 +24,12 @@ export class HandlePaymentSuccessUseCase {
     private readonly paymentRepo: PaymentRepository,
 
     @Inject(TOKENS.ORDER_REPO)
-private readonly orderRepo: OrderRepository,
+    private readonly orderRepo: OrderRepository,
 
-@Inject(TOKENS.CHECKOUT_SESSION_REPO)
-private readonly checkoutSessionRepo: CheckoutSessionRepository,
+    @Inject(TOKENS.CHECKOUT_SESSION_REPO)
+    private readonly checkoutSessionRepo: CheckoutSessionRepository,
 
-private readonly redeemCoinsUseCase: RedeemCoinsUseCase,
+    private readonly redeemCoinsUseCase: RedeemCoinsUseCase,
 
     private readonly paymentDomainService: PaymentDomainService,
 
@@ -128,55 +128,40 @@ private readonly redeemCoinsUseCase: RedeemCoinsUseCase,
     });
 
     // =======================
-// 🪙 REDEEM COINS
-// =======================
+    // 🪙 REDEEM COINS
+    // =======================
 
-const order =
-  await this.orderRepo.findById(
-    payment.orderId,
-  );
+    const order = await this.orderRepo.findById(payment.orderId);
 
-if (
-  order &&
-  order.redeemedCoins > 0 &&
-  order.redeemedAmount > 0
-) {
-  await this.redeemCoinsUseCase.execute({
-    userId: order.userId,
+    if (order && order.redeemedCoins > 0 && order.redeemedAmount > 0) {
+      await this.redeemCoinsUseCase.execute({
+        userId: order.userId,
 
-    orderId: order.id,
+        orderId: order.id,
 
-    coins: order.redeemedCoins,
+        coins: order.redeemedCoins,
 
-    orderAmount:
-      order.grandTotal +
-      order.redeemedAmount,
+        orderAmount: order.grandTotal + order.redeemedAmount,
 
-    metadata: {
-      orderNumber:
-        order.orderNumber,
-    },
-  });
-}
+        metadata: {
+          orderNumber: order.orderNumber,
+        },
+      });
+    }
 
-// =======================
-// ✅ COMPLETE CHECKOUT
-// =======================
+    // =======================
+    // ✅ COMPLETE CHECKOUT
+    // =======================
 
-if (order?.checkoutSessionId) {
-  const session =
-    await this.checkoutSessionRepo.findById(
-      order.checkoutSessionId,
-    );
+    if (order?.checkoutSessionId) {
+      const session = await this.checkoutSessionRepo.findById(order.checkoutSessionId);
 
-  if (session) {
-    session.complete();
+      if (session) {
+        session.complete();
 
-    await this.checkoutSessionRepo.update(
-      session,
-    );
-  }
-}
+        await this.checkoutSessionRepo.update(session);
+      }
+    }
 
     // =======================
     // 🚀 RESPONSE

@@ -13,17 +13,12 @@ export class RestoreBannerImageUseCase {
     private readonly bannerImageRepo: BannerImageRepository,
   ) {}
 
-  async execute(
-    bannerImageId: string,
-  ): Promise<void> {
+  async execute(bannerImageId: string): Promise<void> {
     // =======================
     // 🔍 FIND INCLUDING DELETED
     // =======================
-   
-    const image =
-      await this.bannerImageRepo.findByIdIncludingDeleted(
-        bannerImageId,
-      );
+
+    const image = await this.bannerImageRepo.findByIdIncludingDeleted(bannerImageId);
 
     if (!image) {
       throw new BannerImageNotFoundException({
@@ -41,8 +36,6 @@ export class RestoreBannerImageUseCase {
     // 💾 SAVE
     // =======================
 
-    await this.bannerImageRepo.update(
-      image,
-    );
+    await this.bannerImageRepo.update(image);
   }
 }

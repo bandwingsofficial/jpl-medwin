@@ -1,6 +1,6 @@
 // src/modules/order/order.module.ts
 
-import { Module , forwardRef } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 
 // =======================
 // INFRA
@@ -45,7 +45,9 @@ import { OrderSummaryService } from './application/services/order-summary.servic
 import { OrderOwnershipService } from './application/services/order-ownership.service';
 
 import { OrderNumberService } from './application/services/order-number.service';
-import { OrderResponseBuilderService } from './application/services/order-response-builder.service'
+import { OrderResponseBuilderService } from './application/services/order-response-builder.service';
+
+import { OrderAddressValidationService } from './application/services/order-address-validation.service';
 
 // =======================
 // USE CASES
@@ -75,8 +77,6 @@ import { GetOrdersUseCase } from './application/use-cases/get-admin-order.use-ca
 
 import { GetOrderByIdUseCase } from './application/use-cases/get-admin-order-by-id.use-case';
 
-
-
 // =======================
 // IMPORTS
 // =======================
@@ -84,9 +84,10 @@ import { GetOrderByIdUseCase } from './application/use-cases/get-admin-order-by-
 import { CheckoutSessionModule } from '../checkout-session/checkout-session.module';
 import { CoinsModule } from '../coins/coins.module';
 import { ReturnModule } from '../return/return.module';
+import { SavedAddressModule } from '../saved-address/saved-address.module';
 
 @Module({
-  imports: [CheckoutSessionModule ,CoinsModule,forwardRef(() => ReturnModule)],
+  imports: [CheckoutSessionModule, CoinsModule, forwardRef(() => ReturnModule), SavedAddressModule],
   controllers: [OrderController, AdminOrderController],
 
   providers: [
@@ -124,6 +125,7 @@ import { ReturnModule } from '../return/return.module';
 
     OrderNumberService,
     OrderResponseBuilderService,
+    OrderAddressValidationService,
 
     // =======================
     // USE CASES

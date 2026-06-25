@@ -1,10 +1,6 @@
 // src/modules/product/application/services/variant-sync.service.ts
 
-import {
-  Inject,
-  Injectable,
-  ConflictException,
-} from '@nestjs/common';
+import { Inject, Injectable, ConflictException } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -31,22 +27,11 @@ export class VariantSyncService {
     private readonly variantImageService: VariantImageService,
   ) {}
 
-  async sync(
-    product: Product,
-    variants: any[] = [],
-    tx?: any,
-  ) {
-    const existingVariants =
-      await this.variantRepo.findByProduct(
-        product.id,
-        false,
-        tx,
-      );
+  async sync(product: Product, variants: any[] = [], tx?: any) {
+    const existingVariants = await this.variantRepo.findByProduct(product.id, false, tx);
 
     // Match existing variants by SKU instead of ID
-    const existingMap = new Map(
-      existingVariants.map((v) => [v.sku, v]),
-    );
+    const existingMap = new Map(existingVariants.map((v) => [v.sku, v]));
 
     for (const v of variants) {
       // =======================
@@ -54,10 +39,7 @@ export class VariantSyncService {
       // =======================
 
       if (v.id && v.isDeleted) {
-        await this.variantRepo.softDelete(
-          v.id,
-          tx,
-        );
+        await this.variantRepo.softDelete(v.id, tx);
 
         continue;
       }
@@ -66,8 +48,7 @@ export class VariantSyncService {
       // FIND EXISTING BY SKU
       // =======================
 
-      const existing =
-        existingMap.get(v.sku);
+      const existing = existingMap.get(v.sku);
 
       // =======================
       // UPDATE
@@ -102,17 +83,9 @@ export class VariantSyncService {
           warrantyMonths: v.warrantyMonths,
         });
 
-        await this.variantRepo.update(
-          existing,
-          tx,
-        );
+        await this.variantRepo.update(existing, tx);
 
-        await this.variantImageService.sync(
-          existing.id,
-          existing.name,
-          v,
-          tx,
-        );
+        await this.variantImageService.sync(existing.id, existing.name, v, tx);
 
         continue;
       }
@@ -121,30 +94,17 @@ export class VariantSyncService {
       // CHECK SKU CONFLICT
       // =======================
 
-      const skuOwner =
-        await this.variantRepo.findBySku(
-          v.sku,
-          false,
-          tx,
-        );
+      const skuOwner = await this.variantRepo.findBySku(v.sku, false, tx);
 
-      if (
-        skuOwner &&
-        skuOwner.productId !== product.id
-      ) {
-        throw new ConflictException(
-          `SKU exists: ${v.sku}`,
-        );
+      if (skuOwner && skuOwner.productId !== product.id) {
+        throw new ConflictException(`SKU exists: ${v.sku}`);
       }
 
       // =======================
       // CREATE
       // =======================
 
-      const slug =
-        await this.slugService.generateVariantSlug(
-          v.name,
-        );
+      const slug = await this.slugService.generateVariantSlug(v.name);
 
       const variant = new Variant(
         crypto.randomUUID(),
@@ -166,29 +126,13 @@ export class VariantSyncService {
         new QuantityVO(v.quantity).getValue(),
       );
 
-      const created =
-        await this.variantRepo.create(
-          variant,
-          tx,
-        );
+      const created = await this.variantRepo.create(variant, tx);
 
-      await this.variantImageService.sync(
-        created.id,
-        created.name,
-        v,
-        tx,
-      );
+      await this.variantImageService.sync(created.id, created.name, v, tx);
     }
   }
 
-  async getActiveVariants(
-    productId: string,
-    tx?: any,
-  ) {
-    return this.variantRepo.findByProduct(
-      productId,
-      false,
-      tx,
-    );
+  async getActiveVariants(productId: string, tx?: any) {
+    return this.variantRepo.findByProduct(productId, false, tx);
   }
 }

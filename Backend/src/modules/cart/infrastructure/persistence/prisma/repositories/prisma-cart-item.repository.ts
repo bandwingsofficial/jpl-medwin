@@ -201,18 +201,18 @@ export class PrismaCartItemRepository implements CartItemRepository {
   }
 
   async deleteByVariantId(variantId: string): Promise<void> {
-  await this.prisma.cartItem.deleteMany({
-    where: {
-      variantId,
-    },
-  });
-}
+    await this.prisma.cartItem.deleteMany({
+      where: {
+        variantId,
+      },
+    });
+  }
 
-async deleteByProductId(productId: string): Promise<void> {
-  await this.prisma.cartItem.deleteMany({
-    where: {
-      productId,
-    },
-  });
-}
+  async deleteByProductId(productId: string): Promise<void> {
+    await this.prisma.cartItem.deleteMany({
+      where: {
+        productId,
+      },
+    });
+  }
 }

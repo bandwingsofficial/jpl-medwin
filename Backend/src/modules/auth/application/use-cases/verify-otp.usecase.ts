@@ -63,7 +63,7 @@ export class VerifyOtpUseCase {
     private readonly tokenPort: TokenPort,
 
     @Inject(TOKENS.COIN_WALLET_REPO)
-private readonly walletRepo: CoinWalletRepository,
+    private readonly walletRepo: CoinWalletRepository,
   ) {}
 
   async execute(dto: VerifyOtpDto) {
@@ -173,103 +173,81 @@ private readonly walletRepo: CoinWalletRepository,
     const sendRateLimitKey = `otp:send:${identifier}`;
     await this.rateLimitStore.reset(sendRateLimitKey);
 
-// =======================
-// 6. USER + IDENTITY
-// =======================
+    // =======================
+    // 6. USER + IDENTITY
+    // =======================
 
-const method =
-  isPhone
-    ? AuthMethod.PHONE
-    : AuthMethod.EMAIL;
+    const method = isPhone ? AuthMethod.PHONE : AuthMethod.EMAIL;
 
-let identity =
-  await this.identityRepo.findActiveByTypeAndValue(
-    method,
-    identifier,
-  );
+    let identity = await this.identityRepo.findActiveByTypeAndValue(method, identifier);
 
-let user: User;
+    let user: User;
 
-if (!identity) {
-  // =======================
-  // 👤 CREATE USER
-  // =======================
+    if (!identity) {
+      // =======================
+      // 👤 CREATE USER
+      // =======================
 
-  user =
-    await this.userRepo.create(
-      new User(
-        crypto.randomUUID(),
-      ),
-    );
+      user = await this.userRepo.create(new User(crypto.randomUUID()));
 
-  // =======================
-  // 👛 CREATE WALLET
-  // =======================
+      // =======================
+      // 👛 CREATE WALLET
+      // =======================
 
-  const wallet =
-    new CoinWallet(
-      crypto.randomUUID(),
-
-      user.id,
-
-      0, // balance
-
-      0, // lifetimeEarned
-
-      0, // lifetimeRedeemed
-
-      0, // lifetimeExpired
-
-      0, // lifetimeRefunded
-    );
-
-  await this.walletRepo.create(
-    wallet,
-  );
-
-  // =======================
-  // 🔐 CREATE IDENTITY
-  // =======================
-
-  identity =
-    await this.identityRepo.create(
-      new AuthIdentity(
+      const wallet = new CoinWallet(
         crypto.randomUUID(),
 
         user.id,
 
-        method,
+        0, // balance
 
-        identifier,
+        0, // lifetimeEarned
 
-        true,
-      ),
-    );
-} else {
-  const existingUser =
-    await this.userRepo.findById(
-      identity.userId,
-    );
+        0, // lifetimeRedeemed
 
-  if (!existingUser) {
-    throw new UserNotFoundException({
-      userId:
-        identity.userId,
-    });
-  }
+        0, // lifetimeExpired
 
-  user = existingUser;
+        0, // lifetimeRefunded
+      );
 
-  if (!identity.isVerified) {
-    identity.verify();
+      await this.walletRepo.create(wallet);
 
-    await this.identityRepo.update(
-      identity,
-    );
-  }
-}
+      // =======================
+      // 🔐 CREATE IDENTITY
+      // =======================
 
-user.ensureActive();
+      identity = await this.identityRepo.create(
+        new AuthIdentity(
+          crypto.randomUUID(),
+
+          user.id,
+
+          method,
+
+          identifier,
+
+          true,
+        ),
+      );
+    } else {
+      const existingUser = await this.userRepo.findById(identity.userId);
+
+      if (!existingUser) {
+        throw new UserNotFoundException({
+          userId: identity.userId,
+        });
+      }
+
+      user = existingUser;
+
+      if (!identity.isVerified) {
+        identity.verify();
+
+        await this.identityRepo.update(identity);
+      }
+    }
+
+    user.ensureActive();
 
     // =======================
     // 7. SESSION

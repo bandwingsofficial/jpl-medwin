@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -35,19 +32,10 @@ export class CustomerDashboardService {
 
     to?: string;
   }) {
-    const totalCustomers =
-      await this.getTotalCustomers();
+    const totalCustomers = await this.getTotalCustomers();
 
-    const {
-      totalOrders,
-      repeatCustomers,
-      averageOrdersPerCustomer,
-      averageSpendPerCustomer,
-    } =
-      await this.getOrderMetrics(
-        params,
-        totalCustomers,
-      );
+    const { totalOrders, repeatCustomers, averageOrdersPerCustomer, averageSpendPerCustomer } =
+      await this.getOrderMetrics(params, totalCustomers);
 
     return {
       totalCustomers,
@@ -66,13 +54,11 @@ export class CustomerDashboardService {
    * 👥 Total customers
    */
   private async getTotalCustomers(): Promise<number> {
-    const result =
-      await this.customerRepo.findMany({
-        page: 1,
+    const result = await this.customerRepo.findMany({
+      page: 1,
 
-        limit:
-          Number.MAX_SAFE_INTEGER,
-      });
+      limit: Number.MAX_SAFE_INTEGER,
+    });
 
     return result.total;
   }
@@ -90,141 +76,85 @@ export class CustomerDashboardService {
     },
     totalCustomers: number,
   ) {
-    let startDate:
-      | Date
-      | undefined;
+    let startDate: Date | undefined;
 
-    let endDate:
-      | Date
-      | undefined;
+    let endDate: Date | undefined;
 
     // =======================
     // 📅 CUSTOM RANGE
     // =======================
-    if (
-      params.from &&
-      params.to
-    ) {
-      startDate = new Date(
-        params.from,
-      );
+    if (params.from && params.to) {
+      startDate = new Date(params.from);
 
-      endDate = new Date(
-        params.to,
-      );
+      endDate = new Date(params.to);
 
       // Include entire end day
-      endDate.setHours(
-        23,
-        59,
-        59,
-        999,
-      );
+      endDate.setHours(23, 59, 59, 999);
     }
 
     // =======================
     // 📅 PREDEFINED PERIOD
     // =======================
     else {
-      const range =
-        DashboardPeriodUtil.getRange(
-          params.period ??
-            DashboardPeriod.OVERALL,
-        );
+      const range = DashboardPeriodUtil.getRange(params.period ?? DashboardPeriod.OVERALL);
 
-      startDate =
-        range.startDate;
+      startDate = range.startDate;
 
-      endDate =
-        range.endDate;
+      endDate = range.endDate;
     }
 
-    const {
-      data: orders,
-    } =
-      await this.orderRepo.findMany({
-        page: 1,
+    const { data: orders } = await this.orderRepo.findMany({
+      page: 1,
 
-        limit:
-          Number.MAX_SAFE_INTEGER,
+      limit: Number.MAX_SAFE_INTEGER,
 
-        from: startDate,
+      from: startDate,
 
-        to: endDate,
-      });
+      to: endDate,
+    });
 
-    const customerMap =
-      new Map<
-        string,
-        {
-          orders: number;
+    const customerMap = new Map<
+      string,
+      {
+        orders: number;
 
-          spent: number;
-        }
-      >();
+        spent: number;
+      }
+    >();
 
     for (const order of orders) {
-      const existing =
-        customerMap.get(
-          order.userId,
-        );
+      const existing = customerMap.get(order.userId);
 
       if (existing) {
         existing.orders++;
 
-        existing.spent +=
-          order.grandTotal;
+        existing.spent += order.grandTotal;
       } else {
-        customerMap.set(
-          order.userId,
-          {
-            orders: 1,
+        customerMap.set(order.userId, {
+          orders: 1,
 
-            spent:
-              order.grandTotal,
-          },
-        );
+          spent: order.grandTotal,
+        });
       }
     }
 
-    const repeatCustomers =
-      Array.from(
-        customerMap.values(),
-      ).filter(
-        (customer) =>
-          customer.orders > 1,
-      ).length;
+    const repeatCustomers = Array.from(customerMap.values()).filter(
+      (customer) => customer.orders > 1,
+    ).length;
 
-    const totalRevenue =
-      Array.from(
-        customerMap.values(),
-      ).reduce(
-        (
-          total,
-          customer,
-        ) =>
-          total +
-          customer.spent,
-        0,
-      );
+    const totalRevenue = Array.from(customerMap.values()).reduce(
+      (total, customer) => total + customer.spent,
+      0,
+    );
 
     return {
-      totalOrders:
-        orders.length,
+      totalOrders: orders.length,
 
       repeatCustomers,
 
-      averageOrdersPerCustomer:
-        DashboardMathUtil.average(
-          orders.length,
-          totalCustomers,
-        ),
+      averageOrdersPerCustomer: DashboardMathUtil.average(orders.length, totalCustomers),
 
-      averageSpendPerCustomer:
-        DashboardMathUtil.average(
-          totalRevenue,
-          totalCustomers,
-        ),
+      averageSpendPerCustomer: DashboardMathUtil.average(totalRevenue, totalCustomers),
     };
   }
 }

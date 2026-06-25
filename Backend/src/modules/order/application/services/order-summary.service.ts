@@ -21,112 +21,78 @@ export class OrderSummaryService {
 
     rewardDiscount?: number;
   }) {
-    const items =
-      this.filterActiveItems(
-        params.items,
-      );
+    const items = this.filterActiveItems(params.items);
 
     // =======================
     // 💰 SUBTOTAL
     // =======================
 
-    const subtotal =
-      this.calculateSubtotal(
-        items,
-      );
+    const subtotal = this.calculateSubtotal(items);
 
     // =======================
     // 💸 MRP TOTAL
     // =======================
 
-    const mrpTotal =
-      this.calculateMrpTotal(
-        items,
-      );
+    const mrpTotal = this.calculateMrpTotal(items);
 
     // =======================
     // 🏷 PRODUCT DISCOUNT
     // =======================
 
-    const productDiscount =
-      Math.max(
-        mrpTotal - subtotal,
+    const productDiscount = Math.max(
+      mrpTotal - subtotal,
 
-        0,
-      );
+      0,
+    );
 
     // =======================
     // 🎟 COUPON DISCOUNT
     // =======================
 
-    const couponDiscount =
-      params.couponDiscount ?? 0;
+    const couponDiscount = params.couponDiscount ?? 0;
 
     // =======================
     // 🚚 SHIPPING
     // =======================
 
-    const shippingCharge =
-      params.shippingCharge ??
-      this.calculateShipping(
-        subtotal,
-      );
+    const shippingCharge = params.shippingCharge ?? 0;
 
     // =======================
     // 🧾 TAX
     // =======================
 
-    const tax =
-      params.tax ??
-      this.calculateTax(
-        subtotal,
-      );
+    const tax = params.tax ?? this.calculateTax(subtotal);
 
     // =======================
     // 🪙 REWARD DISCOUNT
     // =======================
 
-    const rewardDiscount =
-      params.rewardDiscount ?? 0;
+    const rewardDiscount = params.rewardDiscount ?? 0;
 
     // =======================
     // 💎 TOTAL SAVINGS
     // =======================
 
-    const totalSavings =
-      productDiscount +
-      couponDiscount +
-      rewardDiscount;
+    const totalSavings = productDiscount + couponDiscount + rewardDiscount;
 
     // =======================
     // 💵 GRAND TOTAL
     // =======================
 
-    const grandTotal =
-      Math.max(
-        subtotal +
-          shippingCharge +
-          tax -
-          couponDiscount -
-          rewardDiscount,
+    const grandTotal = Math.max(
+      subtotal + shippingCharge + tax - couponDiscount - rewardDiscount,
 
-        0,
-      );
+      0,
+    );
 
     // =======================
     // 🚀 RESPONSE
     // =======================
 
     return {
-      totalProducts:
-        this.calculateTotalProducts(
-          items,
-        ),
+      totalProducts: this.calculateTotalProducts(items),
 
-      totalQuantity:
-        this.calculateTotalQuantity(
-          items,
-        ),
+      totalQuantity: this.calculateTotalQuantity(items),
 
       subtotal,
 
@@ -140,15 +106,13 @@ export class OrderSummaryService {
 
       totalSavings,
 
-      shipping:
-        shippingCharge,
+      shipping: shippingCharge,
 
       tax,
 
       grandTotal,
 
-      isFreeShipping:
-        shippingCharge === 0,
+      isFreeShipping: shippingCharge === 0,
     };
   }
 
@@ -156,31 +120,19 @@ export class OrderSummaryService {
   // 📦 FILTER ACTIVE ITEMS
   // =======================
 
-  filterActiveItems(
-    items: OrderItem[],
-  ): OrderItem[] {
-    return items.filter(
-      (item) => !item.isDeleted(),
-    );
+  filterActiveItems(items: OrderItem[]): OrderItem[] {
+    return items.filter((item) => !item.isDeleted());
   }
 
   // =======================
   // 💰 SUBTOTAL
   // =======================
 
-  calculateSubtotal(
-    items: OrderItem[],
-  ): number {
+  calculateSubtotal(items: OrderItem[]): number {
     return Number(
       items
         .reduce(
-          (
-            total,
-            item,
-          ) =>
-            total +
-            item.price *
-              item.quantity,
+          (total, item) => total + item.price * item.quantity,
 
           0,
         )
@@ -192,20 +144,11 @@ export class OrderSummaryService {
   // 💸 MRP TOTAL
   // =======================
 
-  calculateMrpTotal(
-    items: OrderItem[],
-  ): number {
+  calculateMrpTotal(items: OrderItem[]): number {
     return Number(
       items
         .reduce(
-          (
-            total,
-            item,
-          ) =>
-            total +
-            (item.mrp ??
-              item.price) *
-              item.quantity,
+          (total, item) => total + (item.mrp ?? item.price) * item.quantity,
 
           0,
         )
@@ -217,16 +160,9 @@ export class OrderSummaryService {
   // 📦 TOTAL QUANTITY
   // =======================
 
-  calculateTotalQuantity(
-    items: OrderItem[],
-  ): number {
+  calculateTotalQuantity(items: OrderItem[]): number {
     return items.reduce(
-      (
-        total,
-        item,
-      ) =>
-        total +
-        item.quantity,
+      (total, item) => total + item.quantity,
 
       0,
     );
@@ -236,44 +172,15 @@ export class OrderSummaryService {
   // 📦 TOTAL PRODUCTS
   // =======================
 
-  calculateTotalProducts(
-    items: OrderItem[],
-  ): number {
+  calculateTotalProducts(items: OrderItem[]): number {
     return items.length;
-  }
-
-  // =======================
-  // 🚚 SHIPPING
-  // =======================
-
-  calculateShipping(
-    subtotal: number,
-  ): number {
-    // no items
-    if (subtotal <= 0) {
-      return 0;
-    }
-
-    // free shipping
-    if (subtotal >= 500) {
-      return 0;
-    }
-
-    // flat shipping
-    return 50;
   }
 
   // =======================
   // 🧾 TAX
   // =======================
 
-  calculateTax(
-    subtotal: number,
-  ): number {
-    return Number(
-      (
-        subtotal * 0.18
-      ).toFixed(2),
-    );
+  calculateTax(subtotal: number): number {
+    return Number((subtotal * 0.18).toFixed(2));
   }
 }

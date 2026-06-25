@@ -12,6 +12,8 @@ import { OrderNotFoundException } from '../../domain/exceptions/order-not-found.
 
 import { OrderSummaryService } from '../services/order-summary.service';
 
+import { OrderAddressResponseMapper } from '../mappers/order-address-response.mapper';
+
 @Injectable()
 export class GetOrderByIdUseCase {
   constructor(
@@ -36,17 +38,11 @@ export class GetOrderByIdUseCase {
       });
     }
 
-    const latestReturn =
-  await this.returnRepo.findLatestReturnByOrderId(
-    order.id,
-  );
+    const latestReturn = await this.returnRepo.findLatestReturnByOrderId(order.id);
 
-const replacementOrder =
-  latestReturn?.replacementOrderId
-    ? await this.orderRepo.findById(
-        latestReturn.replacementOrderId,
-      )
-    : null;
+    const replacementOrder = latestReturn?.replacementOrderId
+      ? await this.orderRepo.findById(latestReturn.replacementOrderId)
+      : null;
 
     const items = await this.orderItemRepo.findByOrderId(order.id);
 
@@ -70,34 +66,31 @@ const replacementOrder =
       status: order.status,
 
       paymentStatus: order.paymentStatus,
-     returnRequest: latestReturn
-  ? {
-      id: latestReturn.id,
-
-      status: latestReturn.status,
-
-      type: latestReturn.type,
-
-      reason: latestReturn.reason,
-
-      requestedAt: latestReturn.createdAt,
-
-      replacementOrder: replacementOrder
+      returnRequest: latestReturn
         ? {
-            id: replacementOrder.id,
+            id: latestReturn.id,
 
-            orderNumber:
-              replacementOrder.orderNumber,
+            status: latestReturn.status,
 
-            status:
-              replacementOrder.status,
+            type: latestReturn.type,
 
-            createdAt:
-              replacementOrder.createdAt,
+            reason: latestReturn.reason,
+
+            requestedAt: latestReturn.createdAt,
+
+            replacementOrder: replacementOrder
+              ? {
+                  id: replacementOrder.id,
+
+                  orderNumber: replacementOrder.orderNumber,
+
+                  status: replacementOrder.status,
+
+                  createdAt: replacementOrder.createdAt,
+                }
+              : null,
           }
         : null,
-    }
-  : null,
 
       cartId: order.cartId,
 
@@ -125,9 +118,7 @@ const replacementOrder =
         earnedCoins: order.earnedCoins,
       },
 
-      shippingAddress: order.shippingAddress,
-
-      billingAddress: order.billingAddress,
+      ...OrderAddressResponseMapper.toOrderAddressFields(order),
 
       shipment: {
         trackingId: order.trackingId,

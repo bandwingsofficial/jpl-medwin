@@ -1,9 +1,6 @@
 // get-wallet.dto.ts
 
-import {
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export class GetWalletDto {
   @IsOptional()

@@ -92,17 +92,16 @@ export class MarkOrderPaidUseCase {
         totals: {
           subtotal: updated.subtotal,
 
-          couponDiscount:
-  updated.couponDiscount,
+          couponDiscount: updated.couponDiscount,
 
           shippingCharge: updated.shippingCharge,
 
           tax: updated.tax,
           redeemedCoins: updated.redeemedCoins,
 
-redeemedAmount: updated.redeemedAmount,
+          redeemedAmount: updated.redeemedAmount,
 
-earnedCoins: updated.earnedCoins,
+          earnedCoins: updated.earnedCoins,
 
           grandTotal: updated.grandTotal,
 

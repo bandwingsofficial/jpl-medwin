@@ -36,9 +36,7 @@ export class PrismaCoinWalletRepository implements CoinWalletRepository {
     return wallet ? CoinWalletMapper.toDomain(wallet) : null;
   }
 
-  async findAll(
-    tx: Prisma.TransactionClient | PrismaClient = this.prisma,
-  ): Promise<CoinWallet[]> {
+  async findAll(tx: Prisma.TransactionClient | PrismaClient = this.prisma): Promise<CoinWallet[]> {
     const wallets = await tx.coinWallet.findMany({
       orderBy: {
         createdAt: 'desc',
@@ -150,13 +148,7 @@ export class PrismaCoinWalletRepository implements CoinWalletRepository {
     },
     tx: Prisma.TransactionClient | PrismaClient = this.prisma,
   ): Promise<void> {
-    const {
-      walletId,
-      earnedCoins,
-      redeemedCoins,
-      expiredCoins,
-      refundedCoins,
-    } = params;
+    const { walletId, earnedCoins, redeemedCoins, expiredCoins, refundedCoins } = params;
 
     await tx.coinWallet.update({
       where: {

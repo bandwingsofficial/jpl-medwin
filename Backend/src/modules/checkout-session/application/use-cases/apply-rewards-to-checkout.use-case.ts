@@ -99,7 +99,7 @@ export class ApplyRewardsToCheckoutUseCase {
     // 💰 RECALCULATE SUMMARY
     // =======================
 
-    const summary = this.checkoutSummaryService.build({
+    const summary = await this.checkoutSummaryService.build({
       items,
 
       couponDiscount: session.couponDiscount,

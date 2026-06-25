@@ -8,22 +8,13 @@ export class ProductImportParserService {
   // 🧠 JSON PARSER
   // =======================
 
-  parseJson<T>(
-    value: any,
-    fallback: T,
-  ): T {
+  parseJson<T>(value: any, fallback: T): T {
     try {
-      if (
-        value === undefined ||
-        value === null ||
-        value === ''
-      ) {
+      if (value === undefined || value === null || value === '') {
         return fallback;
       }
 
-      return typeof value === 'string'
-        ? (JSON.parse(value) as T)
-        : (value as T);
+      return typeof value === 'string' ? (JSON.parse(value) as T) : (value as T);
     } catch {
       return fallback;
     }
@@ -38,41 +29,21 @@ export class ProductImportParserService {
       .trim()
       .toLowerCase();
 
-    return [
-      'true',
-      '1',
-      'yes',
-      'y',
-      'active',
-      'enabled',
-      'on',
-    ].includes(normalized);
+    return ['true', '1', 'yes', 'y', 'active', 'enabled', 'on'].includes(normalized);
   }
 
   // =======================
   // 🔢 NUMBER PARSER
   // =======================
 
-  toNumber(
-    value: any,
-  ): number | undefined {
-    if (
-      value === null ||
-      value === undefined ||
-      value === ''
-    ) {
+  toNumber(value: any): number | undefined {
+    if (value === null || value === undefined || value === '') {
       return undefined;
     }
 
-    const parsed = Number(
-      String(value)
-        .replace(/,/g, '')
-        .trim(),
-    );
+    const parsed = Number(String(value).replace(/,/g, '').trim());
 
-    return Number.isNaN(parsed)
-      ? undefined
-      : parsed;
+    return Number.isNaN(parsed) ? undefined : parsed;
   }
 
   // =======================
@@ -87,15 +58,8 @@ export class ProductImportParserService {
   // 📋 ARRAY PARSER
   // =======================
 
-  toArray(
-    value: any,
-    separator = ',',
-  ): string[] {
-    if (
-      value === null ||
-      value === undefined ||
-      value === ''
-    ) {
+  toArray(value: any, separator = ','): string[] {
+    if (value === null || value === undefined || value === '') {
       return [];
     }
 
@@ -110,11 +74,7 @@ export class ProductImportParserService {
   // =======================
 
   toImages(value: any): string[] {
-    if (
-      value === null ||
-      value === undefined ||
-      value === ''
-    ) {
+    if (value === null || value === undefined || value === '') {
       return [];
     }
 

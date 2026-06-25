@@ -1,9 +1,6 @@
 // src/modules/customer/application/use-cases/get-customer.use-case.ts
 
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -24,31 +21,18 @@ export class GetCustomerUseCase {
     private readonly domainService: CustomerDomainService,
   ) {}
 
-  async execute(input: {
-    userId: string;
-  }): Promise<CustomerDetailDto> {
-    console.log(
-      '\n👤 [GET CUSTOMER USE CASE]',
-    );
+  async execute(input: { userId: string }): Promise<CustomerDetailDto> {
+    console.log('\n👤 [GET CUSTOMER USE CASE]');
 
-    console.log(
-      '➡️ User ID:',
-      input.userId,
-    );
+    console.log('➡️ User ID:', input.userId);
 
     // =======================
     // 🔍 FIND CUSTOMER
     // =======================
 
-    const customer =
-      await this.customerRepo.findById(
-        input.userId,
-      );
+    const customer = await this.customerRepo.findById(input.userId);
 
-    console.log(
-      '➡️ Customer found:',
-      !!customer,
-    );
+    console.log('➡️ Customer found:', !!customer);
 
     // =======================
     // ❌ NOT FOUND
@@ -64,20 +48,15 @@ export class GetCustomerUseCase {
     // 🧠 ACTIVE VALIDATION
     // =======================
 
-    this.domainService.ensureCustomerActive(
-      {
-        isActive:
-          customer.isActive,
-      },
-    );
+    this.domainService.ensureCustomerActive({
+      isActive: customer.isActive,
+    });
 
     // =======================
     // ✅ RESPONSE
     // =======================
 
-    console.log(
-      '✅ CUSTOMER FETCHED',
-    );
+    console.log('✅ CUSTOMER FETCHED');
 
     return customer;
   }

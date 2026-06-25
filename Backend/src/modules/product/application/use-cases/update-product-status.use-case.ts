@@ -23,7 +23,7 @@ export class UpdateProductStatusUseCase {
     @Inject(TOKENS.VARIANT_REPO)
     private readonly variantRepo: VariantRepository,
 
-      @Inject(TOKENS.CART_ITEM_REPO)
+    @Inject(TOKENS.CART_ITEM_REPO)
     private readonly cartItemRepo: CartItemRepository, // Assuming there's a CartItemRepository for handling cart items
   ) {}
 
@@ -79,85 +79,85 @@ export class UpdateProductStatusUseCase {
     // 💾 TRANSACTION
     // =======================
 
-   return this.prisma.$transaction(async (tx) => {
-  // =======================
-  // 🔴 DEACTIVATE
-  // =======================
+    return this.prisma.$transaction(async (tx) => {
+      // =======================
+      // 🔴 DEACTIVATE
+      // =======================
 
-  if (input.status === ProductStatus.INACTIVE) {
-    // =======================
-    // 🛒 REMOVE CART ITEMS
-    // =======================
+      if (input.status === ProductStatus.INACTIVE) {
+        // =======================
+        // 🛒 REMOVE CART ITEMS
+        // =======================
 
-    await this.cartItemRepo.deleteByProductId(product.id);
+        await this.cartItemRepo.deleteByProductId(product.id);
 
-    // deactivate product
-    product.deactivate();
+        // deactivate product
+        product.deactivate();
 
-    // remove default variant
-    product.defaultVariantId = undefined;
+        // remove default variant
+        product.defaultVariantId = undefined;
 
-    await this.productRepo.update(product, tx);
+        await this.productRepo.update(product, tx);
 
-    // deactivate all child variants
-    for (const v of variants) {
-      if (!v.isDeleted()) {
-        v.deactivate();
+        // deactivate all child variants
+        for (const v of variants) {
+          if (!v.isDeleted()) {
+            v.deactivate();
+          }
+        }
+
+        await this.variantRepo.updateMany(variants, tx);
       }
-    }
 
-    await this.variantRepo.updateMany(variants, tx);
-  }
+      // =======================
+      // 🟢 ACTIVATE
+      // =======================
+      else {
+        // activate product
+        product.activate();
 
-  // =======================
-  // 🟢 ACTIVATE
-  // =======================
-  else {
-    // activate product
-    product.activate();
+        // activate variants
+        for (const v of variants) {
+          // don't restore deleted
+          if (!v.isDeleted()) {
+            v.activate();
+          }
+        }
 
-    // activate variants
-    for (const v of variants) {
-      // don't restore deleted
-      if (!v.isDeleted()) {
-        v.activate();
+        // set first active variant as default
+        const firstActive = variants.find(
+          (v) => !v.isDeleted() && v.status === ProductStatus.ACTIVE,
+        );
+
+        product.defaultVariantId = firstActive?.id;
+
+        await this.productRepo.update(product, tx);
+
+        await this.variantRepo.updateMany(variants, tx);
       }
-    }
 
-    // set first active variant as default
-    const firstActive = variants.find(
-      (v) => !v.isDeleted() && v.status === ProductStatus.ACTIVE,
-    );
+      // =======================
+      // ✅ FINAL RESPONSE
+      // =======================
 
-    product.defaultVariantId = firstActive?.id;
+      return {
+        success: true,
 
-    await this.productRepo.update(product, tx);
+        message:
+          input.status === ProductStatus.ACTIVE
+            ? 'Product activated successfully'
+            : 'Product deactivated successfully',
 
-    await this.variantRepo.updateMany(variants, tx);
-  }
+        data: {
+          id: product.id,
 
-  // =======================
-  // ✅ FINAL RESPONSE
-  // =======================
+          status: product.status,
 
-  return {
-    success: true,
+          defaultVariantId: product.defaultVariantId ?? null,
 
-    message:
-      input.status === ProductStatus.ACTIVE
-        ? 'Product activated successfully'
-        : 'Product deactivated successfully',
-
-    data: {
-      id: product.id,
-
-      status: product.status,
-
-      defaultVariantId: product.defaultVariantId ?? null,
-
-      updatedAt: product.updatedAt,
-    },
-  };
-});
+          updatedAt: product.updatedAt,
+        },
+      };
+    });
   }
 }

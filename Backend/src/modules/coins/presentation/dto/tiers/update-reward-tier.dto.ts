@@ -1,12 +1,6 @@
 // update-reward-tier.dto.ts
 
-import {
-  IsEnum,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, Min } from 'class-validator';
 
 import { RewardTierStatus } from '../../../domain/enums/reward-tier-status.enum';
 

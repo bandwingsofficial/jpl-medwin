@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 
 import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
 
@@ -42,12 +34,11 @@ export class ReturnController {
     @Body()
     body: RequestReturnDto,
   ) {
-    const data =
-      await this.requestReturnUseCase.execute({
-        ...body,
+    const data = await this.requestReturnUseCase.execute({
+      ...body,
 
-        userId: req.user.userId,
-      });
+      userId: req.user.userId,
+    });
 
     return {
       message: 'Return requested successfully',
@@ -67,12 +58,11 @@ export class ReturnController {
     @Param('returnId')
     returnId: string,
   ) {
-    const data =
-      await this.getReturnUseCase.execute({
-        returnId,
+    const data = await this.getReturnUseCase.execute({
+      returnId,
 
-        userId: req.user.userId,
-      });
+      userId: req.user.userId,
+    });
 
     return {
       message: 'Return fetched successfully',
@@ -86,13 +76,10 @@ export class ReturnController {
   // =======================
 
   @Get()
-  async getMyReturns(
-    @Req() req: AuthRequest,
-  ) {
-    const data =
-      await this.getMyReturnsUseCase.execute({
-        userId: req.user.userId,
-      });
+  async getMyReturns(@Req() req: AuthRequest) {
+    const data = await this.getMyReturnsUseCase.execute({
+      userId: req.user.userId,
+    });
 
     return {
       message: 'Returns fetched successfully',

@@ -74,27 +74,27 @@ export class CancelOrderUseCase {
     const updated = await this.orderRepo.update(order);
 
     if (updated.redeemedCoins > 0 && updated.userId) {
-  /*
+      /*
    |--------------------------------------------------------------------------
    | ALREADY REFUNDED
    |--------------------------------------------------------------------------
    */
 
-  if (updated.rewardRefunded) {
-    return {
-      success: true,
+      if (updated.rewardRefunded) {
+        return {
+          success: true,
 
-      data: {
-        id: updated.id,
+          data: {
+            id: updated.id,
 
-        orderNumber: updated.orderNumber,
+            orderNumber: updated.orderNumber,
 
-        rewardRefunded: true,
-      },
-    };
-  }
+            rewardRefunded: true,
+          },
+        };
+      }
 
-  /*
+      /*
    |--------------------------------------------------------------------------
    | REFUND REDEEMED COINS
    |--------------------------------------------------------------------------
@@ -110,39 +110,34 @@ export class CancelOrderUseCase {
    |--------------------------------------------------------------------------
    */
 
-  try {
-    await this.refundCoinsUseCase.execute({
-      userId: updated.userId,
+      try {
+        await this.refundCoinsUseCase.execute({
+          userId: updated.userId,
 
-      orderId: updated.id,
+          orderId: updated.id,
 
-      coins: updated.redeemedCoins,
+          coins: updated.redeemedCoins,
 
-      reason:
-        input.reason ??
-        `Refunded redeemed coins for cancelled order ${updated.orderNumber}`,
-    });
+          reason:
+            input.reason ?? `Refunded redeemed coins for cancelled order ${updated.orderNumber}`,
+        });
 
-    /*
+        /*
      |--------------------------------------------------------------------------
      | MARK REFUNDED
      |--------------------------------------------------------------------------
      */
 
-    updated.markRewardRefunded();
+        updated.markRewardRefunded();
 
-    await this.orderRepo.update(updated);
-
-  } catch (error) {
-  console.warn(
-    'Reward refund skipped:',
-    error instanceof Error
-      ? error.message
-      : String(error),
-  );
-
-  }
-}
+        await this.orderRepo.update(updated);
+      } catch (error) {
+        console.warn(
+          'Reward refund skipped:',
+          error instanceof Error ? error.message : String(error),
+        );
+      }
+    }
 
     const items = await this.orderItemRepo.findByOrderId(updated.id);
 

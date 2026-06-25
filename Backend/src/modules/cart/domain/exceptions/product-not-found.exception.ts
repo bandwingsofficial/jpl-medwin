@@ -7,9 +7,7 @@ import { BaseException } from '@/common/exceptions/base.exception';
 import { ErrorCode } from '@/common/constants/error-codes';
 
 export class ProductNotFoundException extends BaseException {
-  constructor(details?: {
-    productId?: string;
-  }) {
+  constructor(details?: { productId?: string }) {
     super(
       'Product not found',
 

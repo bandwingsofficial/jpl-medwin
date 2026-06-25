@@ -76,13 +76,11 @@ export class DeleteVariantUseCase {
     // =======================
 
     return this.prisma.$transaction(async (tx) => {
+      // =======================
+      // 🛒 REMOVE CART ITEMS
+      // =======================
 
-
-  // =======================
-  // 🛒 REMOVE CART ITEMS
-  // =======================
-
-  await this.cartItemRepo.deleteByVariantId(variant.id);
+      await this.cartItemRepo.deleteByVariantId(variant.id);
 
       // =======================
       // 🔒 SAFE DELETE

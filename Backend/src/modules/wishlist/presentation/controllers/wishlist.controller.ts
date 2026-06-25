@@ -1,15 +1,6 @@
 // src/modules/wishlist/presentation/controllers/wishlist.controller.ts
 
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 
 import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
 
@@ -46,12 +37,11 @@ export class WishlistController {
     @Body()
     dto: AddToWishlistDto,
   ) {
-    const data =
-      await this.addToWishlistUseCase.execute({
-        userId: req.user.userId,
+    const data = await this.addToWishlistUseCase.execute({
+      userId: req.user.userId,
 
-        productId: dto.productId,
-      });
+      productId: dto.productId,
+    });
 
     return {
       message: 'Product added to wishlist',
@@ -87,13 +77,8 @@ export class WishlistController {
   // =======================
 
   @Get()
-  async getWishlist(
-    @Req() req: AuthRequest,
-  ) {
-    const data =
-      await this.getWishlistUseCase.execute(
-        req.user.userId,
-      );
+  async getWishlist(@Req() req: AuthRequest) {
+    const data = await this.getWishlistUseCase.execute(req.user.userId);
 
     return {
       message: 'Wishlist fetched successfully',
@@ -107,17 +92,11 @@ export class WishlistController {
   // =======================
 
   @Get('count')
-  async getWishlistCount(
-    @Req() req: AuthRequest,
-  ) {
-    const data =
-      await this.getWishlistCountUseCase.execute(
-        req.user.userId,
-      );
+  async getWishlistCount(@Req() req: AuthRequest) {
+    const data = await this.getWishlistCountUseCase.execute(req.user.userId);
 
     return {
-      message:
-        'Wishlist count fetched successfully',
+      message: 'Wishlist count fetched successfully',
 
       ...data,
     };

@@ -9,43 +9,25 @@ export interface ReturnRepository {
   // 🔍 FIND
   // =======================
 
-  findById(
-    id: string,
-  ): Promise<Return | null>;
+  findById(id: string): Promise<Return | null>;
 
-  findByOrderId(
-    orderId: string,
-  ): Promise<Return[]>;
+  findByOrderId(orderId: string): Promise<Return[]>;
 
-  findByUserId(
-    userId: string,
-  ): Promise<Return[]>;
+  findByUserId(userId: string): Promise<Return[]>;
 
-  findByStatus(
-    status: ReturnStatus,
-  ): Promise<Return[]>;
+  findByStatus(status: ReturnStatus): Promise<Return[]>;
 
-  findByType(
-    type: ReturnType,
-  ): Promise<Return[]>;
+  findByType(type: ReturnType): Promise<Return[]>;
 
-  findByReason(
-    reason: ReturnReason,
-  ): Promise<Return[]>;
+  findByReason(reason: ReturnReason): Promise<Return[]>;
 
   findPendingReturns(): Promise<Return[]>;
 
-  findActiveReturnByOrderId(
-    orderId: string,
-  ): Promise<Return | null>;
+  findActiveReturnByOrderId(orderId: string): Promise<Return | null>;
 
-  findLatestReturnByOrderId(
-    orderId: string,
-  ): Promise<Return | null>;
+  findLatestReturnByOrderId(orderId: string): Promise<Return | null>;
 
-  findByReplacementOrderId(
-    replacementOrderId: string,
-  ): Promise<Return | null>;
+  findByReplacementOrderId(replacementOrderId: string): Promise<Return | null>;
 
   findMany(params: {
     page?: number;
@@ -69,43 +51,27 @@ export interface ReturnRepository {
   // 🧠 EXISTS
   // =======================
 
-  existsById(
-    id: string,
-  ): Promise<boolean>;
+  existsById(id: string): Promise<boolean>;
 
-  existsActiveReturnByOrderId(
-    orderId: string,
-  ): Promise<boolean>;
+  existsActiveReturnByOrderId(orderId: string): Promise<boolean>;
 
-  existsByReplacementOrderId(
-    replacementOrderId: string,
-  ): Promise<boolean>;
+  existsByReplacementOrderId(replacementOrderId: string): Promise<boolean>;
 
   // =======================
   // ✍️ WRITE
   // =======================
 
-  create(
-    request: Return,
-  ): Promise<Return>;
+  create(request: Return): Promise<Return>;
 
-  update(
-    request: Return,
-  ): Promise<Return>;
+  update(request: Return): Promise<Return>;
 
-  createMany(
-    requests: Return[],
-  ): Promise<void>;
+  createMany(requests: Return[]): Promise<void>;
 
-  updateMany(
-    requests: Return[],
-  ): Promise<void>;
+  updateMany(requests: Return[]): Promise<void>;
 
   // =======================
   // ❌ DELETE
   // =======================
 
-  delete(
-    returnId: string,
-  ): Promise<void>;
+  delete(returnId: string): Promise<void>;
 }

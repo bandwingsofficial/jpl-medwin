@@ -23,26 +23,21 @@ export class CreateReplacementOrderUseCase {
     @Inject(TOKENS.RETURN_REPO)
     private readonly returnRepo: ReturnRepository,
 
-  @Inject(TOKENS.ORDER_REPO)
-  private readonly orderRepo: OrderRepository,
+    @Inject(TOKENS.ORDER_REPO)
+    private readonly orderRepo: OrderRepository,
 
-  @Inject(TOKENS.ORDER_ITEM_REPO)
-  private readonly orderItemRepo: OrderItemRepository,
+    @Inject(TOKENS.ORDER_ITEM_REPO)
+    private readonly orderItemRepo: OrderItemRepository,
 
-  private readonly orderResponseBuilder: OrderResponseBuilderService,
+    private readonly orderResponseBuilder: OrderResponseBuilderService,
   ) {}
 
-  async execute(input: {
-    returnId: string;
-  }) {
+  async execute(input: { returnId: string }) {
     // =======================
     // 🔍 FIND RETURN
     // =======================
 
-    const returnRequest =
-      await this.returnRepo.findById(
-        input.returnId,
-      );
+    const returnRequest = await this.returnRepo.findById(input.returnId);
 
     if (!returnRequest) {
       throw new ReturnNotFoundException({
@@ -54,10 +49,7 @@ export class CreateReplacementOrderUseCase {
     // 🔍 FIND ORIGINAL ORDER
     // =======================
 
-    const originalOrder =
-      await this.orderRepo.findById(
-        returnRequest.orderId,
-      );
+    const originalOrder = await this.orderRepo.findById(returnRequest.orderId);
 
     if (!originalOrder) {
       throw new OrderNotFoundException({
@@ -69,163 +61,154 @@ export class CreateReplacementOrderUseCase {
     // 📦 FIND ORIGINAL ITEMS
     // =======================
 
-    const originalItems =
-      await this.orderItemRepo.findByOrderId(
-        originalOrder.id,
-      );
+    const originalItems = await this.orderItemRepo.findByOrderId(originalOrder.id);
 
     // =======================
     // 🆕 CREATE ORDER
     // =======================
 
-    const replacementOrder =
-      new Order(
-        crypto.randomUUID(),
+    const replacementOrder = new Order(
+      crypto.randomUUID(),
 
-        `REP-${Date.now()}`,
+      `REP-${Date.now()}`,
 
-        undefined,
+      undefined,
 
-        undefined,
+      undefined,
 
-        originalOrder.userId,
+      originalOrder.userId,
 
-        OrderStatus.CONFIRMED,
+      OrderStatus.CONFIRMED,
 
-        PaymentStatus.CAPTURED,
+      PaymentStatus.CAPTURED,
 
-        undefined,
+      undefined,
 
-        originalOrder.subtotal,
+      originalOrder.subtotal,
 
-        originalOrder.couponDiscount,
+      originalOrder.couponDiscount,
 
-        originalOrder.shippingCharge,
+      originalOrder.shippingCharge,
 
-        originalOrder.tax,
+      originalOrder.tax,
 
-        originalOrder.grandTotal,
+      originalOrder.grandTotal,
 
-        originalOrder.totalSavings,
+      originalOrder.totalSavings,
 
-        0, // earnedCoins
+      0, // earnedCoins
 
-        0, // redeemedCoins
+      0, // redeemedCoins
 
-        0, // redeemedAmount
+      0, // redeemedAmount
 
-        originalOrder.shippingAddress,
+      originalOrder.shippingAddressId,
 
-        originalOrder.billingAddress,
+      originalOrder.billingAddressId,
 
-        undefined,
+      originalOrder.isBillingSameAsShipping,
 
-        undefined,
+      originalOrder.shippingAddress,
 
-        undefined,
+      originalOrder.billingAddress,
 
-        undefined,
+      originalOrder.shippingAddressSnapshot,
 
-        undefined,
+      originalOrder.billingAddressSnapshot,
 
-        false,
+      undefined,
 
-        undefined,
+      undefined,
 
-        undefined,
+      undefined,
 
-        'Replacement order',
+      undefined,
 
-        {
-          replacementForOrderId:
-            originalOrder.id,
+      undefined,
 
-          returnId:
-            returnRequest.id,
-        },
-      );
+      false,
 
-    const createdOrder =
-      await this.orderRepo.create(
-        replacementOrder,
-      );
+      undefined,
 
-// =======================
-// 🔗 LINK RETURN ↔ REPLACEMENT ORDER
-// =======================
+      undefined,
 
-returnRequest.replacementOrderId =
-  createdOrder.id;
+      'Replacement order',
 
-await this.returnRepo.update(
-  returnRequest,
-);
+      {
+        replacementForOrderId: originalOrder.id,
+
+        returnId: returnRequest.id,
+      },
+    );
+
+    const createdOrder = await this.orderRepo.create(replacementOrder);
+
+    // =======================
+    // 🔗 LINK RETURN ↔ REPLACEMENT ORDER
+    // =======================
+
+    returnRequest.replacementOrderId = createdOrder.id;
+
+    await this.returnRepo.update(returnRequest);
 
     // =======================
     // 📦 COPY ITEMS
     // =======================
 
-const replacementItems = originalItems.map((item) => {
-  const replacementItem = new OrderItem(
-    crypto.randomUUID(),
+    const replacementItems = originalItems.map((item) => {
+      const replacementItem = new OrderItem(
+        crypto.randomUUID(),
 
-    createdOrder.id,
+        createdOrder.id,
 
-    item.productId,
+        item.productId,
 
-    item.variantId,
+        item.variantId,
 
-    item.productName,
+        item.productName,
 
-    item.variantName,
+        item.variantName,
 
-    item.sku,
+        item.sku,
 
-    item.imageUrl,
+        item.imageUrl,
 
-    item.quantity,
+        item.quantity,
 
-    item.price,
+        item.price,
 
-    item.mrp,
-  );
+        item.mrp,
+      );
 
-  replacementItem.refreshTotals();
+      replacementItem.refreshTotals();
 
-  return replacementItem;
-});
+      return replacementItem;
+    });
 
-    await this.orderItemRepo.createMany(
-      replacementItems,
-    );
+    await this.orderItemRepo.createMany(replacementItems);
 
     // =======================
     // 🚀 RESPONSE
     // =======================
 
-   return {
-  replacementOrder:
-    this.orderResponseBuilder.buildReplacementOrder(
-      createdOrder,
-    ),
+    return {
+      replacementOrder: this.orderResponseBuilder.buildReplacementOrder(createdOrder),
 
-  originalOrder: {
-    id: originalOrder.id,
+      originalOrder: {
+        id: originalOrder.id,
 
-    orderNumber:
-      originalOrder.orderNumber,
-  },
+        orderNumber: originalOrder.orderNumber,
+      },
 
-  returnRequest: {
-    id: returnRequest.id,
+      returnRequest: {
+        id: returnRequest.id,
 
-    status: returnRequest.status,
+        status: returnRequest.status,
 
-    type: returnRequest.type,
-  },
+        type: returnRequest.type,
+      },
 
-  itemCount:
-    replacementItems.length,
-};
+      itemCount: replacementItems.length,
+    };
   }
 }

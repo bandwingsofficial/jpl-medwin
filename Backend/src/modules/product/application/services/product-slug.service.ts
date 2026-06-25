@@ -17,12 +17,16 @@ export class ProductSlugService {
     private readonly variantRepo: VariantRepository,
   ) {}
 
-  async generateProductSlug(source: string): Promise<string> {
-    if (!source) {
+  getBaseSlug(source: string): string {
+    if (!source?.trim()) {
       throw new Error('Slug generation failed: name/slug missing');
     }
 
-    const base = new SlugVO(source).getValue();
+    return new SlugVO(source).getValue();
+  }
+
+  async generateProductSlug(source: string): Promise<string> {
+    const base = this.getBaseSlug(source);
 
     let slug = base;
     let counter = 1;
@@ -52,31 +56,27 @@ export class ProductSlugService {
   }
 
   async generateUpdatedProductSlug(
-  source: string,
-  currentProductId: string,
-  tx?: any,
-): Promise<string> {
-  if (!source) {
-    throw new Error('Slug generation failed');
-  }
-
-  const base = new SlugVO(source).getValue();
-
-  let slug = base;
-  let counter = 1;
-
-  while (true) {
-    const existing = await this.productRepo.findBySlug(
-      slug,
-      true,
-      tx,
-    );
-
-    if (!existing || existing.id === currentProductId) {
-      return slug;
+    source: string,
+    currentProductId: string,
+    tx?: any,
+  ): Promise<string> {
+    if (!source) {
+      throw new Error('Slug generation failed');
     }
 
-    slug = `${base}-${counter++}`;
+    const base = new SlugVO(source).getValue();
+
+    let slug = base;
+    let counter = 1;
+
+    while (true) {
+      const existing = await this.productRepo.findBySlug(slug, true, tx);
+
+      if (!existing || existing.id === currentProductId) {
+        return slug;
+      }
+
+      slug = `${base}-${counter++}`;
+    }
   }
-}
 }

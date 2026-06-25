@@ -11,15 +11,9 @@ export class AutocompleteSearchUseCase {
     private readonly searchRepository: SearchRepository,
   ) {}
 
-  async execute(
-    query: string,
-    limit = 10,
-  ) {
+  async execute(query: string, limit = 10) {
     return {
-      results: await this.searchRepository.autocomplete(
-        query,
-        limit,
-      ),
+      results: await this.searchRepository.autocomplete(query, limit),
     };
   }
 }

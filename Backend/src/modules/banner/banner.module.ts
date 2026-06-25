@@ -45,7 +45,7 @@ import { UpdateBannerImageUseCase } from './application/use-cases/update-banner-
 import { RestoreBannerImageUseCase } from './application/use-cases/restore-banner-image.use-case';
 
 import { DeleteBannerImageUseCase } from './application/use-cases/delete-banner-image.use-case';
-import { AddBannerImageUseCase } from './application/use-cases/add-banner-image.use-case'
+import { AddBannerImageUseCase } from './application/use-cases/add-banner-image.use-case';
 
 // =======================
 // REPOSITORIES
@@ -56,18 +56,9 @@ import { PrismaBannerRepository } from './infrastructure/persistence/prisma/repo
 import { PrismaBannerImageRepository } from './infrastructure/persistence/prisma/repositories/prisma-banner-image.repository';
 
 @Module({
-  imports: [
-    PrismaModule,
-    AuthModule,
-    UploadModule,
-    ProductModule,
-  ],
+  imports: [PrismaModule, AuthModule, UploadModule, ProductModule],
 
-  controllers: [
-    AdminBannerController,
-
-    PublicBannerController,
-  ],
+  controllers: [AdminBannerController, PublicBannerController],
 
   providers: [
     // =======================
@@ -113,16 +104,10 @@ import { PrismaBannerImageRepository } from './infrastructure/persistence/prisma
 
     {
       provide: TOKENS.BANNER_IMAGE_REPO,
-      useClass:
-        PrismaBannerImageRepository,
+      useClass: PrismaBannerImageRepository,
     },
   ],
 
-  exports: [
-    TOKENS.BANNER_REPO,
-
-    TOKENS.BANNER_IMAGE_REPO,
-  ],
+  exports: [TOKENS.BANNER_REPO, TOKENS.BANNER_IMAGE_REPO],
 })
 export class BannerModule {}
-

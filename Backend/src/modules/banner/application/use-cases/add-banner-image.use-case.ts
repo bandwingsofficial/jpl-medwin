@@ -32,10 +32,7 @@ export class AddBannerImageUseCase {
     // 🔍 VERIFY BANNER
     // =======================
 
-    const banner =
-      await this.bannerRepo.findById(
-        input.bannerId,
-      );
+    const banner = await this.bannerRepo.findById(input.bannerId);
 
     if (!banner) {
       throw new BannerNotFoundException({
@@ -47,23 +44,19 @@ export class AddBannerImageUseCase {
     // 🖼 CREATE IMAGE
     // =======================
 
-    const image =
-      new BannerImage(
-        crypto.randomUUID(),
+    const image = new BannerImage(
+      crypto.randomUUID(),
 
-        input.bannerId,
+      input.bannerId,
 
-        input.imageUrl,
+      input.imageUrl,
 
-        input.productId,
+      input.productId,
 
-        input.sortOrder ?? 0,
-      );
+      input.sortOrder ?? 0,
+    );
 
-    const created =
-      await this.bannerImageRepo.create(
-        image,
-      );
+    const created = await this.bannerImageRepo.create(image);
 
     // =======================
     // 🚀 RESPONSE
@@ -72,24 +65,17 @@ export class AddBannerImageUseCase {
     return {
       id: created.id,
 
-      bannerId:
-        created.bannerId,
+      bannerId: created.bannerId,
 
-      imageUrl:
-        created.imageUrl,
+      imageUrl: created.imageUrl,
 
-      productId:
-        created.productId ??
-        null,
+      productId: created.productId ?? null,
 
-      sortOrder:
-        created.sortOrder,
+      sortOrder: created.sortOrder,
 
-      createdAt:
-        created.createdAt,
+      createdAt: created.createdAt,
 
-      updatedAt:
-        created.updatedAt,
+      updatedAt: created.updatedAt,
     };
   }
 }

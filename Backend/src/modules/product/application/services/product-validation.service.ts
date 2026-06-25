@@ -30,88 +30,87 @@ export class ProductValidationService {
     private readonly brandRepo: BrandRepository,
   ) {}
 
-async validate(input: {
-  categoryId: string;
-  subCategoryId: string;
-  miniCategoryId: string;
-  brandId: string;
-}) {
+  async validate(input: {
+    categoryId: string;
+    subCategoryId: string;
+    miniCategoryId: string;
+    brandId: string;
+  }) {
+    // 🔥 avoid findById(undefined)
+    if (!input.categoryId) {
+      throw new CategoryNotFoundException({
+        categoryId: input.categoryId,
+      });
+    }
 
-  // 🔥 avoid findById(undefined)
-  if (!input.categoryId) {
-    throw new CategoryNotFoundException({
-      categoryId: input.categoryId,
-    });
+    if (!input.subCategoryId) {
+      throw new SubCategoryNotFoundException({
+        subCategoryId: input.subCategoryId,
+      });
+    }
+
+    if (!input.miniCategoryId) {
+      throw new MiniCategoryNotFoundException({
+        miniCategoryId: input.miniCategoryId,
+      });
+    }
+
+    if (!input.brandId) {
+      throw new BrandNotFoundException({
+        brandId: input.brandId,
+      });
+    }
+
+    const [category, sub, mini, brand] = await Promise.all([
+      this.categoryRepo.findById(input.categoryId),
+      this.subCategoryRepo.findById(input.subCategoryId),
+      this.miniCategoryRepo.findById(input.miniCategoryId),
+      this.brandRepo.findById(input.brandId),
+    ]);
+
+    if (!category) {
+      throw new CategoryNotFoundException({
+        categoryId: input.categoryId,
+      });
+    }
+
+    if (!sub) {
+      throw new SubCategoryNotFoundException({
+        subCategoryId: input.subCategoryId,
+      });
+    }
+
+    if (!mini) {
+      throw new MiniCategoryNotFoundException({
+        miniCategoryId: input.miniCategoryId,
+      });
+    }
+
+    if (!brand) {
+      throw new BrandNotFoundException({
+        brandId: input.brandId,
+      });
+    }
+
+    if (sub.categoryId !== category.id) {
+      throw new InvalidCategoryHierarchyException({
+        categoryId: category.id,
+        subCategoryId: sub.id,
+      });
+    }
+
+    if (mini.subCategoryId !== sub.id) {
+      throw new InvalidCategoryHierarchyException({
+        subCategoryId: sub.id,
+        miniCategoryId: mini.id,
+      });
+    }
+
+    return {
+      category,
+      subCategory: sub,
+      miniCategory: mini,
+      brand,
+    };
   }
-
-  if (!input.subCategoryId) {
-    throw new SubCategoryNotFoundException({
-      subCategoryId: input.subCategoryId,
-    });
-  }
-
-  if (!input.miniCategoryId) {
-    throw new MiniCategoryNotFoundException({
-      miniCategoryId: input.miniCategoryId,
-    });
-  }
-
-  if (!input.brandId) {
-    throw new BrandNotFoundException({
-      brandId: input.brandId,
-    });
-  }
-
-  const [category, sub, mini, brand] = await Promise.all([
-    this.categoryRepo.findById(input.categoryId),
-    this.subCategoryRepo.findById(input.subCategoryId),
-    this.miniCategoryRepo.findById(input.miniCategoryId),
-    this.brandRepo.findById(input.brandId),
-  ]);
-
-  if (!category) {
-    throw new CategoryNotFoundException({
-      categoryId: input.categoryId,
-    });
-  }
-
-  if (!sub) {
-    throw new SubCategoryNotFoundException({
-      subCategoryId: input.subCategoryId,
-    });
-  }
-
-  if (!mini) {
-    throw new MiniCategoryNotFoundException({
-      miniCategoryId: input.miniCategoryId,
-    });
-  }
-
-  if (!brand) {
-    throw new BrandNotFoundException({
-      brandId: input.brandId,
-    });
-  }
-
-  if (sub.categoryId !== category.id) {
-    throw new InvalidCategoryHierarchyException({
-      categoryId: category.id,
-      subCategoryId: sub.id,
-    });
-  }
-
-  if (mini.subCategoryId !== sub.id) {
-    throw new InvalidCategoryHierarchyException({
-      subCategoryId: sub.id,
-      miniCategoryId: mini.id,
-    });
-  }
-
-  return {
-    category,
-    subCategory: sub,
-    miniCategory: mini,
-    brand,
-  };
-}
 }

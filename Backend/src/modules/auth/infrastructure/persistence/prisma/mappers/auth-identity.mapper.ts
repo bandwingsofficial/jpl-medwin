@@ -61,7 +61,11 @@ export class AuthIdentityMapper {
       case 'GOOGLE':
         return AuthMethod.GOOGLE;
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown AuthMethod', value: method, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown AuthMethod',
+          value: method,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -78,7 +82,11 @@ export class AuthIdentityMapper {
       case AuthMethod.GOOGLE:
         return 'GOOGLE';
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown AuthMethod', value: method, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown AuthMethod',
+          value: method,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 }

@@ -41,7 +41,6 @@ import { ExportProductsUseCase } from './application/use-cases/export-products.u
 import { PreviewProductImportUseCase } from './application/use-cases/preview-product-import.use-case';
 import { PublicGetProductsUseCase } from './application/use-cases/public-get-products.use-case';
 
-
 // =======================
 // VARIANT USE CASES
 // =======================
@@ -73,6 +72,7 @@ import { ProductGalleryService } from './application/services/product-gallery.se
 import { ProductImportMapperService } from './application/services/product-import.mapper';
 import { ProductImportValidatorService } from './application/services/product-import.validator';
 import { ProductImportResolverService } from './application/services/product-import-resolver.service';
+import { ProductS3ImageResolverService } from './application/services/product-s3-image-resolver.service';
 
 import { ProductImportParserService } from './application/services/product-import-parser.service';
 import { ProductFileMapperService } from './application/services/product-file-mapper.service';
@@ -83,9 +83,9 @@ import { ProductUploadService } from './application/services/product-upload.serv
 // =======================
 
 import { ProductExportBuilderService } from './application/services/product-export-builder.service';
-import {ProductExportExcelService } from './application/services/product-export-excel.service';
+import { ProductExportExcelService } from './application/services/product-export-excel.service';
 import { ProductExportFlattenerService } from './application/services/product-export-flattener.service';
-import { ProductExportMapperService } from './application/services/product-export.mapper.service'
+import { ProductExportMapperService } from './application/services/product-export.mapper.service';
 
 // =======================
 // DOMAIN SERVICES
@@ -111,11 +111,7 @@ import { PrismaProductImageRepository } from './infrastructure/persistence/prism
     forwardRef(() => CartModule),
   ],
 
-  controllers: [
-    AdminProductController,
-    PublicProductController,
-    PublicVariantController,
-  ],
+  controllers: [AdminProductController, PublicProductController, PublicVariantController],
 
   providers: [
     // =======================
@@ -165,6 +161,7 @@ import { PrismaProductImageRepository } from './infrastructure/persistence/prism
     ProductImportMapperService,
     ProductImportValidatorService,
     ProductImportResolverService,
+    ProductS3ImageResolverService,
 
     ProductImportParserService,
     ProductFileMapperService,
@@ -201,11 +198,6 @@ import { PrismaProductImageRepository } from './infrastructure/persistence/prism
     },
   ],
 
-  exports: [
-    TOKENS.PRODUCT_REPO,
-    TOKENS.VARIANT_REPO,
-    TOKENS.PRODUCT_IMAGE_REPO,
-  ],
+  exports: [TOKENS.PRODUCT_REPO, TOKENS.VARIANT_REPO, TOKENS.PRODUCT_IMAGE_REPO],
 })
 export class ProductModule {}
-

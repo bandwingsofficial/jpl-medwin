@@ -1,5 +1,7 @@
 // src/modules/order/domain/repositories/order-item.repository.ts
 
+import { Prisma } from '@prisma/client';
+
 import { OrderItem } from '../entities/order-item.entity';
 
 export interface OrderItemRepository {
@@ -33,7 +35,7 @@ export interface OrderItemRepository {
 
   create(item: OrderItem): Promise<OrderItem>;
 
-  createMany(items: OrderItem[]): Promise<void>;
+  createMany(items: OrderItem[], tx?: Prisma.TransactionClient): Promise<void>;
 
   update(item: OrderItem): Promise<OrderItem>;
 
@@ -50,10 +52,8 @@ export interface OrderItemRepository {
   delete(itemId: string): Promise<void>;
 
   // =======================
-// 📊 DASHBOARD
-// =======================
+  // 📊 DASHBOARD
+  // =======================
 
-findByOrderIds(
-  orderIds: string[],
-): Promise<OrderItem[]>;
+  findByOrderIds(orderIds: string[]): Promise<OrderItem[]>;
 }

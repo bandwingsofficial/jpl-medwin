@@ -1,9 +1,6 @@
 // src/modules/dashboard/application/services/order-dashboard.service.ts
 
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -39,46 +36,22 @@ export class OrderDashboardService {
 
     to?: string;
   }) {
-    const orders =
-      await this.fetchOrders(
-        params,
-      );
+    const orders = await this.fetchOrders(params);
 
-    const items =
-      await this.fetchOrderItems(
-        orders,
-      );
+    const items = await this.fetchOrderItems(orders);
 
     return {
-      totalOrders:
-        this.calculateTotalOrders(
-          orders,
-        ),
+      totalOrders: this.calculateTotalOrders(orders),
 
-      deliveredOrders:
-        this.calculateDeliveredOrders(
-          orders,
-        ),
+      deliveredOrders: this.calculateDeliveredOrders(orders),
 
-      cancelledOrders:
-        this.calculateCancelledOrders(
-          orders,
-        ),
+      cancelledOrders: this.calculateCancelledOrders(orders),
 
-      refundedOrders:
-        this.calculateRefundedOrders(
-          orders,
-        ),
+      refundedOrders: this.calculateRefundedOrders(orders),
 
-      returnedOrders:
-        this.calculateReturnedOrders(
-          orders,
-        ),
+      returnedOrders: this.calculateReturnedOrders(orders),
 
-      unitsSold:
-        this.calculateUnitsSold(
-          items,
-        ),
+      unitsSold: this.calculateUnitsSold(items),
     };
   }
 
@@ -92,68 +65,42 @@ export class OrderDashboardService {
 
     to?: string;
   }): Promise<Order[]> {
-    let startDate:
-      | Date
-      | undefined;
+    let startDate: Date | undefined;
 
-    let endDate:
-      | Date
-      | undefined;
+    let endDate: Date | undefined;
 
     // =======================
     // 📅 CUSTOM RANGE
     // =======================
-    if (
-      params.from &&
-      params.to
-    ) {
-      startDate = new Date(
-        params.from,
-      );
+    if (params.from && params.to) {
+      startDate = new Date(params.from);
 
-      endDate = new Date(
-        params.to,
-      );
+      endDate = new Date(params.to);
 
       // Include the entire end day
-      endDate.setHours(
-        23,
-        59,
-        59,
-        999,
-      );
+      endDate.setHours(23, 59, 59, 999);
     }
 
     // =======================
     // 📅 PREDEFINED PERIOD
     // =======================
     else {
-      const range =
-        DashboardPeriodUtil.getRange(
-          params.period ??
-            DashboardPeriod.OVERALL,
-        );
+      const range = DashboardPeriodUtil.getRange(params.period ?? DashboardPeriod.OVERALL);
 
-      startDate =
-        range.startDate;
+      startDate = range.startDate;
 
-      endDate =
-        range.endDate;
+      endDate = range.endDate;
     }
 
-    const {
-      data,
-    } =
-      await this.orderRepo.findMany({
-        page: 1,
+    const { data } = await this.orderRepo.findMany({
+      page: 1,
 
-        limit:
-          Number.MAX_SAFE_INTEGER,
+      limit: Number.MAX_SAFE_INTEGER,
 
-        from: startDate,
+      from: startDate,
 
-        to: endDate,
-      });
+      to: endDate,
+    });
 
     return data;
   }
@@ -161,95 +108,53 @@ export class OrderDashboardService {
   /**
    * 📦 Fetch order items
    */
-  private async fetchOrderItems(
-    orders: Order[],
-  ): Promise<OrderItem[]> {
+  private async fetchOrderItems(orders: Order[]): Promise<OrderItem[]> {
     if (!orders.length) {
       return [];
     }
 
-    return this.orderItemRepo.findByOrderIds(
-      orders.map(
-        (order) => order.id,
-      ),
-    );
+    return this.orderItemRepo.findByOrderIds(orders.map((order) => order.id));
   }
 
   /**
    * 📊 Total orders
    */
-  private calculateTotalOrders(
-    orders: Order[],
-  ): number {
+  private calculateTotalOrders(orders: Order[]): number {
     return orders.length;
   }
 
   /**
    * ✅ Delivered orders
    */
-  private calculateDeliveredOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.DELIVERED,
-    ).length;
+  private calculateDeliveredOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.DELIVERED).length;
   }
 
   /**
    * ❌ Cancelled orders
    */
-  private calculateCancelledOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.CANCELLED,
-    ).length;
+  private calculateCancelledOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.CANCELLED).length;
   }
 
   /**
    * 💸 Refunded orders
    */
-  private calculateRefundedOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.REFUNDED,
-    ).length;
+  private calculateRefundedOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.REFUNDED).length;
   }
 
   /**
    * ↩️ Returned orders
    */
-  private calculateReturnedOrders(
-    orders: Order[],
-  ): number {
-    return orders.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.RETURNED,
-    ).length;
+  private calculateReturnedOrders(orders: Order[]): number {
+    return orders.filter((order) => order.status === OrderStatus.RETURNED).length;
   }
 
   /**
    * 📦 Units sold
    */
-  private calculateUnitsSold(
-    items: OrderItem[],
-  ): number {
-    return items.reduce(
-      (
-        total,
-        item,
-      ) =>
-        total +
-        item.quantity,
-      0,
-    );
+  private calculateUnitsSold(items: OrderItem[]): number {
+    return items.reduce((total, item) => total + item.quantity, 0);
   }
 }

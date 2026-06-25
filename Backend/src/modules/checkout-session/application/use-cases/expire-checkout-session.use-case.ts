@@ -54,10 +54,10 @@ export class ExpireCheckoutSessionUseCase {
     session.expire();
 
     // =======================
-// 🪙 CLEAR REWARD SNAPSHOT
-// =======================
+    // 🪙 CLEAR REWARD SNAPSHOT
+    // =======================
 
-session.removeRewards();
+    session.removeRewards();
 
     // =======================
     // 💾 SAVE SESSION

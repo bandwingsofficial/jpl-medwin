@@ -142,9 +142,7 @@ export class GetVariantsUseCase {
     // =======================
 
     return {
-      success: true,
-
-      data: paginated.map((variant) => {
+variants: paginated.map((variant) => {
         const imgs = imageMap.get(variant.id) ?? [];
 
         return {

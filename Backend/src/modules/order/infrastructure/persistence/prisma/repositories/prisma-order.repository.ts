@@ -13,6 +13,7 @@ import { OrderStatus } from '../../../../domain/enums/order-status.enum';
 import { PaymentStatus } from '../../../../domain/enums/payment-status.enum';
 
 import { OrderMapper } from '../mappers/order.mapper';
+import { ORDER_ADDRESS_INCLUDE, ORDER_DEFAULT_INCLUDE } from '../constants/order-includes';
 
 @Injectable()
 export class PrismaOrderRepository implements OrderRepository {
@@ -24,14 +25,12 @@ export class PrismaOrderRepository implements OrderRepository {
 
   async findById(id: string, tx: Prisma.TransactionClient = this.prisma): Promise<Order | null> {
     const order = await tx.order.findFirst({
-  where: {
-    id,
-    deletedAt: null,
-  },
-  include: {
-    returns: true,
-  },
-});
+      where: {
+        id,
+        deletedAt: null,
+      },
+      include: ORDER_DEFAULT_INCLUDE,
+    });
 
     return order ? OrderMapper.toDomain(order) : null;
   }
@@ -43,6 +42,8 @@ export class PrismaOrderRepository implements OrderRepository {
 
         deletedAt: null,
       },
+
+      include: ORDER_ADDRESS_INCLUDE,
     });
 
     return order ? OrderMapper.toDomain(order) : null;
@@ -55,6 +56,8 @@ export class PrismaOrderRepository implements OrderRepository {
 
         deletedAt: null,
       },
+
+      include: ORDER_ADDRESS_INCLUDE,
     });
 
     return order ? OrderMapper.toDomain(order) : null;
@@ -71,6 +74,8 @@ export class PrismaOrderRepository implements OrderRepository {
       orderBy: {
         createdAt: 'desc',
       },
+
+      include: ORDER_ADDRESS_INCLUDE,
     });
 
     return orders.map((o) => OrderMapper.toDomain(o));
@@ -87,6 +92,8 @@ export class PrismaOrderRepository implements OrderRepository {
       orderBy: {
         createdAt: 'desc',
       },
+
+      include: ORDER_ADDRESS_INCLUDE,
     });
 
     return orders.map((o) => OrderMapper.toDomain(o));
@@ -103,6 +110,8 @@ export class PrismaOrderRepository implements OrderRepository {
       orderBy: {
         createdAt: 'desc',
       },
+
+      include: ORDER_ADDRESS_INCLUDE,
     });
 
     return orders.map((o) => OrderMapper.toDomain(o));
@@ -119,6 +128,8 @@ export class PrismaOrderRepository implements OrderRepository {
       orderBy: {
         createdAt: 'desc',
       },
+
+      include: ORDER_ADDRESS_INCLUDE,
     });
 
     return orders.map((o) => OrderMapper.toDomain(o));
@@ -256,6 +267,7 @@ export class PrismaOrderRepository implements OrderRepository {
 
         include: {
           user: true,
+          ...ORDER_ADDRESS_INCLUDE,
         },
       }),
 
@@ -303,9 +315,11 @@ export class PrismaOrderRepository implements OrderRepository {
   // ✍️ WRITE
   // =======================
 
-  async create(order: Order): Promise<Order> {
-    const created = await this.prisma.order.create({
+  async create(order: Order, tx: Prisma.TransactionClient = this.prisma): Promise<Order> {
+    const created = await tx.order.create({
       data: OrderMapper.toPersistence(order),
+
+      include: ORDER_ADDRESS_INCLUDE,
     });
 
     return OrderMapper.toDomain(created);
@@ -318,6 +332,8 @@ export class PrismaOrderRepository implements OrderRepository {
       },
 
       data: OrderMapper.toPersistence(order),
+
+      include: ORDER_ADDRESS_INCLUDE,
     });
 
     return OrderMapper.toDomain(updated);
@@ -518,16 +534,15 @@ export class PrismaOrderRepository implements OrderRepository {
   }
 
   // =======================
-// 📊 DASHBOARD
-// =======================
+  // 📊 DASHBOARD
+  // =======================
 
-async findByPeriod(params: {
-  from?: Date;
+  async findByPeriod(params: {
+    from?: Date;
 
-  to?: Date;
-}): Promise<Order[]> {
-  const orders =
-    await this.prisma.order.findMany({
+    to?: Date;
+  }): Promise<Order[]> {
+    const orders = await this.prisma.order.findMany({
       where: {
         deletedAt: null,
 
@@ -545,36 +560,36 @@ async findByPeriod(params: {
       orderBy: {
         createdAt: 'desc',
       },
+
+      include: ORDER_ADDRESS_INCLUDE,
     });
 
-  return orders.map(
-    OrderMapper.toDomain,
-  );
-}
+    return orders.map(OrderMapper.toDomain);
+  }
 
-async countByStatus(params: {
-  status: OrderStatus;
+  async countByStatus(params: {
+    status: OrderStatus;
 
-  from?: Date;
+    from?: Date;
 
-  to?: Date;
-}): Promise<number> {
-  return this.prisma.order.count({
-    where: {
-      deletedAt: null,
+    to?: Date;
+  }): Promise<number> {
+    return this.prisma.order.count({
+      where: {
+        deletedAt: null,
 
-      status: params.status,
+        status: params.status,
 
-      createdAt: {
-        ...(params.from && {
-          gte: params.from,
-        }),
+        createdAt: {
+          ...(params.from && {
+            gte: params.from,
+          }),
 
-        ...(params.to && {
-          lte: params.to,
-        }),
+          ...(params.to && {
+            lte: params.to,
+          }),
+        },
       },
-    },
-  });
-}
+    });
+  }
 }

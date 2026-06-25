@@ -9,9 +9,7 @@ export class WishlistMapper {
   // ❤️ WISHLIST
   // =======================
 
-  static toDomain(
-    p: PrismaWishlist,
-  ): Wishlist {
+  static toDomain(p: PrismaWishlist): Wishlist {
     return new Wishlist(
       p.id,
 
@@ -27,9 +25,7 @@ export class WishlistMapper {
     );
   }
 
-  static toPersistence(
-    e: Wishlist,
-  ) {
+  static toPersistence(e: Wishlist) {
     return {
       id: e.id,
 

@@ -155,32 +155,6 @@ export class CartDomainService {
   }
 
   // =======================
-  // 🚚 FREE SHIPPING
-  // =======================
-
-  isEligibleForFreeShipping(subtotal: number): boolean {
-    return subtotal >= 500;
-  }
-
-  // =======================
-  // 🚚 SHIPPING
-  // =======================
-
-  calculateShipping(subtotal: number): number {
-    // empty cart
-    if (subtotal <= 0) {
-      return 0;
-    }
-
-    // free shipping
-    if (this.isEligibleForFreeShipping(subtotal)) {
-      return 0;
-    }
-
-    return 50;
-  }
-
-  // =======================
   // 🧹 FILTER ACTIVE ITEMS
   // =======================
 

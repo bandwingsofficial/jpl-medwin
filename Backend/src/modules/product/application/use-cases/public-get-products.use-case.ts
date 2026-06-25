@@ -50,13 +50,7 @@ type PublicGetProductsInput = {
 
   includeVariants?: boolean;
 
-  sortBy?:
-    | 'newest'
-    | 'oldest'
-    | 'nameAsc'
-    | 'nameDesc'
-    | 'priceLowToHigh'
-    | 'priceHighToLow';
+  sortBy?: 'newest' | 'oldest' | 'nameAsc' | 'nameDesc' | 'priceLowToHigh' | 'priceHighToLow';
 
   page?: number;
 
@@ -70,19 +64,14 @@ export class PublicGetProductsUseCase {
     private readonly productRepo: ProductRepository,
   ) {}
 
-  async execute(
-    input: PublicGetProductsInput = {},
-  ): Promise<PaginatedProducts> {
+  async execute(input: PublicGetProductsInput = {}): Promise<PaginatedProducts> {
     // =======================
     // PAGINATION
     // =======================
 
     const page = Number(input.page) || 1;
 
-    const limit = Math.min(
-      Number(input.limit) || 20,
-      100,
-    );
+    const limit = Math.min(Number(input.limit) || 20, 100);
 
     const skip = (page - 1) * limit;
 
@@ -232,24 +221,15 @@ export class PublicGetProductsUseCase {
     // PRICE FILTER
     // =======================
 
-    if (
-      input.minPrice !== undefined ||
-      input.maxPrice !== undefined
-    ) {
+    if (input.minPrice !== undefined || input.maxPrice !== undefined) {
       data = data.filter((p) => {
         const price = p.price.min ?? 0;
 
-        if (
-          input.minPrice !== undefined &&
-          price < input.minPrice
-        ) {
+        if (input.minPrice !== undefined && price < input.minPrice) {
           return false;
         }
 
-        if (
-          input.maxPrice !== undefined &&
-          price > input.maxPrice
-        ) {
+        if (input.maxPrice !== undefined && price > input.maxPrice) {
           return false;
         }
 
@@ -262,9 +242,7 @@ export class PublicGetProductsUseCase {
     // =======================
 
     if (input.inStock === true) {
-      data = data.filter(
-        (p) => p.stock.inStock,
-      );
+      data = data.filter((p) => p.stock.inStock);
     }
 
     return {
@@ -277,9 +255,7 @@ export class PublicGetProductsUseCase {
 
         limit,
 
-        totalPages: Math.ceil(
-          total / limit,
-        ),
+        totalPages: Math.ceil(total / limit),
       },
     };
   }

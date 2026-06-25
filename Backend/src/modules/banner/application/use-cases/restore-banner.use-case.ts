@@ -17,17 +17,12 @@ export class RestoreBannerUseCase {
     private readonly bannerImageRepo: BannerImageRepository,
   ) {}
 
-  async execute(
-    bannerId: string,
-  ): Promise<void> {
+  async execute(bannerId: string): Promise<void> {
     // =======================
     // 🔍 FIND BANNER
     // =======================
 
-    const banner =
-      await this.bannerRepo.findByIdIncludingDeleted(
-        bannerId,
-      );
+    const banner = await this.bannerRepo.findByIdIncludingDeleted(bannerId);
 
     if (!banner) {
       throw new BannerNotFoundException({
@@ -39,10 +34,7 @@ export class RestoreBannerUseCase {
     // 🔍 FIND IMAGES
     // =======================
 
-    const images =
-      await this.bannerImageRepo.findByBannerIdIncludingDeleted(
-        bannerId,
-      );
+    const images = await this.bannerImageRepo.findByBannerIdIncludingDeleted(bannerId);
 
     // =======================
     // ♻️ RESTORE IMAGES
@@ -52,9 +44,7 @@ export class RestoreBannerUseCase {
       images.map(async (image) => {
         image.restore();
 
-        return this.bannerImageRepo.update(
-          image,
-        );
+        return this.bannerImageRepo.update(image);
       }),
     );
 
@@ -68,8 +58,6 @@ export class RestoreBannerUseCase {
     // 💾 SAVE
     // =======================
 
-    await this.bannerRepo.update(
-      banner,
-    );
+    await this.bannerRepo.update(banner);
   }
 }

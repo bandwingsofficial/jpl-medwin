@@ -4,6 +4,6 @@ import { S3Service } from './infrastructure/s3.service';
 
 @Module({
   providers: [UploadImageUseCase, S3Service],
-  exports: [UploadImageUseCase], // 👈 important
+  exports: [UploadImageUseCase, S3Service],
 })
 export class UploadModule {}

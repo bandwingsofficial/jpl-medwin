@@ -25,29 +25,25 @@ export class PrismaCategoryRepository implements CategoryRepository {
     return CategoryMapper.toDomainCategory(data);
   }
   // =======================
-// 🔍 FIND BY NAME
-// =======================
+  // 🔍 FIND BY NAME
+  // =======================
 
-async findByName(
-  name: string,
-): Promise<Category | null> {
-  const data = await this.prisma.category.findFirst({
-    where: {
-      deletedAt: null,
-      name: {
-        equals: name.trim(),
-        mode: 'insensitive',
+  async findByName(name: string): Promise<Category | null> {
+    const data = await this.prisma.category.findFirst({
+      where: {
+        deletedAt: null,
+        name: {
+          equals: name.trim(),
+          mode: 'insensitive',
+        },
       },
-    },
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-  return data
-    ? CategoryMapper.toDomainCategory(data)
-    : null;
-}
+    return data ? CategoryMapper.toDomainCategory(data) : null;
+  }
 
   async findBySlug(slug: string): Promise<Category | null> {
     const data = await this.prisma.category.findFirst({

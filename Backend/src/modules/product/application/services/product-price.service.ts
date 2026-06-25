@@ -27,4 +27,3 @@ export class ProductPriceService {
     product.maxPrice = Math.max(...sellingPrices);
   }
 }
-

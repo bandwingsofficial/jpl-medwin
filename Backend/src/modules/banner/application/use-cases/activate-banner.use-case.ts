@@ -13,17 +13,12 @@ export class ActivateBannerUseCase {
     private readonly bannerRepo: BannerRepository,
   ) {}
 
-  async execute(
-    bannerId: string,
-  ): Promise<void> {
+  async execute(bannerId: string): Promise<void> {
     // =======================
     // 🔍 FIND
     // =======================
 
-    const banner =
-      await this.bannerRepo.findById(
-        bannerId,
-      );
+    const banner = await this.bannerRepo.findById(bannerId);
 
     if (!banner) {
       throw new BannerNotFoundException({
@@ -41,8 +36,6 @@ export class ActivateBannerUseCase {
     // 💾 SAVE
     // =======================
 
-    await this.bannerRepo.update(
-      banner,
-    );
+    await this.bannerRepo.update(banner);
   }
 }

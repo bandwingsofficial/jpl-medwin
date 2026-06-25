@@ -81,11 +81,13 @@ export interface VariantPagination {
 }
 
 export interface VariantListResponse {
-  success: boolean;
 
-  message: string;
+    success:boolean;
 
-  data: ProductVariant[];
+    message:string;
 
-  pagination: VariantPagination;
+    data:{
+        variants:ProductVariant[];
+        pagination:VariantPagination;
+    };
 }

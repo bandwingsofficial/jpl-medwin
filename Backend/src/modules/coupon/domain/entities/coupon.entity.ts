@@ -263,10 +263,7 @@ export class Coupon {
     if (this.isPercentage()) {
       discount = (subtotal * this.discountValue) / 100;
 
-      if (
-        this.maximumDiscountAmount &&
-        discount > this.maximumDiscountAmount
-      ) {
+      if (this.maximumDiscountAmount && discount > this.maximumDiscountAmount) {
         discount = this.maximumDiscountAmount;
       }
     }
@@ -341,10 +338,7 @@ export class Coupon {
     // 📊 USAGE LIMIT
     // =======================
 
-    if (
-      this.usageLimit !== undefined &&
-      this.usedCount >= this.usageLimit
-    ) {
+    if (this.usageLimit !== undefined && this.usedCount >= this.usageLimit) {
       throw new CouponUsageLimitReachedException({
         couponId: this.id,
 
@@ -396,10 +390,7 @@ export class Coupon {
     // 📊 USAGE LIMIT
     // =======================
 
-    if (
-      this.usageLimit !== undefined &&
-      this.usedCount > this.usageLimit
-    ) {
+    if (this.usageLimit !== undefined && this.usedCount > this.usageLimit) {
       throw new InvalidCouponException({
         couponCode: this.code,
 
@@ -411,11 +402,7 @@ export class Coupon {
     // ⏰ DATE VALIDATION
     // =======================
 
-    if (
-      this.startsAt &&
-      this.expiresAt &&
-      this.startsAt > this.expiresAt
-    ) {
+    if (this.startsAt && this.expiresAt && this.startsAt > this.expiresAt) {
       throw new InvalidCouponException({
         couponCode: this.code,
 

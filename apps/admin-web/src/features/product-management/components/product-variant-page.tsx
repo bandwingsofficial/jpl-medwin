@@ -87,17 +87,11 @@ export function ProductVariantPage(
   // VARIANTS FIX
   // =========================================
 
-  const variants =
-  response?.data ?? [];
+const variants =
+response?.data?.variants ?? [];
 
-
-  // =========================================
-  // PAGINATION
-  // =========================================
-
-  const pagination =
-  response?.pagination;
-
+const pagination =
+response?.data?.pagination;
   // =========================================
   // EMPTY
   // =========================================

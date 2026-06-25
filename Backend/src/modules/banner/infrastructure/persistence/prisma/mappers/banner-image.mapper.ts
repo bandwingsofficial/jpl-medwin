@@ -1,6 +1,4 @@
-import {
-  BannerImage as PrismaBannerImage,
-} from '@prisma/client';
+import { BannerImage as PrismaBannerImage } from '@prisma/client';
 
 import { BannerImage } from '../../../../domain/entities/banner-image.entity';
 
@@ -8,12 +6,12 @@ import { BannerStatus } from '../../../../domain/enums/banner-status.enum';
 
 export class BannerImageMapper {
   static toDomain(
-  p: PrismaBannerImage & {
-    product?: {
-      slug: string;
-    } | null;
-  },
-):BannerImage {
+    p: PrismaBannerImage & {
+      product?: {
+        slug: string;
+      } | null;
+    },
+  ): BannerImage {
     return new BannerImage(
       p.id,
 
@@ -35,9 +33,7 @@ export class BannerImageMapper {
     );
   }
 
-  static toPersistence(
-    e: BannerImage,
-  ) {
+  static toPersistence(e: BannerImage) {
     return {
       id: e.id,
 

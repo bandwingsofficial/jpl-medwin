@@ -38,9 +38,7 @@ export class RefundOrderUseCase {
     // 🔍 FIND ORDER
     // =======================
 
-    const order = await this.orderRepo.findById(
-      input.orderId,
-    );
+    const order = await this.orderRepo.findById(input.orderId);
 
     if (!order) {
       throw new OrderNotFoundException({
@@ -52,13 +50,9 @@ export class RefundOrderUseCase {
     // 🛡 VALIDATE
     // =======================
 
-    this.domainService.ensureOrderUsable(
-      order,
-    );
+    this.domainService.ensureOrderUsable(order);
 
-    this.domainService.ensureCanRefund(
-      order,
-    );
+    this.domainService.ensureCanRefund(order);
 
     // =======================
     // 💰 REFUND METADATA
@@ -70,8 +64,7 @@ export class RefundOrderUseCase {
       refund: {
         reason: input.reason,
 
-        refundReferenceId:
-          input.refundReferenceId,
+        refundReferenceId: input.refundReferenceId,
 
         refundedAt: new Date(),
       },
@@ -83,18 +76,13 @@ export class RefundOrderUseCase {
 
     order.refund();
 
-    const updated =
-      await this.orderRepo.update(order);
+    const updated = await this.orderRepo.update(order);
 
     // =======================
     // 🪙 REFUND REDEEMED COINS
     // =======================
 
-    if (
-      updated.redeemedCoins > 0 &&
-      updated.userId &&
-      !updated.rewardRefunded
-    ) {
+    if (updated.redeemedCoins > 0 && updated.userId && !updated.rewardRefunded) {
       try {
         await this.refundCoinsUseCase.execute({
           userId: updated.userId,
@@ -104,21 +92,16 @@ export class RefundOrderUseCase {
           coins: updated.redeemedCoins,
 
           reason:
-            input.reason ??
-            `Refunded redeemed coins for refunded order ${updated.orderNumber}`,
+            input.reason ?? `Refunded redeemed coins for refunded order ${updated.orderNumber}`,
         });
 
         updated.markRewardRefunded();
 
-        await this.orderRepo.update(
-          updated,
-        );
+        await this.orderRepo.update(updated);
       } catch (error) {
         console.warn(
           'Reward refund skipped:',
-          error instanceof Error
-            ? error.message
-            : String(error),
+          error instanceof Error ? error.message : String(error),
         );
       }
     }
@@ -127,10 +110,7 @@ export class RefundOrderUseCase {
     // 📦 ITEMS
     // =======================
 
-    const items =
-      await this.orderItemRepo.findByOrderId(
-        updated.id,
-      );
+    const items = await this.orderItemRepo.findByOrderId(updated.id);
 
     // =======================
     // 🚀 RESPONSE
@@ -142,75 +122,53 @@ export class RefundOrderUseCase {
       data: {
         id: updated.id,
 
-        orderNumber:
-          updated.orderNumber,
+        orderNumber: updated.orderNumber,
 
         status: updated.status,
 
-        paymentStatus:
-          updated.paymentStatus,
+        paymentStatus: updated.paymentStatus,
 
         refund: {
           reason: input.reason,
 
-          refundReferenceId:
-            input.refundReferenceId,
+          refundReferenceId: input.refundReferenceId,
 
-          refundedAt:
-            updated.refundedAt,
+          refundedAt: updated.refundedAt,
         },
 
         rewards: {
-          redeemedCoins:
-            updated.redeemedCoins,
+          redeemedCoins: updated.redeemedCoins,
 
-          redeemedAmount:
-            updated.redeemedAmount,
+          redeemedAmount: updated.redeemedAmount,
 
-          rewardRefunded:
-            updated.rewardRefunded,
+          rewardRefunded: updated.rewardRefunded,
         },
 
         totals: {
-          subtotal:
-            updated.subtotal,
+          subtotal: updated.subtotal,
 
-          couponDiscount:
-            updated.couponDiscount,
+          couponDiscount: updated.couponDiscount,
 
-          shippingCharge:
-            updated.shippingCharge,
+          shippingCharge: updated.shippingCharge,
 
           tax: updated.tax,
 
-          grandTotal:
-            updated.grandTotal,
+          grandTotal: updated.grandTotal,
 
-          totalSavings:
-            updated.totalSavings,
+          totalSavings: updated.totalSavings,
 
-          redeemedCoins:
-            updated.redeemedCoins,
+          redeemedCoins: updated.redeemedCoins,
 
-          redeemedAmount:
-            updated.redeemedAmount,
+          redeemedAmount: updated.redeemedAmount,
 
-          earnedCoins:
-            updated.earnedCoins,
+          earnedCoins: updated.earnedCoins,
         },
 
-        itemCount:
-          this.domainService.calculateTotalProducts(
-            items,
-          ),
+        itemCount: this.domainService.calculateTotalProducts(items),
 
-        totalQuantity:
-          this.domainService.calculateTotalQuantity(
-            items,
-          ),
+        totalQuantity: this.domainService.calculateTotalQuantity(items),
 
-        updatedAt:
-          updated.updatedAt,
+        updatedAt: updated.updatedAt,
       },
     };
   }

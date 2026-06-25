@@ -25,30 +25,30 @@ export interface OrderRepository {
 
   findPendingPaymentOrders(): Promise<Order[]>;
   findMany(params: {
-  page?: number;
+    page?: number;
 
-  limit?: number;
+    limit?: number;
 
-  search?: string;
+    search?: string;
 
-  status?: OrderStatus;
+    status?: OrderStatus;
 
-  paymentStatus?: PaymentStatus;
+    paymentStatus?: PaymentStatus;
 
-  userId?: string;
+    userId?: string;
 
-  from?: Date;
+    from?: Date;
 
-  to?: Date;
+    to?: Date;
 
-  sortBy?: string;
+    sortBy?: string;
 
-  sortOrder?: 'asc' | 'desc';
-}): Promise<{
-  data: Order[];
+    sortOrder?: 'asc' | 'desc';
+  }): Promise<{
+    data: Order[];
 
-  total: number;
-}>;
+    total: number;
+  }>;
 
   // =======================
   // 🧠 CHECKS
@@ -62,7 +62,7 @@ export interface OrderRepository {
   // ✍️ WRITE
   // =======================
 
-  create(order: Order): Promise<Order>;
+  create(order: Order, tx?: Prisma.TransactionClient): Promise<Order>;
 
   update(order: Order): Promise<Order>;
 
@@ -118,17 +118,10 @@ export interface OrderRepository {
 
   restore(orderId: string): Promise<void>;
   // =======================
-// 📊 DASHBOARD
-// =======================
+  // 📊 DASHBOARD
+  // =======================
 
-findByPeriod(params: {
-  from?: Date;
-  to?: Date;
-}): Promise<Order[]>;
+  findByPeriod(params: { from?: Date; to?: Date }): Promise<Order[]>;
 
-countByStatus(params: {
-  status: OrderStatus;
-  from?: Date;
-  to?: Date;
-}): Promise<number>;
+  countByStatus(params: { status: OrderStatus; from?: Date; to?: Date }): Promise<number>;
 }

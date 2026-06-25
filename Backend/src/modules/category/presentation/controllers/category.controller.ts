@@ -103,101 +103,89 @@ export class AdminCategoryController {
   ) {}
 
   // ================= CREATE =================
- @Post()
-@UseInterceptors(FileInterceptor('image', multerConfig))
-async create(
-  @UploadedFile() file: Express.Multer.File,
-  @Body() dto: CreateCategoryDto,
-) {
-  let imageUrl = dto.imageUrl;
+  @Post()
+  @UseInterceptors(FileInterceptor('image', multerConfig))
+  async create(@UploadedFile() file: Express.Multer.File, @Body() dto: CreateCategoryDto) {
+    let imageUrl = dto.imageUrl;
 
-  // =======================
-  // UPLOAD FIRST
-  // =======================
-  console.time('upload');
+    // =======================
+    // UPLOAD FIRST
+    // =======================
+    console.time('upload');
 
-  if (file) {
-    const upload = await this.uploadUseCase.execute(
-      file,
-      'categories',
-    );
-    console.timeEnd('upload');
+    if (file) {
+      const upload = await this.uploadUseCase.execute(file, 'categories');
+      console.timeEnd('upload');
 
-    imageUrl = upload.url;
+      imageUrl = upload.url;
+    }
+
+    // =======================
+    // CREATE CATEGORY
+    // =======================
+    console.time('create');
+    return this.createCategory.execute({
+      ...dto,
+      imageUrl,
+    });
+    console.timeEnd('create');
   }
-
-  // =======================
-  // CREATE CATEGORY
-  // =======================
-console.time('create');
-  return this.createCategory.execute({
-    ...dto,
-    imageUrl,
-  });
-  console.timeEnd('create');
-}
 
   @Post('sub')
-@UseInterceptors(FileInterceptor('image', multerConfig))
-async createSubCategory(
-  @UploadedFile() file: Express.Multer.File,
-  @Body() dto: CreateSubCategoryDto,
-) {
-  let imageUrl = dto.imageUrl;
+  @UseInterceptors(FileInterceptor('image', multerConfig))
+  async createSubCategory(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() dto: CreateSubCategoryDto,
+  ) {
+    let imageUrl = dto.imageUrl;
 
-  // =======================
-  // UPLOAD FIRST
-  // =======================
+    // =======================
+    // UPLOAD FIRST
+    // =======================
 
-  if (file) {
-    const upload = await this.uploadUseCase.execute(
-      file,
-      'sub-categories',
-    );
+    if (file) {
+      const upload = await this.uploadUseCase.execute(file, 'sub-categories');
 
-    imageUrl = upload.url;
+      imageUrl = upload.url;
+    }
+
+    // =======================
+    // CREATE SUB CATEGORY
+    // =======================
+
+    return this.createSub.execute({
+      ...dto,
+      imageUrl,
+    });
   }
-
-  // =======================
-  // CREATE SUB CATEGORY
-  // =======================
-
-  return this.createSub.execute({
-    ...dto,
-    imageUrl,
-  });
-}
 
   @Post('mini')
-@UseInterceptors(FileInterceptor('image', multerConfig))
-async createMiniCategory(
-  @UploadedFile() file: Express.Multer.File,
-  @Body() dto: CreateMiniCategoryDto,
-) {
-  let imageUrl = dto.imageUrl;
+  @UseInterceptors(FileInterceptor('image', multerConfig))
+  async createMiniCategory(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() dto: CreateMiniCategoryDto,
+  ) {
+    let imageUrl = dto.imageUrl;
 
-  // =======================
-  // UPLOAD FIRST
-  // =======================
+    // =======================
+    // UPLOAD FIRST
+    // =======================
 
-  if (file) {
-    const upload = await this.uploadUseCase.execute(
-      file,
-      'mini-categories',
-    );
+    if (file) {
+      const upload = await this.uploadUseCase.execute(file, 'mini-categories');
 
-    imageUrl = upload.url;
+      imageUrl = upload.url;
+    }
+
+    // =======================
+    // CREATE MINI CATEGORY
+    // =======================
+
+    return this.createMini.execute({
+      ...dto,
+      imageUrl,
+    });
   }
-
-  // =======================
-  // CREATE MINI CATEGORY
-  // =======================
-
-  return this.createMini.execute({
-    ...dto,
-    imageUrl,
-  });
-}
 
   // ================= UPDATE =================
 

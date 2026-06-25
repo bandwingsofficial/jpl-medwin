@@ -14,6 +14,8 @@ import { GetMyOrdersUseCase } from '../../application/use-cases/get-my-orders.us
 
 import { CancelOrderUseCase } from '../../application/use-cases/cancel-order.use-case';
 
+import { CreateOrderDto } from '../dto/create-order.dto';
+
 @Controller('orders')
 @UseGuards(JwtAuthGuard)
 export class OrderController {
@@ -36,15 +38,7 @@ export class OrderController {
     @Req() req: AuthRequest,
 
     @Body()
-    body: {
-      checkoutSessionId: string;
-
-      shippingAddress?: Record<string, any>;
-
-      billingAddress?: Record<string, any>;
-
-      customerNote?: string;
-    },
+    body: CreateOrderDto,
   ) {
     const data = await this.createOrderFromCheckoutUseCase.execute({
       ...body,

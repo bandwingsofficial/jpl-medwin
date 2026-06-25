@@ -6,6 +6,8 @@ import * as crypto from 'crypto';
 
 import { TOKENS } from '@/common/constants/tokens';
 
+import { PrismaService } from '../../../../infrastructure/prisma/prisma.service';
+
 import { Order } from '../../domain/entities/order.entity';
 
 import { OrderItem } from '../../domain/entities/order-item.entity';
@@ -28,6 +30,11 @@ import { InvalidCheckoutSessionException } from '@/modules/checkout-session/doma
 
 import { RedeemCoinsUseCase } from '@/modules/coins/application/use-cases/redemption/redeem-coins.use-case';
 
+import { OrderAddressValidationService } from '../services/order-address-validation.service';
+
+import { OrderAddressResponseMapper } from '../mappers/order-address-response.mapper';
+import { OrderAddressSnapshotMapper } from '../mappers/order-address-snapshot.mapper';
+
 @Injectable()
 export class CreateOrderFromCheckoutUseCase {
   constructor(
@@ -48,6 +55,10 @@ export class CreateOrderFromCheckoutUseCase {
     private readonly orderNumberService: OrderNumberService,
 
     private readonly redeemCoinsUseCase: RedeemCoinsUseCase,
+
+    private readonly orderAddressValidationService: OrderAddressValidationService,
+
+    private readonly prisma: PrismaService,
   ) {}
 
   async execute(input: {
@@ -55,9 +66,11 @@ export class CreateOrderFromCheckoutUseCase {
 
     userId: string;
 
-    shippingAddress?: Record<string, any>;
+    shippingAddressId: string;
 
-    billingAddress?: Record<string, any>;
+    billingAddressId?: string;
+
+    isBillingSameAsShipping?: boolean;
 
     customerNote?: string;
 
@@ -136,6 +149,17 @@ export class CreateOrderFromCheckoutUseCase {
     }
 
     // =======================
+    // 📍 VALIDATE ADDRESSES
+    // =======================
+
+    const validatedAddresses = await this.orderAddressValidationService.validateForOrderCreation({
+      userId: input.userId,
+      shippingAddressId: input.shippingAddressId,
+      billingAddressId: input.billingAddressId,
+      isBillingSameAsShipping: input.isBillingSameAsShipping,
+    });
+
+    // =======================
     // 🔢 GENERATE ORDER NUMBER
     // =======================
 
@@ -158,6 +182,14 @@ export class CreateOrderFromCheckoutUseCase {
     // =======================
 
     const finalGrandTotal = session.grandTotal;
+
+    const shippingAddressSnapshot = OrderAddressSnapshotMapper.fromSavedAddress(
+      validatedAddresses.shippingAddress,
+    );
+
+    const billingAddressSnapshot = OrderAddressSnapshotMapper.fromSavedAddress(
+      validatedAddresses.billingAddress,
+    );
 
     // =======================
     // 🧾 CREATE ORDER ENTITY
@@ -198,9 +230,19 @@ export class CreateOrderFromCheckoutUseCase {
 
       redeemedAmount,
 
-      input.shippingAddress ?? {},
+      validatedAddresses.shippingAddressId,
 
-      input.billingAddress ?? {},
+      validatedAddresses.billingAddressId,
+
+      validatedAddresses.isBillingSameAsShipping,
+
+      validatedAddresses.shippingAddress,
+
+      validatedAddresses.billingAddress,
+
+      shippingAddressSnapshot,
+
+      billingAddressSnapshot,
 
       // =======================
       // 🚚 SHIPMENT
@@ -230,33 +272,7 @@ export class CreateOrderFromCheckoutUseCase {
     );
 
     // =======================
-    // 💾 SAVE ORDER
-    // =======================
-
-    const createdOrder = await this.orderRepo.create(order);
-
-    // // =======================
-    // // 🪙 REDEEM COINS
-    // // =======================
-
-    // if (redeemedCoins > 0 && redeemedAmount > 0) {
-    //   await this.redeemCoinsUseCase.execute({
-    //     userId: input.userId,
-
-    //     orderId: createdOrder.id,
-
-    //     coins: redeemedCoins,
-
-    //     orderAmount: createdOrder.grandTotal + createdOrder.redeemedAmount,
-
-    //     metadata: {
-    //       orderNumber: createdOrder.orderNumber,
-    //     },
-    //   });
-    // }
-
-    // =======================
-    // 📦 CREATE ORDER ITEMS
+    // 💾 SAVE ORDER + ITEMS (ATOMIC)
     // =======================
 
     const orderItems = checkoutItems.map(
@@ -264,7 +280,7 @@ export class CreateOrderFromCheckoutUseCase {
         new OrderItem(
           crypto.randomUUID(),
 
-          createdOrder.id,
+          order.id,
 
           item.productId,
 
@@ -292,41 +308,49 @@ export class CreateOrderFromCheckoutUseCase {
         ),
     );
 
-    // =======================
-    // 💾 SAVE ORDER ITEMS
-    // =======================
+    const createdOrder = await this.prisma.$transaction(async (tx) => {
+      const persistedOrder = await this.orderRepo.create(order, tx);
 
-    await this.orderItemRepo.createMany(orderItems);
+      await this.orderItemRepo.createMany(orderItems, tx);
 
-//     // =======================
-// // ✅ COMPLETE CHECKOUT SESSION
-// // =======================
+      return persistedOrder;
+    });
 
-// session.complete();
+    // // =======================
+    // // 🪙 REDEEM COINS
+    // // =======================
 
-// await this.checkoutSessionRepo.update(
-//   session,
-// );
+    // if (redeemedCoins > 0 && redeemedAmount > 0) {
+    //   await this.redeemCoinsUseCase.execute({
+    //     userId: input.userId,
+
+    //     orderId: createdOrder.id,
+
+    //     coins: redeemedCoins,
+
+    //     orderAmount: createdOrder.grandTotal + createdOrder.redeemedAmount,
+
+    //     metadata: {
+    //       orderNumber: createdOrder.orderNumber,
+    //     },
+    //   });
+    // }
 
     // =======================
     // 💰 BUILD SUMMARY
     // =======================
 
     const summary = this.summaryService.build({
-  items: orderItems,
+      items: orderItems,
 
-  couponDiscount:
-    createdOrder.couponDiscount ?? 0,
+      couponDiscount: createdOrder.couponDiscount ?? 0,
 
-  rewardDiscount:
-    createdOrder.redeemedAmount ?? 0,
+      rewardDiscount: createdOrder.redeemedAmount ?? 0,
 
-  shippingCharge:
-    createdOrder.shippingCharge ?? 0,
+      shippingCharge: createdOrder.shippingCharge ?? 0,
 
-  tax:
-    createdOrder.tax ?? 0,
-});
+      tax: createdOrder.tax ?? 0,
+    });
 
     // =======================
     // 🚀 RESPONSE
@@ -423,17 +447,7 @@ export class CreateOrderFromCheckoutUseCase {
 
       summary,
 
-      // =======================
-      // 🚚 SHIPPING ADDRESS
-      // =======================
-
-      shippingAddress: createdOrder.shippingAddress,
-
-      // =======================
-      // 🧾 BILLING ADDRESS
-      // =======================
-
-      billingAddress: createdOrder.billingAddress,
+      ...OrderAddressResponseMapper.toOrderAddressFields(createdOrder),
 
       // =======================
       // 📝 CUSTOMER NOTE

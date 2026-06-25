@@ -1,8 +1,6 @@
 // src/modules/dashboard/application/use-cases/get-order-dashboard.use-case.ts
 
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { DashboardPeriod } from '../../domain/enums/dashboard-period.enum';
 
@@ -10,9 +8,7 @@ import { OrderDashboardService } from '../services/order-dashboard.service';
 
 @Injectable()
 export class GetOrderDashboardUseCase {
-  constructor(
-    private readonly orderDashboardService: OrderDashboardService,
-  ) {}
+  constructor(private readonly orderDashboardService: OrderDashboardService) {}
 
   async execute(params?: {
     period?: DashboardPeriod;
@@ -25,26 +21,19 @@ export class GetOrderDashboardUseCase {
     // 📅 PERIOD
     // =======================
 
-    const period =
-      params?.period ??
-      DashboardPeriod.OVERALL;
+    const period = params?.period ?? DashboardPeriod.OVERALL;
 
     // =======================
     // 📊 GET ORDER STATS
     // =======================
 
-    const stats =
-      await this.orderDashboardService.getOrderStats(
-        {
-          period,
+    const stats = await this.orderDashboardService.getOrderStats({
+      period,
 
-          from:
-            params?.from,
+      from: params?.from,
 
-          to:
-            params?.to,
-        },
-      );
+      to: params?.to,
+    });
 
     // =======================
     // 🚀 RESPONSE
@@ -53,29 +42,21 @@ export class GetOrderDashboardUseCase {
     return {
       period,
 
-      from:
-        params?.from,
+      from: params?.from,
 
-      to:
-        params?.to,
+      to: params?.to,
 
-      totalOrders:
-        stats.totalOrders,
+      totalOrders: stats.totalOrders,
 
-      deliveredOrders:
-        stats.deliveredOrders,
+      deliveredOrders: stats.deliveredOrders,
 
-      cancelledOrders:
-        stats.cancelledOrders,
+      cancelledOrders: stats.cancelledOrders,
 
-      refundedOrders:
-        stats.refundedOrders,
+      refundedOrders: stats.refundedOrders,
 
-      returnedOrders:
-        stats.returnedOrders,
+      returnedOrders: stats.returnedOrders,
 
-      unitsSold:
-        stats.unitsSold,
+      unitsSold: stats.unitsSold,
     };
   }
 }

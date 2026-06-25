@@ -31,8 +31,7 @@ export class ProfileDomainService {
   }
 
   isValidPhoneNumber(phoneNumber: string): boolean {
-    const normalizedPhoneNumber =
-      this.normalizePhoneNumber(phoneNumber);
+    const normalizedPhoneNumber = this.normalizePhoneNumber(phoneNumber);
 
     // Supports:
     // +919876543210

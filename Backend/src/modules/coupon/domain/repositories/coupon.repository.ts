@@ -63,7 +63,6 @@ export interface CouponRepository {
     orderId: string;
   }): Promise<boolean>;
 
-
   redeemCoupon(params: {
     couponId: string;
 

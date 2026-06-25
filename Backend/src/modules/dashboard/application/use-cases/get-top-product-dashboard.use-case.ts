@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { DashboardPeriod } from '../../domain/enums/dashboard-period.enum';
 
@@ -8,9 +6,7 @@ import { TopProductDashboardService } from '../services/top-product-dashboard.se
 
 @Injectable()
 export class GetTopProductDashboardUseCase {
-  constructor(
-    private readonly topProductDashboardService: TopProductDashboardService,
-  ) {}
+  constructor(private readonly topProductDashboardService: TopProductDashboardService) {}
 
   async execute(params?: {
     period?: DashboardPeriod;
@@ -23,26 +19,19 @@ export class GetTopProductDashboardUseCase {
     // 📅 PERIOD
     // =======================
 
-    const period =
-      params?.period ??
-      DashboardPeriod.OVERALL;
+    const period = params?.period ?? DashboardPeriod.OVERALL;
 
     // =======================
     // 🏆 TOP PRODUCTS
     // =======================
 
-    const products =
-      await this.topProductDashboardService.getTopProducts(
-        {
-          period,
+    const products = await this.topProductDashboardService.getTopProducts({
+      period,
 
-          from:
-            params?.from,
+      from: params?.from,
 
-          to:
-            params?.to,
-        },
-      );
+      to: params?.to,
+    });
 
     // =======================
     // 🚀 RESPONSE
@@ -51,14 +40,11 @@ export class GetTopProductDashboardUseCase {
     return {
       period,
 
-      from:
-        params?.from,
+      from: params?.from,
 
-      to:
-        params?.to,
+      to: params?.to,
 
-      count:
-        products.length,
+      count: products.length,
 
       products,
     };

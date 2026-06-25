@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  Post,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 
 import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
 
@@ -54,44 +46,35 @@ export class AdminReturnController {
     private readonly completeReturnUseCase: CompleteReturnUseCase,
   ) {}
 
- @Get()
-async getReturns(
- @Query() query: any,
-) {
- const data =
-   await this.getMyReturnsUseCase.execute({
-     ...query,
+  @Get()
+  async getReturns(@Query() query: any) {
+    const data = await this.getMyReturnsUseCase.execute({
+      ...query,
 
-     page: query.page
-       ? Number(query.page)
-       : 1,
+      page: query.page ? Number(query.page) : 1,
 
-     limit: query.limit
-       ? Number(query.limit)
-       : 10,
-   });
+      limit: query.limit ? Number(query.limit) : 10,
+    });
 
- return {
-   message: 'Returns fetched successfully',
+    return {
+      message: 'Returns fetched successfully',
 
-   ...data,
- };
-}
-
+      ...data,
+    };
+  }
 
   @Get(':returnId')
   async getReturn(
     @Param('returnId')
     returnId: string,
   ) {
-    const data =
-      await this.getReturnUseCase.execute({
-        returnId,
+    const data = await this.getReturnUseCase.execute({
+      returnId,
 
-        isAdmin: true,
+      isAdmin: true,
 
-        userId: '',
-      });
+      userId: '',
+    });
 
     return {
       message: 'Return fetched successfully',
@@ -104,25 +87,24 @@ async getReturns(
   // APPROVE
   // =======================
 
- @Post(':returnId/approve')
-async approve(
-  @Param('returnId')
-  returnId: string,
+  @Post(':returnId/approve')
+  async approve(
+    @Param('returnId')
+    returnId: string,
 
-  @Body()
-  body: ApproveReturnDto,
-) {
-  const data =
-    await this.approveReturnUseCase.execute({
+    @Body()
+    body: ApproveReturnDto,
+  ) {
+    const data = await this.approveReturnUseCase.execute({
       returnId,
       adminRemark: body.adminRemark,
     });
 
-  return {
-    message: 'Return approved successfully',
-    ...data,
-  };
-}
+    return {
+      message: 'Return approved successfully',
+      ...data,
+    };
+  }
 
   // =======================
   // REJECT
@@ -136,12 +118,11 @@ async approve(
     @Body()
     body: RejectReturnDto,
   ) {
-    const data =
-      await this.rejectReturnUseCase.execute({
-        returnId,
+    const data = await this.rejectReturnUseCase.execute({
+      returnId,
 
-        reason: body.reason,
-      });
+      reason: body.reason,
+    });
 
     return {
       message: 'Return rejected successfully',
@@ -162,12 +143,11 @@ async approve(
     @Body()
     body: PickupReturnDto,
   ) {
-    const data =
-      await this.pickupReturnUseCase.execute({
-        returnId,
+    const data = await this.pickupReturnUseCase.execute({
+      returnId,
 
-        trackingId: body.trackingId,
-      });
+      trackingId: body.trackingId,
+    });
 
     return {
       message: 'Return picked up successfully',
@@ -188,12 +168,11 @@ async approve(
     @Body()
     body: CompleteReturnDto,
   ) {
-    const data =
-      await this.completeReturnUseCase.execute({
-        returnId,
+    const data = await this.completeReturnUseCase.execute({
+      returnId,
 
-        reason: body.reason,
-      });
+      reason: body.reason,
+    });
 
     return {
       message: 'Return completed successfully',

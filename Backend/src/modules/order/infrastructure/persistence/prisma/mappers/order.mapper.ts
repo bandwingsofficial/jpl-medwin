@@ -4,6 +4,7 @@ import {
   Order as PrismaOrder,
   OrderStatus as PrismaOrderStatus,
   PaymentStatus as PrismaPaymentStatus,
+  SavedAddress as PrismaSavedAddress,
 } from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import { Order } from '../../../../domain/entities/order.entity';
@@ -12,15 +13,20 @@ import { OrderStatus } from '../../../../domain/enums/order-status.enum';
 
 import { PaymentStatus } from '../../../../domain/enums/payment-status.enum';
 import { InvalidEnumMappingException } from '@/common/exceptions/invalid-enum-mapping.exception';
+import { SavedAddressMapper } from '@/modules/saved-address/infrastructure/persistence/prisma/mappers/saved-address.mapper';
+import { OrderAddressSnapshotMapper } from '../../../../application/mappers/order-address-snapshot.mapper';
+
+type PrismaOrderWithAddresses = PrismaOrder & {
+  shippingAddress?: PrismaSavedAddress | null;
+  billingAddress?: PrismaSavedAddress | null;
+};
 
 export class OrderMapper {
   // =======================
   // 🔄 ORDER STATUS
   // =======================
 
-  private static toDomainOrderStatus(
-    status: PrismaOrderStatus,
-  ): OrderStatus {
+  private static toDomainOrderStatus(status: PrismaOrderStatus): OrderStatus {
     switch (status) {
       case PrismaOrderStatus.PENDING_PAYMENT:
         return OrderStatus.PENDING_PAYMENT;
@@ -47,13 +53,15 @@ export class OrderMapper {
         return OrderStatus.RETURNED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown PrismaOrderStatus', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown PrismaOrderStatus',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
-  private static toPrismaOrderStatus(
-    status: OrderStatus,
-  ): PrismaOrderStatus {
+  private static toPrismaOrderStatus(status: OrderStatus): PrismaOrderStatus {
     switch (status) {
       case OrderStatus.PENDING_PAYMENT:
         return PrismaOrderStatus.PENDING_PAYMENT;
@@ -80,7 +88,11 @@ export class OrderMapper {
         return PrismaOrderStatus.RETURNED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown OrderStatus', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown OrderStatus',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -88,9 +100,7 @@ export class OrderMapper {
   // 🔄 PAYMENT STATUS
   // =======================
 
-  private static toDomainPaymentStatus(
-    status: PrismaPaymentStatus,
-  ): PaymentStatus {
+  private static toDomainPaymentStatus(status: PrismaPaymentStatus): PaymentStatus {
     switch (status) {
       case PrismaPaymentStatus.PENDING:
         return PaymentStatus.PENDING;
@@ -120,13 +130,15 @@ export class OrderMapper {
         return PaymentStatus.PARTIALLY_REFUNDED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown PrismaPaymentStatus', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown PrismaPaymentStatus',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
-  private static toPrismaPaymentStatus(
-    status: PaymentStatus,
-  ): PrismaPaymentStatus {
+  private static toPrismaPaymentStatus(status: PaymentStatus): PrismaPaymentStatus {
     switch (status) {
       case PaymentStatus.PENDING:
         return PrismaPaymentStatus.PENDING;
@@ -141,7 +153,7 @@ export class OrderMapper {
         return PrismaPaymentStatus.CAPTURED;
 
       case PaymentStatus.SUCCESS:
-        return PrismaPaymentStatus.SUCCESS;
+        return PaymentStatus.SUCCESS;
 
       case PaymentStatus.FAILED:
         return PrismaPaymentStatus.FAILED;
@@ -156,7 +168,11 @@ export class OrderMapper {
         return PrismaPaymentStatus.PARTIALLY_REFUNDED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown PaymentStatus', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown PaymentStatus',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -164,175 +180,164 @@ export class OrderMapper {
   // 🧾 TO DOMAIN
   // =======================
 
-  static toDomain(p: PrismaOrder): Order {
-  return new Order(
-    p.id,
+  static toDomain(p: PrismaOrderWithAddresses): Order {
+    const order = new Order(
+      p.id,
 
-    p.orderNumber,
+      p.orderNumber,
 
-    p.cartId ?? undefined,
+      p.cartId ?? undefined,
 
-    p.checkoutSessionId ?? undefined,
+      p.checkoutSessionId ?? undefined,
 
-    p.userId ?? '',
+      p.userId ?? '',
 
-    this.toDomainOrderStatus(p.status),
+      this.toDomainOrderStatus(p.status),
 
-    this.toDomainPaymentStatus(
-      p.paymentStatus,
-    ),
+      this.toDomainPaymentStatus(p.paymentStatus),
 
-    p.couponCode ?? undefined,
+      p.couponCode ?? undefined,
 
-    Number(p.subtotal),
+      Number(p.subtotal),
 
-    Number(p.couponDiscount),
+      Number(p.couponDiscount),
 
-    Number(p.shippingCharge),
+      Number(p.shippingCharge),
 
-    Number(p.tax),
+      Number(p.tax),
 
-    Number(p.grandTotal),
+      Number(p.grandTotal),
 
-    Number(p.totalSavings),
+      Number(p.totalSavings),
 
-    // =======================
-    // 🪙 COINS
-    // =======================
+      p.earnedCoins,
 
-    p.earnedCoins,
+      p.redeemedCoins,
 
-    p.redeemedCoins,
+      Number(p.redeemedAmount),
 
-    Number(p.redeemedAmount),
+      p.shippingAddressId ?? undefined,
 
-    (p.shippingAddress as Record<
-      string,
-      any
-    >) ?? {},
+      p.billingAddressId ?? undefined,
 
-    (p.billingAddress as Record<
-      string,
-      any
-    >) ?? {},
+      p.isBillingSameAsShipping,
 
-    // =======================
-    // 🚚 SHIPMENT
-    // =======================
+      p.shippingAddress ? SavedAddressMapper.toDomain(p.shippingAddress) : undefined,
 
-    p.trackingId ?? undefined,
+      p.billingAddress ? SavedAddressMapper.toDomain(p.billingAddress) : undefined,
 
-    p.courierName ?? undefined,
+      OrderAddressSnapshotMapper.fromUnknown(p.shippingAddressSnapshot),
 
-    p.shippedAt ?? undefined,
+      OrderAddressSnapshotMapper.fromUnknown(p.billingAddressSnapshot),
 
-    p.deliveredAt ?? undefined,
+      p.trackingId ?? undefined,
 
-    p.cancelledAt ?? undefined,
+      p.courierName ?? undefined,
 
-    p.rewardRefunded ?? false,
+      p.shippedAt ?? undefined,
 
-    p.refundedAt ?? undefined,
+      p.deliveredAt ?? undefined,
 
-    p.customerNote ?? undefined,
+      p.cancelledAt ?? undefined,
 
-    p.adminNote ?? undefined,
+      p.rewardRefunded ?? false,
 
-    (p.metadata as Record<string, any>) ??
-      {},
+      p.refundedAt ?? undefined,
 
-    p.createdAt,
+      p.customerNote ?? undefined,
 
-    p.updatedAt,
+      p.adminNote ?? undefined,
 
-    p.deletedAt ?? undefined,
-  );
-}
+      (p.metadata as Record<string, any>) ?? {},
+
+      p.createdAt,
+
+      p.updatedAt,
+
+      p.deletedAt ?? undefined,
+    );
+
+    return order;
+  }
 
   // =======================
   // 💾 TO PERSISTENCE
   // =======================
 
   static toPersistence(e: Order) {
-  return {
-    id: e.id,
+    return {
+      id: e.id,
 
-    orderNumber: e.orderNumber,
+      orderNumber: e.orderNumber,
 
-    cartId: e.cartId ?? null,
+      cartId: e.cartId ?? null,
 
-    checkoutSessionId:
-      e.checkoutSessionId ?? null,
+      checkoutSessionId: e.checkoutSessionId ?? null,
 
-    userId: e.userId ?? null,
+      userId: e.userId ?? null,
 
-    status: this.toPrismaOrderStatus(
-      e.status,
-    ),
+      status: this.toPrismaOrderStatus(e.status),
 
-    paymentStatus:
-      this.toPrismaPaymentStatus(
-        e.paymentStatus,
-      ),
+      paymentStatus: this.toPrismaPaymentStatus(e.paymentStatus),
 
-    couponCode: e.couponCode ?? null,
+      couponCode: e.couponCode ?? null,
 
-    subtotal: e.subtotal,
+      subtotal: e.subtotal,
 
-    couponDiscount: e.couponDiscount,
+      couponDiscount: e.couponDiscount,
 
-    shippingCharge: e.shippingCharge,
+      shippingCharge: e.shippingCharge,
 
-    tax: e.tax,
+      tax: e.tax,
 
-    grandTotal: e.grandTotal,
+      grandTotal: e.grandTotal,
 
-    totalSavings: e.totalSavings,
+      totalSavings: e.totalSavings,
 
-    // =======================
-    // 🪙 COINS
-    // =======================
+      earnedCoins: e.earnedCoins,
 
-    earnedCoins: e.earnedCoins,
+      redeemedCoins: e.redeemedCoins,
 
-    redeemedCoins: e.redeemedCoins,
+      redeemedAmount: e.redeemedAmount,
 
-    redeemedAmount: e.redeemedAmount,
+      shippingAddressId: e.shippingAddressId ?? null,
 
-    shippingAddress: e.shippingAddress,
+      billingAddressId: e.billingAddressId ?? null,
 
-    billingAddress: e.billingAddress,
+      isBillingSameAsShipping: e.isBillingSameAsShipping,
 
-    // =======================
-    // 🚚 SHIPMENT
-    // =======================
+      shippingAddressSnapshot: e.shippingAddressSnapshot
+        ? (e.shippingAddressSnapshot as Prisma.InputJsonValue)
+        : undefined,
 
-    trackingId: e.trackingId ?? null,
+      billingAddressSnapshot: e.billingAddressSnapshot
+        ? (e.billingAddressSnapshot as Prisma.InputJsonValue)
+        : undefined,
 
-    courierName: e.courierName ?? null,
+      trackingId: e.trackingId ?? null,
 
-    shippedAt: e.shippedAt ?? null,
+      courierName: e.courierName ?? null,
 
-    deliveredAt: e.deliveredAt ?? null,
+      shippedAt: e.shippedAt ?? null,
 
-    cancelledAt: e.cancelledAt ?? null,
-    
-    rewardRefunded: e.rewardRefunded,
-    refundedAt: e.refundedAt ?? null,
+      deliveredAt: e.deliveredAt ?? null,
 
-    customerNote: e.customerNote ?? null,
+      cancelledAt: e.cancelledAt ?? null,
 
-    adminNote: e.adminNote ?? null,
+      rewardRefunded: e.rewardRefunded,
+      refundedAt: e.refundedAt ?? null,
 
-    metadata:
-  (e.metadata as Prisma.InputJsonValue) ??
-  Prisma.JsonNull,
+      customerNote: e.customerNote ?? null,
 
-    createdAt: e.createdAt,
+      adminNote: e.adminNote ?? null,
 
-    updatedAt: e.updatedAt,
+      metadata: (e.metadata as Prisma.InputJsonValue) ?? Prisma.JsonNull,
 
-    deletedAt: e.deletedAt ?? null,
-  };
-}
+      createdAt: e.createdAt,
+
+      updatedAt: e.updatedAt,
+
+      deletedAt: e.deletedAt ?? null,
+    };
+  }
 }

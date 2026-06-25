@@ -9,101 +9,79 @@ import { BannerImage } from '../../../../domain/entities/banner-image.entity';
 import { BannerImageMapper } from '../mappers/banner-image.mapper';
 
 @Injectable()
-export class PrismaBannerImageRepository
-  implements BannerImageRepository
-{
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
+export class PrismaBannerImageRepository implements BannerImageRepository {
+  constructor(private readonly prisma: PrismaService) {}
 
   // =======================
   // 🔍 FIND
   // =======================
 
-  async findById(
-    id: string,
-  ): Promise<BannerImage | null> {
-    const data =
-  await this.prisma.bannerImage.findFirst({
-    where: {
-      id,
+  async findById(id: string): Promise<BannerImage | null> {
+    const data = await this.prisma.bannerImage.findFirst({
+      where: {
+        id,
 
-      deletedAt: null,
-    },
+        deletedAt: null,
+      },
 
-    include: {
-      product: {
-        select: {
-          slug: true,
+      include: {
+        product: {
+          select: {
+            slug: true,
+          },
         },
       },
-    },
-  });
+    });
 
-    return data
-      ? BannerImageMapper.toDomain(data)
-      : null;
+    return data ? BannerImageMapper.toDomain(data) : null;
   }
 
-  async findByBannerId(
-    bannerId: string,
-  ): Promise<BannerImage[]> {
-    const data =
-  await this.prisma.bannerImage.findMany({
-    where: {
-      bannerId,
+  async findByBannerId(bannerId: string): Promise<BannerImage[]> {
+    const data = await this.prisma.bannerImage.findMany({
+      where: {
+        bannerId,
 
-      deletedAt: null,
-    },
+        deletedAt: null,
+      },
 
-    include: {
-      product: {
-        select: {
-          slug: true,
+      include: {
+        product: {
+          select: {
+            slug: true,
+          },
         },
       },
-    },
 
-    orderBy: {
-      sortOrder: 'asc',
-    },
-  });
+      orderBy: {
+        sortOrder: 'asc',
+      },
+    });
 
-    return data.map((item) =>
-      BannerImageMapper.toDomain(item),
-    );
+    return data.map((item) => BannerImageMapper.toDomain(item));
   }
 
-  async findByProductId(
-    productId: string,
-  ): Promise<BannerImage[]> {
-    const data =
-      await this.prisma.bannerImage.findMany({
-        where: {
-          productId,
+  async findByProductId(productId: string): Promise<BannerImage[]> {
+    const data = await this.prisma.bannerImage.findMany({
+      where: {
+        productId,
 
-          deletedAt: null,
-        },
+        deletedAt: null,
+      },
 
-        orderBy: {
-          sortOrder: 'asc',
-        },
-      });
+      orderBy: {
+        sortOrder: 'asc',
+      },
+    });
 
-    return data.map((item) =>
-      BannerImageMapper.toDomain(item),
-    );
+    return data.map((item) => BannerImageMapper.toDomain(item));
   }
 
   // =======================
   // ♻️ FIND INCLUDING DELETED
   // =======================
 
-  async findByIdIncludingDeleted(
-  id: string,
-): Promise<BannerImage | null> {
-  const data =
-    await this.prisma.bannerImage.findUnique({
+  async findByIdIncludingDeleted(id: string): Promise<BannerImage | null> {
+    const data = await this.prisma.bannerImage.findUnique({
       where: {
         id,
       },
@@ -117,55 +95,35 @@ export class PrismaBannerImageRepository
       },
     });
 
-  return data
-    ? BannerImageMapper.toDomain(data)
-    : null;
-}
+    return data ? BannerImageMapper.toDomain(data) : null;
+  }
 
   // =======================
   // ✍️ WRITE
   // =======================
 
-  async create(
-    image: BannerImage,
-  ): Promise<BannerImage> {
-    const data =
-      await this.prisma.bannerImage.create({
-        data:
-          BannerImageMapper.toPersistence(
-            image,
-          ),
-      });
+  async create(image: BannerImage): Promise<BannerImage> {
+    const data = await this.prisma.bannerImage.create({
+      data: BannerImageMapper.toPersistence(image),
+    });
 
     return BannerImageMapper.toDomain(data);
   }
 
-  async createMany(
-    images: BannerImage[],
-  ): Promise<void> {
+  async createMany(images: BannerImage[]): Promise<void> {
     await this.prisma.bannerImage.createMany({
-      data: images.map((image) =>
-        BannerImageMapper.toPersistence(
-          image,
-        ),
-      ),
+      data: images.map((image) => BannerImageMapper.toPersistence(image)),
     });
   }
 
-  async update(
-    image: BannerImage,
-  ): Promise<BannerImage> {
-    const data =
-      await this.prisma.bannerImage.update({
-        where: {
-          id: image.id,
-        },
+  async update(image: BannerImage): Promise<BannerImage> {
+    const data = await this.prisma.bannerImage.update({
+      where: {
+        id: image.id,
+      },
 
-        data:
-          BannerImageMapper.toPersistence(
-            image,
-          ),
-      });
+      data: BannerImageMapper.toPersistence(image),
+    });
 
     return BannerImageMapper.toDomain(data);
   }
@@ -190,9 +148,7 @@ export class PrismaBannerImageRepository
   // ❌ DELETE
   // =======================
 
-  async softDelete(
-    id: string,
-  ): Promise<void> {
+  async softDelete(id: string): Promise<void> {
     await this.prisma.bannerImage.update({
       where: {
         id,
@@ -204,9 +160,7 @@ export class PrismaBannerImageRepository
     });
   }
 
-  async restore(
-    id: string,
-  ): Promise<void> {
+  async restore(id: string): Promise<void> {
     await this.prisma.bannerImage.update({
       where: {
         id,
@@ -218,9 +172,7 @@ export class PrismaBannerImageRepository
     });
   }
 
-  async deleteByBannerId(
-    bannerId: string,
-  ): Promise<void> {
+  async deleteByBannerId(bannerId: string): Promise<void> {
     await this.prisma.bannerImage.updateMany({
       where: {
         bannerId,
@@ -232,14 +184,11 @@ export class PrismaBannerImageRepository
     });
   }
   // =======================
-// ♻️ FIND INCLUDING DELETED
-// =======================
+  // ♻️ FIND INCLUDING DELETED
+  // =======================
 
-async findByBannerIdIncludingDeleted(
-  bannerId: string,
-): Promise<BannerImage[]> {
-  const data =
-    await this.prisma.bannerImage.findMany({
+  async findByBannerIdIncludingDeleted(bannerId: string): Promise<BannerImage[]> {
+    const data = await this.prisma.bannerImage.findMany({
       where: {
         bannerId,
       },
@@ -249,8 +198,6 @@ async findByBannerIdIncludingDeleted(
       },
     });
 
-  return data.map((item) =>
-    BannerImageMapper.toDomain(item),
-  );
-}
+    return data.map((item) => BannerImageMapper.toDomain(item));
+  }
 }

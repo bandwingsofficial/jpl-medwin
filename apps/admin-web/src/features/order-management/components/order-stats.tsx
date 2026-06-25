@@ -1,46 +1,41 @@
 "use client";
 
+import { ShippingStatusCard } from "./shipping-status-card";
+
 import {
   CheckCircle2,
   Package,
-  RotateCcw,
   Truck,
   Wallet,
 } from "lucide-react";
 
 interface OrderStatsProps {
   totalOrders: number;
-
   confirmedOrders: number;
-
   deliveredOrders: number;
-
   refundedOrders: number;
-
   returnedOrders: number;
 }
 
 export const OrderStats = ({
   totalOrders,
-
   confirmedOrders,
-
   deliveredOrders,
-
   refundedOrders,
-
   returnedOrders,
 }: OrderStatsProps) => {
   return (
     <div className="overflow-x-auto scrollbar-hide">
-
       <div className="flex min-w-max gap-3">
+
+        {/* SHIPPING */}
+
+        <ShippingStatusCard />
 
         {/* TOTAL ORDERS */}
 
         <div className="min-w-[220px] rounded-xl border border-gray-200 bg-white px-3 py-3">
           <div className="flex items-center justify-between">
-
             <div>
               <p className="text-xs font-medium text-gray-500">
                 Total Orders
@@ -57,7 +52,6 @@ export const OrderStats = ({
                 className="text-blue-600"
               />
             </div>
-
           </div>
         </div>
 
@@ -65,7 +59,6 @@ export const OrderStats = ({
 
         <div className="min-w-[220px] rounded-xl border border-gray-200 bg-white px-3 py-3">
           <div className="flex items-center justify-between">
-
             <div>
               <p className="text-xs font-medium text-gray-500">
                 Confirmed
@@ -82,7 +75,6 @@ export const OrderStats = ({
                 className="text-green-600"
               />
             </div>
-
           </div>
         </div>
 
@@ -90,7 +82,6 @@ export const OrderStats = ({
 
         <div className="min-w-[220px] rounded-xl border border-gray-200 bg-white px-3 py-3">
           <div className="flex items-center justify-between">
-
             <div>
               <p className="text-xs font-medium text-gray-500">
                 Delivered
@@ -107,7 +98,6 @@ export const OrderStats = ({
                 className="text-emerald-600"
               />
             </div>
-
           </div>
         </div>
 
@@ -115,7 +105,6 @@ export const OrderStats = ({
 
         <div className="min-w-[220px] rounded-xl border border-gray-200 bg-white px-3 py-3">
           <div className="flex items-center justify-between">
-
             <div>
               <p className="text-xs font-medium text-gray-500">
                 Refunded
@@ -132,12 +121,11 @@ export const OrderStats = ({
                 className="text-orange-600"
               />
             </div>
-
           </div>
         </div>
 
+        
       </div>
-
     </div>
   );
 };

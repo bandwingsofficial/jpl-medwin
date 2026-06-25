@@ -16,9 +16,7 @@ export class CollectionMapper {
   // 🔄 ENUM
   // =======================
 
-  private static toDomainStatus(
-    status: PrismaCollectionStatus,
-  ): CollectionStatus {
+  private static toDomainStatus(status: PrismaCollectionStatus): CollectionStatus {
     switch (status) {
       case PrismaCollectionStatus.ACTIVE:
         return CollectionStatus.ACTIVE;
@@ -28,8 +26,7 @@ export class CollectionMapper {
 
       default:
         throw new InvalidEnumMappingException({
-          enumName:
-            'Unknown PrismaCollectionStatus',
+          enumName: 'Unknown PrismaCollectionStatus',
 
           value: status,
 
@@ -38,9 +35,7 @@ export class CollectionMapper {
     }
   }
 
-  private static toPrismaStatus(
-    status: CollectionStatus,
-  ): PrismaCollectionStatus {
+  private static toPrismaStatus(status: CollectionStatus): PrismaCollectionStatus {
     switch (status) {
       case CollectionStatus.ACTIVE:
         return PrismaCollectionStatus.ACTIVE;
@@ -50,8 +45,7 @@ export class CollectionMapper {
 
       default:
         throw new InvalidEnumMappingException({
-          enumName:
-            'Unknown CollectionStatus',
+          enumName: 'Unknown CollectionStatus',
 
           value: status,
 
@@ -64,9 +58,7 @@ export class CollectionMapper {
   // 📦 COLLECTION
   // =======================
 
-  static toDomain(
-    p: PrismaCollection,
-  ): Collection {
+  static toDomain(p: PrismaCollection): Collection {
     return new Collection(
       p.id,
 
@@ -106,9 +98,7 @@ export class CollectionMapper {
     );
   }
 
-  static toPersistence(
-    e: Collection,
-  ) {
+  static toPersistence(e: Collection) {
     return {
       id: e.id,
 
@@ -122,19 +112,15 @@ export class CollectionMapper {
 
       imageUrl: e.imageUrl ?? null,
 
-      description:
-        e.description ?? null,
+      description: e.description ?? null,
 
-      metaDescription:
-        e.metaDescription ?? null,
+      metaDescription: e.metaDescription ?? null,
 
       // =======================
       // STATUS
       // =======================
 
-      status: this.toPrismaStatus(
-        e.status,
-      ),
+      status: this.toPrismaStatus(e.status),
 
       // =======================
       // TIMESTAMPS

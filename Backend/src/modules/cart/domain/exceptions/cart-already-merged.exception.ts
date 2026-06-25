@@ -6,11 +6,6 @@ import { ErrorCode } from '@/common/constants/error-codes';
 
 export class CartAlreadyMergedException extends BaseException {
   constructor(details?: { cartId?: string }) {
-    super(
-      'Cart already merged',
-      ErrorCode.CART.ALREADY_MERGED,
-      HttpStatus.CONFLICT,
-      details,
-    );
+    super('Cart already merged', ErrorCode.CART.ALREADY_MERGED, HttpStatus.CONFLICT, details);
   }
 }

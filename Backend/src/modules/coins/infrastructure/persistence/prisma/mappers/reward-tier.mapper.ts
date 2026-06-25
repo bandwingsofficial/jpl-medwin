@@ -19,7 +19,11 @@ export class RewardTierMapper {
         return RewardTierStatus.INACTIVE;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Prisma reward tier status', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Prisma reward tier status',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -32,7 +36,11 @@ export class RewardTierMapper {
         return PrismaRewardTierStatus.INACTIVE;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Domain reward tier status', value: status, direction: 'domain_to_prisma' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Domain reward tier status',
+          value: status,
+          direction: 'domain_to_prisma',
+        });
     }
   }
 

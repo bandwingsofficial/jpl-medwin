@@ -24,10 +24,7 @@ export class ListBannersUseCase {
     // =======================
 
     if (filters?.type) {
-      const banners =
-        await this.bannerRepo.findByType(
-          filters.type,
-        );
+      const banners = await this.bannerRepo.findByType(filters.type);
 
       return banners.map((banner) => ({
         id: banner.id,
@@ -49,10 +46,7 @@ export class ListBannersUseCase {
     // =======================
 
     if (filters?.status) {
-      const banners =
-        await this.bannerRepo.findByStatus(
-          filters.status,
-        );
+      const banners = await this.bannerRepo.findByStatus(filters.status);
 
       return banners.map((banner) => ({
         id: banner.id,
@@ -73,8 +67,7 @@ export class ListBannersUseCase {
     // 🔍 ALL
     // =======================
 
-    const banners =
-      await this.bannerRepo.findAll();
+    const banners = await this.bannerRepo.findAll();
 
     return banners.map((banner) => ({
       id: banner.id,

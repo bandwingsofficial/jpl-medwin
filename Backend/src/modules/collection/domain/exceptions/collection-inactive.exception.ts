@@ -7,14 +7,7 @@ import { BaseException } from '@/common/exceptions/base.exception';
 import { ErrorCode } from '@/common/constants/error-codes';
 
 export class CollectionInactiveException extends BaseException {
-  constructor(details?: {
-    collectionId?: string;
-  }) {
-    super(
-      'Collection is inactive',
-      ErrorCode.COLLECTION.INACTIVE,
-      HttpStatus.BAD_REQUEST,
-      details,
-    );
+  constructor(details?: { collectionId?: string }) {
+    super('Collection is inactive', ErrorCode.COLLECTION.INACTIVE, HttpStatus.BAD_REQUEST, details);
   }
 }

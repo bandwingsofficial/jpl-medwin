@@ -1,14 +1,6 @@
 // src/modules/customer/presentation/controllers/admin-customer.controller.ts
 
-import {
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Delete, Get, Param, Patch, Query, UseGuards } from '@nestjs/common';
 
 import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
 
@@ -28,10 +20,7 @@ import { GetCustomerOrdersUseCase } from '../../application/use-cases/get-custom
 import { GetCustomerAnalyticsUseCase } from '../../application/use-cases/get-customer-analytics.use-case';
 
 @Controller('admin/customers')
-@UseGuards(
-  JwtAuthGuard,
-  RolesGuard,
-)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
 export class AdminCustomerController {
   constructor(
@@ -46,15 +35,14 @@ export class AdminCustomerController {
     private readonly getCustomerAnalyticsUseCase: GetCustomerAnalyticsUseCase,
   ) {}
 
+  // =======================
+  // 📊 CUSTOMER ANALYTICS
+  // =======================
 
-// =======================
-// 📊 CUSTOMER ANALYTICS
-// =======================
-
-@Get('analytics')
-async getAnalytics() {
-  return this.getCustomerAnalyticsUseCase.execute();
-}
+  @Get('analytics')
+  async getAnalytics() {
+    return this.getCustomerAnalyticsUseCase.execute();
+  }
   // =======================
   // 📋 GET CUSTOMERS
   // =======================
@@ -70,19 +58,13 @@ async getAnalytics() {
     @Query('limit')
     limit?: string,
   ) {
-    return this.getCustomersUseCase.execute(
-      {
-        search,
+    return this.getCustomersUseCase.execute({
+      search,
 
-        page: page
-          ? Number(page)
-          : 1,
+      page: page ? Number(page) : 1,
 
-        limit: limit
-          ? Number(limit)
-          : 20,
-      },
-    );
+      limit: limit ? Number(limit) : 20,
+    });
   }
 
   // =======================
@@ -90,14 +72,10 @@ async getAnalytics() {
   // =======================
 
   @Get(':id')
-  async getCustomer(
-    @Param('id') id: string,
-  ) {
-    return this.getCustomerUseCase.execute(
-      {
-        userId: id,
-      },
-    );
+  async getCustomer(@Param('id') id: string) {
+    return this.getCustomerUseCase.execute({
+      userId: id,
+    });
   }
 
   // =======================
@@ -105,14 +83,10 @@ async getAnalytics() {
   // =======================
 
   @Get(':id/orders')
-  async getCustomerOrders(
-    @Param('id') id: string,
-  ) {
-    return this.getCustomerOrdersUseCase.execute(
-      {
-        userId: id,
-      },
-    );
+  async getCustomerOrders(@Param('id') id: string) {
+    return this.getCustomerOrdersUseCase.execute({
+      userId: id,
+    });
   }
 
   // =======================
@@ -120,20 +94,15 @@ async getAnalytics() {
   // =======================
 
   @Patch(':id/deactivate')
-  async deactivateCustomer(
-    @Param('id') id: string,
-  ) {
-    await this.deactivateCustomerUseCase.execute(
-      {
-        userId: id,
-      },
-    );
+  async deactivateCustomer(@Param('id') id: string) {
+    await this.deactivateCustomerUseCase.execute({
+      userId: id,
+    });
 
     return {
       success: true,
 
-      message:
-        'Customer deactivated successfully',
+      message: 'Customer deactivated successfully',
     };
   }
 
@@ -142,18 +111,13 @@ async getAnalytics() {
   // =======================
 
   @Delete(':id')
-  async deleteCustomer(
-    @Param('id') id: string,
-  ) {
+  async deleteCustomer(@Param('id') id: string) {
     return {
       success: false,
 
-      message:
-        'Delete customer not implemented yet',
+      message: 'Delete customer not implemented yet',
 
       userId: id,
     };
   }
-
-
 }

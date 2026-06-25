@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { DashboardPeriod } from '../../domain/enums/dashboard-period.enum';
 
@@ -8,9 +6,7 @@ import { TopCustomerDashboardService } from '../services/top-customer-dashboard.
 
 @Injectable()
 export class GetTopCustomerDashboardUseCase {
-  constructor(
-    private readonly topCustomerDashboardService: TopCustomerDashboardService,
-  ) {}
+  constructor(private readonly topCustomerDashboardService: TopCustomerDashboardService) {}
 
   async execute(params?: {
     period?: DashboardPeriod;
@@ -23,26 +19,19 @@ export class GetTopCustomerDashboardUseCase {
     // 📅 PERIOD
     // =======================
 
-    const period =
-      params?.period ??
-      DashboardPeriod.OVERALL;
+    const period = params?.period ?? DashboardPeriod.OVERALL;
 
     // =======================
     // 🏆 TOP CUSTOMERS
     // =======================
 
-    const customers =
-      await this.topCustomerDashboardService.getTopCustomers(
-        {
-          period,
+    const customers = await this.topCustomerDashboardService.getTopCustomers({
+      period,
 
-          from:
-            params?.from,
+      from: params?.from,
 
-          to:
-            params?.to,
-        },
-      );
+      to: params?.to,
+    });
 
     // =======================
     // 🚀 RESPONSE
@@ -51,14 +40,11 @@ export class GetTopCustomerDashboardUseCase {
     return {
       period,
 
-      from:
-        params?.from,
+      from: params?.from,
 
-      to:
-        params?.to,
+      to: params?.to,
 
-      count:
-        customers.length,
+      count: customers.length,
 
       customers,
     };

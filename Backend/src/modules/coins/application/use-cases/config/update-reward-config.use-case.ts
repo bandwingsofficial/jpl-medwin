@@ -29,11 +29,7 @@ export class UpdateRewardConfigUseCase {
     isActive?: boolean;
   }) {
     return this.prisma.$transaction(async (tx) => {
-      const rewardConfig =
-        await this.rewardConfigRepository.findById(
-          input.id,
-          tx,
-        );
+      const rewardConfig = await this.rewardConfigRepository.findById(input.id, tx);
 
       if (!rewardConfig) {
         throw new RewardConfigNotFoundException({
@@ -44,46 +40,31 @@ export class UpdateRewardConfigUseCase {
       const shouldActivate = input.isActive === true;
 
       if (shouldActivate) {
-        await this.rewardConfigRepository.deactivateAll(
-          tx,
-        );
+        await this.rewardConfigRepository.deactivateAll(tx);
       }
 
       rewardConfig.updateDetails({
         earnRateAmount: input.earnRateAmount,
         earnRateCoins: input.earnRateCoins,
         coinValue: input.coinValue,
-        maxRedemptionPercentage:
-          input.maxRedemptionPercentage,
-        minimumOrderAmount:
-          input.minimumOrderAmount,
+        maxRedemptionPercentage: input.maxRedemptionPercentage,
+        minimumOrderAmount: input.minimumOrderAmount,
         expiryMonths: input.expiryMonths,
-        rewardOnDelivered:
-          input.rewardOnDelivered,
+        rewardOnDelivered: input.rewardOnDelivered,
         isActive: input.isActive,
       });
 
-      const updatedConfig =
-        await this.rewardConfigRepository.update(
-          rewardConfig,
-          tx,
-        );
+      const updatedConfig = await this.rewardConfigRepository.update(rewardConfig, tx);
 
       return {
         id: updatedConfig.id,
-        earnRateAmount:
-          updatedConfig.earnRateAmount,
-        earnRateCoins:
-          updatedConfig.earnRateCoins,
+        earnRateAmount: updatedConfig.earnRateAmount,
+        earnRateCoins: updatedConfig.earnRateCoins,
         coinValue: updatedConfig.coinValue,
-        maxRedemptionPercentage:
-          updatedConfig.maxRedemptionPercentage,
-        minimumOrderAmount:
-          updatedConfig.minimumOrderAmount,
-        expiryMonths:
-          updatedConfig.expiryMonths,
-        rewardOnDelivered:
-          updatedConfig.rewardOnDelivered,
+        maxRedemptionPercentage: updatedConfig.maxRedemptionPercentage,
+        minimumOrderAmount: updatedConfig.minimumOrderAmount,
+        expiryMonths: updatedConfig.expiryMonths,
+        rewardOnDelivered: updatedConfig.rewardOnDelivered,
         isActive: updatedConfig.isActive,
         createdAt: updatedConfig.createdAt,
         updatedAt: updatedConfig.updatedAt,

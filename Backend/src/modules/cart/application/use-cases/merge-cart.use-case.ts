@@ -141,7 +141,7 @@ export class MergeCartUseCase {
     // 💰 SUMMARY
     // =======================
 
-    const summary = this.summaryService.build({
+    const summary = await this.summaryService.build({
       items: finalItems,
     });
 

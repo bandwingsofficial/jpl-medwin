@@ -259,16 +259,16 @@ export class SavedAddress {
     }
 
     if (!this.fullName?.trim()) {
-  throw new InvalidAddressException({
-    field: 'fullName',
-  });
-}
+      throw new InvalidAddressException({
+        field: 'fullName',
+      });
+    }
 
-if (!this.phoneNumber?.trim()) {
-  throw new InvalidAddressException({
-    field: 'phoneNumber',
-  });
-}
+    if (!this.phoneNumber?.trim()) {
+      throw new InvalidAddressException({
+        field: 'phoneNumber',
+      });
+    }
 
     if (!this.city?.trim()) {
       throw new InvalidAddressException({

@@ -20,9 +20,7 @@ export class DeleteProfileUseCase {
     // 🔍 FIND PROFILE
     // =======================
 
-    const profile = await this.profileRepo.findByUserId(
-      userId,
-    );
+    const profile = await this.profileRepo.findByUserId(userId);
 
     // =======================
     // ❌ NOT FOUND

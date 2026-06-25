@@ -14,7 +14,7 @@ export class UpdateSavedAddressService {
     params: {
       fullName?: string;
 
-phoneNumber?: string;
+      phoneNumber?: string;
 
       type?: AddressType;
 

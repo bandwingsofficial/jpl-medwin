@@ -1,4 +1,4 @@
-import { Module ,forwardRef } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 
 // =======================
 // INFRA
@@ -65,15 +65,9 @@ import { CreateReplacementOrderUseCase } from './application/use-cases/create-re
 import { OrderModule } from '../order/order.module';
 
 @Module({
-  imports: [
-    forwardRef(() => OrderModule),
-  ],
+  imports: [forwardRef(() => OrderModule)],
 
-  controllers: [
-    ReturnController,
-
-    AdminReturnController,
-  ],
+  controllers: [ReturnController, AdminReturnController],
 
   providers: [
     PrismaService,

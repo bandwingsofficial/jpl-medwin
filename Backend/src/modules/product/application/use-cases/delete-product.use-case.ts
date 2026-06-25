@@ -112,71 +112,69 @@ export class DeleteProductUseCase {
     // 💾 TRANSACTION
     // =======================
 
-   return this.prisma.$transaction(async (tx) => {
-  // =======================
-  // 🛒 REMOVE CART ITEMS
-  // =======================
+    return this.prisma.$transaction(async (tx) => {
+      // =======================
+      // 🛒 REMOVE CART ITEMS
+      // =======================
 
-  await this.cartItemRepo.deleteByProductId(product.id);
+      await this.cartItemRepo.deleteByProductId(product.id);
 
-  // =======================
-  // 🔴 DEACTIVATE PRODUCT
-  // =======================
+      // =======================
+      // 🔴 DEACTIVATE PRODUCT
+      // =======================
 
-  product.deactivate();
+      product.deactivate();
 
-  // remove default variant
-  product.defaultVariantId = undefined;
+      // remove default variant
+      product.defaultVariantId = undefined;
 
-  // =======================
-  // 🗑 SOFT DELETE PRODUCT
-  // =======================
+      // =======================
+      // 🗑 SOFT DELETE PRODUCT
+      // =======================
 
-  product.softDelete();
+      product.softDelete();
 
-  await this.productRepo.update(product, tx);
+      await this.productRepo.update(product, tx);
 
-  // =======================
-  // 🔴 CHILD VARIANTS
-  // =======================
+      // =======================
+      // 🔴 CHILD VARIANTS
+      // =======================
 
-  for (const variant of variants) {
-    if (!variant.isDeleted()) {
-      variant.deactivate();
+      for (const variant of variants) {
+        if (!variant.isDeleted()) {
+          variant.deactivate();
 
-      variant.softDelete();
+          variant.softDelete();
 
-      await this.variantRepo.update(variant, tx);
-    }
-  }
+          await this.variantRepo.update(variant, tx);
+        }
+      }
 
-  // =======================
-  // 🖼 SOFT DELETE IMAGES
-  // =======================
+      // =======================
+      // 🖼 SOFT DELETE IMAGES
+      // =======================
 
-  await this.imageRepo.softDeleteByProduct(productId, tx);
+      await this.imageRepo.softDeleteByProduct(productId, tx);
 
-  await this.imageRepo.softDeleteByVariantProduct(productId, tx);
+      await this.imageRepo.softDeleteByVariantProduct(productId, tx);
 
-  // =======================
-  // ✅ RESPONSE
-  // =======================
+      // =======================
+      // ✅ RESPONSE
+      // =======================
 
-  return {
-    success: true,
+      return {
+        success: true,
 
-    message: force
-      ? 'Product force deleted successfully'
-      : 'Product deleted successfully',
+        message: force ? 'Product force deleted successfully' : 'Product deleted successfully',
 
-    data: {
-      id: product.id,
+        data: {
+          id: product.id,
 
-      status: product.status,
+          status: product.status,
 
-      deletedAt: product.deletedAt,
-    },
-  };
-});
+          deletedAt: product.deletedAt,
+        },
+      };
+    });
   }
 }

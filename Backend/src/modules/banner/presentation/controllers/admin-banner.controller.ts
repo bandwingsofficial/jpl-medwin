@@ -14,7 +14,7 @@ import {
   Inject,
 } from '@nestjs/common';
 
-import { FilesInterceptor , FileInterceptor  } from '@nestjs/platform-express';
+import { FilesInterceptor, FileInterceptor } from '@nestjs/platform-express';
 
 import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
 import { RolesGuard } from '@/modules/auth/presentation/guards/role.guard';
@@ -38,12 +38,12 @@ import { ListBannersUseCase } from '../../application/use-cases/list-banners.use
 import { UpdateBannerImageUseCase } from '../../application/use-cases/update-banner-image.use-case';
 import { RestoreBannerImageUseCase } from '../../application/use-cases/restore-banner-image.use-case';
 import { DeleteBannerImageUseCase } from '../../application/use-cases/delete-banner-image.use-case';
-import { AddBannerImageUseCase } from '../../application/use-cases/add-banner-image.use-case'
+import { AddBannerImageUseCase } from '../../application/use-cases/add-banner-image.use-case';
 
 import { CreateBannerDto } from '../dto/create-banner.dto';
 import { UpdateBannerDto } from '../dto/update-banner.dto';
 import { UpdateBannerImageDto } from '../dto/update-banner-image.dto';
-import { AddBannerImageDto } from '../dto/add-banner-image'
+import { AddBannerImageDto } from '../dto/add-banner-image';
 
 import { BannerStatus } from '../../domain/enums/banner-status.enum';
 import { BannerType } from '../../domain/enums/banner-type.enum';
@@ -77,75 +77,49 @@ export class AdminBannerController {
 
     private readonly deleteBannerImageUseCase: DeleteBannerImageUseCase,
 
-    private readonly addBannerImageUseCase : AddBannerImageUseCase,
+    private readonly addBannerImageUseCase: AddBannerImageUseCase,
 
     private readonly uploadUseCase: UploadImageUseCase,
     @Inject(TOKENS.BANNER_IMAGE_REPO)
-private readonly bannerImageRepo: BannerImageRepository,
+    private readonly bannerImageRepo: BannerImageRepository,
   ) {}
 
   // =======================
   // =======================
-// ✨ CREATE
-// =======================
+  // ✨ CREATE
+  // =======================
 
-@Post()
-@UseInterceptors(
-  FilesInterceptor(
-    'images',
-    5,
-    multerConfig,
-  ),
-)
-async createBanner(
-  @UploadedFiles()
-  files: Express.Multer.File[],
+  @Post()
+  @UseInterceptors(FilesInterceptor('images', 5, multerConfig))
+  async createBanner(
+    @UploadedFiles()
+    files: Express.Multer.File[],
 
-  @Body()
-  dto: CreateBannerDto,
-) {
-  const images =
-    await Promise.all(
-      (files ?? []).map(
-        async (
-          file,
-          index,
-        ) => {
-          const upload =
-            await this.uploadUseCase.execute(
-              file,
-              'banners',
-            );
+    @Body()
+    dto: CreateBannerDto,
+  ) {
+    const images = await Promise.all(
+      (files ?? []).map(async (file, index) => {
+        const upload = await this.uploadUseCase.execute(file, 'banners');
 
-          return {
-            imageUrl:
-              upload.url,
+        return {
+          imageUrl: upload.url,
 
-            productId:
-              dto.images?.[
-                index
-              ]?.productId,
+          productId: dto.images?.[index]?.productId,
 
-            sortOrder:
-              dto.images?.[
-                index
-              ]?.sortOrder ??
-              index,
-          };
-        },
-      ),
+          sortOrder: dto.images?.[index]?.sortOrder ?? index,
+        };
+      }),
     );
 
-  return this.createBannerUseCase.execute(
-    {
+    return this.createBannerUseCase.execute({
       name: dto.name,
 
       type: dto.type,
 
       images,
-    },
-  );
-}
+    });
+  }
 
   // =======================
   // 🔄 UPDATE BANNER
@@ -159,127 +133,84 @@ async createBanner(
     @Body()
     dto: UpdateBannerDto,
   ) {
-
-     console.log('DTO:', dto);
+    console.log('DTO:', dto);
     return this.updateBannerUseCase.execute({
       bannerId,
       ...dto,
     });
   }
 
+  // =======================
+  // 🔄 UPDATE IMAGE
+  // =======================
 
-// =======================
-// 🔄 UPDATE IMAGE
-// =======================
+  @Patch('images/:bannerImageId')
+  @UseInterceptors(FileInterceptor('image', multerConfig))
+  async updateBannerImage(
+    @Param('bannerImageId')
+    bannerImageId: string,
 
-@Patch('images/:bannerImageId')
-@UseInterceptors(
-  FileInterceptor(
-    'image',
-    multerConfig,
-  ),
-)
-async updateBannerImage(
-  @Param('bannerImageId')
-  bannerImageId: string,
+    @UploadedFile()
+    file: Express.Multer.File,
 
-  @UploadedFile()
-  file: Express.Multer.File,
-
-  @Body()
-  dto: UpdateBannerImageDto,
-) {
-  const existing =
-    await this.bannerImageRepo.findById(
-      bannerImageId,
-    );
-
-  if (!existing) {
-    throw new Error(
-      'Banner image not found',
-    );
-  }
-
-  let imageUrl =
-    existing.imageUrl;
-
-  if (file) {
-    const upload =
-      await this.uploadUseCase.execute(
-        file,
-        'banners',
-      );
-
-    imageUrl = upload.url;
-  }
-
-  const image =
-    await this.updateBannerImageUseCase.execute(
-      {
-        bannerImageId,
-
-        imageUrl,
-
-        productId:
-          dto.productId,
-
-        sortOrder:
-          dto.sortOrder,
-      },
-    );
-
-  if (
-    file &&
-    existing.imageUrl
+    @Body()
+    dto: UpdateBannerImageDto,
   ) {
-    await this.uploadUseCase.delete(
-      existing.imageUrl,
-    );
+    const existing = await this.bannerImageRepo.findById(bannerImageId);
+
+    if (!existing) {
+      throw new Error('Banner image not found');
+    }
+
+    let imageUrl = existing.imageUrl;
+
+    if (file) {
+      const upload = await this.uploadUseCase.execute(file, 'banners');
+
+      imageUrl = upload.url;
+    }
+
+    const image = await this.updateBannerImageUseCase.execute({
+      bannerImageId,
+
+      imageUrl,
+
+      productId: dto.productId,
+
+      sortOrder: dto.sortOrder,
+    });
+
+    if (file && existing.imageUrl) {
+      await this.uploadUseCase.delete(existing.imageUrl);
+    }
+
+    return image;
   }
 
-  return image;
-}
+  @Post(':bannerId/images')
+  @UseInterceptors(FileInterceptor('image', multerConfig))
+  async addImage(
+    @Param('bannerId')
+    bannerId: string,
 
+    @UploadedFile()
+    file: Express.Multer.File,
 
-@Post(':bannerId/images')
-@UseInterceptors(
-  FileInterceptor(
-    'image',
-    multerConfig,
-  ),
-)
-async addImage(
-  @Param('bannerId')
-  bannerId: string,
+    @Body()
+    dto: AddBannerImageDto,
+  ) {
+    const upload = await this.uploadUseCase.execute(file, 'banners');
 
-  @UploadedFile()
-  file: Express.Multer.File,
-
-  @Body()
-  dto: AddBannerImageDto,
-) {
-  const upload =
-    await this.uploadUseCase.execute(
-      file,
-      'banners',
-    );
-
-  return this.addBannerImageUseCase.execute(
-    {
+    return this.addBannerImageUseCase.execute({
       bannerId,
 
-      imageUrl:
-        upload.url,
+      imageUrl: upload.url,
 
-      productId:
-        dto.productId,
+      productId: dto.productId,
 
-      sortOrder:
-        dto.sortOrder,
-    },
-  );
-}
-
+      sortOrder: dto.sortOrder,
+    });
+  }
 
   // =======================
   // 📋 LIST
@@ -308,9 +239,7 @@ async addImage(
     @Param('bannerId')
     bannerId: string,
   ) {
-    return this.getBannerUseCase.execute(
-      bannerId,
-    );
+    return this.getBannerUseCase.execute(bannerId);
   }
 
   // =======================
@@ -322,14 +251,11 @@ async addImage(
     @Param('bannerId')
     bannerId: string,
   ) {
-    await this.activateBannerUseCase.execute(
-      bannerId,
-    );
+    await this.activateBannerUseCase.execute(bannerId);
 
     return {
       success: true,
-      message:
-        'Banner activated successfully',
+      message: 'Banner activated successfully',
     };
   }
 
@@ -342,14 +268,11 @@ async addImage(
     @Param('bannerId')
     bannerId: string,
   ) {
-    await this.deactivateBannerUseCase.execute(
-      bannerId,
-    );
+    await this.deactivateBannerUseCase.execute(bannerId);
 
     return {
       success: true,
-      message:
-        'Banner deactivated successfully',
+      message: 'Banner deactivated successfully',
     };
   }
 
@@ -362,14 +285,11 @@ async addImage(
     @Param('bannerId')
     bannerId: string,
   ) {
-    await this.restoreBannerUseCase.execute(
-      bannerId,
-    );
+    await this.restoreBannerUseCase.execute(bannerId);
 
     return {
       success: true,
-      message:
-        'Banner restored successfully',
+      message: 'Banner restored successfully',
     };
   }
 
@@ -377,158 +297,146 @@ async addImage(
   // ♻️ RESTORE IMAGE
   // =======================
 
-  @Patch(
-    'images/:bannerImageId/restore',
-  )
+  @Patch('images/:bannerImageId/restore')
   async restoreImage(
     @Param('bannerImageId')
     bannerImageId: string,
   ) {
-    await this.restoreBannerImageUseCase.execute(
-      bannerImageId,
-    );
+    await this.restoreBannerImageUseCase.execute(bannerImageId);
 
     return {
       success: true,
-      message:
-        'Banner image restored successfully',
+      message: 'Banner image restored successfully',
     };
   }
 
-//   // =======================
-//   // 🗑 DELETE
-//   // =======================
+  //   // =======================
+  //   // 🗑 DELETE
+  //   // =======================
 
-//   @Delete(':bannerId')
-// async deleteBanner(
-//   @Param('bannerId')
-//   bannerId: string,
-// ) {
-//   const banner =
-//     await this.getBannerUseCase.execute(
-//       bannerId,
-//     );
+  //   @Delete(':bannerId')
+  // async deleteBanner(
+  //   @Param('bannerId')
+  //   bannerId: string,
+  // ) {
+  //   const banner =
+  //     await this.getBannerUseCase.execute(
+  //       bannerId,
+  //     );
 
-//   await this.deleteBannerUseCase.execute(
-//     bannerId,
-//   );
+  //   await this.deleteBannerUseCase.execute(
+  //     bannerId,
+  //   );
 
-//   await Promise.all(
-//     banner.images.map(
-//       async (image) => {
-//         if (image.imageUrl) {
-//           try {
-//             await this.uploadUseCase.delete(
-//               image.imageUrl,
-//             );
-//           } catch {
-//             // ignore
-//           }
-//         }
-//       },
-//     ),
-//   );
+  //   await Promise.all(
+  //     banner.images.map(
+  //       async (image) => {
+  //         if (image.imageUrl) {
+  //           try {
+  //             await this.uploadUseCase.delete(
+  //               image.imageUrl,
+  //             );
+  //           } catch {
+  //             // ignore
+  //           }
+  //         }
+  //       },
+  //     ),
+  //   );
 
-//   return {
-//     success: true,
-//     message:
-//       'Banner deleted successfully',
-//   };
-// }
+  //   return {
+  //     success: true,
+  //     message:
+  //       'Banner deleted successfully',
+  //   };
+  // }
 
-// @Delete('images/:bannerImageId')
-// async deleteImage(
-//   @Param('bannerImageId')
-//   bannerImageId: string,
-// ) {
-//   const image =
-//     await this.bannerImageRepo.findById(
-//       bannerImageId,
-//     );
+  // @Delete('images/:bannerImageId')
+  // async deleteImage(
+  //   @Param('bannerImageId')
+  //   bannerImageId: string,
+  // ) {
+  //   const image =
+  //     await this.bannerImageRepo.findById(
+  //       bannerImageId,
+  //     );
 
-//   if (!image) {
-//     throw new Error(
-//       'Banner image not found',
-//     );
-//   }
+  //   if (!image) {
+  //     throw new Error(
+  //       'Banner image not found',
+  //     );
+  //   }
 
-//   // Save URL before delete
-//   const imageUrl =
-//     image.imageUrl;
+  //   // Save URL before delete
+  //   const imageUrl =
+  //     image.imageUrl;
 
-//   // Soft delete DB record
-//   await this.deleteBannerImageUseCase.execute(
-//     bannerImageId,
-//   );
+  //   // Soft delete DB record
+  //   await this.deleteBannerImageUseCase.execute(
+  //     bannerImageId,
+  //   );
 
-//   // Delete S3 file
-//   if (imageUrl) {
-//     try {
-//       console.log(
-//         'Deleting image:',
-//         imageUrl,
-//       );
+  //   // Delete S3 file
+  //   if (imageUrl) {
+  //     try {
+  //       console.log(
+  //         'Deleting image:',
+  //         imageUrl,
+  //       );
 
-//       await this.uploadUseCase.delete(
-//         imageUrl,
-//       );
+  //       await this.uploadUseCase.delete(
+  //         imageUrl,
+  //       );
 
-//       console.log(
-//         'S3 delete success',
-//       );
-//     } catch (error) {
-//       console.error(
-//         'S3 delete failed:',
-//         error,
-//       );
-//     }
-//   }
+  //       console.log(
+  //         'S3 delete success',
+  //       );
+  //     } catch (error) {
+  //       console.error(
+  //         'S3 delete failed:',
+  //         error,
+  //       );
+  //     }
+  //   }
 
-//   return {
-//     success: true,
-//     message:
-//       'Banner image deleted successfully',
-//   };
-// }
+  //   return {
+  //     success: true,
+  //     message:
+  //       'Banner image deleted successfully',
+  //   };
+  // }
 
-// =======================
-// 🗑 DELETE BANNER
-// =======================
+  // =======================
+  // 🗑 DELETE BANNER
+  // =======================
 
-@Delete(':bannerId')
-async deleteBanner(
-  @Param('bannerId')
-  bannerId: string,
-) {
-  await this.deleteBannerUseCase.execute(
-    bannerId,
-  );
+  @Delete(':bannerId')
+  async deleteBanner(
+    @Param('bannerId')
+    bannerId: string,
+  ) {
+    await this.deleteBannerUseCase.execute(bannerId);
 
-  return {
-    success: true,
-    message:
-      'Banner deleted successfully',
-  };
+    return {
+      success: true,
+      message: 'Banner deleted successfully',
+    };
+  }
+
+  // =======================
+  // 🗑 DELETE IMAGE
+  // =======================
+
+  @Delete('images/:bannerImageId')
+  async deleteImage(
+    @Param('bannerImageId')
+    bannerImageId: string,
+  ) {
+    await this.deleteBannerImageUseCase.execute(bannerImageId);
+
+    return {
+      success: true,
+      message: 'Banner image deleted successfully',
+    };
+  }
 }
-
-// =======================
-// 🗑 DELETE IMAGE
-// =======================
-
-@Delete('images/:bannerImageId')
-async deleteImage(
-  @Param('bannerImageId')
-  bannerImageId: string,
-) {
-  await this.deleteBannerImageUseCase.execute(
-    bannerImageId,
-  );
-
-  return {
-    success: true,
-    message:
-      'Banner image deleted successfully',
-  };
-}
-}
-

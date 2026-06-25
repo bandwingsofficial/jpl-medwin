@@ -83,7 +83,7 @@ export class RemoveCouponUseCase {
     // 💰 SUMMARY
     // =======================
 
-    const summary = this.summaryService.build({
+    const summary = await this.summaryService.build({
       items,
 
       couponDiscount: 0,

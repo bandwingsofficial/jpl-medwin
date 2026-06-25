@@ -49,15 +49,9 @@ import { PrismaCustomerRepository } from './infrastructure/repositories/prisma-c
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 
 @Module({
-  imports: [
-    PrismaModule,
+  imports: [PrismaModule, AuthModule],
 
-    AuthModule,
-  ],
-
-  controllers: [
-    AdminCustomerController,
-  ],
+  controllers: [AdminCustomerController],
 
   providers: [
     // =======================
@@ -87,13 +81,10 @@ import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
     {
       provide: TOKENS.CUSTOMER_REPO,
 
-      useClass:
-        PrismaCustomerRepository,
+      useClass: PrismaCustomerRepository,
     },
   ],
 
-  exports: [
-    TOKENS.CUSTOMER_REPO,
-  ],
+  exports: [TOKENS.CUSTOMER_REPO],
 })
 export class CustomerModule {}

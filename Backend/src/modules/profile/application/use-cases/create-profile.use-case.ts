@@ -39,9 +39,7 @@ export class CreateProfileUseCase {
     // 🔍 CHECK EXISTING PROFILE
     // =======================
 
-    const existingProfile = await this.profileRepo.findByUserId(
-      input.userId,
-    );
+    const existingProfile = await this.profileRepo.findByUserId(input.userId);
 
     if (existingProfile) {
       throw new ProfileAlreadyExistsException({
@@ -53,46 +51,34 @@ export class CreateProfileUseCase {
     // ✨ NORMALIZATION
     // =======================
 
-    const normalizedName = input.name
-      ? this.domainService.normalizeName(input.name)
-      : undefined;
+    const normalizedName = input.name ? this.domainService.normalizeName(input.name) : undefined;
 
     const normalizedEmail = input.email
       ? this.domainService.normalizeEmail(input.email)
       : undefined;
 
     const normalizedPhoneNumber = input.phoneNumber
-      ? this.domainService.normalizePhoneNumber(
-          input.phoneNumber,
-        )
+      ? this.domainService.normalizePhoneNumber(input.phoneNumber)
       : undefined;
 
     // =======================
     // 🔍 EMAIL VALIDATION
     // =======================
 
-    if (
-      normalizedEmail &&
-      !this.domainService.isValidEmail(normalizedEmail)
-    ) {
+    if (normalizedEmail && !this.domainService.isValidEmail(normalizedEmail)) {
       throw new InvalidEmailException({
-  email: normalizedEmail,
-});
+        email: normalizedEmail,
+      });
     }
 
     // =======================
     // 🔍 PHONE VALIDATION
     // =======================
 
-    if (
-      normalizedPhoneNumber &&
-      !this.domainService.isValidPhoneNumber(
-        normalizedPhoneNumber,
-      )
-    ) {
+    if (normalizedPhoneNumber && !this.domainService.isValidPhoneNumber(normalizedPhoneNumber)) {
       throw new InvalidPhoneNumberException({
-  phoneNumber: normalizedPhoneNumber,
-});
+        phoneNumber: normalizedPhoneNumber,
+      });
     }
 
     // =======================
@@ -100,15 +86,12 @@ export class CreateProfileUseCase {
     // =======================
 
     if (normalizedEmail) {
-      const existingEmailProfile =
-        await this.profileRepo.findByEmail(
-          normalizedEmail,
-        );
+      const existingEmailProfile = await this.profileRepo.findByEmail(normalizedEmail);
 
       if (existingEmailProfile) {
         throw new EmailAlreadyExistsException({
-  email: normalizedEmail,
-});
+          email: normalizedEmail,
+        });
       }
     }
 
@@ -117,15 +100,12 @@ export class CreateProfileUseCase {
     // =======================
 
     if (normalizedPhoneNumber) {
-      const existingPhoneProfile =
-        await this.profileRepo.findByPhoneNumber(
-          normalizedPhoneNumber,
-        );
+      const existingPhoneProfile = await this.profileRepo.findByPhoneNumber(normalizedPhoneNumber);
 
       if (existingPhoneProfile) {
         throw new PhoneNumberAlreadyExistsException({
-  phoneNumber: normalizedPhoneNumber,
-});
+          phoneNumber: normalizedPhoneNumber,
+        });
       }
     }
 

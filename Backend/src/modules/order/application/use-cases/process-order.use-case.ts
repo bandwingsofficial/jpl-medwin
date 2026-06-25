@@ -72,52 +72,41 @@ export class ProcessOrderUseCase {
     // =======================
 
     return {
-  id: updated.id,
+      id: updated.id,
 
-  orderNumber: updated.orderNumber,
+      orderNumber: updated.orderNumber,
 
-  status: updated.status,
+      status: updated.status,
 
-  paymentStatus: updated.paymentStatus,
+      paymentStatus: updated.paymentStatus,
 
-  totals: {
-    subtotal: updated.subtotal,
+      totals: {
+        subtotal: updated.subtotal,
 
-    couponDiscount:
-      updated.couponDiscount,
+        couponDiscount: updated.couponDiscount,
 
-    shippingCharge:
-      updated.shippingCharge,
+        shippingCharge: updated.shippingCharge,
 
-    tax: updated.tax,
+        tax: updated.tax,
 
-    redeemedCoins:
-      updated.redeemedCoins,
+        redeemedCoins: updated.redeemedCoins,
 
-    redeemedAmount:
-      updated.redeemedAmount,
+        redeemedAmount: updated.redeemedAmount,
 
-    earnedCoins:
-      updated.earnedCoins,
+        earnedCoins: updated.earnedCoins,
 
-    grandTotal:
-      updated.grandTotal,
+        grandTotal: updated.grandTotal,
 
-    totalSavings:
-      updated.totalSavings,
-  },
+        totalSavings: updated.totalSavings,
+      },
 
-  itemCount:
-  this.domainService.calculateTotalProducts(items),
+      itemCount: this.domainService.calculateTotalProducts(items),
 
-totalQuantity:
-  this.domainService.calculateTotalQuantity(items),
+      totalQuantity: this.domainService.calculateTotalQuantity(items),
 
-  processedAt:
-    updated.updatedAt,
+      processedAt: updated.updatedAt,
 
-  updatedAt:
-    updated.updatedAt,
-};
+      updatedAt: updated.updatedAt,
+    };
   }
 }

@@ -2,7 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../../../infrastructure/prisma/prisma.service';
 import { Prisma, ProductStatus as PrismaProductStatus } from '@prisma/client';
 
-import { ProductRepository, FullProduct ,ProductFilters } from '../../../../domain/repositories/product.repository';
+import {
+  ProductRepository,
+  FullProduct,
+  ProductFilters,
+} from '../../../../domain/repositories/product.repository';
 
 import { Product } from '../../../../domain/entities/product.entity';
 import { ProductMapper } from '../mappers/product.mapper';
@@ -16,48 +20,45 @@ export class PrismaProductRepository implements ProductRepository {
   // =======================
 
   async findById(
-  id: string,
-  includeDeleted = false,
-  tx?: Prisma.TransactionClient,
-): Promise<any | null> {
-  const client = tx ?? this.prisma;
+    id: string,
+    includeDeleted = false,
+    tx?: Prisma.TransactionClient,
+  ): Promise<any | null> {
+    const client = tx ?? this.prisma;
 
-  const data = await client.product.findUnique({
-    where: { id },
+    const data = await client.product.findUnique({
+      where: { id },
 
-    include: {
-      category: true,
-      subCategory: true,
-      miniCategory: true,
-    },
-  });
+      include: {
+        category: true,
+        subCategory: true,
+        miniCategory: true,
+      },
+    });
 
-  if (!data) return null;
+    if (!data) return null;
 
-  if (!includeDeleted && data.deletedAt) {
-    return null;
+    if (!includeDeleted && data.deletedAt) {
+      return null;
+    }
+
+    return ProductMapper.toDomainProduct(data);
   }
 
-  return ProductMapper.toDomainProduct(data);;
-}
+  async findByIds(ids: string[], tx?: Prisma.TransactionClient): Promise<Product[]> {
+    const client = tx ?? this.prisma;
 
-async findByIds(
-  ids: string[],
-  tx?: Prisma.TransactionClient,
-): Promise<Product[]> {
-  const client = tx ?? this.prisma;
-
-  const data = await client.product.findMany({
-    where: {
-      id: {
-        in: ids,
+    const data = await client.product.findMany({
+      where: {
+        id: {
+          in: ids,
+        },
+        deletedAt: null,
       },
-      deletedAt: null,
-    },
-  });
+    });
 
-  return data.map((item) => ProductMapper.toDomainProduct(item));
-}
+    return data.map((item) => ProductMapper.toDomainProduct(item));
+  }
 
   async findFullById(id: string, tx?: Prisma.TransactionClient): Promise<FullProduct | null> {
     const client = tx ?? this.prisma;
@@ -183,107 +184,107 @@ async findByIds(
   }
 
   async filter(filters: ProductFilters): Promise<FullProduct[]> {
-  return this.prisma.product.findMany({
-    where: {
-      deletedAt: null,
+    return this.prisma.product.findMany({
+      where: {
+        deletedAt: null,
 
-      ...(filters.categoryId && {
-        categoryId: filters.categoryId,
-      }),
+        ...(filters.categoryId && {
+          categoryId: filters.categoryId,
+        }),
 
-      ...(filters.subCategoryId && {
-        subCategoryId: filters.subCategoryId,
-      }),
+        ...(filters.subCategoryId && {
+          subCategoryId: filters.subCategoryId,
+        }),
 
-      ...(filters.miniCategoryId && {
-        miniCategoryId: filters.miniCategoryId,
-      }),
+        ...(filters.miniCategoryId && {
+          miniCategoryId: filters.miniCategoryId,
+        }),
 
-      ...(filters.brandId && {
-        brandId: filters.brandId,
-      }),
+        ...(filters.brandId && {
+          brandId: filters.brandId,
+        }),
 
-      ...(filters.type && {
-        type: filters.type as any,
-      }),
+        ...(filters.type && {
+          type: filters.type as any,
+        }),
 
-      ...(filters.status && {
-        status: filters.status as any,
-      }),
+        ...(filters.status && {
+          status: filters.status as any,
+        }),
 
-      ...(filters.tag && {
-        tags: {
-          has: filters.tag,
-        },
-      }),
-
-      ...(filters.search && {
-        OR: [
-          {
-            name: {
-              contains: filters.search,
-              mode: 'insensitive',
-            },
+        ...(filters.tag && {
+          tags: {
+            has: filters.tag,
           },
-          {
-            slug: {
-              contains: filters.search,
-              mode: 'insensitive',
+        }),
+
+        ...(filters.search && {
+          OR: [
+            {
+              name: {
+                contains: filters.search,
+                mode: 'insensitive',
+              },
             },
-          },
-        ],
-      }),
-    },
-
-    skip: filters.skip,
-
-    take: filters.take,
-
-    orderBy: filters.orderBy,
-
-    include: {
-      brand: true,
-
-      category: true,
-
-      subCategory: true,
-
-      miniCategory: true,
-
-      images: {
-        where: {
-          deletedAt: null,
-        },
-
-        orderBy: {
-          sortOrder: 'asc',
-        },
+            {
+              slug: {
+                contains: filters.search,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        }),
       },
 
-      variants: {
-        where: {
-          deletedAt: null,
+      skip: filters.skip,
+
+      take: filters.take,
+
+      orderBy: filters.orderBy,
+
+      include: {
+        brand: true,
+
+        category: true,
+
+        subCategory: true,
+
+        miniCategory: true,
+
+        images: {
+          where: {
+            deletedAt: null,
+          },
+
+          orderBy: {
+            sortOrder: 'asc',
+          },
         },
 
-        orderBy: {
-          createdAt: 'asc',
-        },
+        variants: {
+          where: {
+            deletedAt: null,
+          },
 
-        include: {
-          images: {
-            where: {
-              deletedAt: null,
-            },
+          orderBy: {
+            createdAt: 'asc',
+          },
 
-            orderBy: {
-              sortOrder: 'asc',
+          include: {
+            images: {
+              where: {
+                deletedAt: null,
+              },
+
+              orderBy: {
+                sortOrder: 'asc',
+              },
             },
           },
         },
       },
-    },
-  });
-}
+    });
+  }
 
   // =======================
   // 🧠 CHECKS

@@ -7,10 +7,7 @@ import { BaseException } from '@/common/exceptions/base.exception';
 import { ErrorCode } from '@/common/constants/error-codes';
 
 export class WishlistAlreadyExistsException extends BaseException {
-  constructor(details?: {
-    userId?: string;
-    productId?: string;
-  }) {
+  constructor(details?: { userId?: string; productId?: string }) {
     super(
       'Product already exists in wishlist',
 

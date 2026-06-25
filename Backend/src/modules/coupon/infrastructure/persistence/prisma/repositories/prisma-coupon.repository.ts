@@ -183,7 +183,7 @@ export class PrismaCouponRepository implements CouponRepository {
     return CouponMapper.toDomain(data);
   }
 
-// =======================
+  // =======================
   // 📊 USAGE
   // =======================
 

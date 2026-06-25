@@ -32,17 +32,12 @@ export class RemoveRewardsFromCheckoutUseCase {
     private readonly checkoutSummaryService: CheckoutSessionSummaryService,
   ) {}
 
-  async execute(input: {
-    checkoutSessionId: string;
-  }) {
+  async execute(input: { checkoutSessionId: string }) {
     // =======================
     // 🔍 FIND SESSION
     // =======================
 
-    const session =
-      await this.checkoutSessionRepo.findById(
-        input.checkoutSessionId,
-      );
+    const session = await this.checkoutSessionRepo.findById(input.checkoutSessionId);
 
     // =======================
     // ❌ SESSION NOT FOUND
@@ -50,8 +45,7 @@ export class RemoveRewardsFromCheckoutUseCase {
 
     if (!session) {
       throw new CheckoutSessionNotFoundException({
-        checkoutSessionId:
-          input.checkoutSessionId,
+        checkoutSessionId: input.checkoutSessionId,
       });
     }
 
@@ -59,18 +53,13 @@ export class RemoveRewardsFromCheckoutUseCase {
     // 🛡 VALIDATE SESSION
     // =======================
 
-    this.checkoutSessionDomainService.ensureSessionUsable(
-      session,
-    );
+    this.checkoutSessionDomainService.ensureSessionUsable(session);
 
     // =======================
     // 📦 GET ITEMS
     // =======================
 
-    const items =
-      await this.checkoutSessionItemRepo.findByCheckoutSessionId(
-        session.id,
-      );
+    const items = await this.checkoutSessionItemRepo.findByCheckoutSessionId(session.id);
 
     // =======================
     // 🪙 REMOVE REWARDS
@@ -86,68 +75,51 @@ export class RemoveRewardsFromCheckoutUseCase {
     // 💰 RECALCULATE SUMMARY
     // =======================
 
-    const summary =
-      this.checkoutSummaryService.build({
-        items,
+    const summary = await this.checkoutSummaryService.build({
+      items,
 
-        couponDiscount:
-          session.couponDiscount,
+      couponDiscount: session.couponDiscount,
 
-        rewardDiscount:
-          0,
+      rewardDiscount: 0,
 
-        shipping:
-          session.shippingCharge,
+      shipping: session.shippingCharge,
 
-        tax:
-          session.tax,
-      });
+      tax: session.tax,
+    });
 
     // =======================
     // 🔄 SYNC SNAPSHOT
     // =======================
 
-    session.grandTotal =
-      summary.grandTotal;
+    session.grandTotal = summary.grandTotal;
 
-    session.totalSavings =
-      summary.totalSavings;
+    session.totalSavings = summary.totalSavings;
 
     // =======================
     // 💾 SAVE SESSION
     // =======================
 
-    const updatedSession =
-      await this.checkoutSessionRepo.update(
-        session,
-      );
+    const updatedSession = await this.checkoutSessionRepo.update(session);
 
     // =======================
     // 💰 PAYABLES
     // =======================
 
     const payableBeforeRewards =
-      summary.subtotal +
-      summary.shipping +
-      summary.tax -
-      summary.couponDiscount;
+      summary.subtotal + summary.shipping + summary.tax - summary.couponDiscount;
 
-    const payableAfterRewards =
-      summary.grandTotal;
+    const payableAfterRewards = summary.grandTotal;
 
     // =======================
     // 🚀 RESPONSE
     // =======================
 
     return {
-      checkoutSessionId:
-        updatedSession.id,
+      checkoutSessionId: updatedSession.id,
 
-      status:
-        updatedSession.status,
+      status: updatedSession.status,
 
-      expiresAt:
-        updatedSession.expiresAt,
+      expiresAt: updatedSession.expiresAt,
 
       // =======================
       // 🪙 REWARDS
@@ -168,17 +140,13 @@ export class RemoveRewardsFromCheckoutUseCase {
       // =======================
 
       cart: {
-        id:
-          updatedSession.cartId,
+        id: updatedSession.cartId,
 
-        status:
-          'LOCKED',
+        status: 'LOCKED',
 
-        lockedAt:
-          updatedSession.updatedAt,
+        lockedAt: updatedSession.updatedAt,
 
-        couponCode:
-          updatedSession.couponCode,
+        couponCode: updatedSession.couponCode,
       },
 
       // =======================
@@ -186,72 +154,54 @@ export class RemoveRewardsFromCheckoutUseCase {
       // =======================
 
       items: items.map((item) => {
-        const mrp =
-          item.mrp ?? item.price;
+        const mrp = item.mrp ?? item.price;
 
-        const mrpTotal =
-          mrp * item.quantity;
+        const mrpTotal = mrp * item.quantity;
 
-        const discount =
-          mrpTotal -
-          item.totalPrice;
+        const discount = mrpTotal - item.totalPrice;
 
         return {
-          id:
-            item.id,
+          id: item.id,
 
-          checkoutSessionId:
-            item.checkoutSessionId,
+          checkoutSessionId: item.checkoutSessionId,
 
-          productId:
-            item.productId,
+          productId: item.productId,
 
-          variantId:
-            item.variantId,
+          variantId: item.variantId,
 
-          productName:
-            item.productName,
+          productName: item.productName,
 
           variant: {
-            id:
-              item.variantId,
+            id: item.variantId,
 
-            name:
-              item.variantName,
+            name: item.variantName,
 
-            sku:
-              item.sku,
+            sku: item.sku,
 
-            quantity:
-              item.quantity,
+            quantity: item.quantity,
 
             pricing: {
-              sellingPrice:
-                item.price,
+              sellingPrice: item.price,
 
               mrp,
             },
 
             images: {
-              main:
-                item.imageUrl,
+              main: item.imageUrl,
             },
           },
 
           totals: {
-            subtotal:
-              item.totalPrice,
+            subtotal: item.totalPrice,
 
             mrpTotal,
 
             discount,
           },
 
-          createdAt:
-            item.createdAt,
+          createdAt: item.createdAt,
 
-          updatedAt:
-            item.updatedAt,
+          updatedAt: item.updatedAt,
         };
       }),
 
@@ -261,8 +211,7 @@ export class RemoveRewardsFromCheckoutUseCase {
 
       summary,
 
-      updatedAt:
-        updatedSession.updatedAt,
+      updatedAt: updatedSession.updatedAt,
     };
   }
 }

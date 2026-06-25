@@ -39,17 +39,13 @@ export class ReturnDomainService {
   // =======================
 
   ensureCanApprove(returnRequest: Return) {
-    if (
-      returnRequest.status !==
-      ReturnStatus.REQUESTED
-    ) {
+    if (returnRequest.status !== ReturnStatus.REQUESTED) {
       throw new InvalidReturnOperationException({
         returnId: returnRequest.id,
 
         operation: 'approve',
 
-        reason:
-          'Only requested returns can be approved',
+        reason: 'Only requested returns can be approved',
       });
     }
   }
@@ -59,17 +55,13 @@ export class ReturnDomainService {
   // =======================
 
   ensureCanReject(returnRequest: Return) {
-    if (
-      returnRequest.status !==
-      ReturnStatus.REQUESTED
-    ) {
+    if (returnRequest.status !== ReturnStatus.REQUESTED) {
       throw new InvalidReturnOperationException({
         returnId: returnRequest.id,
 
         operation: 'reject',
 
-        reason:
-          'Only requested returns can be rejected',
+        reason: 'Only requested returns can be rejected',
       });
     }
   }
@@ -79,17 +71,13 @@ export class ReturnDomainService {
   // =======================
 
   ensureCanPickup(returnRequest: Return) {
-    if (
-      returnRequest.status !==
-      ReturnStatus.APPROVED
-    ) {
+    if (returnRequest.status !== ReturnStatus.APPROVED) {
       throw new InvalidReturnOperationException({
         returnId: returnRequest.id,
 
         operation: 'pickup',
 
-        reason:
-          'Only approved returns can be picked up',
+        reason: 'Only approved returns can be picked up',
       });
     }
   }
@@ -99,17 +87,13 @@ export class ReturnDomainService {
   // =======================
 
   ensureCanComplete(returnRequest: Return) {
-    if (
-      returnRequest.status !==
-      ReturnStatus.PICKED_UP
-    ) {
+    if (returnRequest.status !== ReturnStatus.PICKED_UP) {
       throw new InvalidReturnOperationException({
         returnId: returnRequest.id,
 
         operation: 'complete',
 
-        reason:
-          'Return must be picked up before completion',
+        reason: 'Return must be picked up before completion',
       });
     }
   }
@@ -123,10 +107,7 @@ export class ReturnDomainService {
 
     userId: string;
   }): boolean {
-    return (
-      params.returnRequest.userId ===
-      params.userId
-    );
+    return params.returnRequest.userId === params.userId;
   }
 
   // =======================
@@ -134,17 +115,12 @@ export class ReturnDomainService {
   // =======================
 
   isActive(returnRequest: Return): boolean {
-    return [
-      ReturnStatus.REQUESTED,
-      ReturnStatus.APPROVED,
-      ReturnStatus.PICKED_UP,
-    ].includes(returnRequest.status);
+    return [ReturnStatus.REQUESTED, ReturnStatus.APPROVED, ReturnStatus.PICKED_UP].includes(
+      returnRequest.status,
+    );
   }
 
   isClosed(returnRequest: Return): boolean {
-    return [
-      ReturnStatus.REJECTED,
-      ReturnStatus.COMPLETED,
-    ].includes(returnRequest.status);
+    return [ReturnStatus.REJECTED, ReturnStatus.COMPLETED].includes(returnRequest.status);
   }
 }

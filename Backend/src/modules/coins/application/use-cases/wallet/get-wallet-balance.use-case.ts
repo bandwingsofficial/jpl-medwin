@@ -17,10 +17,7 @@ export class GetWalletBalanceUseCase {
     private readonly walletRepo: CoinWalletRepository,
   ) {}
 
-  async execute(input: {
-    walletId?: string;
-    userId?: string;
-  }) {
+  async execute(input: { walletId?: string; userId?: string }) {
     if (!input.walletId && !input.userId) {
       throw new InvalidWalletQueryException();
     }
@@ -28,14 +25,9 @@ export class GetWalletBalanceUseCase {
     let wallet: CoinWallet | null = null;
 
     if (input.walletId) {
-      wallet = await this.walletRepo.findById(
-        input.walletId,
-      );
+      wallet = await this.walletRepo.findById(input.walletId);
     } else if (input.userId) {
-      wallet =
-        await this.walletRepo.findByUserId(
-          input.userId,
-        );
+      wallet = await this.walletRepo.findByUserId(input.userId);
     }
 
     if (!wallet) {
@@ -56,17 +48,13 @@ export class GetWalletBalanceUseCase {
 
       hasBalance: wallet.balance > 0,
 
-      lifetimeEarned:
-        wallet.lifetimeEarned,
+      lifetimeEarned: wallet.lifetimeEarned,
 
-      lifetimeRedeemed:
-        wallet.lifetimeRedeemed,
+      lifetimeRedeemed: wallet.lifetimeRedeemed,
 
-      lifetimeExpired:
-        wallet.lifetimeExpired,
+      lifetimeExpired: wallet.lifetimeExpired,
 
-      lifetimeRefunded:
-        wallet.lifetimeRefunded,
+      lifetimeRefunded: wallet.lifetimeRefunded,
 
       createdAt: wallet.createdAt,
 

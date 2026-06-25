@@ -6,9 +6,7 @@ import { UploadImageUseCase } from '@/modules/upload/application/upload-image.us
 
 @Injectable()
 export class ProductUploadService {
-  constructor(
-    private readonly uploadUseCase: UploadImageUseCase,
-  ) {}
+  constructor(private readonly uploadUseCase: UploadImageUseCase) {}
 
   // =======================
   // 📤 UPLOAD SINGLE FILE
@@ -22,10 +20,7 @@ export class ProductUploadService {
       return undefined;
     }
 
-    const result = await this.uploadUseCase.execute(
-      file,
-      'products',
-    );
+    const result = await this.uploadUseCase.execute(file, 'products');
 
     uploadedUrls.push(result.url);
 
@@ -36,10 +31,7 @@ export class ProductUploadService {
   // 📤 UPLOAD MULTIPLE FILES
   // =======================
 
-  async uploadMany(
-    uploadedUrls: string[],
-    files?: Express.Multer.File[],
-  ): Promise<string[]> {
+  async uploadMany(uploadedUrls: string[], files?: Express.Multer.File[]): Promise<string[]> {
     if (!files?.length) {
       return [];
     }
@@ -47,10 +39,7 @@ export class ProductUploadService {
     const urls: string[] = [];
 
     for (const file of files) {
-      const url = await this.uploadFile(
-        uploadedUrls,
-        file,
-      );
+      const url = await this.uploadFile(uploadedUrls, file);
 
       if (url) {
         urls.push(url);
@@ -64,9 +53,7 @@ export class ProductUploadService {
   // 🗑 SAFE DELETE SINGLE
   // =======================
 
-  async safeDelete(
-    url?: string | null,
-  ): Promise<void> {
+  async safeDelete(url?: string | null): Promise<void> {
     if (!url) {
       return;
     }
@@ -74,11 +61,7 @@ export class ProductUploadService {
     try {
       await this.uploadUseCase.delete(url);
     } catch (error) {
-      console.error(
-        'Failed to delete uploaded file:',
-        url,
-        error,
-      );
+      console.error('Failed to delete uploaded file:', url, error);
     }
   }
 
@@ -86,15 +69,11 @@ export class ProductUploadService {
   // 🗑 SAFE DELETE MULTIPLE
   // =======================
 
-  async safeDeleteMany(
-    urls?: (string | null | undefined)[],
-  ): Promise<void> {
+  async safeDeleteMany(urls?: (string | null | undefined)[]): Promise<void> {
     if (!urls?.length) {
       return;
     }
 
-    await Promise.all(
-      urls.map((url) => this.safeDelete(url)),
-    );
+    await Promise.all(urls.map((url) => this.safeDelete(url)));
   }
 }

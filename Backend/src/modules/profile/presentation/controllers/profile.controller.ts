@@ -69,10 +69,7 @@ export class ProfileController {
     // =======================
 
     if (file) {
-      const upload = await this.uploadUseCase.execute(
-        file,
-        'profiles',
-      );
+      const upload = await this.uploadUseCase.execute(file, 'profiles');
 
       avatarUrl = upload.url;
     }
@@ -109,10 +106,7 @@ export class ProfileController {
     // 🔍 EXISTING PROFILE
     // =======================
 
-    const existingProfile =
-      await this.getProfileUseCase.execute(
-        req.user.userId,
-      );
+    const existingProfile = await this.getProfileUseCase.execute(req.user.userId);
 
     let avatarUrl = existingProfile.avatarUrl;
 
@@ -121,10 +115,7 @@ export class ProfileController {
     // =======================
 
     if (file) {
-      const upload = await this.uploadUseCase.execute(
-        file,
-        'profiles',
-      );
+      const upload = await this.uploadUseCase.execute(file, 'profiles');
 
       avatarUrl = upload.url;
     }
@@ -133,25 +124,22 @@ export class ProfileController {
     // 🔄 UPDATE PROFILE
     // =======================
 
-    const updatedProfile =
-      await this.updateProfileUseCase.execute({
-        userId: req.user.userId,
+    const updatedProfile = await this.updateProfileUseCase.execute({
+      userId: req.user.userId,
 
-        name: dto?.name,
-        email: dto?.email,
-        phoneNumber: dto?.phoneNumber,
+      name: dto?.name,
+      email: dto?.email,
+      phoneNumber: dto?.phoneNumber,
 
-        avatarUrl,
-      });
+      avatarUrl,
+    });
 
     // =======================
     // 🗑️ DELETE OLD IMAGE
     // =======================
 
     if (file && existingProfile.avatarUrl) {
-      await this.uploadUseCase.delete(
-        existingProfile.avatarUrl,
-      );
+      await this.uploadUseCase.delete(existingProfile.avatarUrl);
     }
 
     return updatedProfile;
@@ -163,46 +151,37 @@ export class ProfileController {
 
   @Get()
   async getProfile(@Req() req: AuthRequest) {
-    return this.getProfileUseCase.execute(
-      req.user.userId,
-    );
+    return this.getProfileUseCase.execute(req.user.userId);
   }
-// =======================
-// 🗑️ DELETE PROFILE
-// =======================
-
-@Delete()
-async deleteProfile(@Req() req: AuthRequest) {
-  // =======================
-  // 🔍 GET PROFILE
-  // =======================
-
-  const profile =
-    await this.getProfileUseCase.execute(
-      req.user.userId,
-    );
-
   // =======================
   // 🗑️ DELETE PROFILE
   // =======================
 
-  await this.deleteProfileUseCase.execute(
-    req.user.userId,
-  );
+  @Delete()
+  async deleteProfile(@Req() req: AuthRequest) {
+    // =======================
+    // 🔍 GET PROFILE
+    // =======================
 
-  // =======================
-  // 🖼️ DELETE AVATAR
-  // =======================
+    const profile = await this.getProfileUseCase.execute(req.user.userId);
 
-  if (profile.avatarUrl) {
-    await this.uploadUseCase.delete(
-      profile.avatarUrl,
-    );
+    // =======================
+    // 🗑️ DELETE PROFILE
+    // =======================
+
+    await this.deleteProfileUseCase.execute(req.user.userId);
+
+    // =======================
+    // 🖼️ DELETE AVATAR
+    // =======================
+
+    if (profile.avatarUrl) {
+      await this.uploadUseCase.delete(profile.avatarUrl);
+    }
+
+    return {
+      success: true,
+      message: 'Profile deleted successfully',
+    };
   }
-
-  return {
-    success: true,
-    message: 'Profile deleted successfully',
-  };
-}
 }

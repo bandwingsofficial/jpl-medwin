@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 
 import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
 import { RolesGuard } from '@/modules/auth/presentation/guards/role.guard';
@@ -21,27 +16,16 @@ import { AutocompleteSearchUseCase } from '../../application/use-cases/autocompl
 export class SearchController {
   constructor(
     private readonly globalSearchUseCase: GlobalSearchUseCase,
-    private readonly autocompleteSearchUseCase : AutocompleteSearchUseCase
+    private readonly autocompleteSearchUseCase: AutocompleteSearchUseCase,
   ) {}
 
   @Get()
-  async search(
-    @Query() query: SearchQueryDto,
-  ) {
-    return this.globalSearchUseCase.execute(
-      query.q,
-      query.limit,
-    );
+  async search(@Query() query: SearchQueryDto) {
+    return this.globalSearchUseCase.execute(query.q, query.limit);
   }
 
   @Get('autocomplete')
-async autocomplete(
-  @Query('q') query: string,
-  @Query('limit') limit?: number,
-) {
-  return this.autocompleteSearchUseCase.execute(
-    query,
-    limit,
-  );
-}
+  async autocomplete(@Query('q') query: string, @Query('limit') limit?: number) {
+    return this.autocompleteSearchUseCase.execute(query, limit);
+  }
 }

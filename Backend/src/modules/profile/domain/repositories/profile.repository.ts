@@ -25,9 +25,7 @@ export abstract class ProfileRepository {
 
   abstract findByEmail(email: string): Promise<Profile | null>;
 
-  abstract findByPhoneNumber(
-    phoneNumber: string,
-  ): Promise<Profile | null>;
+  abstract findByPhoneNumber(phoneNumber: string): Promise<Profile | null>;
 
   // =======================
   // 🗑️ DELETE

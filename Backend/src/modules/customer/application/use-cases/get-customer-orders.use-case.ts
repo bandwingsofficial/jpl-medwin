@@ -1,9 +1,6 @@
 // src/modules/customer/application/use-cases/get-customer-orders.use-case.ts
 
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -18,62 +15,43 @@ export class GetCustomerOrdersUseCase {
     private readonly customerRepo: CustomerRepository,
   ) {}
 
-  async execute(input: {
-    userId: string;
-  }): Promise<{
+  async execute(input: { userId: string }): Promise<{
     totalOrders: number;
 
     totalSpent: number;
   }> {
-    console.log(
-      '\n📦 [GET CUSTOMER ORDERS USE CASE]',
-    );
+    console.log('\n📦 [GET CUSTOMER ORDERS USE CASE]');
 
-    console.log(
-      '➡️ User ID:',
-      input.userId,
-    );
+    console.log('➡️ User ID:', input.userId);
 
     // =======================
     // 🔍 FIND CUSTOMER
     // =======================
 
-    const customer =
-      await this.customerRepo.findById(
-        input.userId,
-      );
+    const customer = await this.customerRepo.findById(input.userId);
 
-    console.log(
-      '➡️ Customer found:',
-      !!customer,
-    );
+    console.log('➡️ Customer found:', !!customer);
 
     // =======================
     // ❌ NOT FOUND
     // =======================
 
     if (!customer) {
-      throw new CustomerNotFoundException(
-        {
-          userId: input.userId,
-        },
-      );
+      throw new CustomerNotFoundException({
+        userId: input.userId,
+      });
     }
 
     // =======================
     // ✅ RESPONSE
     // =======================
 
-    console.log(
-      '✅ Customer orders fetched',
-    );
+    console.log('✅ Customer orders fetched');
 
     return {
-      totalOrders:
-        customer.stats.totalOrders,
+      totalOrders: customer.stats.totalOrders,
 
-      totalSpent:
-        customer.stats.totalSpent,
+      totalSpent: customer.stats.totalSpent,
     };
   }
 }

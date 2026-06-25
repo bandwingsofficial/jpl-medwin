@@ -26,17 +26,17 @@ import { OrderStatus } from '@/modules/order/domain/enums/order-status.enum';
 
 @Injectable()
 export class RequestReturnUseCase {
-constructor(
-  @Inject(TOKENS.RETURN_REPO)
-  private readonly returnRepo: ReturnRepository,
+  constructor(
+    @Inject(TOKENS.RETURN_REPO)
+    private readonly returnRepo: ReturnRepository,
 
-  @Inject(TOKENS.ORDER_REPO)
-  private readonly orderRepo: OrderRepository,
+    @Inject(TOKENS.ORDER_REPO)
+    private readonly orderRepo: OrderRepository,
 
-  private readonly domainService: ReturnDomainService,
+    private readonly domainService: ReturnDomainService,
 
-  private readonly orderResponseBuilder: OrderResponseBuilderService,
-) {}
+    private readonly orderResponseBuilder: OrderResponseBuilderService,
+  ) {}
 
   async execute(input: {
     orderId: string;
@@ -53,10 +53,7 @@ constructor(
     // 🔍 FIND ORDER
     // =======================
 
-    const order =
-      await this.orderRepo.findById(
-        input.orderId,
-      );
+    const order = await this.orderRepo.findById(input.orderId);
 
     // =======================
     // ❌ ORDER NOT FOUND
@@ -78,8 +75,7 @@ constructor(
 
         operation: 'request_return',
 
-        reason:
-          'Unauthorized access to order',
+        reason: 'Unauthorized access to order',
       });
     }
 
@@ -87,17 +83,13 @@ constructor(
     // 📦 ONLY DELIVERED ORDERS
     // =======================
 
-    if (
-      order.status !==
-      OrderStatus.DELIVERED
-    ) {
+    if (order.status !== OrderStatus.DELIVERED) {
       throw new InvalidOrderOperationException({
         orderId: order.id,
 
         operation: 'request_return',
 
-        reason:
-          'Only delivered orders can be returned',
+        reason: 'Only delivered orders can be returned',
       });
     }
 
@@ -105,10 +97,7 @@ constructor(
     // 🛡 PREVENT DUPLICATE
     // =======================
 
-    const existing =
-      await this.returnRepo.findActiveReturnByOrderId(
-        order.id,
-      );
+    const existing = await this.returnRepo.findActiveReturnByOrderId(order.id);
 
     if (existing) {
       throw new ReturnAlreadyRequestedException({
@@ -120,51 +109,45 @@ constructor(
     // 🧾 CREATE ENTITY
     // =======================
 
-const returnRequest = Return.create({
-  orderId: order.id,
-  userId: input.userId,
-  type: input.type,
-  reason: input.reason,
-  description: input.description,
-});
+    const returnRequest = Return.create({
+      orderId: order.id,
+      userId: input.userId,
+      type: input.type,
+      reason: input.reason,
+      description: input.description,
+    });
     // =======================
     // 💾 SAVE
     // =======================
 
-    const created =
-      await this.returnRepo.create(
-        returnRequest,
-      );
+    const created = await this.returnRepo.create(returnRequest);
 
     // =======================
     // 🚀 RESPONSE
     // =======================
 
     return {
-  returnRequest: {
-    id: created.id,
+      returnRequest: {
+        id: created.id,
 
-    orderId: created.orderId,
+        orderId: created.orderId,
 
-    userId: created.userId,
+        userId: created.userId,
 
-    type: created.type,
+        type: created.type,
 
-    reason: created.reason,
+        reason: created.reason,
 
-    description: created.description,
+        description: created.description,
 
-    status: created.status,
+        status: created.status,
 
-    createdAt: created.createdAt,
+        createdAt: created.createdAt,
 
-    updatedAt: created.updatedAt,
-  },
+        updatedAt: created.updatedAt,
+      },
 
-  order:
-    this.orderResponseBuilder.buildReplacementOrder(
-      order,
-    ),
-};
+      order: this.orderResponseBuilder.buildReplacementOrder(order),
+    };
   }
 }

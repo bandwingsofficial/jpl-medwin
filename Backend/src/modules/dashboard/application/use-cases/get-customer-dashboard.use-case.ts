@@ -1,8 +1,6 @@
 // src/modules/dashboard/application/use-cases/get-customer-dashboard.use-case.ts
 
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { DashboardPeriod } from '../../domain/enums/dashboard-period.enum';
 
@@ -10,9 +8,7 @@ import { CustomerDashboardService } from '../services/customer-dashboard.service
 
 @Injectable()
 export class GetCustomerDashboardUseCase {
-  constructor(
-    private readonly customerDashboardService: CustomerDashboardService,
-  ) {}
+  constructor(private readonly customerDashboardService: CustomerDashboardService) {}
 
   async execute(params?: {
     period?: DashboardPeriod;
@@ -25,26 +21,19 @@ export class GetCustomerDashboardUseCase {
     // 📅 PERIOD
     // =======================
 
-    const period =
-      params?.period ??
-      DashboardPeriod.OVERALL;
+    const period = params?.period ?? DashboardPeriod.OVERALL;
 
     // =======================
     // 👥 CUSTOMER METRICS
     // =======================
 
-    const data =
-      await this.customerDashboardService.getCustomerStats(
-        {
-          period,
+    const data = await this.customerDashboardService.getCustomerStats({
+      period,
 
-          from:
-            params?.from,
+      from: params?.from,
 
-          to:
-            params?.to,
-        },
-      );
+      to: params?.to,
+    });
 
     // =======================
     // 🚀 RESPONSE
@@ -53,11 +42,9 @@ export class GetCustomerDashboardUseCase {
     return {
       period,
 
-      from:
-        params?.from,
+      from: params?.from,
 
-      to:
-        params?.to,
+      to: params?.to,
 
       ...data,
     };

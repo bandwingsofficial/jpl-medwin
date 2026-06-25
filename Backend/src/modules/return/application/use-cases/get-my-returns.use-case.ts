@@ -76,12 +76,9 @@ export class GetMyReturnsUseCase {
 
     const data = await Promise.all(
       result.data.map(async (returnRequest) => {
-        const replacementOrder =
-          returnRequest.replacementOrderId
-            ? await this.orderRepo.findById(
-                returnRequest.replacementOrderId,
-              )
-            : null;
+        const replacementOrder = returnRequest.replacementOrderId
+          ? await this.orderRepo.findById(returnRequest.replacementOrderId)
+          : null;
 
         return {
           id: returnRequest.id,
@@ -94,31 +91,21 @@ export class GetMyReturnsUseCase {
 
           reason: returnRequest.reason,
 
-          description:
-            returnRequest.description,
+          description: returnRequest.description,
 
-          replacementOrder:
-            this.orderResponseBuilder.buildReplacementOrder(
-              replacementOrder,
-            ),
+          replacementOrder: this.orderResponseBuilder.buildReplacementOrder(replacementOrder),
 
-          approvedAt:
-            returnRequest.approvedAt,
+          approvedAt: returnRequest.approvedAt,
 
-          rejectedAt:
-            returnRequest.rejectedAt,
+          rejectedAt: returnRequest.rejectedAt,
 
-          pickedUpAt:
-            returnRequest.pickedUpAt,
+          pickedUpAt: returnRequest.pickedUpAt,
 
-          completedAt:
-            returnRequest.completedAt,
+          completedAt: returnRequest.completedAt,
 
-          createdAt:
-            returnRequest.createdAt,
+          createdAt: returnRequest.createdAt,
 
-          updatedAt:
-            returnRequest.updatedAt,
+          updatedAt: returnRequest.updatedAt,
         };
       }),
     );
@@ -137,9 +124,7 @@ export class GetMyReturnsUseCase {
 
         total: result.total,
 
-        totalPages: Math.ceil(
-          result.total / (input.limit ?? 10),
-        ),
+        totalPages: Math.ceil(result.total / (input.limit ?? 10)),
       },
     };
   }

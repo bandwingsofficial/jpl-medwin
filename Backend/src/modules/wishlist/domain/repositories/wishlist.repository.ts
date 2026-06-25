@@ -11,19 +11,13 @@ export interface WishlistRepository {
 
   findByUserId(userId: string): Promise<Wishlist[]>;
 
-  findByUserAndProduct(
-    userId: string,
-    productId: string,
-  ): Promise<Wishlist | null>;
+  findByUserAndProduct(userId: string, productId: string): Promise<Wishlist | null>;
 
   // =======================
   // 🧠 CHECKS
   // =======================
 
-  exists(
-    userId: string,
-    productId: string,
-  ): Promise<boolean>;
+  exists(userId: string, productId: string): Promise<boolean>;
 
   countByUserId(userId: string): Promise<number>;
 

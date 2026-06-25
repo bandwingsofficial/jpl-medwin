@@ -108,10 +108,7 @@ export class CheckoutSession {
   // =======================
 
   isActive(): boolean {
-    return (
-      this.status === CheckoutSessionStatus.ACTIVE &&
-      !this.deletedAt
-    );
+    return this.status === CheckoutSessionStatus.ACTIVE && !this.deletedAt;
   }
 
   isCompleted(): boolean {
@@ -261,15 +258,10 @@ export class CheckoutSession {
   // =======================
 
   recalculateTotals() {
-    this.totalSavings =
-      this.couponDiscount + this.rewardDiscount;
+    this.totalSavings = this.couponDiscount + this.rewardDiscount;
 
     this.grandTotal = Math.max(
-      this.subtotal -
-        this.couponDiscount -
-        this.rewardDiscount +
-        this.shippingCharge +
-        this.tax,
+      this.subtotal - this.couponDiscount - this.rewardDiscount + this.shippingCharge + this.tax,
       0,
     );
   }

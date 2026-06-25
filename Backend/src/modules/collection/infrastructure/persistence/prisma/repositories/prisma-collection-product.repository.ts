@@ -11,68 +11,49 @@ import { CollectionProduct } from '../../../../domain/entities/collection-produc
 import { CollectionProductMapper } from '../mappers/collection-product.mapper';
 
 @Injectable()
-export class PrismaCollectionProductRepository
-  implements CollectionProductRepository
-{
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
+export class PrismaCollectionProductRepository implements CollectionProductRepository {
+  constructor(private readonly prisma: PrismaService) {}
 
   // =======================
   // 🔍 FIND
   // =======================
 
-  async findById(
-    id: string,
-  ): Promise<CollectionProduct | null> {
-    const data =
-      await this.prisma.collectionProduct.findUnique({
-        where: {
-          id,
-        },
-      });
+  async findById(id: string): Promise<CollectionProduct | null> {
+    const data = await this.prisma.collectionProduct.findUnique({
+      where: {
+        id,
+      },
+    });
 
-    return data
-      ? CollectionProductMapper.toDomain(data)
-      : null;
+    return data ? CollectionProductMapper.toDomain(data) : null;
   }
 
-  async findByCollectionId(
-    collectionId: string,
-  ): Promise<CollectionProduct[]> {
-    const data =
-      await this.prisma.collectionProduct.findMany({
-        where: {
-          collectionId,
-        },
+  async findByCollectionId(collectionId: string): Promise<CollectionProduct[]> {
+    const data = await this.prisma.collectionProduct.findMany({
+      where: {
+        collectionId,
+      },
 
-        orderBy: {
-          sortOrder: 'asc',
-        },
-      });
+      orderBy: {
+        sortOrder: 'asc',
+      },
+    });
 
-    return data.map((item) =>
-      CollectionProductMapper.toDomain(item),
-    );
+    return data.map((item) => CollectionProductMapper.toDomain(item));
   }
 
-  async findByProductId(
-    productId: string,
-  ): Promise<CollectionProduct[]> {
-    const data =
-      await this.prisma.collectionProduct.findMany({
-        where: {
-          productId,
-        },
+  async findByProductId(productId: string): Promise<CollectionProduct[]> {
+    const data = await this.prisma.collectionProduct.findMany({
+      where: {
+        productId,
+      },
 
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-    return data.map((item) =>
-      CollectionProductMapper.toDomain(item),
-    );
+    return data.map((item) => CollectionProductMapper.toDomain(item));
   }
 
   async findByCollectionAndProduct(params: {
@@ -80,20 +61,15 @@ export class PrismaCollectionProductRepository
 
     productId: string;
   }): Promise<CollectionProduct | null> {
-    const data =
-      await this.prisma.collectionProduct.findFirst({
-        where: {
-          collectionId:
-            params.collectionId,
+    const data = await this.prisma.collectionProduct.findFirst({
+      where: {
+        collectionId: params.collectionId,
 
-          productId:
-            params.productId,
-        },
-      });
+        productId: params.productId,
+      },
+    });
 
-    return data
-      ? CollectionProductMapper.toDomain(data)
-      : null;
+    return data ? CollectionProductMapper.toDomain(data) : null;
   }
 
   // =======================
@@ -105,16 +81,13 @@ export class PrismaCollectionProductRepository
 
     productId: string;
   }): Promise<boolean> {
-    const count =
-      await this.prisma.collectionProduct.count({
-        where: {
-          collectionId:
-            params.collectionId,
+    const count = await this.prisma.collectionProduct.count({
+      where: {
+        collectionId: params.collectionId,
 
-          productId:
-            params.productId,
-        },
-      });
+        productId: params.productId,
+      },
+    });
 
     return count > 0;
   }
@@ -123,31 +96,17 @@ export class PrismaCollectionProductRepository
   // ✍️ WRITE
   // =======================
 
-  async create(
-    item: CollectionProduct,
-  ): Promise<CollectionProduct> {
-    const data =
-      await this.prisma.collectionProduct.create({
-        data:
-          CollectionProductMapper.toPersistence(
-            item,
-          ),
-      });
+  async create(item: CollectionProduct): Promise<CollectionProduct> {
+    const data = await this.prisma.collectionProduct.create({
+      data: CollectionProductMapper.toPersistence(item),
+    });
 
-    return CollectionProductMapper.toDomain(
-      data,
-    );
+    return CollectionProductMapper.toDomain(data);
   }
 
-  async createMany(
-    items: CollectionProduct[],
-  ): Promise<void> {
+  async createMany(items: CollectionProduct[]): Promise<void> {
     await this.prisma.collectionProduct.createMany({
-      data: items.map((item) =>
-        CollectionProductMapper.toPersistence(
-          item,
-        ),
-      ),
+      data: items.map((item) => CollectionProductMapper.toPersistence(item)),
     });
   }
 
@@ -155,9 +114,7 @@ export class PrismaCollectionProductRepository
   // ❌ DELETE
   // =======================
 
-  async delete(
-    id: string,
-  ): Promise<void> {
+  async delete(id: string): Promise<void> {
     await this.prisma.collectionProduct.delete({
       where: {
         id,
@@ -172,18 +129,14 @@ export class PrismaCollectionProductRepository
   }): Promise<void> {
     await this.prisma.collectionProduct.deleteMany({
       where: {
-        collectionId:
-          params.collectionId,
+        collectionId: params.collectionId,
 
-        productId:
-          params.productId,
+        productId: params.productId,
       },
     });
   }
 
-  async deleteByCollectionId(
-    collectionId: string,
-  ): Promise<void> {
+  async deleteByCollectionId(collectionId: string): Promise<void> {
     await this.prisma.collectionProduct.deleteMany({
       where: {
         collectionId,
@@ -191,9 +144,7 @@ export class PrismaCollectionProductRepository
     });
   }
 
-  async deleteByProductId(
-    productId: string,
-  ): Promise<void> {
+  async deleteByProductId(productId: string): Promise<void> {
     await this.prisma.collectionProduct.deleteMany({
       where: {
         productId,

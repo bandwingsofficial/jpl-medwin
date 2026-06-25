@@ -139,7 +139,7 @@ export class CreateCheckoutSessionUseCase {
     // 💰 SUMMARY
     // =======================
 
-    const summary = this.summaryService.build({
+    const summary = await this.summaryService.build({
       items: cartItems,
 
       couponDiscount: 0,

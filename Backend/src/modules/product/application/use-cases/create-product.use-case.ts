@@ -39,13 +39,13 @@ export class CreateProductUseCase {
 
     await this.validationService.validate(input);
 
+    console.log('CreateProduct input mainImage:', input.mainImage);
+
     // =======================
     // 🔥 SLUG
     // =======================
 
-    const slug = await this.slugService.generateProductSlug(
-      input.slug || input.name,
-    );
+    const slug = await this.slugService.generateProductSlug(input.slug || input.name);
 
     // =======================
     // 💾 TRANSACTION
@@ -56,69 +56,47 @@ export class CreateProductUseCase {
       // 🆕 CREATE / RESTORE PRODUCT
       // =======================
 
-      const product = await this.productBuilderService.build(
-        input,
-        slug,
-        tx,
-      );
+      const product = await this.productBuilderService.build(input, slug, tx);
 
       // =======================
       // 🖼 PRODUCT IMAGES
       // =======================
 
-      await this.productImageService.createProductImages(
-        product,
-        input,
-        tx,
-      );
+      await this.productImageService.createProductImages(product, input, tx);
 
       // =======================
       // ➕ VARIANTS
       // =======================
 
-      product.defaultVariantId =
-        await this.variantCreatorService.createVariants(
-          product,
-          input.variants,
-          tx,
-        );
+      product.defaultVariantId = await this.variantCreatorService.createVariants(
+        product,
+        input.variants,
+        tx,
+      );
 
       // =======================
       // 💰 PRICE RANGE
       // =======================
 
-      this.productPriceService.calculatePriceRange(
-        product,
-        input.variants,
-      );
+      this.productPriceService.calculatePriceRange(product, input.variants);
 
       // =======================
       // 💾 SAVE PRODUCT
       // =======================
 
-      await this.productRepo.update(
-        product,
-        tx,
-      );
+      await this.productRepo.update(product, tx);
 
       // =======================
       // 🔥 FINAL FETCH
       // =======================
 
-      const fullProduct =
-        await this.productRepo.findFullById(
-          product.id,
-          tx,
-        );
+      const fullProduct = await this.productRepo.findFullById(product.id, tx);
 
       if (!fullProduct) {
-        throw new Error(
-          'Product created but failed to fetch',
-        );
+        throw new Error('Product created but failed to fetch');
       }
 
       return fullProduct;
     });
   }
 }
-

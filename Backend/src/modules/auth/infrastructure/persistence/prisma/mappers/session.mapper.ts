@@ -77,7 +77,11 @@ export class SessionMapper {
       case 'IOS':
         return Platform.IOS;
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Platform', value: platform, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Platform',
+          value: platform,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -92,7 +96,11 @@ export class SessionMapper {
       case 'API':
         return SessionType.API;
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown SessionType', value: type, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown SessionType',
+          value: type,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -111,7 +119,11 @@ export class SessionMapper {
       case Platform.IOS:
         return 'IOS';
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Platform', value: platform, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Platform',
+          value: platform,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -126,7 +138,11 @@ export class SessionMapper {
       case SessionType.API:
         return 'API';
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown SessionType', value: type, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown SessionType',
+          value: type,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 }

@@ -12,11 +12,6 @@ export class CollectionNotFoundException extends BaseException {
 
     slug?: string;
   }) {
-    super(
-      'Collection not found',
-      ErrorCode.COLLECTION.NOT_FOUND,
-      HttpStatus.NOT_FOUND,
-      details,
-    );
+    super('Collection not found', ErrorCode.COLLECTION.NOT_FOUND, HttpStatus.NOT_FOUND, details);
   }
 }

@@ -44,25 +44,17 @@ export class AddProductToCollectionUseCase {
     // 🔍 COLLECTION
     // =======================
 
-    const collection =
-      this.collectionDomainService.ensureExists({
-        collection:
-          await this.collectionRepo.findById(
-            input.collectionId,
-          ),
+    const collection = this.collectionDomainService.ensureExists({
+      collection: await this.collectionRepo.findById(input.collectionId),
 
-        collectionId:
-          input.collectionId,
-      });
+      collectionId: input.collectionId,
+    });
 
     // =======================
     // 📦 PRODUCT
     // =======================
 
-    const product =
-      await this.productRepo.findById(
-        input.productId,
-      );
+    const product = await this.productRepo.findById(input.productId);
 
     if (!product) {
       throw new CollectionProductNotFoundException({
@@ -74,42 +66,33 @@ export class AddProductToCollectionUseCase {
     // 🧠 EXISTS
     // =======================
 
-    const exists =
-      await this.collectionProductRepo.exists({
-        collectionId:
-          input.collectionId,
+    const exists = await this.collectionProductRepo.exists({
+      collectionId: input.collectionId,
 
-        productId:
-          input.productId,
-      });
+      productId: input.productId,
+    });
 
     this.collectionProductDomainService.ensureCanAdd({
       exists,
 
-      collectionId:
-        input.collectionId,
+      collectionId: input.collectionId,
 
-      productId:
-        input.productId,
+      productId: input.productId,
     });
 
     // =======================
     // ➕ CREATE
     // =======================
 
-    const item =
-      new CollectionProduct(
-        crypto.randomUUID(),
+    const item = new CollectionProduct(
+      crypto.randomUUID(),
 
-        input.collectionId,
+      input.collectionId,
 
-        input.productId,
-      );
+      input.productId,
+    );
 
-    const created =
-      await this.collectionProductRepo.create(
-        item,
-      );
+    const created = await this.collectionProductRepo.create(item);
 
     // =======================
     // 🚀 RESPONSE
@@ -118,14 +101,11 @@ export class AddProductToCollectionUseCase {
     return {
       id: created.id,
 
-      collectionId:
-        created.collectionId,
+      collectionId: created.collectionId,
 
-      productId:
-        created.productId,
+      productId: created.productId,
 
-      createdAt:
-        created.createdAt,
+      createdAt: created.createdAt,
     };
   }
 }

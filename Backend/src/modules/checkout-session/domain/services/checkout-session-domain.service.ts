@@ -90,32 +90,6 @@ export class CheckoutSessionDomainService {
   }
 
   // =======================
-  // 🚚 FREE SHIPPING
-  // =======================
-
-  isEligibleForFreeShipping(subtotal: number): boolean {
-    return subtotal >= 500;
-  }
-
-  // =======================
-  // 🚚 SHIPPING
-  // =======================
-
-  calculateShipping(subtotal: number): number {
-    // empty
-    if (subtotal <= 0) {
-      return 0;
-    }
-
-    // free shipping
-    if (this.isEligibleForFreeShipping(subtotal)) {
-      return 0;
-    }
-
-    return 50;
-  }
-
-  // =======================
   // 🧾 TAX
   // =======================
 
@@ -131,25 +105,25 @@ export class CheckoutSessionDomainService {
   // =======================
 
   calculateGrandTotal(params: {
-  subtotal: number;
+    subtotal: number;
 
-  shipping?: number;
+    shipping?: number;
 
-  tax?: number;
+    tax?: number;
 
-  couponDiscount?: number;
+    couponDiscount?: number;
 
-  rewardDiscount?: number;
-}): number {
-  const total =
-    params.subtotal +
-    (params.shipping ?? 0) +
-    (params.tax ?? 0) -
-    (params.couponDiscount ?? 0) -
-    (params.rewardDiscount ?? 0);
+    rewardDiscount?: number;
+  }): number {
+    const total =
+      params.subtotal +
+      (params.shipping ?? 0) +
+      (params.tax ?? 0) -
+      (params.couponDiscount ?? 0) -
+      (params.rewardDiscount ?? 0);
 
-  return Math.max(total, 0);
-}
+    return Math.max(total, 0);
+  }
 
   // =======================
   // 💰 TOTAL SAVINGS

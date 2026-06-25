@@ -53,13 +53,7 @@ type GetProductsInput = {
 
   includeVariants?: boolean;
 
-  sortBy?:
-    | 'newest'
-    | 'oldest'
-    | 'nameAsc'
-    | 'nameDesc'
-    | 'priceLowToHigh'
-    | 'priceHighToLow';
+  sortBy?: 'newest' | 'oldest' | 'nameAsc' | 'nameDesc' | 'priceLowToHigh' | 'priceHighToLow';
 
   page?: number;
 
@@ -74,227 +68,212 @@ export class GetProductsUseCase {
   ) {}
 
   async execute(input: GetProductsInput = {}): Promise<PaginatedProducts> {
-  // =======================
-  // 📄 PAGINATION
-  // =======================
+    // =======================
+    // 📄 PAGINATION
+    // =======================
 
-  const page = Number(input.page) || 1;
+    const page = Number(input.page) || 1;
 
-  const limit = Math.min(Number(input.limit) || 20, 100);
+    const limit = Math.min(Number(input.limit) || 20, 100);
 
-  const skip = (page - 1) * limit;
-  console.log({
-  inputPage: input.page,
-  page,
-  limit,
-  skip,
-});
-
-  // =======================
-  // 🔥 FILTER
-  // =======================
-
-  const where: any = {
-    deletedAt: null,
-  };
-
-  // =======================
-  // STATUS
-  // =======================
-
-  if (input.onlyActive !== false) {
-    where.status = ProductStatus.ACTIVE;
-  }
-
-  if (input.status) {
-    where.status = input.status;
-  }
-
-  // =======================
-  // CATEGORY FILTERS
-  // =======================
-
-  if (input.categoryId) {
-    where.categoryId = input.categoryId;
-  }
-
-  if (input.subCategoryId) {
-    where.subCategoryId = input.subCategoryId;
-  }
-
-  if (input.miniCategoryId) {
-    where.miniCategoryId = input.miniCategoryId;
-  }
-
-  if (input.brandId) {
-    where.brandId = input.brandId;
-  }
-
-  if (input.type) {
-    where.type = input.type;
-  }
-
-  // =======================
-  // TAG FILTER
-  // =======================
-
-  if (input.tag) {
-    where.tags = {
-      has: input.tag,
-    };
-  }
-
-  // =======================
-  // SEARCH
-  // =======================
-
-  if (input.search?.trim()) {
-    where.OR = [
-      {
-        name: {
-          contains: input.search,
-          mode: 'insensitive',
-        },
-      },
-      {
-        slug: {
-          contains: input.search,
-          mode: 'insensitive',
-        },
-      },
-      {
-        tags: {
-          has: input.search,
-        },
-      },
-    ];
-  }
-
-  // =======================
-  // SORT
-  // =======================
-
-  let orderBy: any = {
-    createdAt: 'desc',
-  };
-
-  switch (input.sortBy) {
-    case 'oldest':
-      orderBy = {
-        createdAt: 'asc',
-      };
-      break;
-
-    case 'nameAsc':
-      orderBy = {
-        name: 'asc',
-      };
-      break;
-
-    case 'nameDesc':
-      orderBy = {
-        name: 'desc',
-      };
-      break;
-  }
-
-  // =======================
-  // QUERY
-  // =======================
-
-  const [products, total] = await Promise.all([
-    this.productRepo.findMany({
-      where,
-      skip,
-      take: limit,
-      orderBy,
-    }),
-
-    this.productRepo.count(where),
-  ]);
-
-  // =======================
-  // MAP
-  // =======================
-
-  let data = products.map((product) => {
-    const mapped = ProductResponseMapper.map(product);
-
-    if (input.includeVariants === false) {
-      mapped.variants = [];
-    }
-
-    return mapped;
-  });
-
-  // =======================
-  // PRICE FILTER
-  // =======================
-
-  if (
-    input.minPrice !== undefined ||
-    input.maxPrice !== undefined
-  ) {
-    data = data.filter((p) => {
-      const price = p.price.min ?? 0;
-
-      if (
-        input.minPrice !== undefined &&
-        price < input.minPrice
-      ) {
-        return false;
-      }
-
-      if (
-        input.maxPrice !== undefined &&
-        price > input.maxPrice
-      ) {
-        return false;
-      }
-
-      return true;
-    });
-  }
-
-  // =======================
-  // STOCK FILTER
-  // =======================
-
-  if (input.inStock === true) {
-    data = data.filter((p) => p.stock.inStock);
-  }
-
-  // =======================
-  // PRICE SORT
-  // =======================
-
-  if (input.sortBy === 'priceLowToHigh') {
-    data.sort(
-      (a, b) =>
-        (a.price.min ?? 0) - (b.price.min ?? 0),
-    );
-  }
-
-  if (input.sortBy === 'priceHighToLow') {
-    data.sort(
-      (a, b) =>
-        (b.price.min ?? 0) - (a.price.min ?? 0),
-    );
-  }
-
-  // =======================
-  // RESPONSE
-  // =======================
-
-  return {
-    data,
-
-    pagination: {
-      total,
+    const skip = (page - 1) * limit;
+    console.log({
+      inputPage: input.page,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
-    },
-  };
-}
+      skip,
+    });
+
+    // =======================
+    // 🔥 FILTER
+    // =======================
+
+    const where: any = {
+      deletedAt: null,
+    };
+
+    // =======================
+    // STATUS
+    // =======================
+
+    if (input.onlyActive !== false) {
+      where.status = ProductStatus.ACTIVE;
+    }
+
+    if (input.status) {
+      where.status = input.status;
+    }
+
+    // =======================
+    // CATEGORY FILTERS
+    // =======================
+
+    if (input.categoryId) {
+      where.categoryId = input.categoryId;
+    }
+
+    if (input.subCategoryId) {
+      where.subCategoryId = input.subCategoryId;
+    }
+
+    if (input.miniCategoryId) {
+      where.miniCategoryId = input.miniCategoryId;
+    }
+
+    if (input.brandId) {
+      where.brandId = input.brandId;
+    }
+
+    if (input.type) {
+      where.type = input.type;
+    }
+
+    // =======================
+    // TAG FILTER
+    // =======================
+
+    if (input.tag) {
+      where.tags = {
+        has: input.tag,
+      };
+    }
+
+    // =======================
+    // SEARCH
+    // =======================
+
+    if (input.search?.trim()) {
+      where.OR = [
+        {
+          name: {
+            contains: input.search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          slug: {
+            contains: input.search,
+            mode: 'insensitive',
+          },
+        },
+        {
+          tags: {
+            has: input.search,
+          },
+        },
+      ];
+    }
+
+    // =======================
+    // SORT
+    // =======================
+
+    let orderBy: any = {
+      createdAt: 'desc',
+    };
+
+    switch (input.sortBy) {
+      case 'oldest':
+        orderBy = {
+          createdAt: 'asc',
+        };
+        break;
+
+      case 'nameAsc':
+        orderBy = {
+          name: 'asc',
+        };
+        break;
+
+      case 'nameDesc':
+        orderBy = {
+          name: 'desc',
+        };
+        break;
+    }
+
+    // =======================
+    // QUERY
+    // =======================
+
+    const [products, total] = await Promise.all([
+      this.productRepo.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy,
+      }),
+
+      this.productRepo.count(where),
+    ]);
+
+    // =======================
+    // MAP
+    // =======================
+
+    let data = products.map((product) => {
+      const mapped = ProductResponseMapper.map(product);
+
+      if (input.includeVariants === false) {
+        mapped.variants = [];
+      }
+
+      return mapped;
+    });
+
+    // =======================
+    // PRICE FILTER
+    // =======================
+
+    if (input.minPrice !== undefined || input.maxPrice !== undefined) {
+      data = data.filter((p) => {
+        const price = p.price.min ?? 0;
+
+        if (input.minPrice !== undefined && price < input.minPrice) {
+          return false;
+        }
+
+        if (input.maxPrice !== undefined && price > input.maxPrice) {
+          return false;
+        }
+
+        return true;
+      });
+    }
+
+    // =======================
+    // STOCK FILTER
+    // =======================
+
+    if (input.inStock === true) {
+      data = data.filter((p) => p.stock.inStock);
+    }
+
+    // =======================
+    // PRICE SORT
+    // =======================
+
+    if (input.sortBy === 'priceLowToHigh') {
+      data.sort((a, b) => (a.price.min ?? 0) - (b.price.min ?? 0));
+    }
+
+    if (input.sortBy === 'priceHighToLow') {
+      data.sort((a, b) => (b.price.min ?? 0) - (a.price.min ?? 0));
+    }
+
+    // =======================
+    // RESPONSE
+    // =======================
+
+    return {
+      data,
+
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
 }

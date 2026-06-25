@@ -17,15 +17,10 @@ export class CalculateEarnedCoinsUseCase {
     private readonly rewardsDomainService: RewardsDomainService,
   ) {}
 
-  async execute(input: {
-    orderAmount: number;
-  }) {
-    this.rewardsDomainService.validateOrderAmount(
-      input.orderAmount,
-    );
+  async execute(input: { orderAmount: number }) {
+    this.rewardsDomainService.validateOrderAmount(input.orderAmount);
 
-    const rewardConfig =
-      await this.rewardConfigRepo.findActiveConfig();
+    const rewardConfig = await this.rewardConfigRepo.findActiveConfig();
 
     if (!rewardConfig) {
       throw new RewardConfigNotFoundException();
@@ -33,21 +28,13 @@ export class CalculateEarnedCoinsUseCase {
 
     rewardConfig.ensureActive();
 
-    const earnedCoins =
-      rewardConfig.calculateEarnedCoins(
-        input.orderAmount,
-      );
+    const earnedCoins = rewardConfig.calculateEarnedCoins(input.orderAmount);
 
-    const earnRate =
-      `₹${rewardConfig.earnRateAmount} = ${rewardConfig.earnRateCoins} coins`;
+    const earnRate = `₹${rewardConfig.earnRateAmount} = ${rewardConfig.earnRateCoins} coins`;
 
-    const estimatedCoinValue =
-      rewardConfig.calculateCoinValue(
-        earnedCoins,
-      );
+    const estimatedCoinValue = rewardConfig.calculateCoinValue(earnedCoins);
 
-    const expiresAt =
-      rewardConfig.calculateExpiryDate();
+    const expiresAt = rewardConfig.calculateExpiryDate();
 
     return {
       orderAmount: input.orderAmount,
@@ -63,40 +50,29 @@ export class CalculateEarnedCoinsUseCase {
       config: {
         id: rewardConfig.id,
 
-        earnRateAmount:
-          rewardConfig.earnRateAmount,
+        earnRateAmount: rewardConfig.earnRateAmount,
 
-        earnRateCoins:
-          rewardConfig.earnRateCoins,
+        earnRateCoins: rewardConfig.earnRateCoins,
 
-        coinValue:
-          rewardConfig.coinValue,
+        coinValue: rewardConfig.coinValue,
 
-        maxRedemptionPercentage:
-          rewardConfig.maxRedemptionPercentage,
+        maxRedemptionPercentage: rewardConfig.maxRedemptionPercentage,
 
-        minimumOrderAmount:
-          rewardConfig.minimumOrderAmount,
+        minimumOrderAmount: rewardConfig.minimumOrderAmount,
 
-        expiryMonths:
-          rewardConfig.expiryMonths,
+        expiryMonths: rewardConfig.expiryMonths,
 
-        rewardOnDelivered:
-          rewardConfig.rewardOnDelivered,
+        rewardOnDelivered: rewardConfig.rewardOnDelivered,
 
-        isActive:
-          rewardConfig.isActive,
+        isActive: rewardConfig.isActive,
       },
 
       summary: {
-        coinsPerRate:
-          rewardConfig.earnRateCoins,
+        coinsPerRate: rewardConfig.earnRateCoins,
 
-        amountPerRate:
-          rewardConfig.earnRateAmount,
+        amountPerRate: rewardConfig.earnRateAmount,
 
-        estimatedSavings:
-          estimatedCoinValue,
+        estimatedSavings: estimatedCoinValue,
       },
     };
   }

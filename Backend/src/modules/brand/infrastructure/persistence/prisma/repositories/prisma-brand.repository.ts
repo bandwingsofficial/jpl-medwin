@@ -40,31 +40,27 @@ export class PrismaBrandRepository implements BrandRepository {
   }
 
   // =======================
-// 🔍 FIND BY NAME
-// =======================
+  // 🔍 FIND BY NAME
+  // =======================
 
-async findByName(
-  name: string,
-): Promise<Brand | null> {
-  const data = await this.prisma.brand.findFirst({
-    where: {
-      deletedAt: null,
+  async findByName(name: string): Promise<Brand | null> {
+    const data = await this.prisma.brand.findFirst({
+      where: {
+        deletedAt: null,
 
-      name: {
-        equals: name.trim(),
-        mode: 'insensitive',
+        name: {
+          equals: name.trim(),
+          mode: 'insensitive',
+        },
       },
-    },
 
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-  return data
-    ? BrandMapper.toDomain(data)
-    : null;
-}
+    return data ? BrandMapper.toDomain(data) : null;
+  }
 
   async findAll(): Promise<Brand[]> {
     const data = await this.prisma.brand.findMany({

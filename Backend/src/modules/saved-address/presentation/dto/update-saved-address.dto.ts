@@ -25,7 +25,7 @@ export class UpdateSavedAddressDto {
   @IsString()
   @MaxLength(100)
   fullName?: string;
-  
+
   @IsOptional()
   @IsString()
   @MaxLength(20)

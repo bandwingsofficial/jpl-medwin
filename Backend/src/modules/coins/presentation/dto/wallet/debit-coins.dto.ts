@@ -1,13 +1,6 @@
 // debit-coins.dto.ts
 
-import {
-  IsEnum,
-  IsInt,
-  IsObject,
-  IsOptional,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsEnum, IsInt, IsObject, IsOptional, IsString, Min } from 'class-validator';
 
 import { CoinTransactionType } from '../../../domain/enums/coin-transaction-type.enum';
 import { RewardSourceType } from '../../../domain/enums/reward-source-type.enum';

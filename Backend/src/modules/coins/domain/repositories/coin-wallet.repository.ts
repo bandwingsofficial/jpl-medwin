@@ -3,39 +3,19 @@ import { Prisma } from '@prisma/client';
 import { CoinWallet } from '../entities/coin-wallet.entity';
 
 export interface CoinWalletRepository {
-  findById(
-    id: string,
-    tx?: Prisma.TransactionClient,
-  ): Promise<CoinWallet | null>;
+  findById(id: string, tx?: Prisma.TransactionClient): Promise<CoinWallet | null>;
 
-  findByUserId(
-    userId: string,
-    tx?: Prisma.TransactionClient,
-  ): Promise<CoinWallet | null>;
+  findByUserId(userId: string, tx?: Prisma.TransactionClient): Promise<CoinWallet | null>;
 
-  findAll(
-    tx?: Prisma.TransactionClient,
-  ): Promise<CoinWallet[]>;
+  findAll(tx?: Prisma.TransactionClient): Promise<CoinWallet[]>;
 
-  existsById(
-    id: string,
-    tx?: Prisma.TransactionClient,
-  ): Promise<boolean>;
+  existsById(id: string, tx?: Prisma.TransactionClient): Promise<boolean>;
 
-  existsByUserId(
-    userId: string,
-    tx?: Prisma.TransactionClient,
-  ): Promise<boolean>;
+  existsByUserId(userId: string, tx?: Prisma.TransactionClient): Promise<boolean>;
 
-  create(
-    wallet: CoinWallet,
-    tx?: Prisma.TransactionClient,
-  ): Promise<CoinWallet>;
+  create(wallet: CoinWallet, tx?: Prisma.TransactionClient): Promise<CoinWallet>;
 
-  update(
-    wallet: CoinWallet,
-    tx?: Prisma.TransactionClient,
-  ): Promise<CoinWallet>;
+  update(wallet: CoinWallet, tx?: Prisma.TransactionClient): Promise<CoinWallet>;
 
   incrementBalance(
     params: {
@@ -64,13 +44,7 @@ export interface CoinWalletRepository {
     tx?: Prisma.TransactionClient,
   ): Promise<void>;
 
-  lockWallet(
-    walletId: string,
-    tx?: Prisma.TransactionClient,
-  ): Promise<void>;
+  lockWallet(walletId: string, tx?: Prisma.TransactionClient): Promise<void>;
 
-  delete(
-    id: string,
-    tx?: Prisma.TransactionClient,
-  ): Promise<void>;
+  delete(id: string, tx?: Prisma.TransactionClient): Promise<void>;
 }

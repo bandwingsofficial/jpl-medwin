@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { DashboardPeriod } from '../../domain/enums/dashboard-period.enum';
 
@@ -8,9 +6,7 @@ import { OrderStatusDashboardService } from '../services/order-status-dashboard.
 
 @Injectable()
 export class GetOrderStatusDashboardUseCase {
-  constructor(
-    private readonly orderStatusDashboardService: OrderStatusDashboardService,
-  ) {}
+  constructor(private readonly orderStatusDashboardService: OrderStatusDashboardService) {}
 
   async execute(params?: {
     period?: DashboardPeriod;
@@ -23,26 +19,19 @@ export class GetOrderStatusDashboardUseCase {
     // 📅 PERIOD
     // =======================
 
-    const period =
-      params?.period ??
-      DashboardPeriod.OVERALL;
+    const period = params?.period ?? DashboardPeriod.OVERALL;
 
     // =======================
     // 📊 GET STATUS STATS
     // =======================
 
-    const statuses =
-      await this.orderStatusDashboardService.getOrderStatuses(
-        {
-          period,
+    const statuses = await this.orderStatusDashboardService.getOrderStatuses({
+      period,
 
-          from:
-            params?.from,
+      from: params?.from,
 
-          to:
-            params?.to,
-        },
-      );
+      to: params?.to,
+    });
 
     // =======================
     // 🚀 RESPONSE
@@ -51,35 +40,25 @@ export class GetOrderStatusDashboardUseCase {
     return {
       period,
 
-      from:
-        params?.from,
+      from: params?.from,
 
-      to:
-        params?.to,
+      to: params?.to,
 
-      pending:
-        statuses.pending,
+      pending: statuses.pending,
 
-      confirmed:
-        statuses.confirmed,
+      confirmed: statuses.confirmed,
 
-      processing:
-        statuses.processing,
+      processing: statuses.processing,
 
-      shipped:
-        statuses.shipped,
+      shipped: statuses.shipped,
 
-      delivered:
-        statuses.delivered,
+      delivered: statuses.delivered,
 
-      cancelled:
-        statuses.cancelled,
+      cancelled: statuses.cancelled,
 
-      refunded:
-        statuses.refunded,
+      refunded: statuses.refunded,
 
-      returned:
-        statuses.returned,
+      returned: statuses.returned,
     };
   }
 }

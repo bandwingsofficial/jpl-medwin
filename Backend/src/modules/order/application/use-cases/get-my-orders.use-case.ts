@@ -12,6 +12,8 @@ import { InvalidOrderOperationException } from '../../domain/exceptions/invalid-
 
 import { ReturnRepository } from '@/modules/return/domain/repositories/return.repository';
 
+import { OrderAddressResponseMapper } from '../mappers/order-address-response.mapper';
+
 @Injectable()
 export class GetMyOrdersUseCase {
   constructor(
@@ -52,15 +54,11 @@ export class GetMyOrdersUseCase {
       orders.map(async (order) => {
         const items = await this.orderItemRepo.findByOrderId(order.id);
 
-        const latestReturn =
-  await this.returnRepo.findLatestReturnByOrderId(order.id);
+        const latestReturn = await this.returnRepo.findLatestReturnByOrderId(order.id);
 
-const replacementOrder =
-  latestReturn?.replacementOrderId
-    ? await this.orderRepo.findById(
-        latestReturn.replacementOrderId,
-      )
-    : null;
+        const replacementOrder = latestReturn?.replacementOrderId
+          ? await this.orderRepo.findById(latestReturn.replacementOrderId)
+          : null;
 
         return {
           id: order.id,
@@ -72,37 +70,34 @@ const replacementOrder =
           paymentStatus: order.paymentStatus,
 
           returnRequest: latestReturn
-  ? {
-      id: latestReturn.id,
+            ? {
+                id: latestReturn.id,
 
-      status: latestReturn.status,
+                status: latestReturn.status,
 
-      type: latestReturn.type,
+                type: latestReturn.type,
 
-      reason: latestReturn.reason,
+                reason: latestReturn.reason,
 
-      requestedAt: latestReturn.createdAt,
+                requestedAt: latestReturn.createdAt,
 
-      replacementOrder: replacementOrder
-        ? {
-            id: replacementOrder.id,
+                replacementOrder: replacementOrder
+                  ? {
+                      id: replacementOrder.id,
 
-            orderNumber: replacementOrder.orderNumber,
+                      orderNumber: replacementOrder.orderNumber,
 
-            status: replacementOrder.status,
+                      status: replacementOrder.status,
 
-            createdAt: replacementOrder.createdAt,
-          }
-        : null,
-    }
-  : null,
+                      createdAt: replacementOrder.createdAt,
+                    }
+                  : null,
+              }
+            : null,
 
           itemCount: items.length,
 
-          totalQuantity: items.reduce(
-            (total, item) => total + item.quantity,
-            0,
-          ),
+          totalQuantity: items.reduce((total, item) => total + item.quantity, 0),
 
           totals: {
             subtotal: order.subtotal,
@@ -123,6 +118,8 @@ const replacementOrder =
 
             earnedCoins: order.earnedCoins,
           },
+
+          ...OrderAddressResponseMapper.toOrderAddressFields(order),
 
           shipment: {
             shippedAt: order.shippedAt,

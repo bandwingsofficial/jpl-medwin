@@ -37,9 +37,7 @@ export class ProductImportValidatorService {
       // DUPLICATE PRODUCT
       // =======================
 
-      const normalizedName = product.name
-        .trim()
-        .toLowerCase();
+      const normalizedName = product.name.trim().toLowerCase();
 
       if (productNames.has(normalizedName)) {
         errors.push({
@@ -69,18 +67,9 @@ export class ProductImportValidatorService {
       // VARIANT LOOP
       // =======================
 
-      product.variants.forEach(
-        (variant: ParsedVariant, variantIndex) => {
-          this.validateVariant(
-            variant,
-            variantIndex,
-            row,
-            product.name,
-            skus,
-            errors,
-          );
-        },
-      );
+      product.variants.forEach((variant: ParsedVariant, variantIndex) => {
+        this.validateVariant(variant, variantIndex, row, product.name, skus, errors);
+      });
     });
 
     return {
@@ -116,9 +105,7 @@ export class ProductImportValidatorService {
       return;
     }
 
-    const normalizedSku = variant.sku
-      .trim()
-      .toUpperCase();
+    const normalizedSku = variant.sku.trim().toUpperCase();
 
     // SKU FORMAT
 
@@ -212,10 +199,7 @@ export class ProductImportValidatorService {
 
     // MAIN IMAGE
 
-    if (
-      variant.images.main &&
-      !this.isValidUrl(variant.images.main)
-    ) {
+    if (variant.images.main && !this.isValidUrl(variant.images.main)) {
       errors.push({
         row,
         product: productName,
@@ -239,10 +223,7 @@ export class ProductImportValidatorService {
 
     // WARRANTY
 
-    if (
-      variant.warrantyMonths !== null &&
-      variant.warrantyMonths < 0
-    ) {
+    if (variant.warrantyMonths !== null && variant.warrantyMonths < 0) {
       errors.push({
         row,
         product: productName,

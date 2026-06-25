@@ -91,24 +91,22 @@ export class CompleteCheckoutSessionUseCase {
     // =======================
 
     session.metadata = {
-  ...session.metadata,
+      ...session.metadata,
 
-  payment: {
-    id: input.paymentId,
+      payment: {
+        id: input.paymentId,
 
-    provider: input.paymentProvider,
+        provider: input.paymentProvider,
 
-    completedAt: new Date(),
-  },
+        completedAt: new Date(),
+      },
 
-  rewards: {
-    rewardCoinsUsed:
-      session.rewardCoinsUsed,
+      rewards: {
+        rewardCoinsUsed: session.rewardCoinsUsed,
 
-    rewardDiscount:
-      session.rewardDiscount,
-  },
-};
+        rewardDiscount: session.rewardDiscount,
+      },
+    };
 
     // =======================
     // 🔄 CONVERT CART
@@ -158,28 +156,22 @@ export class CompleteCheckoutSessionUseCase {
       },
 
       totals: {
-  subtotal: completedSession.subtotal,
+        subtotal: completedSession.subtotal,
 
-  couponDiscount:
-    completedSession.couponDiscount,
+        couponDiscount: completedSession.couponDiscount,
 
-  rewardDiscount:
-    completedSession.rewardDiscount,
+        rewardDiscount: completedSession.rewardDiscount,
 
-  rewardCoinsUsed:
-    completedSession.rewardCoinsUsed,
+        rewardCoinsUsed: completedSession.rewardCoinsUsed,
 
-  shippingCharge:
-    completedSession.shippingCharge,
+        shippingCharge: completedSession.shippingCharge,
 
-  tax: completedSession.tax,
+        tax: completedSession.tax,
 
-  grandTotal:
-    completedSession.grandTotal,
+        grandTotal: completedSession.grandTotal,
 
-  totalSavings:
-    completedSession.totalSavings,
-},
+        totalSavings: completedSession.totalSavings,
+      },
 
       itemCount: items.length,
 

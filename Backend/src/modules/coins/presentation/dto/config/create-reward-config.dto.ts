@@ -1,12 +1,6 @@
 // create-reward-config.dto.ts
 
-import {
-  IsBoolean,
-  IsInt,
-  IsNumber,
-  IsOptional,
-  Min,
-} from 'class-validator';
+import { IsBoolean, IsInt, IsNumber, IsOptional, Min } from 'class-validator';
 
 export class CreateRewardConfigDto {
   @IsNumber()

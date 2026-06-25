@@ -37,18 +37,9 @@ export class RefundCoinsUseCase {
     private readonly creditCoinsUseCase: CreditCoinsUseCase,
   ) {}
 
-  async execute(input: {
-    userId: string;
-    orderId: string;
-    coins: number;
-    reason?: string;
-  }) {
+  async execute(input: { userId: string; orderId: string; coins: number; reason?: string }) {
     return this.prisma.$transaction(async (tx) => {
-      const wallet =
-        await this.walletRepo.findByUserId(
-          input.userId,
-          tx,
-        );
+      const wallet = await this.walletRepo.findByUserId(input.userId, tx);
 
       if (!wallet) {
         throw new WalletNotFoundException({
@@ -56,93 +47,62 @@ export class RefundCoinsUseCase {
         });
       }
 
-      await this.walletRepo.lockWallet(
-        wallet.id,
-        tx,
-      );
+      await this.walletRepo.lockWallet(wallet.id, tx);
 
-      const orderTransactions =
-        await this.transactionRepo.findByOrderId(
-          input.orderId,
-          tx,
-        );
+      const orderTransactions = await this.transactionRepo.findByOrderId(input.orderId, tx);
 
-      if (
-        !orderTransactions ||
-        orderTransactions.length === 0
-      ) {
+      if (!orderTransactions || orderTransactions.length === 0) {
         throw new RedemptionNotFoundException();
       }
 
-      const redeemedTransaction =
-        orderTransactions.find(
-          (transaction) =>
-            transaction.type ===
-            CoinTransactionType.REDEEMED,
-        );
+      const redeemedTransaction = orderTransactions.find(
+        (transaction) => transaction.type === CoinTransactionType.REDEEMED,
+      );
 
       if (!redeemedTransaction) {
         throw new RedeemedTransactionNotFoundException();
       }
 
-      const alreadyRefundedCoins =
-        orderTransactions
-          .filter(
-            (transaction) =>
-              transaction.type ===
-                CoinTransactionType.REFUNDED ||
-              transaction.type ===
-                CoinTransactionType.REDEEM_REVERSED,
-          )
-          .reduce(
-            (total, transaction) =>
-              total + transaction.coins,
-            0,
-          );
+      const alreadyRefundedCoins = orderTransactions
+        .filter(
+          (transaction) =>
+            transaction.type === CoinTransactionType.REFUNDED ||
+            transaction.type === CoinTransactionType.REDEEM_REVERSED,
+        )
+        .reduce((total, transaction) => total + transaction.coins, 0);
 
       if (input.coins <= 0) {
         throw new InvalidRefundAmountException();
       }
 
-      if (
-        alreadyRefundedCoins + input.coins >
-        redeemedTransaction.coins
-      ) {
+      if (alreadyRefundedCoins + input.coins > redeemedTransaction.coins) {
         throw new CoinsAlreadyRefundedException();
       }
 
-      const result =
-        await this.creditCoinsUseCase.execute(
-          {
-            userId: input.userId,
+      const result = await this.creditCoinsUseCase.execute(
+        {
+          userId: input.userId,
 
-            coins: input.coins,
+          coins: input.coins,
 
-            type:
-              CoinTransactionType.REDEEM_REVERSED,
+          type: CoinTransactionType.REDEEM_REVERSED,
 
-            sourceType:
-              RewardSourceType.REFUND,
+          sourceType: RewardSourceType.REFUND,
 
-            orderId: input.orderId,
+          orderId: input.orderId,
 
-            description:
-              input.reason ??
-              `Refunded ${input.coins} coins`,
+          description: input.reason ?? `Refunded ${input.coins} coins`,
 
-            metadata: {
-              refundedOrderId:
-                input.orderId,
-              originalTransactionId:
-                redeemedTransaction.id,
-              alreadyRefundedCoins,
-            },
-
-            idempotencyKey:
-              `refund-${input.orderId}-${alreadyRefundedCoins + input.coins}`,
+          metadata: {
+            refundedOrderId: input.orderId,
+            originalTransactionId: redeemedTransaction.id,
+            alreadyRefundedCoins,
           },
-          tx,
-        );
+
+          idempotencyKey: `refund-${input.orderId}-${alreadyRefundedCoins + input.coins}`,
+        },
+        tx,
+      );
 
       return {
         refunded: true,
@@ -151,72 +111,46 @@ export class RefundCoinsUseCase {
 
         refundedCoins: input.coins,
 
-        totalRefundedCoins:
-          alreadyRefundedCoins +
-          input.coins,
+        totalRefundedCoins: alreadyRefundedCoins + input.coins,
 
         wallet: result.wallet
           ? {
               id: result.wallet.id,
 
-              userId:
-                result.wallet.userId,
+              userId: result.wallet.userId,
 
-              balance:
-                result.wallet.balance,
+              balance: result.wallet.balance,
 
-              lifetimeEarned:
-                result.wallet
-                  .lifetimeEarned,
+              lifetimeEarned: result.wallet.lifetimeEarned,
 
-              lifetimeRedeemed:
-                result.wallet
-                  .lifetimeRedeemed,
+              lifetimeRedeemed: result.wallet.lifetimeRedeemed,
 
-              lifetimeExpired:
-                result.wallet
-                  .lifetimeExpired,
+              lifetimeExpired: result.wallet.lifetimeExpired,
 
-              lifetimeRefunded:
-                result.wallet
-                  .lifetimeRefunded,
+              lifetimeRefunded: result.wallet.lifetimeRefunded,
 
-              updatedAt:
-                result.wallet.updatedAt,
+              updatedAt: result.wallet.updatedAt,
             }
           : null,
 
         transaction: {
           id: result.transaction.id,
 
-          type:
-            result.transaction.type,
+          type: result.transaction.type,
 
-          status:
-            result.transaction.status,
+          status: result.transaction.status,
 
-          coins:
-            result.transaction.coins,
+          coins: result.transaction.coins,
 
-          balanceBefore:
-            result.transaction
-              .balanceBefore,
+          balanceBefore: result.transaction.balanceBefore,
 
-          balanceAfter:
-            result.transaction
-              .balanceAfter,
+          balanceAfter: result.transaction.balanceAfter,
 
-          sourceType:
-            result.transaction
-              .sourceType,
+          sourceType: result.transaction.sourceType,
 
-          description:
-            result.transaction
-              .description,
+          description: result.transaction.description,
 
-          createdAt:
-            result.transaction
-              .createdAt,
+          createdAt: result.transaction.createdAt,
         },
 
         duplicated: result.duplicated,

@@ -17,23 +17,16 @@ export class RestoreCollectionUseCase {
     private readonly domainService: CollectionDomainService,
   ) {}
 
-  async execute(input: {
-    collectionId: string;
-  }) {
+  async execute(input: { collectionId: string }) {
     // =======================
     // 🔍 COLLECTION
     // =======================
 
-    const collection =
-      this.domainService.ensureExists({
-        collection:
-          await this.collectionRepo.findByIdIncludingDeleted(
-            input.collectionId,
-          ),
+    const collection = this.domainService.ensureExists({
+      collection: await this.collectionRepo.findByIdIncludingDeleted(input.collectionId),
 
-        collectionId:
-          input.collectionId,
-      });
+      collectionId: input.collectionId,
+    });
 
     // =======================
     // ♻️ RESTORE
@@ -45,10 +38,7 @@ export class RestoreCollectionUseCase {
     // 💾 SAVE
     // =======================
 
-    const restored =
-      await this.collectionRepo.update(
-        collection,
-      );
+    const restored = await this.collectionRepo.update(collection);
 
     // =======================
     // 🚀 RESPONSE
@@ -63,8 +53,7 @@ export class RestoreCollectionUseCase {
 
       status: restored.status,
 
-      updatedAt:
-        restored.updatedAt,
+      updatedAt: restored.updatedAt,
     };
   }
 }

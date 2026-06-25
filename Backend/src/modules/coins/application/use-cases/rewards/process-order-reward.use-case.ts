@@ -48,14 +48,9 @@ export class ProcessOrderRewardUseCase {
     metadata?: Record<string, unknown>;
   }) {
     return this.prisma.$transaction(async (tx) => {
-      this.rewardsDomainService.validateOrderAmount(
-        input.orderAmount,
-      );
+      this.rewardsDomainService.validateOrderAmount(input.orderAmount);
 
-      const rewardConfig =
-        await this.rewardConfigRepo.findActiveConfig(
-          tx,
-        );
+      const rewardConfig = await this.rewardConfigRepo.findActiveConfig(tx);
 
       if (!rewardConfig) {
         throw new RewardConfigNotFoundException();
@@ -66,17 +61,10 @@ export class ProcessOrderRewardUseCase {
       let rewardTier: RewardTier | null = null;
 
       if (input.rewardTierId) {
-        rewardTier =
-          await this.rewardTierRepo.findById(
-            input.rewardTierId,
-            tx,
-          );
+        rewardTier = await this.rewardTierRepo.findById(input.rewardTierId, tx);
       }
 
-      const campaigns =
-        await this.rewardCampaignRepo.findCurrentCampaigns(
-          tx,
-        );
+      const campaigns = await this.rewardCampaignRepo.findCurrentCampaigns(tx);
 
       let campaign: RewardCampaign | null = null;
 
@@ -84,16 +72,12 @@ export class ProcessOrderRewardUseCase {
         campaign = campaigns[0];
       }
 
-      const finalCoins =
-        this.rewardsDomainService.calculateFinalRewardCoins(
-          {
-            orderAmount:
-              input.orderAmount,
-            rewardConfig,
-            rewardTier,
-            campaign,
-          },
-        );
+      const finalCoins = this.rewardsDomainService.calculateFinalRewardCoins({
+        orderAmount: input.orderAmount,
+        rewardConfig,
+        rewardTier,
+        campaign,
+      });
 
       if (finalCoins <= 0) {
         return {
@@ -102,86 +86,63 @@ export class ProcessOrderRewardUseCase {
         };
       }
 
-      const expiresAt =
-        rewardConfig.calculateExpiryDate();
+      const expiresAt = rewardConfig.calculateExpiryDate();
 
-      let description =
-        `Earned ${finalCoins} coins from order ${input.orderId}`;
+      let description = `Earned ${finalCoins} coins from order ${input.orderId}`;
 
       if (rewardTier) {
-        description +=
-          ` with ${rewardTier.name} tier`;
+        description += ` with ${rewardTier.name} tier`;
       }
 
       if (campaign) {
-        description +=
-          ` + ${campaign.title} campaign`;
+        description += ` + ${campaign.title} campaign`;
       }
 
-      const result =
-        await this.creditCoinsUseCase.execute(
-          {
-            userId: input.userId,
+      const result = await this.creditCoinsUseCase.execute(
+        {
+          userId: input.userId,
 
-            coins: finalCoins,
+          coins: finalCoins,
 
-            type:
-              CoinTransactionType.EARNED,
+          type: CoinTransactionType.EARNED,
 
-            sourceType:
-              RewardSourceType.ORDER,
+          sourceType: RewardSourceType.ORDER,
 
-            orderId: input.orderId,
+          orderId: input.orderId,
 
-            paymentId:
-              input.paymentId,
+          paymentId: input.paymentId,
 
-            expiresAt,
+          expiresAt,
 
-            metadata: {
-              ...(input.metadata ??
-                {}),
-              orderAmount:
-                input.orderAmount,
-              rewardTierId:
-                rewardTier?.id,
-              rewardCampaignId:
-                campaign?.id,
-            },
-
-            description,
-
-            idempotencyKey:
-              `reward-${input.orderId}`,
+          metadata: {
+            ...(input.metadata ?? {}),
+            orderAmount: input.orderAmount,
+            rewardTierId: rewardTier?.id,
+            rewardCampaignId: campaign?.id,
           },
-          tx,
-        );
 
-      const baseCoins =
-        rewardConfig.calculateEarnedCoins(
-          input.orderAmount,
-        );
+          description,
 
-      const tierCoins = rewardTier
-        ? rewardTier.calculateRewardCoins(
-            baseCoins,
-          )
-        : baseCoins;
+          idempotencyKey: `reward-${input.orderId}`,
+        },
+        tx,
+      );
 
-      const campaignBonus =
-        finalCoins - tierCoins;
+      const baseCoins = rewardConfig.calculateEarnedCoins(input.orderAmount);
+
+      const tierCoins = rewardTier ? rewardTier.calculateRewardCoins(baseCoins) : baseCoins;
+
+      const campaignBonus = finalCoins - tierCoins;
 
       return {
         rewarded: true,
 
         wallet: result.wallet,
 
-        transaction:
-          result.transaction,
+        transaction: result.transaction,
 
         rewards: {
-          orderAmount:
-            input.orderAmount,
+          orderAmount: input.orderAmount,
 
           baseCoins,
 
@@ -198,11 +159,9 @@ export class ProcessOrderRewardUseCase {
 
               name: rewardTier.name,
 
-              status:
-                rewardTier.status,
+              status: rewardTier.status,
 
-              multiplier:
-                rewardTier.coinMultiplier,
+              multiplier: rewardTier.coinMultiplier,
             }
           : null,
 
@@ -210,18 +169,15 @@ export class ProcessOrderRewardUseCase {
           ? {
               id: campaign.id,
 
-              title:
-                campaign.title,
+              title: campaign.title,
 
-              bonusMultiplier:
-                campaign.bonusMultiplier,
+              bonusMultiplier: campaign.bonusMultiplier,
             }
           : null,
 
         expiresAt,
 
-        duplicated:
-          result.duplicated,
+        duplicated: result.duplicated,
       };
     });
   }

@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import {
-  BannerStatus as PrismaBannerStatus,
-  BannerType as PrismaBannerType,
-} from '@prisma/client';
+import { BannerStatus as PrismaBannerStatus, BannerType as PrismaBannerType } from '@prisma/client';
 
 import { PrismaService } from '../../../../../../infrastructure/prisma/prisma.service';
 
@@ -18,142 +15,105 @@ import { BannerType } from '../../../../domain/enums/banner-type.enum';
 import { BannerMapper } from '../mappers/banner.mapper';
 
 @Injectable()
-export class PrismaBannerRepository
-  implements BannerRepository
-{
-  constructor(
-    private readonly prisma: PrismaService,
-  ) {}
+export class PrismaBannerRepository implements BannerRepository {
+  constructor(private readonly prisma: PrismaService) {}
 
   // =======================
   // 🔍 FIND
   // =======================
 
-  async findById(
-    id: string,
-  ): Promise<Banner | null> {
-    const data =
-      await this.prisma.banner.findFirst({
-        where: {
-          id,
-          deletedAt: null,
-        },
-      });
+  async findById(id: string): Promise<Banner | null> {
+    const data = await this.prisma.banner.findFirst({
+      where: {
+        id,
+        deletedAt: null,
+      },
+    });
 
-    return data
-      ? BannerMapper.toDomain(data)
-      : null;
+    return data ? BannerMapper.toDomain(data) : null;
   }
 
   async findAll(): Promise<Banner[]> {
-    const data =
-      await this.prisma.banner.findMany({
-        where: {
-          deletedAt: null,
-        },
+    const data = await this.prisma.banner.findMany({
+      where: {
+        deletedAt: null,
+      },
 
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-    return data.map((item) =>
-      BannerMapper.toDomain(item),
-    );
+    return data.map((item) => BannerMapper.toDomain(item));
   }
 
-  async findByType(
-    type: BannerType,
-  ): Promise<Banner[]> {
-    const data =
-      await this.prisma.banner.findMany({
-        where: {
-          type:
-            type as unknown as PrismaBannerType,
+  async findByType(type: BannerType): Promise<Banner[]> {
+    const data = await this.prisma.banner.findMany({
+      where: {
+        type: type as unknown as PrismaBannerType,
 
-          deletedAt: null,
-        },
+        deletedAt: null,
+      },
 
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-    return data.map((item) =>
-      BannerMapper.toDomain(item),
-    );
+    return data.map((item) => BannerMapper.toDomain(item));
   }
 
-  async findByStatus(
-    status: BannerStatus,
-  ): Promise<Banner[]> {
-    const data =
-      await this.prisma.banner.findMany({
-        where: {
-          status:
-            status as unknown as PrismaBannerStatus,
+  async findByStatus(status: BannerStatus): Promise<Banner[]> {
+    const data = await this.prisma.banner.findMany({
+      where: {
+        status: status as unknown as PrismaBannerStatus,
 
-          deletedAt: null,
-        },
+        deletedAt: null,
+      },
 
-        orderBy: {
-          createdAt: 'desc',
-        },
-      });
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-    return data.map((item) =>
-      BannerMapper.toDomain(item),
-    );
+    return data.map((item) => BannerMapper.toDomain(item));
   }
 
   // =======================
   // ♻️ FIND INCLUDING DELETED
   // =======================
 
-  async findByIdIncludingDeleted(
-    id: string,
-  ): Promise<Banner | null> {
-    const data =
-      await this.prisma.banner.findUnique({
-        where: {
-          id,
-        },
-      });
+  async findByIdIncludingDeleted(id: string): Promise<Banner | null> {
+    const data = await this.prisma.banner.findUnique({
+      where: {
+        id,
+      },
+    });
 
-    return data
-      ? BannerMapper.toDomain(data)
-      : null;
+    return data ? BannerMapper.toDomain(data) : null;
   }
 
-  async findByNameIncludingDeleted(
-    name: string,
-  ): Promise<Banner | null> {
-    const data =
-      await this.prisma.banner.findFirst({
-        where: {
-          name,
-        },
-      });
+  async findByNameIncludingDeleted(name: string): Promise<Banner | null> {
+    const data = await this.prisma.banner.findFirst({
+      where: {
+        name,
+      },
+    });
 
-    return data
-      ? BannerMapper.toDomain(data)
-      : null;
+    return data ? BannerMapper.toDomain(data) : null;
   }
 
   // =======================
   // 🧠 CHECKS
   // =======================
 
-  async existsByName(
-    name: string,
-  ): Promise<boolean> {
-    const count =
-      await this.prisma.banner.count({
-        where: {
-          name,
-          deletedAt: null,
-        },
-      });
+  async existsByName(name: string): Promise<boolean> {
+    const count = await this.prisma.banner.count({
+      where: {
+        name,
+        deletedAt: null,
+      },
+    });
 
     return count > 0;
   }
@@ -162,34 +122,22 @@ export class PrismaBannerRepository
   // ✍️ WRITE
   // =======================
 
-  async create(
-    banner: Banner,
-  ): Promise<Banner> {
-    const data =
-      await this.prisma.banner.create({
-        data:
-          BannerMapper.toPersistence(
-            banner,
-          ),
-      });
+  async create(banner: Banner): Promise<Banner> {
+    const data = await this.prisma.banner.create({
+      data: BannerMapper.toPersistence(banner),
+    });
 
     return BannerMapper.toDomain(data);
   }
 
-  async update(
-    banner: Banner,
-  ): Promise<Banner> {
-    const data =
-      await this.prisma.banner.update({
-        where: {
-          id: banner.id,
-        },
+  async update(banner: Banner): Promise<Banner> {
+    const data = await this.prisma.banner.update({
+      where: {
+        id: banner.id,
+      },
 
-        data:
-          BannerMapper.toPersistence(
-            banner,
-          ),
-      });
+      data: BannerMapper.toPersistence(banner),
+    });
 
     return BannerMapper.toDomain(data);
   }
@@ -198,32 +146,26 @@ export class PrismaBannerRepository
   // 🔄 STATUS
   // =======================
 
-  async activate(
-    bannerId: string,
-  ): Promise<void> {
+  async activate(bannerId: string): Promise<void> {
     await this.prisma.banner.update({
       where: {
         id: bannerId,
       },
 
       data: {
-        status:
-          PrismaBannerStatus.ACTIVE,
+        status: PrismaBannerStatus.ACTIVE,
       },
     });
   }
 
-  async deactivate(
-    bannerId: string,
-  ): Promise<void> {
+  async deactivate(bannerId: string): Promise<void> {
     await this.prisma.banner.update({
       where: {
         id: bannerId,
       },
 
       data: {
-        status:
-          PrismaBannerStatus.INACTIVE,
+        status: PrismaBannerStatus.INACTIVE,
       },
     });
   }
@@ -232,9 +174,7 @@ export class PrismaBannerRepository
   // ❌ DELETE
   // =======================
 
-  async softDelete(
-    bannerId: string,
-  ): Promise<void> {
+  async softDelete(bannerId: string): Promise<void> {
     await this.prisma.banner.update({
       where: {
         id: bannerId,
@@ -246,9 +186,7 @@ export class PrismaBannerRepository
     });
   }
 
-  async restore(
-    bannerId: string,
-  ): Promise<void> {
+  async restore(bannerId: string): Promise<void> {
     await this.prisma.banner.update({
       where: {
         id: bannerId,

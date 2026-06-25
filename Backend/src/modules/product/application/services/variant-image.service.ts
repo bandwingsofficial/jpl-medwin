@@ -136,35 +136,23 @@ export class VariantImageService {
       // =======================
 
       if (existing) {
-  const alt = img.alt || name;
+        const alt = img.alt || name;
 
-  if (
-    existing.alt !== alt ||
-    existing.sortOrder !== i
-  ) {
-    console.log(
-      '🔄 UPDATE IMAGE:',
-      existing.id,
-    );
+        if (existing.alt !== alt || existing.sortOrder !== i) {
+          console.log('🔄 UPDATE IMAGE:', existing.id);
 
-    existing.updateDetails({
-      alt,
-      sortOrder: i,
-    });
+          existing.updateDetails({
+            alt,
+            sortOrder: i,
+          });
 
-    await this.imageRepo.update(
-      existing,
-      tx,
-    );
-  } else {
-    console.log(
-      '⏭ IMAGE UNCHANGED:',
-      existing.id,
-    );
-  }
+          await this.imageRepo.update(existing, tx);
+        } else {
+          console.log('⏭ IMAGE UNCHANGED:', existing.id);
+        }
 
-  continue;
-}
+        continue;
+      }
 
       // =======================
       // CREATE NEW

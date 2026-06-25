@@ -16,6 +16,8 @@ import { OrderOwnershipService } from '../services/order-ownership.service';
 
 import { OrderSummaryService } from '../services/order-summary.service';
 
+import { OrderAddressResponseMapper } from '../mappers/order-address-response.mapper';
+
 import { ReturnRepository } from '@/modules/return/domain/repositories/return.repository';
 
 @Injectable()
@@ -56,21 +58,15 @@ export class GetOrderUseCase {
     // 🔄 ACTIVE RETURN
     // =======================
 
-    const latestReturn =
-  await this.returnRepo.findLatestReturnByOrderId(
-    order.id,
-  );
+    const latestReturn = await this.returnRepo.findLatestReturnByOrderId(order.id);
 
-          // =======================
-    // 🔄 REPLACEMENT ORDER DETAILS 
+    // =======================
+    // 🔄 REPLACEMENT ORDER DETAILS
     // =======================
 
-      const replacementOrder =
-  latestReturn?.replacementOrderId
-    ? await this.orderRepo.findById(
-        latestReturn.replacementOrderId,
-      )
-    : null;
+    const replacementOrder = latestReturn?.replacementOrderId
+      ? await this.orderRepo.findById(latestReturn.replacementOrderId)
+      : null;
 
     // =======================
     // 🔐 OWNERSHIP
@@ -126,33 +122,30 @@ export class GetOrderUseCase {
       paymentStatus: order.paymentStatus,
 
       returnRequest: latestReturn
-  ? {
-      id: latestReturn.id,
-
-      status: latestReturn.status,
-
-      type: latestReturn.type,
-
-      reason: latestReturn.reason,
-
-      requestedAt: latestReturn.createdAt,
-
-      replacementOrder: replacementOrder
         ? {
-            id: replacementOrder.id,
+            id: latestReturn.id,
 
-            orderNumber:
-              replacementOrder.orderNumber,
+            status: latestReturn.status,
 
-            status:
-              replacementOrder.status,
+            type: latestReturn.type,
 
-            createdAt:
-              replacementOrder.createdAt,
+            reason: latestReturn.reason,
+
+            requestedAt: latestReturn.createdAt,
+
+            replacementOrder: replacementOrder
+              ? {
+                  id: replacementOrder.id,
+
+                  orderNumber: replacementOrder.orderNumber,
+
+                  status: replacementOrder.status,
+
+                  createdAt: replacementOrder.createdAt,
+                }
+              : null,
           }
         : null,
-    }
-  : null,
 
       cartId: order.cartId,
 
@@ -180,9 +173,7 @@ export class GetOrderUseCase {
         earnedCoins: order.earnedCoins,
       },
 
-      shippingAddress: order.shippingAddress,
-
-      billingAddress: order.billingAddress,
+      ...OrderAddressResponseMapper.toOrderAddressFields(order),
 
       shipment: {
         shippedAt: order.shippedAt,
@@ -210,12 +201,9 @@ export class GetOrderUseCase {
       items: items.map((item) => {
         const mrp = item.mrp ?? item.price;
 
-        const mrpTotal =
-          item.totalMrp ?? mrp * item.quantity;
+        const mrpTotal = item.totalMrp ?? mrp * item.quantity;
 
-        const discount =
-          item.totalSavings ??
-          mrpTotal - item.totalPrice;
+        const discount = item.totalSavings ?? mrpTotal - item.totalPrice;
 
         return {
           id: item.id,
@@ -273,4 +261,3 @@ export class GetOrderUseCase {
     };
   }
 }
-

@@ -102,22 +102,20 @@ export class PrismaSavedAddressRepository implements SavedAddressRepository {
     return data.map((a) => SavedAddressMapper.toDomain(a));
   }
 
-  async findAllByPhoneNumber(
-  phoneNumber: string,
-): Promise<SavedAddress[]> {
-  const data = await this.prisma.savedAddress.findMany({
-    where: {
-      phoneNumber,
-      deletedAt: null,
-    },
+  async findAllByPhoneNumber(phoneNumber: string): Promise<SavedAddress[]> {
+    const data = await this.prisma.savedAddress.findMany({
+      where: {
+        phoneNumber,
+        deletedAt: null,
+      },
 
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
-  return data.map((a) => SavedAddressMapper.toDomain(a));
-}
+    return data.map((a) => SavedAddressMapper.toDomain(a));
+  }
 
   async findSingleTypeAddress(
     userId: string,
@@ -160,6 +158,15 @@ export class PrismaSavedAddressRepository implements SavedAddressRepository {
     });
 
     return count > 0;
+  }
+
+  async countOrderReferences(addressId: string): Promise<number> {
+    return this.prisma.order.count({
+      where: {
+        deletedAt: null,
+        OR: [{ shippingAddressId: addressId }, { billingAddressId: addressId }],
+      },
+    });
   }
 
   // =======================

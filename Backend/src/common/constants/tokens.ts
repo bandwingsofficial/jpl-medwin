@@ -90,7 +90,6 @@ export const TOKENS = {
   REWARD_TIER_REPO: Symbol('REWARD_TIER_REPO'),
   REWARD_CAMPAIGN_REPO: Symbol('REWARD_CAMPAIGN_REPO'),
 
-
   // =======================
   // CUSTOMER
   // =======================
@@ -117,13 +116,17 @@ export const TOKENS = {
   //=========================
   // SEARCH
   //=========================
-  
-  SEARCH_REPOSITORY : Symbol('SEARCH_REPOSITORY'),
 
-    //=========================
-  // RETURN 
+  SEARCH_REPOSITORY: Symbol('SEARCH_REPOSITORY'),
+
+  //=========================
+  // RETURN
   //=========================
 
-  RETURN_REPO : Symbol('RETURN_REPO'),
+  RETURN_REPO: Symbol('RETURN_REPO'),
 
+  // =======================
+  // SHIPPING CONFIGURATION
+  // =======================
+  SHIPPING_CONFIGURATION_REPO: Symbol('SHIPPING_CONFIGURATION_REPO'),
 } as const;

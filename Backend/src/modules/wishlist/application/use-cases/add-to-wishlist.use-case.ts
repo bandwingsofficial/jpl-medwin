@@ -33,9 +33,7 @@ export class AddToWishlistUseCase {
     // 📦 PRODUCT
     // =======================
 
-    const product = await this.productRepo.findById(
-      input.productId,
-    );
+    const product = await this.productRepo.findById(input.productId);
 
     if (!product) {
       throw new WishlistProductNotFoundException({
@@ -47,11 +45,7 @@ export class AddToWishlistUseCase {
     // ❤️ EXISTS
     // =======================
 
-    const existing =
-      await this.wishlistRepo.findByUserAndProduct(
-        input.userId,
-        input.productId,
-      );
+    const existing = await this.wishlistRepo.findByUserAndProduct(input.userId, input.productId);
 
     if (existing && !existing.isDeleted()) {
       throw new WishlistAlreadyExistsException({
@@ -67,8 +61,7 @@ export class AddToWishlistUseCase {
     if (existing && existing.isDeleted()) {
       existing.restore();
 
-      const restored =
-        await this.wishlistRepo.update(existing);
+      const restored = await this.wishlistRepo.update(existing);
 
       return restored;
     }

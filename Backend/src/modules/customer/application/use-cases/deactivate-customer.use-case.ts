@@ -1,9 +1,6 @@
 // src/modules/customer/application/use-cases/deactivate-customer.use-case.ts
 
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -22,65 +19,43 @@ export class DeactivateCustomerUseCase {
     private readonly domainService: CustomerDomainService,
   ) {}
 
-  async execute(input: {
-    userId: string;
-  }): Promise<void> {
-    console.log(
-      '\n❌ [DEACTIVATE CUSTOMER USE CASE]',
-    );
+  async execute(input: { userId: string }): Promise<void> {
+    console.log('\n❌ [DEACTIVATE CUSTOMER USE CASE]');
 
-    console.log(
-      '➡️ User ID:',
-      input.userId,
-    );
+    console.log('➡️ User ID:', input.userId);
 
     // =======================
     // 🔍 FIND CUSTOMER
     // =======================
 
-    const customer =
-      await this.customerRepo.findById(
-        input.userId,
-      );
+    const customer = await this.customerRepo.findById(input.userId);
 
-    console.log(
-      '➡️ Customer found:',
-      !!customer,
-    );
+    console.log('➡️ Customer found:', !!customer);
 
     // =======================
     // ❌ NOT FOUND
     // =======================
 
     if (!customer) {
-      throw new CustomerNotFoundException(
-        {
-          userId: input.userId,
-        },
-      );
+      throw new CustomerNotFoundException({
+        userId: input.userId,
+      });
     }
 
     // =======================
     // 🧠 VALIDATE ACTIVE
     // =======================
 
-    this.domainService.ensureCustomerActive(
-      {
-        isActive:
-          customer.isActive,
-      },
-    );
+    this.domainService.ensureCustomerActive({
+      isActive: customer.isActive,
+    });
 
     // =======================
     // ❌ DEACTIVATE
     // =======================
 
-    await this.customerRepo.deactivate(
-      input.userId,
-    );
+    await this.customerRepo.deactivate(input.userId);
 
-    console.log(
-      '✅ CUSTOMER DEACTIVATED',
-    );
+    console.log('✅ CUSTOMER DEACTIVATED');
   }
 }

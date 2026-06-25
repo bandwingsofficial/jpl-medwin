@@ -36,36 +36,27 @@ export class RemoveProductFromCollectionUseCase {
     // =======================
 
     this.collectionDomainService.ensureExists({
-      collection:
-        await this.collectionRepo.findById(
-          input.collectionId,
-        ),
+      collection: await this.collectionRepo.findById(input.collectionId),
 
-      collectionId:
-        input.collectionId,
+      collectionId: input.collectionId,
     });
 
     // =======================
     // 🔍 EXISTS
     // =======================
 
-    const exists =
-      await this.collectionProductRepo.exists({
-        collectionId:
-          input.collectionId,
+    const exists = await this.collectionProductRepo.exists({
+      collectionId: input.collectionId,
 
-        productId:
-          input.productId,
-      });
+      productId: input.productId,
+    });
 
     this.collectionProductDomainService.ensureCanRemove({
       exists,
 
-      collectionId:
-        input.collectionId,
+      collectionId: input.collectionId,
 
-      productId:
-        input.productId,
+      productId: input.productId,
     });
 
     // =======================
@@ -73,11 +64,9 @@ export class RemoveProductFromCollectionUseCase {
     // =======================
 
     await this.collectionProductRepo.deleteByCollectionAndProduct({
-      collectionId:
-        input.collectionId,
+      collectionId: input.collectionId,
 
-      productId:
-        input.productId,
+      productId: input.productId,
     });
   }
 }

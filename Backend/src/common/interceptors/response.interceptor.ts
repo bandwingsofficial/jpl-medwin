@@ -1,20 +1,10 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 
 import { map } from 'rxjs/operators';
 
 @Injectable()
-export class ResponseInterceptor
-  implements NestInterceptor
-{
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ) {
+export class ResponseInterceptor implements NestInterceptor {
+  intercept(context: ExecutionContext, next: CallHandler) {
     return next.handle().pipe(
       map((response) => {
         // =======================
@@ -22,12 +12,7 @@ export class ResponseInterceptor
         // =======================
 
         if (response?.message) {
-          const {
-            message,
-            data,
-            pagination,
-            ...rest
-          } = response;
+          const { message, data, pagination, ...rest } = response;
 
           return {
             success: true,

@@ -18,8 +18,8 @@ import { CartItem } from '../../domain/entities/cart-item.entity';
 
 import { CartStatus } from '../../domain/enums/cart-status.enum';
 
-import { ProductNotFoundException  } from '../../domain/exceptions/product-not-found.exception';
-import { VariantNotFoundException  } from '../../domain/exceptions/variant-not-found.exception';
+import { ProductNotFoundException } from '../../domain/exceptions/product-not-found.exception';
+import { VariantNotFoundException } from '../../domain/exceptions/variant-not-found.exception';
 
 import { CartSummaryService } from '../services/cart-summary.service';
 
@@ -94,10 +94,10 @@ export class AddToCartUseCase {
     const product = await this.productRepo.findFullById(input.productId);
 
     if (!product) {
-  throw new ProductNotFoundException({
-  productId: input.productId,
-});
-}
+      throw new ProductNotFoundException({
+        productId: input.productId,
+      });
+    }
 
     // =======================
     // 🔍 VARIANT
@@ -106,11 +106,11 @@ export class AddToCartUseCase {
     const variant = product.variants.find((v) => v.id === input.variantId);
 
     if (!variant) {
-  throw new VariantNotFoundException({
-  variantId: input.variantId,
-  productId: input.productId,
-});
-}
+      throw new VariantNotFoundException({
+        variantId: input.variantId,
+        productId: input.productId,
+      });
+    }
 
     // =======================
     // 📦 STOCK CHECK
@@ -283,7 +283,7 @@ export class AddToCartUseCase {
     // 💰 SUMMARY
     // =======================
 
-    const summary = this.summaryService.build({
+    const summary = await this.summaryService.build({
       items: cartItems,
 
       couponDiscount: cart.couponDiscount,

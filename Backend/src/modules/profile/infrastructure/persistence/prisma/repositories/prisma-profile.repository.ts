@@ -90,9 +90,7 @@ export class PrismaProfileRepository implements ProfileRepository {
     return PrismaProfileMapper.toDomain(profile);
   }
 
-  async findByPhoneNumber(
-    phoneNumber: string,
-  ): Promise<Profile | null> {
+  async findByPhoneNumber(phoneNumber: string): Promise<Profile | null> {
     const profile = await this.prisma.profile.findFirst({
       where: {
         phoneNumber,

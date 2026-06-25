@@ -35,14 +35,14 @@ export class CouponDomainService {
   // =======================
 
   normalizeCouponCode(code?: string): string {
-  if (!code || !code.trim()) {
-    throw new InvalidCouponException({
-      message: 'Coupon code is required',
-    });
-  }
+    if (!code || !code.trim()) {
+      throw new InvalidCouponException({
+        message: 'Coupon code is required',
+      });
+    }
 
-  return code.trim().toUpperCase();
-}
+    return code.trim().toUpperCase();
+  }
 
   // =======================
   // 💰 DISCOUNT VALIDATION

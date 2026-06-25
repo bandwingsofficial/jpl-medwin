@@ -12,14 +12,9 @@ export class RazorpayService {
 
   constructor() {
     this.razorpay = new Razorpay({
-      key_id:
-        process.env
-          .RAZORPAY_KEY_ID ?? '',
+      key_id: process.env.RAZORPAY_KEY_ID ?? '',
 
-      key_secret:
-        process.env
-          .RAZORPAY_KEY_SECRET ??
-        '',
+      key_secret: process.env.RAZORPAY_KEY_SECRET ?? '',
     });
   }
 
@@ -44,19 +39,15 @@ export class RazorpayService {
      |--------------------------------------------------
      */
 
-    const razorpayOrder =
-      await this.razorpay.orders.create({
-        amount: Math.round(
-          input.amount * 100,
-        ),
+    const razorpayOrder = await this.razorpay.orders.create({
+      amount: Math.round(input.amount * 100),
 
-        currency:
-          input.currency ?? 'INR',
+      currency: input.currency ?? 'INR',
 
-        receipt: input.receipt,
+      receipt: input.receipt,
 
-        notes: input.notes ?? {},
-      });
+      notes: input.notes ?? {},
+    });
 
     return razorpayOrder;
   }
@@ -76,19 +67,9 @@ export class RazorpayService {
   }): boolean {
     const body = `${input.orderId}|${input.paymentId}`;
 
-    const expectedSignature =
-      crypto
-        .createHmac(
-          'sha256',
-          input.secret,
-        )
-        .update(body)
-        .digest('hex');
+    const expectedSignature = crypto.createHmac('sha256', input.secret).update(body).digest('hex');
 
-    return (
-      expectedSignature ===
-      input.signature
-    );
+    return expectedSignature === input.signature;
   }
 
   // =======================
@@ -100,17 +81,9 @@ export class RazorpayService {
 
     amount?: number;
   }) {
-    const refund =
-      await this.razorpay.payments.refund(
-        input.paymentId,
-        {
-          amount: input.amount
-            ? Math.round(
-                input.amount * 100,
-              )
-            : undefined,
-        },
-      );
+    const refund = await this.razorpay.payments.refund(input.paymentId, {
+      amount: input.amount ? Math.round(input.amount * 100) : undefined,
+    });
 
     return refund;
   }

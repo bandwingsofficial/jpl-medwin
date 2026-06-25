@@ -27,10 +27,7 @@ export class UpdateBannerUseCase {
     // 🔍 FIND
     // =======================
 
-    const banner =
-      await this.bannerRepo.findById(
-        input.bannerId,
-      );
+    const banner = await this.bannerRepo.findById(input.bannerId);
 
     if (!banner) {
       throw new BannerNotFoundException({
@@ -43,16 +40,9 @@ export class UpdateBannerUseCase {
     // =======================
 
     if (input.name !== undefined) {
-      const existing =
-        await this.bannerRepo.findByNameIncludingDeleted(
-          input.name,
-        );
+      const existing = await this.bannerRepo.findByNameIncludingDeleted(input.name);
 
-      if (
-        existing &&
-        existing.id !== banner.id &&
-        !existing.isDeleted()
-      ) {
+      if (existing && existing.id !== banner.id && !existing.isDeleted()) {
         throw new BannerAlreadyExistsException({
           name: input.name,
         });
@@ -73,10 +63,7 @@ export class UpdateBannerUseCase {
     // 💾 SAVE
     // =======================
 
-    const updated =
-      await this.bannerRepo.update(
-        banner,
-      );
+    const updated = await this.bannerRepo.update(banner);
 
     // =======================
     // 🚀 RESPONSE

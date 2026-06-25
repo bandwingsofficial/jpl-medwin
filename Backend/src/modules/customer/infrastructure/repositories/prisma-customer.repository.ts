@@ -24,40 +24,34 @@ export class PrismaCustomerRepository {
   // 🔍 GET CUSTOMER
   // =======================
 
-  async findById(
-    userId: string,
-  ): Promise<CustomerDetailDto | null> {
+  async findById(userId: string): Promise<CustomerDetailDto | null> {
     console.log('\n👤 [GET CUSTOMER]');
 
     console.log('➡️ User ID:', userId);
 
-    const user =
-      await this.prisma.user.findUnique({
-        where: {
-          id: userId,
-        },
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
 
-        include: {
-          profile: true,
+      include: {
+        profile: true,
 
-          identities: {
-            where: {
-              deletedAt: null,
-            },
-          },
-
-          orders: {
-            where: {
-              deletedAt: null,
-            },
+        identities: {
+          where: {
+            deletedAt: null,
           },
         },
-      });
 
-    console.log(
-      '➡️ User found:',
-      !!user,
-    );
+        orders: {
+          where: {
+            deletedAt: null,
+          },
+        },
+      },
+    });
+
+    console.log('➡️ User found:', !!user);
 
     if (!user) {
       return null;
@@ -67,15 +61,9 @@ export class PrismaCustomerRepository {
     // 📊 STATS
     // =======================
 
-    const totalSpent =
-      this.domainService.calculateTotalSpent(
-        user.orders ?? [],
-      );
+    const totalSpent = this.domainService.calculateTotalSpent(user.orders ?? []);
 
-    const totalOrders =
-      this.domainService.calculateTotalOrders(
-        user.orders ?? [],
-      );
+    const totalOrders = this.domainService.calculateTotalOrders(user.orders ?? []);
 
     // =======================
     // ✅ RESPONSE
@@ -88,49 +76,33 @@ export class PrismaCustomerRepository {
 
       isActive: user.isActive,
 
-      tokenVersion:
-        user.tokenVersion,
+      tokenVersion: user.tokenVersion,
 
       profile: user.profile
         ? {
             id: user.profile.id,
 
-            name:
-              user.profile.name ??
-              undefined,
+            name: user.profile.name ?? undefined,
 
-            email:
-              user.profile.email ??
-              undefined,
+            email: user.profile.email ?? undefined,
 
-            phoneNumber:
-              user.profile
-                .phoneNumber ??
-              undefined,
+            phoneNumber: user.profile.phoneNumber ?? undefined,
 
-            avatarUrl:
-              user.profile
-                .avatarUrl ??
-              undefined,
+            avatarUrl: user.profile.avatarUrl ?? undefined,
           }
         : null,
 
-      identities:
-        (user.identities ?? []).map(
-          (identity) => ({
-            id: identity.id,
+      identities: (user.identities ?? []).map((identity) => ({
+        id: identity.id,
 
-            type: identity.type,
+        type: identity.type,
 
-            value: identity.value,
+        value: identity.value,
 
-            isVerified:
-              identity.isVerified,
+        isVerified: identity.isVerified,
 
-            isTotpEnabled:
-              identity.isTotpEnabled,
-          }),
-        ),
+        isTotpEnabled: identity.isTotpEnabled,
+      })),
 
       stats: {
         totalOrders,
@@ -138,11 +110,9 @@ export class PrismaCustomerRepository {
         totalSpent,
       },
 
-      createdAt:
-        user.createdAt,
+      createdAt: user.createdAt,
 
-      updatedAt:
-        user.updatedAt,
+      updatedAt: user.updatedAt,
     };
   }
 
@@ -167,183 +137,144 @@ export class PrismaCustomerRepository {
 
     totalPages: number;
   }> {
-    console.log(
-      '\n📋 [GET CUSTOMERS]',
-    );
+    console.log('\n📋 [GET CUSTOMERS]');
 
-    const page =
-      Number(params?.page) || 1;
+    const page = Number(params?.page) || 1;
 
-    const limit = Math.min(
-      Number(params?.limit) || 20,
-      100,
-    );
+    const limit = Math.min(Number(params?.limit) || 20, 100);
 
-    const search =
-      params?.search?.trim();
+    const search = params?.search?.trim();
 
     // =======================
     // ✅ WHERE
     // =======================
 
-    const where: Prisma.UserWhereInput =
-      {
-        deletedAt: null,
+    const where: Prisma.UserWhereInput = {
+      deletedAt: null,
 
-        role: UserRole.USER,
+      role: UserRole.USER,
 
-        ...(search
-          ? {
-              OR: [
-                {
-                  profile: {
-                    name: {
-                      contains:
-                        search,
+      ...(search
+        ? {
+            OR: [
+              {
+                profile: {
+                  name: {
+                    contains: search,
 
-                      mode:
-                        'insensitive',
-                    },
+                    mode: 'insensitive',
                   },
                 },
+              },
 
-                {
-                  profile: {
-                    email: {
-                      contains:
-                        search,
+              {
+                profile: {
+                  email: {
+                    contains: search,
 
-                      mode:
-                        'insensitive',
-                    },
+                    mode: 'insensitive',
                   },
                 },
+              },
 
-                {
-                  profile: {
-                    phoneNumber: {
-                      contains:
-                        search,
-                    },
+              {
+                profile: {
+                  phoneNumber: {
+                    contains: search,
                   },
                 },
-              ],
-            }
-          : {}),
-      };
+              },
+            ],
+          }
+        : {}),
+    };
 
     // =======================
     // ✅ FETCH USERS
     // =======================
 
-    const users =
-      await this.prisma.user.findMany(
-        {
-          where,
+    const users = await this.prisma.user.findMany({
+      where,
 
-          include: {
-  profile: true,
+      include: {
+        profile: true,
 
-  identities: {
-    where: {
-      deletedAt: null,
-    },
-  },
-
-  orders: {
-              where: {
-                deletedAt: null,
-              },
-            },
-          },
-
-          skip:
-            (page - 1) * limit,
-
-          take: limit,
-
-          orderBy: {
-            createdAt: 'desc',
+        identities: {
+          where: {
+            deletedAt: null,
           },
         },
-      );
+
+        orders: {
+          where: {
+            deletedAt: null,
+          },
+        },
+      },
+
+      skip: (page - 1) * limit,
+
+      take: limit,
+
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
 
     // =======================
     // ✅ TOTAL
     // =======================
 
-    const total =
-      await this.prisma.user.count({
-        where,
-      });
+    const total = await this.prisma.user.count({
+      where,
+    });
 
     // =======================
     // 🧠 MAP DATA
     // =======================
 
-    const data: CustomerListDto[] =
-      users.map((user) => ({
-        id: user.id,
+    const data: CustomerListDto[] = users.map((user) => ({
+      id: user.id,
 
-        role: user.role,
+      role: user.role,
 
-        name:
-          user.profile?.name ??
-          undefined,
+      name: user.profile?.name ?? undefined,
 
-        email:
-  user.profile?.email ??
-  user.identities?.find(
-    (identity) =>
-      identity.type === 'EMAIL',
-  )?.value ??
-  undefined,
+      email:
+        user.profile?.email ??
+        user.identities?.find((identity) => identity.type === 'EMAIL')?.value ??
+        undefined,
 
-phoneNumber:
-  user.profile?.phoneNumber ??
-  user.identities?.find(
-    (identity) =>
-      identity.type === 'PHONE',
-  )?.value ??
-  undefined,
+      phoneNumber:
+        user.profile?.phoneNumber ??
+        user.identities?.find((identity) => identity.type === 'PHONE')?.value ??
+        undefined,
 
-        avatarUrl:
-          user.profile
-            ?.avatarUrl ??
-          undefined,
+      avatarUrl: user.profile?.avatarUrl ?? undefined,
 
-        isActive:
-          user.isActive,
+      isActive: user.isActive,
 
-        totalOrders:
-          (user.orders ?? [])
-            .length,
+      totalOrders: (user.orders ?? []).length,
 
-        totalSpent:
-          this.domainService.calculateTotalSpent(
-            user.orders ?? [],
-          ),
+      totalSpent: this.domainService.calculateTotalSpent(user.orders ?? []),
 
-        createdAt:
-          user.createdAt,
-      }));
+      createdAt: user.createdAt,
+    }));
 
     // =======================
     // ✅ RESPONSE
     // =======================
 
     return {
-  customers: data,
+      customers: data,
 
-  total,
+      total,
 
-  page,
+      page,
 
-  limit,
+      limit,
 
-  totalPages: Math.ceil(
-    total / limit,
-  ),
-};
+      totalPages: Math.ceil(total / limit),
+    };
   }
 }

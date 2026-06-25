@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -32,14 +29,9 @@ export class TopCustomerDashboardService {
 
     to?: string;
   }) {
-    const orders =
-      await this.fetchOrders(
-        params,
-      );
+    const orders = await this.fetchOrders(params);
 
-    return this.calculateTopCustomers(
-      orders,
-    );
+    return this.calculateTopCustomers(orders);
   }
 
   /**
@@ -52,82 +44,50 @@ export class TopCustomerDashboardService {
 
     to?: string;
   }): Promise<Order[]> {
-    let startDate:
-      | Date
-      | undefined;
+    let startDate: Date | undefined;
 
-    let endDate:
-      | Date
-      | undefined;
+    let endDate: Date | undefined;
 
     // =======================
     // 📅 CUSTOM RANGE
     // =======================
-    if (
-      params.from &&
-      params.to
-    ) {
-      startDate = new Date(
-        params.from,
-      );
+    if (params.from && params.to) {
+      startDate = new Date(params.from);
 
-      endDate = new Date(
-        params.to,
-      );
+      endDate = new Date(params.to);
 
       // Include entire end day
-      endDate.setHours(
-        23,
-        59,
-        59,
-        999,
-      );
+      endDate.setHours(23, 59, 59, 999);
     }
 
     // =======================
     // 📅 PREDEFINED PERIOD
     // =======================
     else {
-      const range =
-        DashboardPeriodUtil.getRange(
-          params.period ??
-            DashboardPeriod.OVERALL,
-        );
+      const range = DashboardPeriodUtil.getRange(params.period ?? DashboardPeriod.OVERALL);
 
-      startDate =
-        range.startDate;
+      startDate = range.startDate;
 
-      endDate =
-        range.endDate;
+      endDate = range.endDate;
     }
 
-    const {
-      data,
-    } =
-      await this.orderRepo.findMany({
-        page: 1,
+    const { data } = await this.orderRepo.findMany({
+      page: 1,
 
-        limit:
-          Number.MAX_SAFE_INTEGER,
+      limit: Number.MAX_SAFE_INTEGER,
 
-        from: startDate,
+      from: startDate,
 
-        to: endDate,
-      });
+      to: endDate,
+    });
 
-    return data.filter(
-      (order) =>
-        order.status ===
-        OrderStatus.DELIVERED,
-    );
+    return data.filter((order) => order.status === OrderStatus.DELIVERED);
   }
 
   /**
    * 📊 Calculate top customers
    */
-  private calculateTopCustomers(
-    orders: Order[],
-  ) {
+  private calculateTopCustomers(orders: Order[]) {
     const customers = new Map<
       string,
       {
@@ -140,46 +100,25 @@ export class TopCustomerDashboardService {
     >();
 
     for (const order of orders) {
-      const existing =
-        customers.get(
-          order.userId,
-        );
+      const existing = customers.get(order.userId);
 
       if (existing) {
         existing.totalOrders++;
 
-        existing.totalSpent +=
-          order.grandTotal;
+        existing.totalSpent += order.grandTotal;
       } else {
-        customers.set(
-          order.userId,
-          {
-            userId:
-              order.userId,
+        customers.set(order.userId, {
+          userId: order.userId,
 
-            totalOrders: 1,
+          totalOrders: 1,
 
-            totalSpent:
-              order.grandTotal,
-          },
-        );
+          totalSpent: order.grandTotal,
+        });
       }
     }
 
-    return Array.from(
-      customers.values(),
-    )
-      .sort(
-        (
-          a,
-          b,
-        ) =>
-          b.totalSpent -
-          a.totalSpent,
-      )
-      .slice(
-        0,
-        10,
-      );
+    return Array.from(customers.values())
+      .sort((a, b) => b.totalSpent - a.totalSpent)
+      .slice(0, 10);
   }
 }

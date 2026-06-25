@@ -17,23 +17,16 @@ export class DeleteCollectionUseCase {
     private readonly domainService: CollectionDomainService,
   ) {}
 
-  async execute(input: {
-    collectionId: string;
-  }): Promise<void> {
+  async execute(input: { collectionId: string }): Promise<void> {
     // =======================
     // 🔍 COLLECTION
     // =======================
 
-    const collection =
-      this.domainService.ensureExists({
-        collection:
-          await this.collectionRepo.findById(
-            input.collectionId,
-          ),
+    const collection = this.domainService.ensureExists({
+      collection: await this.collectionRepo.findById(input.collectionId),
 
-        collectionId:
-          input.collectionId,
-      });
+      collectionId: input.collectionId,
+    });
 
     // =======================
     // ❌ DELETE
@@ -45,8 +38,6 @@ export class DeleteCollectionUseCase {
     // 💾 SAVE
     // =======================
 
-    await this.collectionRepo.update(
-      collection,
-    );
+    await this.collectionRepo.update(collection);
   }
 }

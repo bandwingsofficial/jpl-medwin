@@ -8,6 +8,7 @@ import { Module, forwardRef } from '@nestjs/common';
 
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 import { CouponModule } from '../coupon/coupon.module';
+import { ShippingConfigurationModule } from '../shipping-configuration/shipping-configuration.module';
 
 // =======================
 // TOKENS
@@ -78,7 +79,7 @@ import { RemoveCouponUseCase } from './application/use-cases/remove-coupon.use-c
 import { ProductModule } from '../product/product.module';
 
 @Module({
- imports: [forwardRef(() => ProductModule), CouponModule],
+  imports: [forwardRef(() => ProductModule), CouponModule, ShippingConfigurationModule],
 
   controllers: [CartController],
 

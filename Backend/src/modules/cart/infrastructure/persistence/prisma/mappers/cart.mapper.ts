@@ -33,7 +33,11 @@ export class CartMapper {
         return CartStatus.MERGED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown PrismaCartStatus', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown PrismaCartStatus',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -58,7 +62,11 @@ export class CartMapper {
         return PrismaCartStatus.MERGED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown CartStatus', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown CartStatus',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 

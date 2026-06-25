@@ -36,86 +36,50 @@ export class UpdateCollectionUseCase {
     // 🔍 COLLECTION
     // =======================
 
-    const collection =
-  this.domainService.ensureExists({
-    collection:
-      await this.collectionRepo.findById(
-        input.collectionId,
-      ),
+    const collection = this.domainService.ensureExists({
+      collection: await this.collectionRepo.findById(input.collectionId),
 
-    collectionId:
-      input.collectionId,
-  });
+      collectionId: input.collectionId,
+    });
     // =======================
-// 🔍 NAME CONFLICT
-// =======================
+    // 🔍 NAME CONFLICT
+    // =======================
 
-if (
-  input.name &&
-  input.name !== collection.name
-) {
-  const existing =
-    await this.collectionRepo.findByNameIncludingDeleted(
-      input.name,
-    );
+    if (input.name && input.name !== collection.name) {
+      const existing = await this.collectionRepo.findByNameIncludingDeleted(input.name);
 
-  if (
-    existing &&
-    existing.id !== collection.id &&
-    !existing.isDeleted()
-  ) {
-    throw new CollectionAlreadyExistsException({
-      name: input.name,
-    });
-  }
+      if (existing && existing.id !== collection.id && !existing.isDeleted()) {
+        throw new CollectionAlreadyExistsException({
+          name: input.name,
+        });
+      }
 
-  collection.name = input.name;
+      collection.name = input.name;
 
-  // =======================
-  // 🔗 AUTO SLUG
-  // =======================
+      // =======================
+      // 🔗 AUTO SLUG
+      // =======================
 
-  const generatedSlug =
-    this.domainService.generateSlug(
-      input.name,
-    );
+      const generatedSlug = this.domainService.generateSlug(input.name);
 
-  const slugExists =
-    await this.collectionRepo.findBySlugIncludingDeleted(
-      generatedSlug,
-    );
+      const slugExists = await this.collectionRepo.findBySlugIncludingDeleted(generatedSlug);
 
-  if (
-    slugExists &&
-    slugExists.id !== collection.id &&
-    !slugExists.isDeleted()
-  ) {
-    throw new CollectionAlreadyExistsException({
-      slug: generatedSlug,
-    });
-  }
+      if (slugExists && slugExists.id !== collection.id && !slugExists.isDeleted()) {
+        throw new CollectionAlreadyExistsException({
+          slug: generatedSlug,
+        });
+      }
 
-  collection.slug =
-    generatedSlug;
-}
+      collection.slug = generatedSlug;
+    }
     // =======================
     // 🔍 SLUG CONFLICT
     // =======================
 
-    if (
-      input.slug &&
-      input.slug !== collection.slug
-    ) {
-      const existing =
-        await this.collectionRepo.findBySlugIncludingDeleted(
-          input.slug,
-        );
+    if (input.slug && input.slug !== collection.slug) {
+      const existing = await this.collectionRepo.findBySlugIncludingDeleted(input.slug);
 
-      if (
-        existing &&
-        existing.id !== collection.id &&
-        !existing.isDeleted()
-      ) {
+      if (existing && existing.id !== collection.id && !existing.isDeleted()) {
         throw new CollectionAlreadyExistsException({
           slug: input.slug,
         });
@@ -129,50 +93,35 @@ if (
     // =======================
 
     if (input.imageUrl !== undefined) {
-      collection.imageUrl =
-        input.imageUrl;
+      collection.imageUrl = input.imageUrl;
     }
 
     // =======================
-// 📝 DESCRIPTION
-// =======================
+    // 📝 DESCRIPTION
+    // =======================
 
-if (
-  input.description !== undefined
-) {
-  collection.description =
-    input.description;
+    if (input.description !== undefined) {
+      collection.description = input.description;
 
-  // auto meta only if not provided
-  if (
-    input.metaDescription ===
-    undefined
-  ) {
-    collection.metaDescription =
-      input.description;
-  }
-}
+      // auto meta only if not provided
+      if (input.metaDescription === undefined) {
+        collection.metaDescription = input.description;
+      }
+    }
 
-// =======================
-// 📝 META
-// =======================
+    // =======================
+    // 📝 META
+    // =======================
 
-if (
-  input.metaDescription !==
-  undefined
-) {
-  collection.metaDescription =
-    input.metaDescription;
-}
+    if (input.metaDescription !== undefined) {
+      collection.metaDescription = input.metaDescription;
+    }
 
     // =======================
     // 💾 SAVE
     // =======================
 
-    const updated =
-      await this.collectionRepo.update(
-        collection,
-      );
+    const updated = await this.collectionRepo.update(collection);
 
     // =======================
     // 🚀 RESPONSE
@@ -185,22 +134,17 @@ if (
 
       slug: updated.slug,
 
-      imageUrl:
-        updated.imageUrl ?? null,
+      imageUrl: updated.imageUrl ?? null,
 
-      description:
-        updated.description ?? null,
+      description: updated.description ?? null,
 
-      metaDescription:
-        updated.metaDescription ?? null,
+      metaDescription: updated.metaDescription ?? null,
 
       status: updated.status,
 
-      createdAt:
-        updated.createdAt,
+      createdAt: updated.createdAt,
 
-      updatedAt:
-        updated.updatedAt,
+      updatedAt: updated.updatedAt,
     };
   }
 }

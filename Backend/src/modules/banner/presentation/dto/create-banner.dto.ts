@@ -1,11 +1,4 @@
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-  Min,
-  MinLength,
-  ValidateNested,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString, Min, MinLength, ValidateNested } from 'class-validator';
 
 import { Type } from 'class-transformer';
 

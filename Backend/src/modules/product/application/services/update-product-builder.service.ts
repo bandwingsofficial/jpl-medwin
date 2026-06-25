@@ -6,29 +6,19 @@ import { Product } from '../../domain/entities/product.entity';
 
 @Injectable()
 export class UpdateProductBuilderService {
-  update(
-    product: Product,
-    input: any,
-    newSlug?: string,
-  ): boolean {
+  update(product: Product, input: any, newSlug?: string): boolean {
     let changed = false;
 
     // =======================
     // BASIC FIELDS
     // =======================
 
-    if (
-      input.name !== undefined &&
-      product.name !== input.name
-    ) {
+    if (input.name !== undefined && product.name !== input.name) {
       product.name = input.name;
       changed = true;
     }
 
-    if (
-      newSlug &&
-      product.slug !== newSlug
-    ) {
+    if (newSlug && product.slug !== newSlug) {
       product.slug = newSlug;
       changed = true;
     }
@@ -67,10 +57,7 @@ export class UpdateProductBuilderService {
       warrantyMonths: input.warrantyMonths,
     };
 
-    if (
-      JSON.stringify(oldValues) !==
-      JSON.stringify(newValues)
-    ) {
+    if (JSON.stringify(oldValues) !== JSON.stringify(newValues)) {
       product.updateDetails(newValues);
       changed = true;
     }

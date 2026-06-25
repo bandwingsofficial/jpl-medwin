@@ -15,9 +15,7 @@ export class CheckoutSessionMapper {
   // 🔄 ENUM
   // =======================
 
-  private static toDomainStatus(
-    status: PrismaCheckoutSessionStatus,
-  ): CheckoutSessionStatus {
+  private static toDomainStatus(status: PrismaCheckoutSessionStatus): CheckoutSessionStatus {
     switch (status) {
       case PrismaCheckoutSessionStatus.ACTIVE:
         return CheckoutSessionStatus.ACTIVE;
@@ -32,13 +30,15 @@ export class CheckoutSessionMapper {
         return CheckoutSessionStatus.EXPIRED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown PrismaCheckoutSessionStatus', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown PrismaCheckoutSessionStatus',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
-  private static toPrismaStatus(
-    status: CheckoutSessionStatus,
-  ): PrismaCheckoutSessionStatus {
+  private static toPrismaStatus(status: CheckoutSessionStatus): PrismaCheckoutSessionStatus {
     switch (status) {
       case CheckoutSessionStatus.ACTIVE:
         return PrismaCheckoutSessionStatus.ACTIVE;
@@ -53,7 +53,11 @@ export class CheckoutSessionMapper {
         return PrismaCheckoutSessionStatus.EXPIRED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown CheckoutSessionStatus', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown CheckoutSessionStatus',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -61,9 +65,7 @@ export class CheckoutSessionMapper {
   // 🔄 TO DOMAIN
   // =======================
 
-  static toDomain(
-    p: PrismaCheckoutSession,
-  ): CheckoutSession {
+  static toDomain(p: PrismaCheckoutSession): CheckoutSession {
     return new CheckoutSession(
       p.id,
 
@@ -113,9 +115,7 @@ export class CheckoutSessionMapper {
   // 🔄 TO PERSISTENCE
   // =======================
 
-  static toPersistence(
-    e: CheckoutSession,
-  ) {
+  static toPersistence(e: CheckoutSession) {
     return {
       id: e.id,
 
@@ -125,52 +125,39 @@ export class CheckoutSessionMapper {
 
       guestId: e.guestId ?? null,
 
-      status: this.toPrismaStatus(
-        e.status,
-      ),
+      status: this.toPrismaStatus(e.status),
 
       couponCode: e.couponCode ?? null,
 
       subtotal: e.subtotal,
 
-      couponDiscount:
-        e.couponDiscount,
+      couponDiscount: e.couponDiscount,
 
-      rewardCoinsUsed:
-        e.rewardCoinsUsed,
+      rewardCoinsUsed: e.rewardCoinsUsed,
 
-      rewardDiscount:
-        e.rewardDiscount,
+      rewardDiscount: e.rewardDiscount,
 
-      shippingCharge:
-        e.shippingCharge,
+      shippingCharge: e.shippingCharge,
 
       tax: e.tax,
 
-      grandTotal:
-        e.grandTotal,
+      grandTotal: e.grandTotal,
 
-      totalSavings:
-        e.totalSavings,
+      totalSavings: e.totalSavings,
 
-      metadata:
-  (e.metadata as Prisma.InputJsonValue) ??
-  Prisma.JsonNull,
+      metadata: (e.metadata as Prisma.InputJsonValue) ?? Prisma.JsonNull,
 
       expiresAt: e.expiresAt,
 
-      completedAt:
-        e.completedAt ?? null,
+      completedAt: e.completedAt ?? null,
 
-      failedAt:
-        e.failedAt ?? null,
+      failedAt: e.failedAt ?? null,
 
       createdAt: e.createdAt,
 
       updatedAt: e.updatedAt,
 
-      deletedAt:
-        e.deletedAt ?? null,
+      deletedAt: e.deletedAt ?? null,
     };
   }
 }

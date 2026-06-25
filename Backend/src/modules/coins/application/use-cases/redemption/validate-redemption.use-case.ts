@@ -22,15 +22,8 @@ export class ValidateRedemptionUseCase {
     private readonly redemptionDomainService: RedemptionDomainService,
   ) {}
 
-  async execute(input: {
-    userId: string;
-    coins: number;
-    orderAmount: number;
-  }) {
-    const wallet =
-      await this.walletRepository.findByUserId(
-        input.userId,
-      );
+  async execute(input: { userId: string; coins: number; orderAmount: number }) {
+    const wallet = await this.walletRepository.findByUserId(input.userId);
 
     if (!wallet) {
       throw new WalletNotFoundException({
@@ -38,8 +31,7 @@ export class ValidateRedemptionUseCase {
       });
     }
 
-    const rewardConfig =
-      await this.rewardConfigRepository.findActiveConfig();
+    const rewardConfig = await this.rewardConfigRepository.findActiveConfig();
 
     if (!rewardConfig) {
       throw new RewardConfigNotFoundException();
@@ -54,29 +46,20 @@ export class ValidateRedemptionUseCase {
       orderAmount: input.orderAmount,
     });
 
-    const redeemedAmount =
-      this.redemptionDomainService.calculateRedeemableAmount(
-        {
-          coins: input.coins,
-          rewardConfig,
-        },
-      );
+    const redeemedAmount = this.redemptionDomainService.calculateRedeemableAmount({
+      coins: input.coins,
+      rewardConfig,
+    });
 
-    const maxRedeemableCoins =
-      this.redemptionDomainService.calculateMaxRedeemableCoins(
-        {
-          orderAmount: input.orderAmount,
-          rewardConfig,
-        },
-      );
+    const maxRedeemableCoins = this.redemptionDomainService.calculateMaxRedeemableCoins({
+      orderAmount: input.orderAmount,
+      rewardConfig,
+    });
 
-    const finalPayableAmount =
-      this.redemptionDomainService.calculateFinalPayableAmount(
-        {
-          orderAmount: input.orderAmount,
-          redeemedAmount,
-        },
-      );
+    const finalPayableAmount = this.redemptionDomainService.calculateFinalPayableAmount({
+      orderAmount: input.orderAmount,
+      redeemedAmount,
+    });
 
     return {
       valid: true,
@@ -88,13 +71,9 @@ export class ValidateRedemptionUseCase {
 
         balance: wallet.balance,
 
-        remainingBalance:
-          wallet.balance - input.coins,
+        remainingBalance: wallet.balance - input.coins,
 
-        hasSufficientBalance:
-          wallet.hasSufficientBalance(
-            input.coins,
-          ),
+        hasSufficientBalance: wallet.hasSufficientBalance(input.coins),
 
         isEmpty: wallet.isEmpty(),
       },
@@ -106,13 +85,11 @@ export class ValidateRedemptionUseCase {
 
         maxRedeemableCoins,
 
-        coinValue:
-          rewardConfig.coinValue,
+        coinValue: rewardConfig.coinValue,
       },
 
       payable: {
-        originalAmount:
-          input.orderAmount,
+        originalAmount: input.orderAmount,
 
         redeemedAmount,
 
@@ -120,20 +97,15 @@ export class ValidateRedemptionUseCase {
       },
 
       config: {
-        coinValue:
-          rewardConfig.coinValue,
+        coinValue: rewardConfig.coinValue,
 
-        maxRedemptionPercentage:
-          rewardConfig.maxRedemptionPercentage,
+        maxRedemptionPercentage: rewardConfig.maxRedemptionPercentage,
 
-        minimumOrderAmount:
-          rewardConfig.minimumOrderAmount,
+        minimumOrderAmount: rewardConfig.minimumOrderAmount,
 
-        rewardOnDelivered:
-          rewardConfig.rewardOnDelivered,
+        rewardOnDelivered: rewardConfig.rewardOnDelivered,
 
-        expiryMonths:
-          rewardConfig.expiryMonths,
+        expiryMonths: rewardConfig.expiryMonths,
       },
     };
   }

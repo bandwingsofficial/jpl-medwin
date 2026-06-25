@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  DeleteObjectCommand,
+  HeadObjectCommand,
+} from '@aws-sdk/client-s3';
 
 @Injectable()
 export class S3Service {
@@ -40,8 +45,42 @@ export class S3Service {
 
     return {
       key,
-      url: this.getFileUrl(key),
+      url: this.getPublicUrl(key),
     };
+  }
+
+  // =======================
+  // 🔍 OBJECT EXISTS
+  // =======================
+
+  async objectExists(key: string): Promise<boolean> {
+    try {
+      await this.s3.send(
+        new HeadObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+        }),
+      );
+
+      return true;
+    } catch (error: any) {
+      const status = error?.$metadata?.httpStatusCode;
+      const code = error?.name ?? error?.Code;
+
+      if (status === 404 || code === 'NotFound' || code === 'NoSuchKey') {
+        return false;
+      }
+
+      throw error;
+    }
+  }
+
+  // =======================
+  // 🔗 PUBLIC URL
+  // =======================
+
+  getPublicUrl(key: string): string {
+    return this.getFileUrl(key);
   }
 
   // =======================

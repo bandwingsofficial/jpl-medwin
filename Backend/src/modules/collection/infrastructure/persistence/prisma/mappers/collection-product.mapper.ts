@@ -5,9 +5,7 @@ import { CollectionProduct as PrismaCollectionProduct } from '@prisma/client';
 import { CollectionProduct } from '../../../../domain/entities/collection-product.entity';
 
 export class CollectionProductMapper {
-  static toDomain(
-    p: PrismaCollectionProduct,
-  ): CollectionProduct {
+  static toDomain(p: PrismaCollectionProduct): CollectionProduct {
     return new CollectionProduct(
       p.id,
 
@@ -21,23 +19,17 @@ export class CollectionProductMapper {
     );
   }
 
-  static toPersistence(
-    e: CollectionProduct,
-  ) {
+  static toPersistence(e: CollectionProduct) {
     return {
       id: e.id,
 
-      collectionId:
-        e.collectionId,
+      collectionId: e.collectionId,
 
-      productId:
-        e.productId,
+      productId: e.productId,
 
-      sortOrder:
-        e.sortOrder,
+      sortOrder: e.sortOrder,
 
-      createdAt:
-        e.createdAt,
+      createdAt: e.createdAt,
     };
   }
 }

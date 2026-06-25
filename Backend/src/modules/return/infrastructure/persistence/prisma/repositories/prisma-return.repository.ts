@@ -23,24 +23,20 @@ export class PrismaReturnRepository implements ReturnRepository {
   // 🔍 FIND
   // =======================
 
-  async findById(
-  id: string,
-): Promise<Return | null> {
-  const record = await this.prisma.return.findUnique({
-    where: {
-      id,
-    },
+  async findById(id: string): Promise<Return | null> {
+    const record = await this.prisma.return.findUnique({
+      where: {
+        id,
+      },
 
-    include: {
-      order: true,
-      replacementOrder: true,
-    },
-  });
+      include: {
+        order: true,
+        replacementOrder: true,
+      },
+    });
 
-  return record
-    ? ReturnMapper.toDomain(record)
-    : null;
-}
+    return record ? ReturnMapper.toDomain(record) : null;
+  }
 
   async findByOrderId(orderId: string): Promise<Return[]> {
     const records = await this.prisma.return.findMany({
@@ -154,31 +150,25 @@ export class PrismaReturnRepository implements ReturnRepository {
     return record ? ReturnMapper.toDomain(record) : null;
   }
 
-  async findByReplacementOrderId(
-  replacementOrderId: string,
-): Promise<Return | null> {
-  const record = await this.prisma.return.findFirst({
-    where: {
-      replacementOrderId,
-    },
-  });
+  async findByReplacementOrderId(replacementOrderId: string): Promise<Return | null> {
+    const record = await this.prisma.return.findFirst({
+      where: {
+        replacementOrderId,
+      },
+    });
 
-  return record
-    ? ReturnMapper.toDomain(record)
-    : null;
-}
+    return record ? ReturnMapper.toDomain(record) : null;
+  }
 
-async existsByReplacementOrderId(
-  replacementOrderId: string,
-): Promise<boolean> {
-  const count = await this.prisma.return.count({
-    where: {
-      replacementOrderId,
-    },
-  });
+  async existsByReplacementOrderId(replacementOrderId: string): Promise<boolean> {
+    const count = await this.prisma.return.count({
+      where: {
+        replacementOrderId,
+      },
+    });
 
-  return count > 0;
-}
+    return count > 0;
+  }
 
   async findMany(params: {
     page?: number;
@@ -209,15 +199,9 @@ async existsByReplacementOrderId(
 
     total: number;
   }> {
-    const page = Number(
- params.page ?? 1,
-);
+    const page = Number(params.page ?? 1);
 
-
-    const limit = Number(
- params.limit ?? 10,
-);
-
+    const limit = Number(params.limit ?? 10);
 
     const skip = (page - 1) * limit;
 

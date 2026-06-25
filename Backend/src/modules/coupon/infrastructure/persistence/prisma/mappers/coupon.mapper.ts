@@ -30,7 +30,11 @@ export class CouponMapper {
         return CouponStatus.EXPIRED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Prisma coupon status', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Prisma coupon status',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -46,7 +50,11 @@ export class CouponMapper {
         return PrismaCouponStatus.EXPIRED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Domain coupon status', value: status, direction: 'domain_to_prisma' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Domain coupon status',
+          value: status,
+          direction: 'domain_to_prisma',
+        });
     }
   }
 
@@ -59,7 +67,11 @@ export class CouponMapper {
         return CouponDiscountType.FIXED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Prisma coupon discount type', value: type, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Prisma coupon discount type',
+          value: type,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -72,7 +84,11 @@ export class CouponMapper {
         return PrismaCouponDiscountType.FIXED;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Domain coupon discount type', value: type, direction: 'domain_to_prisma' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Domain coupon discount type',
+          value: type,
+          direction: 'domain_to_prisma',
+        });
     }
   }
 

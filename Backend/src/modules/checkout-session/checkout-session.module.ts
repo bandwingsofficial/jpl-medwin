@@ -65,21 +65,14 @@ import { RemoveRewardsFromCheckoutUseCase } from './application/use-cases/remove
 import { ProductModule } from '../product/product.module';
 
 import { CoinsModule } from '../coins/coins.module';
+import { ShippingConfigurationModule } from '../shipping-configuration/shipping-configuration.module';
 
 import { CartModule } from '../cart/cart.module';
 
 @Module({
-  imports: [
-    ProductModule,
+  imports: [ProductModule, CartModule, CoinsModule, ShippingConfigurationModule],
 
-    CartModule,
-
-    CoinsModule,
-  ],
-
-  controllers: [
-    CheckoutSessionController,
-  ],
+  controllers: [CheckoutSessionController],
 
   providers: [
     PrismaService,
@@ -89,19 +82,15 @@ import { CartModule } from '../cart/cart.module';
     // =======================
 
     {
-      provide:
-        TOKENS.CHECKOUT_SESSION_REPO,
+      provide: TOKENS.CHECKOUT_SESSION_REPO,
 
-      useClass:
-        PrismaCheckoutSessionRepository,
+      useClass: PrismaCheckoutSessionRepository,
     },
 
     {
-      provide:
-        TOKENS.CHECKOUT_SESSION_ITEM_REPO,
+      provide: TOKENS.CHECKOUT_SESSION_ITEM_REPO,
 
-      useClass:
-        PrismaCheckoutSessionItemRepository,
+      useClass: PrismaCheckoutSessionItemRepository,
     },
 
     // =======================

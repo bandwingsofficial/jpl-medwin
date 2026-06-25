@@ -16,7 +16,11 @@ export class BrandMapper {
       case PrismaBrandStatus.INACTIVE:
         return BrandStatus.INACTIVE;
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Prisma status', value: status, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Prisma status',
+          value: status,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -27,7 +31,11 @@ export class BrandMapper {
       case BrandStatus.INACTIVE:
         return PrismaBrandStatus.INACTIVE;
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Domain status', value: status, direction: 'domain_to_prisma' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Domain status',
+          value: status,
+          direction: 'domain_to_prisma',
+        });
     }
   }
 

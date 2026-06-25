@@ -51,7 +51,6 @@ import { GetCollectionsUseCase } from '../../application/use-cases/get-collectio
 
 import { GetCollectionUseCase } from '../../application/use-cases/get-collection.use-case';
 
-
 import { CreateCollectionDto } from '../../presentation/dto/create-collection.dto';
 
 import { UpdateCollectionDto } from '../../presentation/dto/update-collection.dto';
@@ -82,8 +81,7 @@ export class AdminCollectionController {
     private readonly getCollectionUseCase: GetCollectionUseCase,
     private readonly addProductToCollectionUseCase: AddProductToCollectionUseCase,
 
-private readonly removeProductFromCollectionUseCase: RemoveProductFromCollectionUseCase,
-    
+    private readonly removeProductFromCollectionUseCase: RemoveProductFromCollectionUseCase,
 
     private readonly uploadUseCase: UploadImageUseCase,
 
@@ -148,14 +146,13 @@ private readonly removeProductFromCollectionUseCase: RemoveProductFromCollection
       imageUrl = upload.url;
     }
 
-    const collection =
-  await this.updateCollectionUseCase.execute({
-    collectionId: id,
+    const collection = await this.updateCollectionUseCase.execute({
+      collectionId: id,
 
-    ...dto,
+      ...dto,
 
-    imageUrl,
-  });
+      imageUrl,
+    });
 
     if (file && existing.imageUrl) {
       await this.uploadUseCase.delete(existing.imageUrl);
@@ -282,44 +279,43 @@ private readonly removeProductFromCollectionUseCase: RemoveProductFromCollection
   }
 
   // =======================
-// ➕ ADD PRODUCT
-// =======================
+  // ➕ ADD PRODUCT
+  // =======================
 
-@Post(':id/products')
-async addProduct(
-  @Param('id') collectionId: string,
+  @Post(':id/products')
+  async addProduct(
+    @Param('id') collectionId: string,
 
-  @Body()
-  dto: AddProductToCollectionDto,
-) {
-  return this.addProductToCollectionUseCase.execute({
-    collectionId,
+    @Body()
+    dto: AddProductToCollectionDto,
+  ) {
+    return this.addProductToCollectionUseCase.execute({
+      collectionId,
 
-    productId: dto.productId,
-  });
-}
+      productId: dto.productId,
+    });
+  }
 
-// =======================
-// ❌ REMOVE PRODUCT
-// =======================
+  // =======================
+  // ❌ REMOVE PRODUCT
+  // =======================
 
-@Delete(':id/products/:productId')
-async removeProduct(
-  @Param('id') collectionId: string,
+  @Delete(':id/products/:productId')
+  async removeProduct(
+    @Param('id') collectionId: string,
 
-  @Param('productId') productId: string,
-) {
-  await this.removeProductFromCollectionUseCase.execute({
-    collectionId,
+    @Param('productId') productId: string,
+  ) {
+    await this.removeProductFromCollectionUseCase.execute({
+      collectionId,
 
-    productId,
-  });
+      productId,
+    });
 
-  return {
-    success: true,
+    return {
+      success: true,
 
-    message:
-      'Product removed from collection',
-  };
-}
+      message: 'Product removed from collection',
+    };
+  }
 }

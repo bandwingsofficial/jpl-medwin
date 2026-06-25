@@ -27,7 +27,11 @@ export class SavedAddressMapper {
         return AddressType.OTHER;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Prisma address type', value: type, direction: 'prisma_to_domain' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Prisma address type',
+          value: type,
+          direction: 'prisma_to_domain',
+        });
     }
   }
 
@@ -43,7 +47,11 @@ export class SavedAddressMapper {
         return PrismaAddressType.OTHER;
 
       default:
-        throw new InvalidEnumMappingException({ enumName: 'Unknown Domain address type', value: type, direction: 'domain_to_prisma' });
+        throw new InvalidEnumMappingException({
+          enumName: 'Unknown Domain address type',
+          value: type,
+          direction: 'domain_to_prisma',
+        });
     }
   }
 
@@ -57,9 +65,9 @@ export class SavedAddressMapper {
 
       p.userId,
 
-  p.fullName ?? undefined,
+      p.fullName ?? undefined,
 
-  p.phoneNumber,
+      p.phoneNumber,
 
       this.toDomainType(p.type),
 
@@ -120,7 +128,7 @@ export class SavedAddressMapper {
       userId: e.userId,
       fullName: e.fullName ?? null,
 
-phoneNumber: e.phoneNumber,
+      phoneNumber: e.phoneNumber,
 
       type: this.toPrismaType(e.type),
 

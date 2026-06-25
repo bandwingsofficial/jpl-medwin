@@ -25,8 +25,7 @@ export class GetWishlistUseCase {
     // ❤️ WISHLIST
     // =======================
 
-    const wishlists =
-      await this.wishlistRepo.findByUserId(userId);
+    const wishlists = await this.wishlistRepo.findByUserId(userId);
 
     // =======================
     // 📦 PRODUCTS
@@ -34,10 +33,7 @@ export class GetWishlistUseCase {
 
     const items = await Promise.all(
       wishlists.map(async (wishlist) => {
-        const product =
-          await this.productRepo.findFullById(
-            wishlist.productId,
-          );
+        const product = await this.productRepo.findFullById(wishlist.productId);
 
         if (!product) {
           return null;

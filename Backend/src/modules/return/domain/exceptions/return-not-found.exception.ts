@@ -6,11 +6,6 @@ import { ErrorCode } from '@/common/constants/error-codes';
 
 export class ReturnNotFoundException extends BaseException {
   constructor(details?: { returnId?: string }) {
-    super(
-      'Return request not found',
-      ErrorCode.RETURN.NOT_FOUND,
-      HttpStatus.NOT_FOUND,
-      details,
-    );
+    super('Return request not found', ErrorCode.RETURN.NOT_FOUND, HttpStatus.NOT_FOUND, details);
   }
 }

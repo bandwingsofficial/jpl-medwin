@@ -48,8 +48,7 @@ export class CouponApplicationService {
     // 🔤 NORMALIZE
     // =======================
 
-    const normalizedCode =
-      this.domainService.normalizeCouponCode(couponCode);
+    const normalizedCode = this.domainService.normalizeCouponCode(couponCode);
 
     // =======================
     // 🔍 FIND
@@ -109,10 +108,7 @@ export class CouponApplicationService {
     // 📊 USAGE LIMIT
     // =======================
 
-    if (
-      coupon.usageLimit !== undefined &&
-      coupon.usedCount >= coupon.usageLimit
-    ) {
+    if (coupon.usageLimit !== undefined && coupon.usedCount >= coupon.usageLimit) {
       throw new InvalidCouponException({
         message: 'Coupon usage limit exceeded',
       });
@@ -123,12 +119,11 @@ export class CouponApplicationService {
     // =======================
 
     if (userId && coupon.perUserLimit) {
-      const userUsageCount =
-        await this.couponRepo.countUserCouponUsage({
-          couponId: coupon.id,
+      const userUsageCount = await this.couponRepo.countUserCouponUsage({
+        couponId: coupon.id,
 
-          userId,
-        });
+        userId,
+      });
 
       if (userUsageCount >= coupon.perUserLimit) {
         throw new InvalidCouponException({
@@ -267,10 +262,7 @@ export class CouponApplicationService {
     // 📊 LIMIT CHECK
     // =======================
 
-    if (
-      coupon.usageLimit !== undefined &&
-      coupon.usedCount >= coupon.usageLimit
-    ) {
+    if (coupon.usageLimit !== undefined && coupon.usedCount >= coupon.usageLimit) {
       throw new InvalidCouponException({
         message: 'Coupon usage limit exceeded',
       });
@@ -281,12 +273,11 @@ export class CouponApplicationService {
     // =======================
 
     if (coupon.perUserLimit) {
-      const userUsageCount =
-        await this.couponRepo.countUserCouponUsage({
-          couponId,
+      const userUsageCount = await this.couponRepo.countUserCouponUsage({
+        couponId,
 
-          userId,
-        });
+        userId,
+      });
 
       if (userUsageCount >= coupon.perUserLimit) {
         throw new InvalidCouponException({

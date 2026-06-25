@@ -9,9 +9,7 @@ export abstract class CustomerRepository {
   // 🔍 GET CUSTOMER
   // =======================
 
-  abstract findById(
-    userId: string,
-  ): Promise<CustomerDetailDto | null>;
+  abstract findById(userId: string): Promise<CustomerDetailDto | null>;
 
   // =======================
   // 📋 GET CUSTOMERS
@@ -39,7 +37,5 @@ export abstract class CustomerRepository {
   // ❌ DEACTIVATE CUSTOMER
   // =======================
 
-  abstract deactivate(
-    userId: string,
-  ): Promise<void>;
+  abstract deactivate(userId: string): Promise<void>;
 }

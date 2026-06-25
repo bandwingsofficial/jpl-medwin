@@ -73,15 +73,7 @@ import { CheckoutSessionModule } from '@/modules/checkout-session/checkout-sessi
 import { CoinsModule } from '@/modules/coins/coins.module';
 
 @Module({
-  imports: [
-  ConfigModule,
-
-  OrderModule,
-
-  CheckoutSessionModule,
-
-  CoinsModule,
-],
+  imports: [ConfigModule, OrderModule, CheckoutSessionModule, CoinsModule],
 
   controllers: [PaymentController, PaymentWebhookController],
 

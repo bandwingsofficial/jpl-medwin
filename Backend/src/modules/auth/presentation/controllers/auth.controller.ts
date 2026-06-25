@@ -45,15 +45,15 @@ export class AuthController {
       result.method === 'email' ? maskEmail(result.identifier) : maskPhone(result.identifier);
 
     return {
-  success: true,
-  message: 'OTP sent successfully',
-  data: {
-    method: result.method,
-    target,
-    retryAfter: result.retryAfter,
-    remainingSendAttempts: result.remainingSendAttempts,
-  },
-};
+      success: true,
+      message: 'OTP sent successfully',
+      data: {
+        method: result.method,
+        target,
+        retryAfter: result.retryAfter,
+        remainingSendAttempts: result.remainingSendAttempts,
+      },
+    };
   }
 
   // =======================
@@ -71,18 +71,18 @@ export class AuthController {
     console.log('ACCESS TOKEN:', result.accessToken);
 
     return {
-  success: true,
-  message: 'Login successful',
-  data: {
-    user: result.user,
-    session: {
-      id: result.session.id,
-      deviceId: result.session.deviceId,
-      deviceName: result.session.deviceName,
-      platform: result.session.platform,
-    },
-  },
-};
+      success: true,
+      message: 'Login successful',
+      data: {
+        user: result.user,
+        session: {
+          id: result.session.id,
+          deviceId: result.session.deviceId,
+          deviceName: result.session.deviceName,
+          platform: result.session.platform,
+        },
+      },
+    };
   }
 
   // =======================
@@ -113,21 +113,21 @@ export class AuthController {
   // =======================
 
   @UseGuards(JwtAuthGuard)
-@Get('me')
-async me(@Req() req: AuthRequest) {
-  const user = req.user;
+  @Get('me')
+  async me(@Req() req: AuthRequest) {
+    const user = req.user;
 
-  return {
-    success: true,
-    message: 'User fetched successfully',
-    data: {
-      user: {
-        id: user.userId,
-        role: user.role,
+    return {
+      success: true,
+      message: 'User fetched successfully',
+      data: {
+        user: {
+          id: user.userId,
+          role: user.role,
+        },
       },
-    },
-  };
-}
+    };
+  }
 
   // =======================
   // 🚪 LOGOUT
@@ -190,5 +190,3 @@ async me(@Req() req: AuthRequest) {
     };
   }
 }
-
-

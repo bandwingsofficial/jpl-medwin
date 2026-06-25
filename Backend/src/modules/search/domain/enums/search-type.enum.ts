@@ -12,13 +12,8 @@ export enum SearchType {
 
 export const SEARCH_TYPE_VALUES = Object.values(SearchType);
 
-export type SearchTypeType =
-  (typeof SEARCH_TYPE_VALUES)[number];
+export type SearchTypeType = (typeof SEARCH_TYPE_VALUES)[number];
 
-export const isSearchType = (
-  value: string,
-): value is SearchType => {
-  return SEARCH_TYPE_VALUES.includes(
-    value as SearchType,
-  );
+export const isSearchType = (value: string): value is SearchType => {
+  return SEARCH_TYPE_VALUES.includes(value as SearchType);
 };

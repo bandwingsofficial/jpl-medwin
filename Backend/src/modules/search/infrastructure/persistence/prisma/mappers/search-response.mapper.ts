@@ -6,13 +6,7 @@ export class SearchResponseMapper {
   // PRODUCT
   // =======================
 
-  static fromProduct(
-    product: {
-      id: string;
-      name: string;
-      slug: string;
-    },
-  ): SearchResult {
+  static fromProduct(product: { id: string; name: string; slug: string }): SearchResult {
     return {
       id: product.id,
       name: product.name,
@@ -25,13 +19,7 @@ export class SearchResponseMapper {
   // BRAND
   // =======================
 
-  static fromBrand(
-    brand: {
-      id: string;
-      name: string;
-      slug: string;
-    },
-  ): SearchResult {
+  static fromBrand(brand: { id: string; name: string; slug: string }): SearchResult {
     return {
       id: brand.id,
       name: brand.name,
@@ -44,13 +32,7 @@ export class SearchResponseMapper {
   // CATEGORY
   // =======================
 
-  static fromCategory(
-    category: {
-      id: string;
-      name: string;
-      slug: string;
-    },
-  ): SearchResult {
+  static fromCategory(category: { id: string; name: string; slug: string }): SearchResult {
     return {
       id: category.id,
       name: category.name,
@@ -63,13 +45,7 @@ export class SearchResponseMapper {
   // SUB CATEGORY
   // =======================
 
-  static fromSubCategory(
-    subCategory: {
-      id: string;
-      name: string;
-      slug: string;
-    },
-  ): SearchResult {
+  static fromSubCategory(subCategory: { id: string; name: string; slug: string }): SearchResult {
     return {
       id: subCategory.id,
       name: subCategory.name,
@@ -82,13 +58,7 @@ export class SearchResponseMapper {
   // MINI CATEGORY
   // =======================
 
-  static fromMiniCategory(
-    miniCategory: {
-      id: string;
-      name: string;
-      slug: string;
-    },
-  ): SearchResult {
+  static fromMiniCategory(miniCategory: { id: string; name: string; slug: string }): SearchResult {
     return {
       id: miniCategory.id,
       name: miniCategory.name,

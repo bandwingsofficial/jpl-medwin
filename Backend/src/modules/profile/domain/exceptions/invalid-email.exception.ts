@@ -8,11 +8,6 @@ import { ErrorCode } from '@/common/constants/error-codes';
 
 export class InvalidEmailException extends BaseException {
   constructor(details?: { email?: string }) {
-    super(
-      'Invalid email',
-      ErrorCode.PROFILE.INVALID_EMAIL,
-      HttpStatus.BAD_REQUEST,
-      details,
-    );
+    super('Invalid email', ErrorCode.PROFILE.INVALID_EMAIL, HttpStatus.BAD_REQUEST, details);
   }
 }

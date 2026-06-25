@@ -1,9 +1,6 @@
 // src/modules/customer/application/use-cases/get-customers.use-case.ts
 
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -35,47 +32,27 @@ export class GetCustomersUseCase {
 
     totalPages: number;
   }> {
-    console.log(
-      '\n📋 [GET CUSTOMERS USE CASE]',
-    );
+    console.log('\n📋 [GET CUSTOMERS USE CASE]');
 
-    console.log(
-      '➡️ Search:',
-      input?.search,
-    );
+    console.log('➡️ Search:', input?.search);
 
-    console.log(
-      '➡️ Page:',
-      input?.page,
-    );
+    console.log('➡️ Page:', input?.page);
 
-    console.log(
-      '➡️ Limit:',
-      input?.limit,
-    );
+    console.log('➡️ Limit:', input?.limit);
 
     // =======================
     // 📦 FETCH CUSTOMERS
     // =======================
 
-    const result =
-      await this.customerRepo.findMany(
-        {
-          search:
-            input?.search,
+    const result = await this.customerRepo.findMany({
+      search: input?.search,
 
-          page:
-            input?.page,
+      page: input?.page,
 
-          limit:
-            input?.limit,
-        },
-      );
+      limit: input?.limit,
+    });
 
-    console.log(
-      '✅ Customers fetched:',
-      result.customers.length,
-    );
+    console.log('✅ Customers fetched:', result.customers.length);
 
     // =======================
     // ✅ RESPONSE

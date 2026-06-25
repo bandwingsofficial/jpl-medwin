@@ -94,6 +94,8 @@ export class ImportProductsUseCase {
 
         const dto = await this.resolver.resolve(product);
 
+        console.log('ImportProductsUseCase resolved DTO mainImage:', dto.mainImage);
+
         // =======================
         // 🔍 EXISTING PRODUCT
         // =======================

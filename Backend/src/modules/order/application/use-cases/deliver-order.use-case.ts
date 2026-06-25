@@ -27,16 +27,12 @@ export class DeliverOrderUseCase {
     private readonly processOrderRewardUseCase: ProcessOrderRewardUseCase,
   ) {}
 
-  async execute(input: {
-    orderId: string;
-  }) {
+  async execute(input: { orderId: string }) {
     // =======================
     // 🔍 FIND ORDER
     // =======================
 
-    const order = await this.orderRepo.findById(
-      input.orderId,
-    );
+    const order = await this.orderRepo.findById(input.orderId);
 
     // =======================
     // ❌ NOT FOUND
@@ -52,13 +48,9 @@ export class DeliverOrderUseCase {
     // 🛡 VALIDATE
     // =======================
 
-    this.domainService.ensureOrderUsable(
-      order,
-    );
+    this.domainService.ensureOrderUsable(order);
 
-    this.domainService.ensureCanDeliver(
-      order,
-    );
+    this.domainService.ensureCanDeliver(order);
 
     // =======================
     // 🚚 DELIVER ORDER
@@ -66,48 +58,31 @@ export class DeliverOrderUseCase {
 
     order.deliver();
 
-    const updated =
-      await this.orderRepo.update(
-        order,
-      );
+    const updated = await this.orderRepo.update(order);
 
     // =======================
     // 🪙 PROCESS REWARDS
     // =======================
 
-    if (
-      updated.userId &&
-      updated.earnedCoins === 0
-    ) {
-      const rewardResult =
-        await this.processOrderRewardUseCase.execute(
-          {
-            userId: updated.userId,
+    if (updated.userId && updated.earnedCoins === 0) {
+      const rewardResult = await this.processOrderRewardUseCase.execute({
+        userId: updated.userId,
 
-            orderId: updated.id,
+        orderId: updated.id,
 
-            orderAmount:
-              updated.grandTotal,
+        orderAmount: updated.grandTotal,
 
-            metadata: {
-              orderNumber:
-                updated.orderNumber,
-            },
-          },
-        );
+        metadata: {
+          orderNumber: updated.orderNumber,
+        },
+      });
 
-      const earnedCoins =
-        rewardResult.rewards?.finalCoins ??
-        0;
+      const earnedCoins = rewardResult.rewards?.finalCoins ?? 0;
 
       if (earnedCoins > 0) {
-        updated.applyEarnedCoins(
-          earnedCoins,
-        );
+        updated.applyEarnedCoins(earnedCoins);
 
-        await this.orderRepo.update(
-          updated,
-        );
+        await this.orderRepo.update(updated);
       }
     }
 
@@ -115,10 +90,7 @@ export class DeliverOrderUseCase {
     // 📦 ITEMS
     // =======================
 
-    const items =
-      await this.orderItemRepo.findByOrderId(
-        updated.id,
-      );
+    const items = await this.orderItemRepo.findByOrderId(updated.id);
 
     // =======================
     // 🚀 RESPONSE
@@ -130,73 +102,51 @@ export class DeliverOrderUseCase {
       data: {
         id: updated.id,
 
-        orderNumber:
-          updated.orderNumber,
+        orderNumber: updated.orderNumber,
 
         status: updated.status,
 
-        paymentStatus:
-          updated.paymentStatus,
+        paymentStatus: updated.paymentStatus,
 
         shipment: {
-          trackingId:
-            updated.trackingId,
+          trackingId: updated.trackingId,
 
-          courierName:
-            updated.courierName,
+          courierName: updated.courierName,
 
-          shippedAt:
-            updated.shippedAt,
+          shippedAt: updated.shippedAt,
 
-          deliveredAt:
-            updated.deliveredAt,
+          deliveredAt: updated.deliveredAt,
         },
 
         rewards: {
-          earnedCoins:
-            updated.earnedCoins,
+          earnedCoins: updated.earnedCoins,
         },
 
         totals: {
-          subtotal:
-            updated.subtotal,
+          subtotal: updated.subtotal,
 
-          couponDiscount:
-            updated.couponDiscount,
+          couponDiscount: updated.couponDiscount,
 
-          shippingCharge:
-            updated.shippingCharge,
+          shippingCharge: updated.shippingCharge,
 
           tax: updated.tax,
 
-          grandTotal:
-            updated.grandTotal,
+          grandTotal: updated.grandTotal,
 
-          totalSavings:
-            updated.totalSavings,
+          totalSavings: updated.totalSavings,
 
-          redeemedCoins:
-            updated.redeemedCoins,
+          redeemedCoins: updated.redeemedCoins,
 
-          redeemedAmount:
-            updated.redeemedAmount,
+          redeemedAmount: updated.redeemedAmount,
 
-          earnedCoins:
-            updated.earnedCoins,
+          earnedCoins: updated.earnedCoins,
         },
 
-        itemCount:
-          this.domainService.calculateTotalProducts(
-            items,
-          ),
+        itemCount: this.domainService.calculateTotalProducts(items),
 
-        totalQuantity:
-          this.domainService.calculateTotalQuantity(
-            items,
-          ),
+        totalQuantity: this.domainService.calculateTotalQuantity(items),
 
-        updatedAt:
-          updated.updatedAt,
+        updatedAt: updated.updatedAt,
       },
     };
   }

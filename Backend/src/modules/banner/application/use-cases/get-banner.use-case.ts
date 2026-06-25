@@ -44,11 +44,7 @@ export class GetBannerUseCase {
 
     // Collect unique productIds that are actually set — one DB call, not N calls
     const productIds = [
-      ...new Set(
-        images
-          .map((image) => image.productId)
-          .filter((id): id is string => !!id),
-      ),
+      ...new Set(images.map((image) => image.productId).filter((id): id is string => !!id)),
     ];
 
     // productSlugMap → { [productId]: slug }
@@ -86,9 +82,7 @@ export class GetBannerUseCase {
         productId: image.productId ?? null,
 
         // Resolved at read time from productRepo — not stored on BannerImage
-        productSlug: image.productId
-          ? (productSlugMap.get(image.productId) ?? null)
-          : null,
+        productSlug: image.productId ? (productSlugMap.get(image.productId) ?? null) : null,
 
         sortOrder: image.sortOrder,
 

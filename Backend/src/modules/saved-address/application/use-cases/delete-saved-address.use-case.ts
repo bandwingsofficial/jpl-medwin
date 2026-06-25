@@ -12,6 +12,13 @@ import { AddressAccessDeniedException } from '../../domain/exceptions/address-ac
 
 import { AddressAlreadyDeletedException } from '../../domain/exceptions/address-already-deleted.exception';
 
+/**
+ * Soft-deletes a saved address from the customer's address book.
+ *
+ * Orders reference addresses via FK + immutable snapshots, so historical orders
+ * remain valid after deletion. Deleted addresses are hidden from the address book
+ * but are not removed from the database.
+ */
 @Injectable()
 export class DeleteSavedAddressUseCase {
   constructor(
@@ -28,25 +35,13 @@ export class DeleteSavedAddressUseCase {
 
     message: string;
   }> {
-    // =======================
-    // 🔍 FIND INCLUDING DELETED
-    // =======================
-
     const address = await this.repo.findByIdIncludingDeleted(input.id);
-
-    // =======================
-    // ❌ NOT FOUND
-    // =======================
 
     if (!address) {
       throw new AddressNotFoundException({
         addressId: input.id,
       });
     }
-
-    // =======================
-    // 🔐 ACCESS CHECK
-    // =======================
 
     if (address.userId !== input.userId) {
       throw new AddressAccessDeniedException({
@@ -56,31 +51,15 @@ export class DeleteSavedAddressUseCase {
       });
     }
 
-    // =======================
-    // ❌ ALREADY DELETED
-    // =======================
-
     if (address.isDeleted()) {
       throw new AddressAlreadyDeletedException({
         addressId: input.id,
       });
     }
 
-    // =======================
-    // 🧠 DOMAIN DELETE
-    // =======================
-
     address.softDelete();
 
-    // =======================
-    // 💾 PERSIST
-    // =======================
-
     await this.repo.softDelete(address.id);
-
-    // =======================
-    // ✅ RESPONSE
-    // =======================
 
     return {
       success: true,

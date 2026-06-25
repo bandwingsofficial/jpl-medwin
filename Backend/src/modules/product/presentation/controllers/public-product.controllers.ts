@@ -54,13 +54,7 @@ export class PublicProductController {
     includeVariants?: string,
 
     @Query('sortBy')
-    sortBy?:
-      | 'newest'
-      | 'oldest'
-      | 'nameAsc'
-      | 'nameDesc'
-      | 'priceLowToHigh'
-      | 'priceHighToLow',
+    sortBy?: 'newest' | 'oldest' | 'nameAsc' | 'nameDesc' | 'priceLowToHigh' | 'priceHighToLow',
 
     @Query('page')
     page?: string,
@@ -83,29 +77,19 @@ export class PublicProductController {
 
       tag,
 
-      minPrice:
-        minPrice !== undefined
-          ? Number(minPrice)
-          : undefined,
+      minPrice: minPrice !== undefined ? Number(minPrice) : undefined,
 
-      maxPrice:
-        maxPrice !== undefined
-          ? Number(maxPrice)
-          : undefined,
+      maxPrice: maxPrice !== undefined ? Number(maxPrice) : undefined,
 
-      inStock:
-        inStock === 'true',
+      inStock: inStock === 'true',
 
-      includeVariants:
-        includeVariants !== 'false',
+      includeVariants: includeVariants !== 'false',
 
       sortBy,
 
-      page:
-        page ? Number(page) : 1,
+      page: page ? Number(page) : 1,
 
-      limit:
-        limit ? Number(limit) : 20,
+      limit: limit ? Number(limit) : 20,
     });
   }
 
@@ -118,9 +102,6 @@ export class PublicProductController {
     @Param('slug')
     slug: string,
   ) {
-    return this.getProductDetail.executeBySlug(
-      slug,
-      true,
-    );
+    return this.getProductDetail.executeBySlug(slug, true);
   }
 }

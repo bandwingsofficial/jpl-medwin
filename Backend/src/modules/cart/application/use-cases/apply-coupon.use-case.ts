@@ -111,7 +111,7 @@ export class ApplyCouponUseCase {
     // 💰 SUMMARY
     // =======================
 
-    const summary = this.summaryService.build({
+    const summary = await this.summaryService.build({
       items,
 
       couponDiscount: couponResult.discount,

@@ -8,18 +8,12 @@ export enum CollectionStatus {
 
 // 🔥 Useful helpers
 
-export const COLLECTION_STATUS_VALUES =
-  Object.values(CollectionStatus);
+export const COLLECTION_STATUS_VALUES = Object.values(CollectionStatus);
 
-export type CollectionStatusType =
-  (typeof COLLECTION_STATUS_VALUES)[number];
+export type CollectionStatusType = (typeof COLLECTION_STATUS_VALUES)[number];
 
 // Optional: type guard
 
-export const isCollectionStatus = (
-  value: string,
-): value is CollectionStatus => {
-  return COLLECTION_STATUS_VALUES.includes(
-    value as CollectionStatus,
-  );
+export const isCollectionStatus = (value: string): value is CollectionStatus => {
+  return COLLECTION_STATUS_VALUES.includes(value as CollectionStatus);
 };

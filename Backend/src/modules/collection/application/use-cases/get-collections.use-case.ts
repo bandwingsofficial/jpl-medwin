@@ -20,95 +20,68 @@ export class GetCollectionsUseCase {
     private readonly collectionProductRepo: CollectionProductRepository,
   ) {}
 
-  async execute(input: {
-    status?: CollectionStatus;
+  async execute(
+    input: {
+      status?: CollectionStatus;
 
-    page?: number;
+      page?: number;
 
-    limit?: number;
-  } = {}) {
+      limit?: number;
+    } = {},
+  ) {
     // =======================
     // 📄 PAGINATION
     // =======================
 
-    const page =
-      Number(input.page) || 1;
+    const page = Number(input.page) || 1;
 
-    const limit = Math.min(
-      Number(input.limit) || 20,
-      100,
-    );
+    const limit = Math.min(Number(input.limit) || 20, 100);
 
     // =======================
     // 📦 COLLECTIONS
     // =======================
 
-    const collections =
-      input.status
-        ? await this.collectionRepo.findByStatus(
-            input.status,
-          )
-        : await this.collectionRepo.findAll();
+    const collections = input.status
+      ? await this.collectionRepo.findByStatus(input.status)
+      : await this.collectionRepo.findAll();
 
-    const total =
-      collections.length;
+    const total = collections.length;
 
-    const start =
-      (page - 1) * limit;
+    const start = (page - 1) * limit;
 
-    const paginated =
-      collections.slice(
-        start,
-        start + limit,
-      );
+    const paginated = collections.slice(start, start + limit);
 
     // =======================
     // 🚀 ITEMS
     // =======================
 
-    const data =
-      await Promise.all(
-        paginated.map(
-          async (collection) => {
-            const products =
-              await this.collectionProductRepo.findByCollectionId(
-                collection.id,
-              );
+    const data = await Promise.all(
+      paginated.map(async (collection) => {
+        const products = await this.collectionProductRepo.findByCollectionId(collection.id);
 
-            return {
-              id: collection.id,
+        return {
+          id: collection.id,
 
-              name: collection.name,
+          name: collection.name,
 
-              slug: collection.slug,
+          slug: collection.slug,
 
-              imageUrl:
-                collection.imageUrl ??
-                null,
+          imageUrl: collection.imageUrl ?? null,
 
-              description:
-                collection.description ??
-                null,
+          description: collection.description ?? null,
 
-              metaDescription:
-                collection.metaDescription ??
-                null,
+          metaDescription: collection.metaDescription ?? null,
 
-              status:
-                collection.status,
+          status: collection.status,
 
-              productCount:
-                products.length,
+          productCount: products.length,
 
-              createdAt:
-                collection.createdAt,
+          createdAt: collection.createdAt,
 
-              updatedAt:
-                collection.updatedAt,
-            };
-          },
-        ),
-      );
+          updatedAt: collection.updatedAt,
+        };
+      }),
+    );
 
     // =======================
     // 🚀 RESPONSE
@@ -124,9 +97,7 @@ export class GetCollectionsUseCase {
 
         limit,
 
-        totalPages: Math.ceil(
-          total / limit,
-        ),
+        totalPages: Math.ceil(total / limit),
       },
     };
   }

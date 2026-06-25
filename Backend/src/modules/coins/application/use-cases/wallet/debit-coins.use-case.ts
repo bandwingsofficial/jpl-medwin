@@ -55,11 +55,10 @@ export class DebitCoinsUseCase {
     this.coinsDomainService.validateCoins(input.coins);
 
     if (input.idempotencyKey) {
-      const existingTransaction =
-        await this.transactionRepository.findByIdempotencyKey(
-          input.idempotencyKey,
-          tx,
-        );
+      const existingTransaction = await this.transactionRepository.findByIdempotencyKey(
+        input.idempotencyKey,
+        tx,
+      );
 
       if (existingTransaction) {
         return {
@@ -70,11 +69,7 @@ export class DebitCoinsUseCase {
       }
     }
 
-    const wallet: CoinWallet | null =
-      await this.walletRepository.findByUserId(
-        input.userId,
-        tx,
-      );
+    const wallet: CoinWallet | null = await this.walletRepository.findByUserId(input.userId, tx);
 
     if (!wallet) {
       throw new WalletNotFoundException({
@@ -89,19 +84,14 @@ export class DebitCoinsUseCase {
 
     const balanceBefore = wallet.balance;
 
-    const transactionType =
-      input.type ?? CoinTransactionType.REDEEMED;
+    const transactionType = input.type ?? CoinTransactionType.REDEEMED;
 
     wallet.debitCoins({
       coins: input.coins,
       transactionType,
     });
 
-    const updatedWallet =
-      await this.walletRepository.update(
-        wallet,
-        tx,
-      );
+    const updatedWallet = await this.walletRepository.update(wallet, tx);
 
     const transaction = new CoinTransaction(
       randomUUID(),
@@ -125,29 +115,15 @@ export class DebitCoinsUseCase {
       input.idempotencyKey,
     );
 
-    const createdTransaction =
-      await this.transactionRepository.create(
-        transaction,
-        tx,
+    const createdTransaction = await this.transactionRepository.create(transaction, tx);
+
+    if (transactionType === CoinTransactionType.REDEEMED && input.coins > 0) {
+      const earnTransactions = await this.transactionRepository.findExpirableEarnTransactions(tx);
+
+      const userEarnTransactions = earnTransactions.filter(
+        (earnTransaction) =>
+          earnTransaction.userId === input.userId && (earnTransaction.remainingCoins ?? 0) > 0,
       );
-
-    if (
-      transactionType ===
-        CoinTransactionType.REDEEMED &&
-      input.coins > 0
-    ) {
-      const earnTransactions =
-        await this.transactionRepository.findExpirableEarnTransactions(
-          tx,
-        );
-
-      const userEarnTransactions =
-        earnTransactions.filter(
-          (earnTransaction) =>
-            earnTransaction.userId ===
-              input.userId &&
-            (earnTransaction.remainingCoins ?? 0) > 0,
-        );
 
       let remainingDebitCoins = input.coins;
 
@@ -156,19 +132,14 @@ export class DebitCoinsUseCase {
           break;
         }
 
-        const availableCoins =
-          earnTransaction.remainingCoins ?? 0;
+        const availableCoins = earnTransaction.remainingCoins ?? 0;
 
-        const deductionCoins = Math.min(
-          availableCoins,
-          remainingDebitCoins,
-        );
+        const deductionCoins = Math.min(availableCoins, remainingDebitCoins);
 
         await this.transactionRepository.updateRemainingCoins(
           {
             transactionId: earnTransaction.id,
-            remainingCoins:
-              availableCoins - deductionCoins,
+            remainingCoins: availableCoins - deductionCoins,
           },
           tx,
         );
@@ -182,14 +153,10 @@ export class DebitCoinsUseCase {
         id: updatedWallet.id,
         userId: updatedWallet.userId,
         balance: updatedWallet.balance,
-        lifetimeEarned:
-          updatedWallet.lifetimeEarned,
-        lifetimeRedeemed:
-          updatedWallet.lifetimeRedeemed,
-        lifetimeExpired:
-          updatedWallet.lifetimeExpired,
-        lifetimeRefunded:
-          updatedWallet.lifetimeRefunded,
+        lifetimeEarned: updatedWallet.lifetimeEarned,
+        lifetimeRedeemed: updatedWallet.lifetimeRedeemed,
+        lifetimeExpired: updatedWallet.lifetimeExpired,
+        lifetimeRefunded: updatedWallet.lifetimeRefunded,
         updatedAt: updatedWallet.updatedAt,
       },
 
@@ -198,16 +165,11 @@ export class DebitCoinsUseCase {
         type: createdTransaction.type,
         status: createdTransaction.status,
         coins: createdTransaction.coins,
-        balanceBefore:
-          createdTransaction.balanceBefore,
-        balanceAfter:
-          createdTransaction.balanceAfter,
-        sourceType:
-          createdTransaction.sourceType,
-        description:
-          createdTransaction.description,
-        createdAt:
-          createdTransaction.createdAt,
+        balanceBefore: createdTransaction.balanceBefore,
+        balanceAfter: createdTransaction.balanceAfter,
+        sourceType: createdTransaction.sourceType,
+        description: createdTransaction.description,
+        createdAt: createdTransaction.createdAt,
       },
 
       duplicated: false,

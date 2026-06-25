@@ -14,6 +14,8 @@ import { InvalidCheckoutSessionException } from '../../domain/exceptions/invalid
 
 import { CheckoutSessionOwnershipService } from '../services/checkout-session-ownership.service';
 
+import { ShippingCalculatorService } from '@/modules/shipping-configuration/application/services/shipping-calculator.service';
+
 @Injectable()
 export class GetCheckoutSessionUseCase {
   constructor(
@@ -24,6 +26,8 @@ export class GetCheckoutSessionUseCase {
     private readonly checkoutSessionItemRepo: CheckoutSessionItemRepository,
 
     private readonly ownershipService: CheckoutSessionOwnershipService,
+
+    private readonly shippingCalculator: ShippingCalculatorService,
   ) {}
 
   async execute(input: {
@@ -99,6 +103,10 @@ export class GetCheckoutSessionUseCase {
       0,
     );
 
+    const shippingMeta = await this.shippingCalculator.calculate(session.subtotal, {
+      shipping: session.shippingCharge,
+    });
+
     // =======================
     // 🚀 RESPONSE
     // =======================
@@ -121,28 +129,22 @@ export class GetCheckoutSessionUseCase {
       },
 
       totals: {
-  subtotal: session.subtotal,
+        subtotal: session.subtotal,
 
-  couponDiscount:
-    session.couponDiscount,
+        couponDiscount: session.couponDiscount,
 
-  rewardDiscount:
-    session.rewardDiscount,
+        rewardDiscount: session.rewardDiscount,
 
-  rewardCoinsUsed:
-    session.rewardCoinsUsed,
+        rewardCoinsUsed: session.rewardCoinsUsed,
 
-  shippingCharge:
-    session.shippingCharge,
+        shippingCharge: session.shippingCharge,
 
-  tax: session.tax,
+        tax: session.tax,
 
-  grandTotal:
-    session.grandTotal,
+        grandTotal: session.grandTotal,
 
-  totalSavings:
-    session.totalSavings,
-},
+        totalSavings: session.totalSavings,
+      },
       items: items.map((item) => {
         const mrpTotal = (item.mrp ?? item.price) * item.quantity;
 
@@ -213,17 +215,13 @@ export class GetCheckoutSessionUseCase {
           0,
         ),
 
-        couponDiscount:
-  session.couponDiscount,
+        couponDiscount: session.couponDiscount,
 
-rewardDiscount:
-  session.rewardDiscount,
+        rewardDiscount: session.rewardDiscount,
 
-rewardCoinsUsed:
-  session.rewardCoinsUsed,
+        rewardCoinsUsed: session.rewardCoinsUsed,
 
-totalSavings:
-  session.totalSavings,
+        totalSavings: session.totalSavings,
 
         shipping: session.shippingCharge,
 
@@ -231,7 +229,9 @@ totalSavings:
 
         grandTotal: session.grandTotal,
 
-        isFreeShipping: session.shippingCharge === 0,
+        isFreeShipping: shippingMeta.isFreeShipping,
+
+        freeShippingThreshold: shippingMeta.freeShippingThreshold,
       },
 
       createdAt: session.createdAt,

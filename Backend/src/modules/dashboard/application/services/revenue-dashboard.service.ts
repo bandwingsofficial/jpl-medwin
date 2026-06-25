@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -34,31 +31,16 @@ export class RevenueDashboardService {
 
     to?: string;
   }) {
-    const orders =
-      await this.fetchOrders(
-        params,
-      );
+    const orders = await this.fetchOrders(params);
 
     return {
-      grossRevenue:
-        this.calculateGrossRevenue(
-          orders,
-        ),
+      grossRevenue: this.calculateGrossRevenue(orders),
 
-      refundedRevenue:
-        this.calculateRefundedRevenue(
-          orders,
-        ),
+      refundedRevenue: this.calculateRefundedRevenue(orders),
 
-      netRevenue:
-        this.calculateNetRevenue(
-          orders,
-        ),
+      netRevenue: this.calculateNetRevenue(orders),
 
-      averageOrderValue:
-        this.calculateAverageOrderValue(
-          orders,
-        ),
+      averageOrderValue: this.calculateAverageOrderValue(orders),
     };
   }
 
@@ -72,70 +54,43 @@ export class RevenueDashboardService {
 
     to?: string;
   }): Promise<Order[]> {
-    let startDate:
-      | Date
-      | undefined;
+    let startDate: Date | undefined;
 
-    let endDate:
-      | Date
-      | undefined;
+    let endDate: Date | undefined;
 
     // =======================
     // 📅 CUSTOM RANGE
     // =======================
 
-    if (
-      params.from &&
-      params.to
-    ) {
-      startDate = new Date(
-        params.from,
-      );
+    if (params.from && params.to) {
+      startDate = new Date(params.from);
 
-      endDate = new Date(
-        params.to,
-      );
+      endDate = new Date(params.to);
 
       // include entire end day
-      endDate.setHours(
-        23,
-        59,
-        59,
-        999,
-      );
+      endDate.setHours(23, 59, 59, 999);
     }
 
     // =======================
     // 📅 PREDEFINED PERIOD
     // =======================
-
     else {
-      const range =
-        DashboardPeriodUtil.getRange(
-          params.period ??
-            DashboardPeriod.OVERALL,
-        );
+      const range = DashboardPeriodUtil.getRange(params.period ?? DashboardPeriod.OVERALL);
 
-      startDate =
-        range.startDate;
+      startDate = range.startDate;
 
-      endDate =
-        range.endDate;
+      endDate = range.endDate;
     }
 
-    const {
-      data,
-    } =
-      await this.orderRepo.findMany({
-        page: 1,
+    const { data } = await this.orderRepo.findMany({
+      page: 1,
 
-        limit:
-          Number.MAX_SAFE_INTEGER,
+      limit: Number.MAX_SAFE_INTEGER,
 
-        from: startDate,
+      from: startDate,
 
-        to: endDate,
-      });
+      to: endDate,
+    });
 
     return data;
   }
@@ -146,25 +101,11 @@ export class RevenueDashboardService {
    * Total revenue generated
    * before refunds.
    */
-  private calculateGrossRevenue(
-    orders: Order[],
-  ): number {
+  private calculateGrossRevenue(orders: Order[]): number {
     return Number(
       orders
-        .filter(
-          (order) =>
-            order.status ===
-            OrderStatus.DELIVERED,
-        )
-        .reduce(
-          (
-            total,
-            order,
-          ) =>
-            total +
-            order.grandTotal,
-          0,
-        )
+        .filter((order) => order.status === OrderStatus.DELIVERED)
+        .reduce((total, order) => total + order.grandTotal, 0)
         .toFixed(2),
     );
   }
@@ -172,24 +113,11 @@ export class RevenueDashboardService {
   /**
    * 💸 Refunded revenue
    */
-  private calculateRefundedRevenue(
-    orders: Order[],
-  ): number {
+  private calculateRefundedRevenue(orders: Order[]): number {
     return Number(
       orders
-        .filter(
-          (order) =>
-            !!order.refundedAt,
-        )
-        .reduce(
-          (
-            total,
-            order,
-          ) =>
-            total +
-            order.grandTotal,
-          0,
-        )
+        .filter((order) => !!order.refundedAt)
+        .reduce((total, order) => total + order.grandTotal, 0)
         .toFixed(2),
     );
   }
@@ -197,48 +125,22 @@ export class RevenueDashboardService {
   /**
    * 💵 Net revenue
    */
-  private calculateNetRevenue(
-    orders: Order[],
-  ): number {
-    const grossRevenue =
-      this.calculateGrossRevenue(
-        orders,
-      );
+  private calculateNetRevenue(orders: Order[]): number {
+    const grossRevenue = this.calculateGrossRevenue(orders);
 
-    const refundedRevenue =
-      this.calculateRefundedRevenue(
-        orders,
-      );
+    const refundedRevenue = this.calculateRefundedRevenue(orders);
 
-    return Number(
-      (
-        grossRevenue -
-        refundedRevenue
-      ).toFixed(2),
-    );
+    return Number((grossRevenue - refundedRevenue).toFixed(2));
   }
 
   /**
    * 📊 Average order value
    */
-  private calculateAverageOrderValue(
-    orders: Order[],
-  ): number {
-    const deliveredOrders =
-      orders.filter(
-        (order) =>
-          order.status ===
-          OrderStatus.DELIVERED,
-      );
+  private calculateAverageOrderValue(orders: Order[]): number {
+    const deliveredOrders = orders.filter((order) => order.status === OrderStatus.DELIVERED);
 
-    const grossRevenue =
-      this.calculateGrossRevenue(
-        orders,
-      );
+    const grossRevenue = this.calculateGrossRevenue(orders);
 
-    return DashboardMathUtil.average(
-      grossRevenue,
-      deliveredOrders.length,
-    );
+    return DashboardMathUtil.average(grossRevenue, deliveredOrders.length);
   }
 }

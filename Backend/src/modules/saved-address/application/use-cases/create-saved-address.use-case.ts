@@ -32,7 +32,7 @@ export class CreateSavedAddressUseCase {
   async execute(input: {
     userId: string;
     fullName?: string;
-phoneNumber: string;
+    phoneNumber: string;
     type: AddressType;
     alias?: string;
     addressLine1: string;

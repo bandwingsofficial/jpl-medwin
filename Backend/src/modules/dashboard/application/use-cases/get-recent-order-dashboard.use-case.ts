@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { DashboardPeriod } from '../../domain/enums/dashboard-period.enum';
 
@@ -8,9 +6,7 @@ import { RecentOrderDashboardService } from '../services/recent-order-dashboard.
 
 @Injectable()
 export class GetRecentOrderDashboardUseCase {
-  constructor(
-    private readonly recentOrderDashboardService: RecentOrderDashboardService,
-  ) {}
+  constructor(private readonly recentOrderDashboardService: RecentOrderDashboardService) {}
 
   async execute(params?: {
     period?: DashboardPeriod;
@@ -23,26 +19,19 @@ export class GetRecentOrderDashboardUseCase {
     // 📅 PERIOD
     // =======================
 
-    const period =
-      params?.period ??
-      DashboardPeriod.OVERALL;
+    const period = params?.period ?? DashboardPeriod.OVERALL;
 
     // =======================
     // 📦 GET RECENT ORDERS
     // =======================
 
-    const orders =
-      await this.recentOrderDashboardService.getRecentOrders(
-        {
-          period,
+    const orders = await this.recentOrderDashboardService.getRecentOrders({
+      period,
 
-          from:
-            params?.from,
+      from: params?.from,
 
-          to:
-            params?.to,
-        },
-      );
+      to: params?.to,
+    });
 
     // =======================
     // 🚀 RESPONSE
@@ -51,14 +40,11 @@ export class GetRecentOrderDashboardUseCase {
     return {
       period,
 
-      from:
-        params?.from,
+      from: params?.from,
 
-      to:
-        params?.to,
+      to: params?.to,
 
-      count:
-        orders.length,
+      count: orders.length,
 
       orders,
     };

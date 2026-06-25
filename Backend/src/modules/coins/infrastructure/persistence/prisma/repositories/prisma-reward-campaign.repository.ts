@@ -1,9 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import {
-  Prisma,
-  PrismaClient,
-} from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 
 import { PrismaService } from '../../../../../../infrastructure/prisma/prisma.service';
 
@@ -14,9 +11,7 @@ import { RewardCampaign } from '../../../../domain/entities/reward-campaign.enti
 import { RewardCampaignMapper } from '../mappers/reward-campaign.mapper';
 
 @Injectable()
-export class PrismaRewardCampaignRepository
-  implements RewardCampaignRepository
-{
+export class PrismaRewardCampaignRepository implements RewardCampaignRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findById(
@@ -27,9 +22,7 @@ export class PrismaRewardCampaignRepository
       where: { id },
     });
 
-    return campaign
-      ? RewardCampaignMapper.toDomain(campaign)
-      : null;
+    return campaign ? RewardCampaignMapper.toDomain(campaign) : null;
   }
 
   async findAll(
@@ -41,9 +34,7 @@ export class PrismaRewardCampaignRepository
       },
     });
 
-    return campaigns.map((campaign) =>
-      RewardCampaignMapper.toDomain(campaign),
-    );
+    return campaigns.map((campaign) => RewardCampaignMapper.toDomain(campaign));
   }
 
   async findLatest(
@@ -57,9 +48,7 @@ export class PrismaRewardCampaignRepository
       take: limit,
     });
 
-    return campaigns.map((campaign) =>
-      RewardCampaignMapper.toDomain(campaign),
-    );
+    return campaigns.map((campaign) => RewardCampaignMapper.toDomain(campaign));
   }
 
   async findActiveCampaigns(
@@ -74,9 +63,7 @@ export class PrismaRewardCampaignRepository
       },
     });
 
-    return campaigns.map((campaign) =>
-      RewardCampaignMapper.toDomain(campaign),
-    );
+    return campaigns.map((campaign) => RewardCampaignMapper.toDomain(campaign));
   }
 
   async findCurrentCampaigns(
@@ -99,9 +86,7 @@ export class PrismaRewardCampaignRepository
       },
     });
 
-    return campaigns.map((campaign) =>
-      RewardCampaignMapper.toDomain(campaign),
-    );
+    return campaigns.map((campaign) => RewardCampaignMapper.toDomain(campaign));
   }
 
   async findExpiredCampaigns(
@@ -120,9 +105,7 @@ export class PrismaRewardCampaignRepository
       },
     });
 
-    return campaigns.map((campaign) =>
-      RewardCampaignMapper.toDomain(campaign),
-    );
+    return campaigns.map((campaign) => RewardCampaignMapper.toDomain(campaign));
   }
 
   async findUpcomingCampaigns(
@@ -141,9 +124,7 @@ export class PrismaRewardCampaignRepository
       },
     });
 
-    return campaigns.map((campaign) =>
-      RewardCampaignMapper.toDomain(campaign),
-    );
+    return campaigns.map((campaign) => RewardCampaignMapper.toDomain(campaign));
   }
 
   async existsById(

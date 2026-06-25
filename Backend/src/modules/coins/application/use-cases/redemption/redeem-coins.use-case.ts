@@ -67,11 +67,7 @@ export class RedeemCoinsUseCase {
       // 🔍 EXISTING REDEMPTION
       // =======================
 
-      const existingRedemption =
-        await this.redemptionRepository.findByOrderId(
-          input.orderId,
-          tx,
-        );
+      const existingRedemption = await this.redemptionRepository.findByOrderId(input.orderId, tx);
 
       // =======================
       // ❌ ALREADY REDEEMED
@@ -79,8 +75,7 @@ export class RedeemCoinsUseCase {
 
       if (existingRedemption) {
         throw new AlreadyRedeemedException({
-          orderId:
-            input.orderId,
+          orderId: input.orderId,
         });
       }
 
@@ -88,11 +83,7 @@ export class RedeemCoinsUseCase {
       // 👛 FIND WALLET
       // =======================
 
-      const wallet =
-        await this.walletRepository.findByUserId(
-          input.userId,
-          tx,
-        );
+      const wallet = await this.walletRepository.findByUserId(input.userId, tx);
 
       // =======================
       // ❌ WALLET NOT FOUND
@@ -100,8 +91,7 @@ export class RedeemCoinsUseCase {
 
       if (!wallet) {
         throw new WalletNotFoundException({
-          userId:
-            input.userId,
+          userId: input.userId,
         });
       }
 
@@ -109,19 +99,13 @@ export class RedeemCoinsUseCase {
       // 🔒 LOCK WALLET
       // =======================
 
-      await this.walletRepository.lockWallet(
-        wallet.id,
-        tx,
-      );
+      await this.walletRepository.lockWallet(wallet.id, tx);
 
       // =======================
       // ⚙️ REWARD CONFIG
       // =======================
 
-      const rewardConfig =
-        await this.rewardConfigRepository.findActiveConfig(
-          tx,
-        );
+      const rewardConfig = await this.rewardConfigRepository.findActiveConfig(tx);
 
       // =======================
       // ❌ CONFIG NOT FOUND
@@ -137,128 +121,99 @@ export class RedeemCoinsUseCase {
       // 🛡 VALIDATE REDEMPTION
       // =======================
 
-      this.redemptionDomainService.validateRedemption(
-        {
-          wallet,
+      this.redemptionDomainService.validateRedemption({
+        wallet,
 
-          rewardConfig,
+        rewardConfig,
 
-          requestedCoins:
-            input.coins,
+        requestedCoins: input.coins,
 
-          orderAmount:
-            input.orderAmount,
-        },
-      );
+        orderAmount: input.orderAmount,
+      });
 
       // =======================
       // 💰 CALCULATE AMOUNT
       // =======================
 
-      const redeemedAmount =
-        this.redemptionDomainService.calculateRedeemableAmount(
-          {
-            coins:
-              input.coins,
+      const redeemedAmount = this.redemptionDomainService.calculateRedeemableAmount({
+        coins: input.coins,
 
-            rewardConfig,
-          },
-        );
+        rewardConfig,
+      });
 
       // =======================
       // 🪙 CREATE REDEMPTION
       // =======================
 
-      const redemption =
-        new CoinRedemption(
-          randomUUID(),
+      const redemption = new CoinRedemption(
+        randomUUID(),
 
-          input.userId,
+        input.userId,
 
-          wallet.id,
+        wallet.id,
 
-          input.orderId,
+        input.orderId,
 
-          CoinRedemptionStatus.APPLIED,
+        CoinRedemptionStatus.APPLIED,
 
-          input.coins,
+        input.coins,
 
-          redeemedAmount,
-        );
+        redeemedAmount,
+      );
 
       // =======================
       // 💾 SAVE REDEMPTION
       // =======================
 
-      const createdRedemption =
-        await this.redemptionRepository.create(
-          redemption,
-          tx,
-        );
+      const createdRedemption = await this.redemptionRepository.create(redemption, tx);
 
       // =======================
       // 💳 DEBIT COINS
       // =======================
 
-      const debitResult =
-        await this.debitCoinsUseCase.execute(
-          {
-            userId:
-              input.userId,
+      const debitResult = await this.debitCoinsUseCase.execute(
+        {
+          userId: input.userId,
 
-            coins:
-              input.coins,
+          coins: input.coins,
 
-            type:
-              CoinTransactionType.REDEEMED,
+          type: CoinTransactionType.REDEEMED,
 
-            sourceType:
-              RewardSourceType.REDEMPTION,
+          sourceType: RewardSourceType.REDEMPTION,
 
-            orderId:
-              input.orderId,
+          orderId: input.orderId,
 
-            paymentId:
-              input.paymentId,
+          paymentId: input.paymentId,
 
-            redemptionId:
-              createdRedemption.id,
+          redemptionId: createdRedemption.id,
 
-            metadata: {
-              ...(input.metadata ?? {}),
+          metadata: {
+            ...(input.metadata ?? {}),
 
-              redeemedAmount,
+            redeemedAmount,
 
-              orderAmount:
-                input.orderAmount,
+            orderAmount: input.orderAmount,
 
-              redemptionId:
-                createdRedemption.id,
-            },
-
-            description:
-              `Redeemed ${input.coins} coins for order ${input.orderId}`,
-
-            idempotencyKey:
-              `redeem-${input.orderId}`,
+            redemptionId: createdRedemption.id,
           },
 
-          tx,
-        );
+          description: `Redeemed ${input.coins} coins for order ${input.orderId}`,
+
+          idempotencyKey: `redeem-${input.orderId}`,
+        },
+
+        tx,
+      );
 
       // =======================
       // 💵 FINAL PAYABLE
       // =======================
 
-      const finalPayableAmount =
-        this.redemptionDomainService.calculateFinalPayableAmount(
-          {
-            orderAmount:
-              input.orderAmount,
+      const finalPayableAmount = this.redemptionDomainService.calculateFinalPayableAmount({
+        orderAmount: input.orderAmount,
 
-            redeemedAmount,
-          },
-        );
+        redeemedAmount,
+      });
 
       // =======================
       // 🚀 RESPONSE
@@ -266,37 +221,27 @@ export class RedeemCoinsUseCase {
 
       return {
         redemption: {
-          id:
-            createdRedemption.id,
+          id: createdRedemption.id,
 
-          orderId:
-            createdRedemption.orderId,
+          orderId: createdRedemption.orderId,
 
-          status:
-            createdRedemption.status,
+          status: createdRedemption.status,
 
-          redeemedCoins:
-            createdRedemption.redeemedCoins,
+          redeemedCoins: createdRedemption.redeemedCoins,
 
-          redeemedAmount:
-            createdRedemption.redeemedAmount,
+          redeemedAmount: createdRedemption.redeemedAmount,
 
-          createdAt:
-            createdRedemption.createdAt,
+          createdAt: createdRedemption.createdAt,
 
-          updatedAt:
-            createdRedemption.updatedAt,
+          updatedAt: createdRedemption.updatedAt,
         },
 
-        wallet:
-          debitResult.wallet,
+        wallet: debitResult.wallet,
 
-        transaction:
-          debitResult.transaction,
+        transaction: debitResult.transaction,
 
         payable: {
-          originalAmount:
-            input.orderAmount,
+          originalAmount: input.orderAmount,
 
           redeemedAmount,
 

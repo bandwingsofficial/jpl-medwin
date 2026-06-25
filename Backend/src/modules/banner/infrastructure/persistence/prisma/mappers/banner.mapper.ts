@@ -16,9 +16,7 @@ export class BannerMapper {
   // 🔄 STATUS
   // =======================
 
-  private static toDomainStatus(
-    status: PrismaBannerStatus,
-  ): BannerStatus {
+  private static toDomainStatus(status: PrismaBannerStatus): BannerStatus {
     switch (status) {
       case PrismaBannerStatus.ACTIVE:
         return BannerStatus.ACTIVE;
@@ -28,8 +26,7 @@ export class BannerMapper {
 
       default:
         throw new InvalidEnumMappingException({
-          enumName:
-            'Unknown PrismaBannerStatus',
+          enumName: 'Unknown PrismaBannerStatus',
 
           value: status,
 
@@ -38,9 +35,7 @@ export class BannerMapper {
     }
   }
 
-  private static toPrismaStatus(
-    status: BannerStatus,
-  ): PrismaBannerStatus {
+  private static toPrismaStatus(status: BannerStatus): PrismaBannerStatus {
     switch (status) {
       case BannerStatus.ACTIVE:
         return PrismaBannerStatus.ACTIVE;
@@ -50,8 +45,7 @@ export class BannerMapper {
 
       default:
         throw new InvalidEnumMappingException({
-          enumName:
-            'Unknown BannerStatus',
+          enumName: 'Unknown BannerStatus',
 
           value: status,
 
@@ -64,9 +58,7 @@ export class BannerMapper {
   // 🔄 TYPE
   // =======================
 
-  private static toDomainType(
-    type: PrismaBannerType,
-  ): BannerType {
+  private static toDomainType(type: PrismaBannerType): BannerType {
     switch (type) {
       case PrismaBannerType.HOME_BANNER:
         return BannerType.HOME_BANNER;
@@ -85,8 +77,7 @@ export class BannerMapper {
 
       default:
         throw new InvalidEnumMappingException({
-          enumName:
-            'Unknown PrismaBannerType',
+          enumName: 'Unknown PrismaBannerType',
 
           value: type,
 
@@ -95,9 +86,7 @@ export class BannerMapper {
     }
   }
 
-  private static toPrismaType(
-    type: BannerType,
-  ): PrismaBannerType {
+  private static toPrismaType(type: BannerType): PrismaBannerType {
     switch (type) {
       case BannerType.HOME_BANNER:
         return PrismaBannerType.HOME_BANNER;
@@ -116,8 +105,7 @@ export class BannerMapper {
 
       default:
         throw new InvalidEnumMappingException({
-          enumName:
-            'Unknown BannerType',
+          enumName: 'Unknown BannerType',
 
           value: type,
 
@@ -130,9 +118,7 @@ export class BannerMapper {
   // 📦 BANNER
   // =======================
 
-  static toDomain(
-    p: PrismaBanner,
-  ): Banner {
+  static toDomain(p: PrismaBanner): Banner {
     return new Banner(
       p.id,
 
@@ -150,21 +136,15 @@ export class BannerMapper {
     );
   }
 
-  static toPersistence(
-    e: Banner,
-  ) {
+  static toPersistence(e: Banner) {
     return {
       id: e.id,
 
       name: e.name,
 
-      type: this.toPrismaType(
-        e.type,
-      ),
+      type: this.toPrismaType(e.type),
 
-      status: this.toPrismaStatus(
-        e.status,
-      ),
+      status: this.toPrismaStatus(e.status),
 
       createdAt: e.createdAt,
 

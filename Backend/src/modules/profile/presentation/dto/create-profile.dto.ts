@@ -1,11 +1,6 @@
 // src/modules/profile/application/dto/create-profile.dto.ts
 
-import {
-  IsEmail,
-  IsOptional,
-  IsString,
-  Matches,
-} from 'class-validator';
+import { IsEmail, IsOptional, IsString, Matches } from 'class-validator';
 
 export class CreateProfileDto {
   @IsOptional()

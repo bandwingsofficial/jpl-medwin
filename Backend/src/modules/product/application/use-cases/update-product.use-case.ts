@@ -66,19 +66,11 @@ export class UpdateProductUseCase {
       // 🧱 APPLY UPDATE
       // =======================
 
-     const productChanged =
-  this.updateProductBuilderService.update(
-    product,
-    input,
-    newSlug,
-  );
+      const productChanged = this.updateProductBuilderService.update(product, input, newSlug);
 
-if (productChanged) {
-  await this.productRepo.update(
-    product,
-    tx,
-  );
-}
+      if (productChanged) {
+        await this.productRepo.update(product, tx);
+      }
 
       // =======================
       // 🖼 PRODUCT IMAGES

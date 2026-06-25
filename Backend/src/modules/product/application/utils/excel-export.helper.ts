@@ -7,22 +7,16 @@ export class ExcelExportHelper {
   // EXPORT
   // =======================
 
-  static async export(
-    rows: any[],
-    sheetName = 'Products',
-  ): Promise<Buffer> {
+  static async export(rows: any[], sheetName = 'Products'): Promise<Buffer> {
     const workbook = new Workbook();
 
-    const sheet =
-      workbook.addWorksheet(sheetName);
+    const sheet = workbook.addWorksheet(sheetName);
 
     // =======================
     // HEADERS
     // =======================
 
-    sheet.columns = Object.keys(
-      rows[0] ?? {},
-    ).map((key) => ({
+    sheet.columns = Object.keys(rows[0] ?? {}).map((key) => ({
       header: key,
       key,
       width: 30,
@@ -82,12 +76,11 @@ export class ExcelExportHelper {
     };
 
     // =======================
-// BUFFER
-// =======================
+    // BUFFER
+    // =======================
 
-const buffer = await workbook.xlsx.writeBuffer();
+    const buffer = await workbook.xlsx.writeBuffer();
 
-return Buffer.from(buffer);
+    return Buffer.from(buffer);
   }
 }
-

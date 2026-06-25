@@ -20,11 +20,7 @@ export class ProductFileMapperService {
   // 🖼 MAP IMAGE URLS
   // =======================
 
-  mapProductImages(
-    urls: string[],
-    alt?: string,
-    startOrder = 0,
-  ) {
+  mapProductImages(urls: string[], alt?: string, startOrder = 0) {
     return urls.map((url, index) => ({
       url,
       alt,
@@ -52,29 +48,21 @@ export class ProductFileMapperService {
       // ⭐ MAIN IMAGE
       // =======================
 
-      const mainFile =
-        files.variantMainImages?.[mainIndex++];
+      const mainFile = files.variantMainImages?.[mainIndex++];
 
       // =======================
       // 🖼 NEW GALLERY IMAGE COUNT
       // =======================
 
       const galleryCount =
-        variant.images?.filter(
-          (image) =>
-            !image.id &&
-            image.isDeleted !== true,
-        ).length ?? 0;
+        variant.images?.filter((image) => !image.id && image.isDeleted !== true).length ?? 0;
 
       // =======================
       // 🖼 GALLERY FILES
       // =======================
 
       const galleryFiles =
-        files.variantImages?.slice(
-          galleryIndex,
-          galleryIndex + galleryCount,
-        ) ?? [];
+        files.variantImages?.slice(galleryIndex, galleryIndex + galleryCount) ?? [];
 
       galleryIndex += galleryCount;
 

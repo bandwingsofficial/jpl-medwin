@@ -5,22 +5,14 @@ export interface BrandRepository {
   // 🔍 FIND
   // =======================
 
-  findById(
-    id: string,
-  ): Promise<Brand | null>;
+  findById(id: string): Promise<Brand | null>;
 
-  findBySlug(
-    slug: string,
-  ): Promise<Brand | null>;
+  findBySlug(slug: string): Promise<Brand | null>;
 
-  findByName(
-    name: string,
-  ): Promise<Brand | null>;
+  findByName(name: string): Promise<Brand | null>;
 
   // 🔥 RESTORE SUPPORT
-  findBySlugIncludingDeleted(
-    slug: string,
-  ): Promise<Brand | null>;
+  findBySlugIncludingDeleted(slug: string): Promise<Brand | null>;
 
   findAll(): Promise<Brand[]>;
 
@@ -28,21 +20,15 @@ export interface BrandRepository {
   // 🧠 CHECKS
   // =======================
 
-  existsBySlug(
-    slug: string,
-  ): Promise<boolean>;
+  existsBySlug(slug: string): Promise<boolean>;
 
   // =======================
   // ✍️ WRITE
   // =======================
 
-  create(
-    brand: Brand,
-  ): Promise<Brand>;
+  create(brand: Brand): Promise<Brand>;
 
-  update(
-    brand: Brand,
-  ): Promise<Brand>;
+  update(brand: Brand): Promise<Brand>;
 
   // =======================
   // ❌ DELETE

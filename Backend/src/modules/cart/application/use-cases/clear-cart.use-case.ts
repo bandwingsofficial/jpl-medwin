@@ -77,7 +77,7 @@ export class ClearCartUseCase {
     // 💰 EMPTY SUMMARY
     // =======================
 
-    const summary = this.summaryService.build({
+    const summary = await this.summaryService.build({
       items: [],
     });
 

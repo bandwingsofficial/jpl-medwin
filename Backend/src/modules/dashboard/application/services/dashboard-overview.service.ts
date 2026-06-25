@@ -1,6 +1,4 @@
-import {
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import { DashboardPeriod } from '../../domain/enums/dashboard-period.enum';
 
@@ -45,90 +43,52 @@ export class DashboardOverviewService {
     // =======================
 
     const query = {
-      period:
-        params?.period ??
-        DashboardPeriod.OVERALL,
+      period: params?.period ?? DashboardPeriod.OVERALL,
 
-      from:
-        params?.from,
+      from: params?.from,
 
-      to:
-        params?.to,
+      to: params?.to,
     };
 
     // =======================
     // 🚀 LOAD ALL
     // =======================
 
-    const [
-      orders,
+    const [orders, revenue, customers, topProducts, topCustomers, recentOrders, orderStatuses] =
+      await Promise.all([
+        this.orderDashboardService.getOrderStats(query),
 
-      revenue,
+        this.revenueDashboardService.getRevenueStats(query),
 
-      customers,
+        this.customerDashboardService.getCustomerStats(query),
 
-      topProducts,
+        this.topProductDashboardService.getTopProducts(query),
 
-      topCustomers,
+        this.topCustomerDashboardService.getTopCustomers(query),
 
-      recentOrders,
+        this.recentOrderDashboardService.getRecentOrders(query),
 
-      orderStatuses,
-    ] = await Promise.all([
-      this.orderDashboardService.getOrderStats(
-        query,
-      ),
-
-      this.revenueDashboardService.getRevenueStats(
-        query,
-      ),
-
-      this.customerDashboardService.getCustomerStats(
-        query,
-      ),
-
-      this.topProductDashboardService.getTopProducts(
-        query,
-      ),
-
-      this.topCustomerDashboardService.getTopCustomers(
-        query,
-      ),
-
-      this.recentOrderDashboardService.getRecentOrders(
-        query,
-      ),
-
-      this.orderStatusDashboardService.getOrderStatuses(
-        query,
-      ),
-    ]);
+        this.orderStatusDashboardService.getOrderStatuses(query),
+      ]);
 
     // =======================
     // 📊 SUMMARY
     // =======================
 
     const summary = {
-      totalOrders:
-        orders.totalOrders,
+      totalOrders: orders.totalOrders,
 
-      totalCustomers:
-        customers.totalCustomers,
+      totalCustomers: customers.totalCustomers,
 
-      unitsSold:
-        orders.unitsSold,
+      unitsSold: orders.unitsSold,
 
-      grossRevenue:
-        revenue.grossRevenue,
+      grossRevenue: revenue.grossRevenue,
 
-      refundedRevenue:
-        revenue.refundedRevenue,
+      refundedRevenue: revenue.refundedRevenue,
 
-      netRevenue:
-        revenue.netRevenue,
+      netRevenue: revenue.netRevenue,
 
-      averageOrderValue:
-        revenue.averageOrderValue,
+      averageOrderValue: revenue.averageOrderValue,
     };
 
     // =======================
@@ -136,14 +96,11 @@ export class DashboardOverviewService {
     // =======================
 
     return {
-      period:
-        query.period,
+      period: query.period,
 
-      from:
-        query.from,
+      from: query.from,
 
-      to:
-        query.to,
+      to: query.to,
 
       summary,
 

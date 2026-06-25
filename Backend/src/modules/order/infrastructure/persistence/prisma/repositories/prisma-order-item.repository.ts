@@ -1,6 +1,7 @@
 // src/modules/order/infrastructure/persistence/prisma/repositories/prisma-order-item.repository.ts
 
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 
 import { PrismaService } from '../../../../../../infrastructure/prisma/prisma.service';
 
@@ -78,8 +79,12 @@ export class PrismaOrderItemRepository implements OrderItemRepository {
     return OrderItemMapper.toDomain(created);
   }
 
-  async createMany(items: OrderItem[]): Promise<void> {
-    await this.prisma.orderItem.createMany({
+  async createMany(items: OrderItem[], tx: Prisma.TransactionClient = this.prisma): Promise<void> {
+    if (!items.length) {
+      return;
+    }
+
+    await tx.orderItem.createMany({
       data: items.map((i) => OrderItemMapper.toPersistence(i)),
     });
   }
@@ -125,18 +130,15 @@ export class PrismaOrderItemRepository implements OrderItemRepository {
   }
 
   // =======================
-// 📊 DASHBOARD
-// =======================
+  // 📊 DASHBOARD
+  // =======================
 
-async findByOrderIds(
-  orderIds: string[],
-): Promise<OrderItem[]> {
-  if (!orderIds.length) {
-    return [];
-  }
+  async findByOrderIds(orderIds: string[]): Promise<OrderItem[]> {
+    if (!orderIds.length) {
+      return [];
+    }
 
-  const items =
-    await this.prisma.orderItem.findMany({
+    const items = await this.prisma.orderItem.findMany({
       where: {
         orderId: {
           in: orderIds,
@@ -146,10 +148,6 @@ async findByOrderIds(
       },
     });
 
-  return items.map((item) =>
-    OrderItemMapper.toDomain(
-      item,
-    ),
-  );
-}
+    return items.map((item) => OrderItemMapper.toDomain(item));
+  }
 }

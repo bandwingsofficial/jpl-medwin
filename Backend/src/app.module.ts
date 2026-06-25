@@ -21,6 +21,7 @@ import { BannerModule } from './modules/banner/banner.module';
 import { SearchModule } from './modules/search/search.module';
 import { ReturnModule } from './modules/return/return.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { ShippingConfigurationModule } from './modules/shipping-configuration/shipping-configuration.module';
 
 import { RedisModule } from './infrastructure/cache/redis.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
@@ -50,6 +51,7 @@ import { PrismaModule } from './infrastructure/prisma/prisma.module';
     SearchModule,
     ReturnModule,
     DashboardModule,
+    ShippingConfigurationModule,
   ],
 })
 export class AppModule {}

@@ -12,7 +12,7 @@ import {
   NotFoundException,
   UseGuards,
   BadRequestException,
-  Res
+  Res,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
@@ -1004,30 +1004,24 @@ export class AdminProductController {
   }
 
   // ========================
-// 📦 EXPORT PRODUCTS
-// ========================
+  // 📦 EXPORT PRODUCTS
+  // ========================
 
-@Get('export')
-async exportProducts(
-  @Res() res: Response,
-) {
-  const { buffer } =
-    await this.exportProductsUseCase.execute();
+  @Get('export')
+  async exportProducts(@Res() res: Response) {
+    const { buffer } = await this.exportProductsUseCase.execute();
 
-  const filename = `products-${Date.now()}.xlsx`;
+    const filename = `products-${Date.now()}.xlsx`;
 
-  res.setHeader(
-    'Content-Type',
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-  );
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
 
-  res.setHeader(
-    'Content-Disposition',
-    `attachment; filename="${filename}"`,
-  );
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 
-  return res.end(buffer);
-}
+    return res.end(buffer);
+  }
   // ================= GET product + details =================
 
   @Get()

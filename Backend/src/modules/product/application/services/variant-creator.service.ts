@@ -49,11 +49,7 @@ export class VariantCreatorService {
       // ♻️ RESTORE DELETED VARIANT
       // =======================
 
-      const existingDeletedVariant = await this.variantRepo.findBySku(
-        v.sku,
-        true,
-        tx,
-      );
+      const existingDeletedVariant = await this.variantRepo.findBySku(v.sku, true, tx);
 
       if (existingDeletedVariant && existingDeletedVariant.isDeleted()) {
         existingDeletedVariant.restore();
@@ -80,10 +76,7 @@ export class VariantCreatorService {
           warrantyMonths: v.warrantyMonths,
         });
 
-        const restoredVariant = await this.variantRepo.update(
-          existingDeletedVariant,
-          tx,
-        );
+        const restoredVariant = await this.variantRepo.update(existingDeletedVariant, tx);
 
         if (!defaultVariantId) {
           defaultVariantId = restoredVariant.id;
@@ -144,10 +137,7 @@ export class VariantCreatorService {
         warrantyMonths: v.warrantyMonths,
       });
 
-      const createdVariant = await this.variantRepo.create(
-        variant,
-        tx,
-      );
+      const createdVariant = await this.variantRepo.create(variant, tx);
 
       if (!defaultVariantId) {
         defaultVariantId = createdVariant.id;
@@ -218,15 +208,10 @@ export class VariantCreatorService {
       // =======================
 
       if (mainImageId) {
-        await this.imageRepo.setMainImageForVariant(
-          createdVariant.id,
-          mainImageId,
-          tx,
-        );
+        await this.imageRepo.setMainImageForVariant(createdVariant.id, mainImageId, tx);
       }
     }
 
     return defaultVariantId;
   }
 }
-

@@ -97,56 +97,53 @@ export class PrismaSubCategoryRepository implements SubCategoryRepository {
   }
 
   // =======================
-// 🔍 FIND BY NAME + CATEGORY
-// =======================
+  // 🔍 FIND BY NAME + CATEGORY
+  // =======================
 
-async findByNameAndCategory(
-  name: string,
-  categoryId: string,
-): Promise<SubCategory | null> {
-  const data = await this.prisma.subCategory.findFirst({
-    where: {
-      categoryId,
-      deletedAt: null,
+  async findByNameAndCategory(name: string, categoryId: string): Promise<SubCategory | null> {
+    const data = await this.prisma.subCategory.findFirst({
+      where: {
+        categoryId,
+        deletedAt: null,
 
-      name: {
-        equals: name.trim(),
-        mode: 'insensitive',
-      },
-    },
-
-    orderBy: {
-      createdAt: 'desc',
-    },
-
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      categoryId: true,
-      imageUrl: true,
-      description: true,
-      metaDescription: true,
-      status: true,
-      createdAt: true,
-      updatedAt: true,
-      deletedAt: true,
-
-      category: {
-        select: {
-          name: true,
+        name: {
+          equals: name.trim(),
+          mode: 'insensitive',
         },
       },
-    },
-  });
 
-  return data
-    ? CategoryMapper.toDomainSubCategory({
-        ...data,
-        categoryName: data.category?.name ?? null,
-      })
-    : null;
-}
+      orderBy: {
+        createdAt: 'desc',
+      },
+
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        categoryId: true,
+        imageUrl: true,
+        description: true,
+        metaDescription: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
+        deletedAt: true,
+
+        category: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    });
+
+    return data
+      ? CategoryMapper.toDomainSubCategory({
+          ...data,
+          categoryName: data.category?.name ?? null,
+        })
+      : null;
+  }
 
   async findByCategoryId(categoryId: string): Promise<SubCategory[]> {
     const data = await this.prisma.subCategory.findMany({

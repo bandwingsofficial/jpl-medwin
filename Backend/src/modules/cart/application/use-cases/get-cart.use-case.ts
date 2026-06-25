@@ -51,6 +51,8 @@ export class GetCartUseCase {
     // =======================
 
     if (!cart) {
+      const summary = await this.summaryService.buildEmptySummary();
+
       return {
         id: null,
 
@@ -62,27 +64,7 @@ export class GetCartUseCase {
 
         cartItems: [],
 
-        summary: {
-          totalProducts: 0,
-
-          totalQuantity: 0,
-
-          subtotal: 0,
-
-          mrpTotal: 0,
-
-          productDiscount: 0,
-
-          couponDiscount: 0,
-
-          shipping: 0,
-
-          tax: 0,
-
-          grandTotal: 0,
-
-          savings: 0,
-        },
+        summary,
 
         createdAt: null,
 
@@ -185,7 +167,7 @@ export class GetCartUseCase {
     // 💰 SUMMARY
     // =======================
 
-    const summary = this.summaryService.build({
+    const summary = await this.summaryService.build({
       items,
 
       couponDiscount: cart.couponDiscount,

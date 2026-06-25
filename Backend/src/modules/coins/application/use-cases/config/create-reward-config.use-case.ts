@@ -48,24 +48,17 @@ export class CreateRewardConfigUseCase {
         shouldActivate,
       );
 
-      const createdConfig =
-        await this.rewardConfigRepository.create(
-          rewardConfig,
-          tx,
-        );
+      const createdConfig = await this.rewardConfigRepository.create(rewardConfig, tx);
 
       return {
         id: createdConfig.id,
         earnRateAmount: createdConfig.earnRateAmount,
         earnRateCoins: createdConfig.earnRateCoins,
         coinValue: createdConfig.coinValue,
-        maxRedemptionPercentage:
-          createdConfig.maxRedemptionPercentage,
-        minimumOrderAmount:
-          createdConfig.minimumOrderAmount,
+        maxRedemptionPercentage: createdConfig.maxRedemptionPercentage,
+        minimumOrderAmount: createdConfig.minimumOrderAmount,
         expiryMonths: createdConfig.expiryMonths,
-        rewardOnDelivered:
-          createdConfig.rewardOnDelivered,
+        rewardOnDelivered: createdConfig.rewardOnDelivered,
         isActive: createdConfig.isActive,
         createdAt: createdConfig.createdAt,
         updatedAt: createdConfig.updatedAt,

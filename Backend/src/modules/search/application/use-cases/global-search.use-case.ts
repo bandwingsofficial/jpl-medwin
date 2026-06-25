@@ -1,7 +1,4 @@
-import {
-  Inject,
-  Injectable,
-} from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -22,23 +19,15 @@ export class GlobalSearchUseCase {
     private readonly searchBuilderService: SearchBuilderService,
   ) {}
 
-  async execute(
-    query: string,
-    limit = 10,
-  ): Promise<GlobalSearchDto> {
+  async execute(query: string, limit = 10): Promise<GlobalSearchDto> {
     if (!query?.trim()) {
       throw new InvalidSearchQueryException();
     }
 
-    const results = await this.searchRepository.search(
-      query.trim(),
-      limit,
-    );
+    const results = await this.searchRepository.search(query.trim(), limit);
 
     return {
-      results: this.searchBuilderService.build(
-        results,
-      ),
+      results: this.searchBuilderService.build(results),
     };
   }
 }

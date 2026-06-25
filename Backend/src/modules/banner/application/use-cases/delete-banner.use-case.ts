@@ -17,17 +17,12 @@ export class DeleteBannerUseCase {
     private readonly bannerImageRepo: BannerImageRepository,
   ) {}
 
-  async execute(
-    bannerId: string,
-  ): Promise<void> {
+  async execute(bannerId: string): Promise<void> {
     // =======================
     // 🔍 FIND BANNER
     // =======================
 
-    const banner =
-      await this.bannerRepo.findById(
-        bannerId,
-      );
+    const banner = await this.bannerRepo.findById(bannerId);
 
     if (!banner) {
       throw new BannerNotFoundException({
@@ -39,10 +34,7 @@ export class DeleteBannerUseCase {
     // 🔍 FIND IMAGES
     // =======================
 
-    const images =
-      await this.bannerImageRepo.findByBannerId(
-        bannerId,
-      );
+    const images = await this.bannerImageRepo.findByBannerId(bannerId);
 
     // =======================
     // ♻️ SOFT DELETE IMAGES
@@ -51,29 +43,25 @@ export class DeleteBannerUseCase {
     for (const image of images) {
       image.softDelete();
 
-      await this.bannerImageRepo.update(
-        image,
-      );
+      await this.bannerImageRepo.update(image);
     }
 
-// =======================
-// 🔄 DEACTIVATE BANNER
-// =======================
+    // =======================
+    // 🔄 DEACTIVATE BANNER
+    // =======================
 
-banner.deactivate();
+    banner.deactivate();
 
-// =======================
-// ♻️ SOFT DELETE BANNER
-// =======================
+    // =======================
+    // ♻️ SOFT DELETE BANNER
+    // =======================
 
-banner.softDelete();
+    banner.softDelete();
 
     // =======================
     // 💾 SAVE
     // =======================
 
-    await this.bannerRepo.update(
-      banner,
-    );
+    await this.bannerRepo.update(banner);
   }
 }

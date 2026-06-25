@@ -123,36 +123,34 @@ export class OrderDomainService {
   }
 
   ensureCanCancel(order: Order) {
-  const cancellableStatuses = [
-    OrderStatus.PENDING_PAYMENT,
-  ];
+    const cancellableStatuses = [OrderStatus.PENDING_PAYMENT];
 
-  if (!cancellableStatuses.includes(order.status)) {
-    throw new InvalidOrderOperationException({
-      orderId: order.id,
+    if (!cancellableStatuses.includes(order.status)) {
+      throw new InvalidOrderOperationException({
+        orderId: order.id,
 
-      operation: 'cancel',
+        operation: 'cancel',
 
-      reason: `Order cannot be cancelled in ${order.status} status`,
-    });
+        reason: `Order cannot be cancelled in ${order.status} status`,
+      });
+    }
   }
-}
 
-ensureCanAdminCancel(order: Order) {
-  const cancellableStatuses = [
-    OrderStatus.PENDING_PAYMENT,
-    OrderStatus.CONFIRMED,
-    OrderStatus.PROCESSING,
-  ];
+  ensureCanAdminCancel(order: Order) {
+    const cancellableStatuses = [
+      OrderStatus.PENDING_PAYMENT,
+      OrderStatus.CONFIRMED,
+      OrderStatus.PROCESSING,
+    ];
 
-  if (!cancellableStatuses.includes(order.status)) {
-    throw new InvalidOrderOperationException({
-      orderId: order.id,
-      operation: 'admin_cancel',
-      reason: `Order cannot be cancelled in ${order.status} status`,
-    });
+    if (!cancellableStatuses.includes(order.status)) {
+      throw new InvalidOrderOperationException({
+        orderId: order.id,
+        operation: 'admin_cancel',
+        reason: `Order cannot be cancelled in ${order.status} status`,
+      });
+    }
   }
-}
 
   // =======================
   // 💸 ENSURE REFUNDABLE

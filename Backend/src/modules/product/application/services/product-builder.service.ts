@@ -26,11 +26,7 @@ export class ProductBuilderService {
     // ♻️ RESTORE DELETED PRODUCT
     // =======================
 
-    const existingDeletedProduct = await this.productRepo.findBySlug(
-      slug,
-      true,
-      tx,
-    );
+    const existingDeletedProduct = await this.productRepo.findBySlug(slug, true, tx);
 
     if (existingDeletedProduct?.isDeleted()) {
       existingDeletedProduct.restore();
@@ -61,10 +57,7 @@ export class ProductBuilderService {
         warrantyMonths: input.warrantyMonths,
       });
 
-      return this.productRepo.update(
-        existingDeletedProduct,
-        tx,
-      );
+      return this.productRepo.update(existingDeletedProduct, tx);
     }
 
     // =======================
@@ -115,12 +108,8 @@ export class ProductBuilderService {
       warrantyMonths: input.warrantyMonths,
     });
 
-    await this.productRepo.create(
-      product,
-      tx,
-    );
+    await this.productRepo.create(product, tx);
 
     return product;
   }
 }
-

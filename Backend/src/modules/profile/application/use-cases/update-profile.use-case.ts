@@ -39,9 +39,7 @@ export class UpdateProfileUseCase {
     // 🔍 FIND PROFILE
     // =======================
 
-    const profile = await this.profileRepo.findByUserId(
-      input.userId,
-    );
+    const profile = await this.profileRepo.findByUserId(input.userId);
 
     if (!profile) {
       throw new ProfileNotFoundException({
@@ -54,69 +52,44 @@ export class UpdateProfileUseCase {
     // =======================
 
     const normalizedName =
-      input.name !== undefined
-        ? this.domainService.normalizeName(input.name)
-        : undefined;
+      input.name !== undefined ? this.domainService.normalizeName(input.name) : undefined;
 
     const normalizedEmail =
-      input.email !== undefined
-        ? this.domainService.normalizeEmail(input.email)
-        : undefined;
+      input.email !== undefined ? this.domainService.normalizeEmail(input.email) : undefined;
 
     const normalizedPhoneNumber =
       input.phoneNumber !== undefined
-        ? this.domainService.normalizePhoneNumber(
-            input.phoneNumber,
-          )
+        ? this.domainService.normalizePhoneNumber(input.phoneNumber)
         : undefined;
 
     // =======================
     // 📧 EMAIL VALIDATION
     // =======================
 
-    if (
-      normalizedEmail &&
-      !this.domainService.isValidEmail(
-        normalizedEmail,
-      )
-    ) {
+    if (normalizedEmail && !this.domainService.isValidEmail(normalizedEmail)) {
       throw new InvalidEmailException({
-  email: normalizedEmail,
-});
+        email: normalizedEmail,
+      });
     }
 
     // =======================
     // 📱 PHONE VALIDATION
     // =======================
 
-    if (
-      normalizedPhoneNumber &&
-      !this.domainService.isValidPhoneNumber(
-        normalizedPhoneNumber,
-      )
-    ) {
+    if (normalizedPhoneNumber && !this.domainService.isValidPhoneNumber(normalizedPhoneNumber)) {
       throw new InvalidPhoneNumberException({
-  phoneNumber: normalizedPhoneNumber,
-});
+        phoneNumber: normalizedPhoneNumber,
+      });
     }
 
     // =======================
     // 📧 EMAIL CHECK
     // =======================
 
-    if (
-      normalizedEmail &&
-      normalizedEmail !== profile.email
-    ) {
-      const existingProfile =
-        await this.profileRepo.findByEmail(
-          normalizedEmail,
-        );
+    if (normalizedEmail && normalizedEmail !== profile.email) {
+      const existingProfile = await this.profileRepo.findByEmail(normalizedEmail);
 
-      if (
-        existingProfile &&
-        existingProfile.id !== profile.id
-      ) {
+      if (existingProfile && existingProfile.id !== profile.id) {
         throw new EmailAlreadyExistsException({
           email: normalizedEmail,
         });
@@ -127,22 +100,13 @@ export class UpdateProfileUseCase {
     // 📱 PHONE CHECK
     // =======================
 
-    if (
-      normalizedPhoneNumber &&
-      normalizedPhoneNumber !== profile.phoneNumber
-    ) {
-      const existingPhoneProfile =
-        await this.profileRepo.findByPhoneNumber(
-          normalizedPhoneNumber,
-        );
+    if (normalizedPhoneNumber && normalizedPhoneNumber !== profile.phoneNumber) {
+      const existingPhoneProfile = await this.profileRepo.findByPhoneNumber(normalizedPhoneNumber);
 
-      if (
-        existingPhoneProfile &&
-        existingPhoneProfile.id !== profile.id
-      ) {
+      if (existingPhoneProfile && existingPhoneProfile.id !== profile.id) {
         throw new PhoneNumberAlreadyExistsException({
-  phoneNumber: normalizedPhoneNumber,
-});
+          phoneNumber: normalizedPhoneNumber,
+        });
       }
     }
 

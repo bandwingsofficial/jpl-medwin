@@ -35,9 +35,9 @@ export class UpdateSavedAddressUseCase {
 
   async execute(input: {
     id: string;
-    
+
     fullName?: string;
-phoneNumber?: string;
+    phoneNumber?: string;
     userId: string;
 
     type?: AddressType;

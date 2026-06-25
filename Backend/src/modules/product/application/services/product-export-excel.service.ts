@@ -6,12 +6,7 @@ import { ExcelExportHelper } from '../utils/excel-export.helper';
 
 @Injectable()
 export class ProductExportExcelService {
-  async generate(
-    rows: any[],
-  ): Promise<Buffer> {
-    return ExcelExportHelper.export(
-      rows,
-      'Products',
-    );
+  async generate(rows: any[]): Promise<Buffer> {
+    return ExcelExportHelper.export(rows, 'Products');
   }
 }

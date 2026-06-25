@@ -15,16 +15,16 @@ import { OrderResponseBuilderService } from '@/modules/order/application/service
 @Injectable()
 export class RejectReturnUseCase {
   constructor(
-  @Inject(TOKENS.RETURN_REPO)
-  private readonly returnRepo: ReturnRepository,
+    @Inject(TOKENS.RETURN_REPO)
+    private readonly returnRepo: ReturnRepository,
 
-  @Inject(TOKENS.ORDER_REPO)
-  private readonly orderRepo: OrderRepository,
+    @Inject(TOKENS.ORDER_REPO)
+    private readonly orderRepo: OrderRepository,
 
-  private readonly domainService: ReturnDomainService,
+    private readonly domainService: ReturnDomainService,
 
-  private readonly orderResponseBuilder: OrderResponseBuilderService,
-) {}
+    private readonly orderResponseBuilder: OrderResponseBuilderService,
+  ) {}
 
   async execute(input: {
     returnId: string;
@@ -55,19 +55,17 @@ export class RejectReturnUseCase {
 
     this.domainService.ensureCanReject(returnRequest);
 
-        // =======================
+    // =======================
     // LOAD THE ORDER DETAILS
     // =======================
 
-    const order = await this.orderRepo.findById(
-  returnRequest.orderId,
-);
+    const order = await this.orderRepo.findById(returnRequest.orderId);
 
-if (!order) {
-  throw new OrderNotFoundException({
-    orderId: returnRequest.orderId,
-  });
-}
+    if (!order) {
+      throw new OrderNotFoundException({
+        orderId: returnRequest.orderId,
+      });
+    }
 
     // =======================
     // ❌ REJECT
@@ -86,38 +84,31 @@ if (!order) {
     // =======================
 
     return {
-  returnRequest: {
-    id: updated.id,
+      returnRequest: {
+        id: updated.id,
 
-    orderId: updated.orderId,
+        orderId: updated.orderId,
 
-    userId: updated.userId,
+        userId: updated.userId,
 
-    type: updated.type,
+        type: updated.type,
 
-    reason: updated.reason,
+        reason: updated.reason,
 
-    description: updated.description,
+        description: updated.description,
 
-    status: updated.status,
+        status: updated.status,
 
-    rejectionReason:
-      updated.rejectionReason,
+        rejectionReason: updated.rejectionReason,
 
-    rejectedAt:
-      updated.rejectedAt,
+        rejectedAt: updated.rejectedAt,
 
-    createdAt:
-      updated.createdAt,
+        createdAt: updated.createdAt,
 
-    updatedAt:
-      updated.updatedAt,
-  },
+        updatedAt: updated.updatedAt,
+      },
 
-  order:
-    this.orderResponseBuilder.buildReplacementOrder(
-      order,
-    ),
-};
+      order: this.orderResponseBuilder.buildReplacementOrder(order),
+    };
   }
 }

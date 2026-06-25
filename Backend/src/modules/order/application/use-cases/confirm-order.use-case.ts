@@ -84,31 +84,24 @@ export class ConfirmOrderUseCase {
         paymentStatus: updated.paymentStatus,
 
         totals: {
-  subtotal: updated.subtotal,
+          subtotal: updated.subtotal,
 
-  couponDiscount:
-    updated.couponDiscount,
+          couponDiscount: updated.couponDiscount,
 
-  shippingCharge:
-    updated.shippingCharge,
+          shippingCharge: updated.shippingCharge,
 
-  tax: updated.tax,
+          tax: updated.tax,
 
-  redeemedCoins:
-    updated.redeemedCoins,
+          redeemedCoins: updated.redeemedCoins,
 
-  redeemedAmount:
-    updated.redeemedAmount,
+          redeemedAmount: updated.redeemedAmount,
 
-  earnedCoins:
-    updated.earnedCoins,
+          earnedCoins: updated.earnedCoins,
 
-  grandTotal:
-    updated.grandTotal,
+          grandTotal: updated.grandTotal,
 
-  totalSavings:
-    updated.totalSavings,
-},
+          totalSavings: updated.totalSavings,
+        },
 
         itemCount: items.length,
 

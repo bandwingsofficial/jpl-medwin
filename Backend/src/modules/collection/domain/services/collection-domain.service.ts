@@ -18,42 +18,37 @@ export class CollectionDomainService {
   // =======================
 
   ensureExists(params: {
-  collection: Collection | null;
+    collection: Collection | null;
 
-  collectionId?: string;
+    collectionId?: string;
 
-  slug?: string;
-}): Collection {
-  if (!params.collection) {
-    throw new CollectionNotFoundException({
-      collectionId: params.collectionId,
-      slug: params.slug,
-    });
+    slug?: string;
+  }): Collection {
+    if (!params.collection) {
+      throw new CollectionNotFoundException({
+        collectionId: params.collectionId,
+        slug: params.slug,
+      });
+    }
+
+    return params.collection;
   }
 
-  return params.collection;
-}
-
-generateSlug(name: string): string {
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-');
-}
+  generateSlug(name: string): string {
+    return name
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-');
+  }
 
   // =======================
   // 🟢 ACTIVE
   // =======================
 
-  ensureActive(
-    collection: Collection,
-  ): void {
-    if (
-      collection.status ===
-      CollectionStatus.INACTIVE
-    ) {
+  ensureActive(collection: Collection): void {
+    if (collection.status === CollectionStatus.INACTIVE) {
       throw new CollectionInactiveException({
         collectionId: collection.id,
       });
@@ -64,16 +59,9 @@ generateSlug(name: string): string {
   // 🔴 INACTIVE
   // =======================
 
-  ensureInactive(
-    collection: Collection,
-  ): void {
-    if (
-      collection.status ===
-      CollectionStatus.ACTIVE
-    ) {
-      throw new Error(
-        'Collection is already active',
-      );
+  ensureInactive(collection: Collection): void {
+    if (collection.status === CollectionStatus.ACTIVE) {
+      throw new Error('Collection is already active');
     }
   }
 
@@ -81,9 +69,7 @@ generateSlug(name: string): string {
   // ♻️ DELETED
   // =======================
 
-  ensureNotDeleted(
-    collection: Collection,
-  ): void {
+  ensureNotDeleted(collection: Collection): void {
     if (collection.isDeleted()) {
       throw new CollectionNotFoundException({
         collectionId: collection.id,
@@ -95,37 +81,35 @@ generateSlug(name: string): string {
   // 📦 USABLE
   // =======================
 
-  ensureUsable(
-    collection: Collection,
-  ): void {
+  ensureUsable(collection: Collection): void {
     this.ensureNotDeleted(collection);
 
     this.ensureActive(collection);
   }
 
   // =======================
-// 🔍 UNIQUE
-// =======================
+  // 🔍 UNIQUE
+  // =======================
 
-ensureUnique(params: {
-  nameExists: boolean;
+  ensureUnique(params: {
+    nameExists: boolean;
 
-  slugExists: boolean;
+    slugExists: boolean;
 
-  name: string;
+    name: string;
 
-  slug: string;
-}): void {
-  if (params.nameExists) {
-    throw new CollectionAlreadyExistsException({
-      name: params.name,
-    });
+    slug: string;
+  }): void {
+    if (params.nameExists) {
+      throw new CollectionAlreadyExistsException({
+        name: params.name,
+      });
+    }
+
+    if (params.slugExists) {
+      throw new CollectionAlreadyExistsException({
+        slug: params.slug,
+      });
+    }
   }
-
-  if (params.slugExists) {
-    throw new CollectionAlreadyExistsException({
-      slug: params.slug,
-    });
-  }
-}
 }

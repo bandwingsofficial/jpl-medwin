@@ -88,10 +88,10 @@ export class UpdateVariantStatusUseCase {
       variant.deactivate();
 
       // =======================
-// 🛒 REMOVE CART ITEMS
-// =======================
+      // 🛒 REMOVE CART ITEMS
+      // =======================
 
-await this.cartItemRepo.deleteByVariantId(variant.id);
+      await this.cartItemRepo.deleteByVariantId(variant.id);
 
       // 🔥 DEFAULT VARIANT CHECK
       if (product.defaultVariantId === variant.id) {

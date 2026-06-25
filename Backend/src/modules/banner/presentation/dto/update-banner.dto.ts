@@ -1,8 +1,4 @@
-import {
-  IsEnum,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 
 import { BannerType } from '../../domain/enums/banner-type.enum';
 

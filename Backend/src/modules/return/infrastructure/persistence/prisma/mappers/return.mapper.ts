@@ -17,9 +17,7 @@ export class ReturnMapper {
   // 🧾 TO DOMAIN
   // =======================
 
-  static toDomain(
-    p: PrismaReturn,
-  ): Return {
+  static toDomain(p: PrismaReturn): Return {
     return new Return(
       p.id,
 
@@ -51,8 +49,7 @@ export class ReturnMapper {
 
       p.completedAt ?? undefined,
 
-      (p.metadata as Record<string, any>) ??
-        {},
+      (p.metadata as Record<string, any>) ?? {},
 
       p.createdAt,
 
@@ -64,9 +61,7 @@ export class ReturnMapper {
   // 💾 TO PERSISTENCE
   // =======================
 
-  static toPersistence(
-    e: Return,
-  ) {
+  static toPersistence(e: Return) {
     return {
       id: e.id,
 
@@ -74,51 +69,35 @@ export class ReturnMapper {
 
       userId: e.userId,
 
-      type:
-        e.type as PrismaReturnType,
+      type: e.type as PrismaReturnType,
 
-      reason:
-        e.reason as PrismaReturnReason,
+      reason: e.reason as PrismaReturnReason,
 
-      status:
-        e.status as PrismaReturnStatus,
+      status: e.status as PrismaReturnStatus,
 
-      description:
-        e.description ?? null,
+      description: e.description ?? null,
 
-      adminRemark:
-        e.adminRemark ?? null,
+      adminRemark: e.adminRemark ?? null,
 
-      rejectionReason:
-        e.rejectionReason ?? null,
+      rejectionReason: e.rejectionReason ?? null,
 
-      pickupTrackingId:
-        e.pickupTrackingId ?? null,
+      pickupTrackingId: e.pickupTrackingId ?? null,
 
-      replacementOrderId:
-        e.replacementOrderId ?? null,
+      replacementOrderId: e.replacementOrderId ?? null,
 
-      approvedAt:
-        e.approvedAt ?? null,
+      approvedAt: e.approvedAt ?? null,
 
-      rejectedAt:
-        e.rejectedAt ?? null,
+      rejectedAt: e.rejectedAt ?? null,
 
-      pickedUpAt:
-        e.pickedUpAt ?? null,
+      pickedUpAt: e.pickedUpAt ?? null,
 
-      completedAt:
-        e.completedAt ?? null,
+      completedAt: e.completedAt ?? null,
 
-      metadata:
-        (e.metadata as Prisma.InputJsonValue) ??
-        Prisma.JsonNull,
+      metadata: (e.metadata as Prisma.InputJsonValue) ?? Prisma.JsonNull,
 
-      createdAt:
-        e.createdAt,
+      createdAt: e.createdAt,
 
-      updatedAt:
-        e.updatedAt,
+      updatedAt: e.updatedAt,
     };
   }
 }

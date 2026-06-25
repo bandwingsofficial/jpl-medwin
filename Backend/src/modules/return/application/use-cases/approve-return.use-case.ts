@@ -12,16 +12,16 @@ import { ReturnDomainService } from '../../domain/services/return-domain.service
 
 @Injectable()
 export class ApproveReturnUseCase {
-constructor(
-  @Inject(TOKENS.RETURN_REPO)
-  private readonly returnRepo: ReturnRepository,
+  constructor(
+    @Inject(TOKENS.RETURN_REPO)
+    private readonly returnRepo: ReturnRepository,
 
-  @Inject(TOKENS.ORDER_REPO)
-  private readonly orderRepo: OrderRepository,
+    @Inject(TOKENS.ORDER_REPO)
+    private readonly orderRepo: OrderRepository,
 
-  private readonly domainService: ReturnDomainService,
+    private readonly domainService: ReturnDomainService,
 
-  private readonly orderResponseBuilder: OrderResponseBuilderService,
+    private readonly orderResponseBuilder: OrderResponseBuilderService,
   ) {}
 
   async execute(input: {
@@ -57,15 +57,13 @@ constructor(
     // LOAD THE ORDER DETAILS
     // =======================
 
-    const order = await this.orderRepo.findById(
-  returnRequest.orderId,
-);
+    const order = await this.orderRepo.findById(returnRequest.orderId);
 
-if (!order) {
-  throw new OrderNotFoundException({
-    orderId: returnRequest.orderId,
-  });
-}
+    if (!order) {
+      throw new OrderNotFoundException({
+        orderId: returnRequest.orderId,
+      });
+    }
 
     // =======================
     // ✅ APPROVE
@@ -83,27 +81,24 @@ if (!order) {
     // 🚀 RESPONSE
     // =======================
 
-return {
-  returnRequest: {
-    id: updated.id,
+    return {
+      returnRequest: {
+        id: updated.id,
 
-    status: updated.status,
+        status: updated.status,
 
-    type: updated.type,
+        type: updated.type,
 
-    reason: updated.reason,
+        reason: updated.reason,
 
-    description: updated.description,
+        description: updated.description,
 
-    adminRemark: updated.adminRemark,
+        adminRemark: updated.adminRemark,
 
-    approvedAt: updated.approvedAt,
-  },
+        approvedAt: updated.approvedAt,
+      },
 
-  order:
-    this.orderResponseBuilder.buildReplacementOrder(
-      order,
-    ),
-};
+      order: this.orderResponseBuilder.buildReplacementOrder(order),
+    };
   }
 }

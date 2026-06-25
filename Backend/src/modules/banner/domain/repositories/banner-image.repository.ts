@@ -5,70 +5,43 @@ export interface BannerImageRepository {
   // 🔍 FIND
   // =======================
 
-  findById(
-    id: string,
-  ): Promise<BannerImage | null>;
+  findById(id: string): Promise<BannerImage | null>;
 
-  findByBannerId(
-    bannerId: string,
-  ): Promise<BannerImage[]>;
+  findByBannerId(bannerId: string): Promise<BannerImage[]>;
 
-  findByProductId(
-    productId: string,
-  ): Promise<BannerImage[]>;
+  findByProductId(productId: string): Promise<BannerImage[]>;
 
   // =======================
   // ♻️ FIND INCLUDING DELETED
   // =======================
 
-  findByIdIncludingDeleted(
-    id: string,
-  ): Promise<BannerImage | null>;
+  findByIdIncludingDeleted(id: string): Promise<BannerImage | null>;
 
   // =======================
   // ✍️ WRITE
   // =======================
 
-  create(
-    image: BannerImage,
-  ): Promise<BannerImage>;
+  create(image: BannerImage): Promise<BannerImage>;
 
-  createMany(
-    images: BannerImage[],
-  ): Promise<void>;
+  createMany(images: BannerImage[]): Promise<void>;
 
-  update(
-    image: BannerImage,
-  ): Promise<BannerImage>;
+  update(image: BannerImage): Promise<BannerImage>;
 
-  updateSortOrder(
-    params: {
-      id: string;
-      sortOrder: number;
-    },
-  ): Promise<void>;
+  updateSortOrder(params: { id: string; sortOrder: number }): Promise<void>;
 
   // =======================
   // ❌ DELETE
   // =======================
 
-  softDelete(
-    id: string,
-  ): Promise<void>;
+  softDelete(id: string): Promise<void>;
 
-  restore(
-    id: string,
-  ): Promise<void>;
+  restore(id: string): Promise<void>;
 
-  deleteByBannerId(
-    bannerId: string,
-  ): Promise<void>;
+  deleteByBannerId(bannerId: string): Promise<void>;
 
   // =======================
-// ♻️ FIND INCLUDING DELETED
-// =======================
+  // ♻️ FIND INCLUDING DELETED
+  // =======================
 
-findByBannerIdIncludingDeleted(
-  bannerId: string,
-): Promise<BannerImage[]>;
+  findByBannerIdIncludingDeleted(bannerId: string): Promise<BannerImage[]>;
 }

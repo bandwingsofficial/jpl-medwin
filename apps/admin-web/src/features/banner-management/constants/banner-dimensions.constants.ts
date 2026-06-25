@@ -10,7 +10,7 @@ export const BANNER_DIMENSIONS = {
   HOME_BANNER: {
     width: 1920,
     height: 700,
-    tolerance: 100,
+    tolerance: 300,
   },
 
   CATEGORY_BANNER_HORIZONTAL: {

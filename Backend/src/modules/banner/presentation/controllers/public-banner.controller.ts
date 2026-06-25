@@ -1,8 +1,4 @@
-import {
-  Controller,
-  Get,
-  Param,
-} from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 
 import { GetBannerUseCase } from '../../application/use-cases/get-banner.use-case';
 import { ListBannersUseCase } from '../../application/use-cases/list-banners.use-case';
@@ -35,9 +31,7 @@ export class PublicBannerController {
     @Param('bannerId')
     bannerId: string,
   ) {
-    return this.getBannerUseCase.execute(
-      bannerId,
-    );
+    return this.getBannerUseCase.execute(bannerId);
   }
 
   // =======================
@@ -54,4 +48,3 @@ export class PublicBannerController {
     });
   }
 }
-

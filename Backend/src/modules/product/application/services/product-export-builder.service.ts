@@ -4,10 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
-import {
-  FullProduct,
-  ProductRepository,
-} from '../../domain/repositories/product.repository';
+import { FullProduct, ProductRepository } from '../../domain/repositories/product.repository';
 
 @Injectable()
 export class ProductExportBuilderService {

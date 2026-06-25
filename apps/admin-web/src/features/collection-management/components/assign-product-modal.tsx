@@ -35,8 +35,8 @@ export function AssignProductModal({
   collectionId,
   onClose,
 }: Props) {
-  const [selectedProductId, setSelectedProductId] =
-    useState("");
+  const [selectedProductIds, setSelectedProductIds] =
+    useState<string[]>([]);
 
   const {
     data: products = [],
@@ -59,29 +59,41 @@ export function AssignProductModal({
     );
   }, [products]);
 
+  const handleToggleProduct = (id: string) => {
+    setSelectedProductIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((item) => item !== id)
+        : [...prev, id]
+    );
+  };
+
   async function handleAssign() {
-    if (!selectedProductId) {
+    if (selectedProductIds.length === 0) {
       showError(
-        "Please select a product"
+        "Please select at least one product"
       );
 
       return;
     }
 
     try {
-      await assignMutation.mutateAsync({
-        collectionId,
-        payload: {
-          productId:
-            selectedProductId,
-        },
-      });
-
-      showSuccess(
-        "Product assigned successfully"
+      // Fires individual single-product requests in parallel to match your API type definition
+      await Promise.all(
+        selectedProductIds.map((id) =>
+          assignMutation.mutateAsync({
+            collectionId,
+            payload: {
+              productId: id, // Kept as productId to satisfy the backend & TS types
+            },
+          })
+        )
       );
 
-      setSelectedProductId("");
+      showSuccess(
+        "Products assigned successfully"
+      );
+
+      setSelectedProductIds([]);
 
       onClose();
 
@@ -89,7 +101,7 @@ export function AssignProductModal({
       const message =
         error?.response?.data?.message ||
         error?.message ||
-        "Failed to assign product";
+        "Failed to assign products";
 
       showError(message);
     }
@@ -133,7 +145,7 @@ export function AssignProductModal({
               text-gray-900
             "
           >
-            Assign Product
+            Assign Products
           </DialogTitle>
 
           <p
@@ -143,7 +155,7 @@ export function AssignProductModal({
               text-gray-500
             "
           >
-            Select a product and assign it
+            Select one or more products and assign them
             to this collection.
           </p>
         </DialogHeader>
@@ -160,63 +172,70 @@ export function AssignProductModal({
               mb-2
             "
           >
-            Product
+            Products ({selectedProductIds.length} selected)
           </label>
 
-          <select
-            value={selectedProductId}
-            onChange={(e) =>
-              setSelectedProductId(
-                e.target.value
-              )
-            }
-            disabled={isLoading}
-            className="
-              w-full
-              h-12
-              rounded-xl
-              border
-              border-gray-300
-              bg-white
-              px-4
-              text-sm
-              text-gray-900
-              outline-none
-              focus:ring-2
-              focus:ring-teal-500
-              focus:border-teal-500
-            "
-          >
-            <option value="">
-              {isLoading
-                ? "Loading products..."
-                : "Select Product"}
-            </option>
-
-            {options.map(
-              (option) => (
-                <option
-                  key={option.id}
-                  value={option.id}
-                >
-                  {option.name}
-                </option>
-              )
-            )}
-          </select>
-
-          {!isLoading &&
-            options.length === 0 && (
-              <p
-                className="
-                  mt-2
-                  text-sm
-                  text-red-500
-                "
-              >
-                No products available.
-              </p>
-            )}
+          {isLoading ? (
+            <div className="flex h-40 items-center justify-center border border-gray-200 rounded-xl text-sm text-gray-500 bg-gray-50">
+              Loading products...
+            </div>
+          ) : options.length === 0 ? (
+            <div className="flex h-40 items-center justify-center border border-gray-200 rounded-xl text-sm text-red-500 bg-gray-50">
+              No products available.
+            </div>
+          ) : (
+            <div 
+              className="
+                w-full
+                max-h-60
+                overflow-y-auto
+                rounded-xl
+                border
+                border-gray-300
+                bg-white
+                divide-y
+                divide-gray-100
+              "
+            >
+              {options.map((option) => {
+                const isChecked = selectedProductIds.includes(option.id);
+                return (
+                  <label
+                    key={option.id}
+                    className="
+                      flex
+                      items-center
+                      gap-3
+                      px-4
+                      py-3
+                      text-sm
+                      text-gray-900
+                      cursor-pointer
+                      hover:bg-slate-50
+                      transition-colors
+                    "
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => handleToggleProduct(option.id)}
+                      className="
+                        h-4
+                        w-4
+                        rounded
+                        border-gray-300
+                        text-teal-600
+                        focus:ring-teal-500
+                      "
+                    />
+                    <span className="font-medium select-none">
+                      {option.name}
+                    </span>
+                  </label>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* FOOTER */}
@@ -250,7 +269,7 @@ export function AssignProductModal({
               min-w-[150px]
             "
           >
-            Assign Product
+            Assign Products
           </Button>
         </div>
       </DialogContent>
