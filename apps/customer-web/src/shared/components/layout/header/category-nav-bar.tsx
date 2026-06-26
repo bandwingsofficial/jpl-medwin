@@ -305,7 +305,7 @@ export function CategoryNavBar() {
               <ShinyNavLink href="tel:+919876152430">
                 <span className="flex items-center gap-2">
                   <Phone size={16} />
-                  +91 9876152430
+                  +91 98761 52430
                 </span>
               </ShinyNavLink>
             </div>

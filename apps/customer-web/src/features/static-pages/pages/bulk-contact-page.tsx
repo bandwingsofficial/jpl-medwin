@@ -301,9 +301,17 @@ export function BulkContactPage() {
             <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: 580, fontWeight: 300, marginBottom: 28 }}>
               <span style={{ color: "#2DD4BF", fontWeight: 500 }}>JPL Medwin</span> provides enterprise-grade bulk procurement for dental clinics, hospitals, labs, and institutional buyers with equipment-safe logistics and dedicated pricing tiers.
             </p>
-            <button className="bk-quote-btn">
-              Request a Quote <ArrowUpRight size={14} />
-            </button>
+            <button
+  className="bk-quote-btn"
+  onClick={() => {
+    const phone = "917289999456"; // Your WhatsApp number (country code, no +)
+    const message =
+  "Hello JPL Markwin,%0A%0AI would like to place a bulk order for your products. Could you please guide me through the process?";
+    window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
+  }}
+>
+  Request a Quote <ArrowUpRight size={14} />
+</button>
           </div>
         </div>
 
@@ -376,15 +384,56 @@ export function BulkContactPage() {
             <div className="bk-contact-icon"><Phone size={20} /></div>
             <div style={{ position: "relative", zIndex: 1 }}>
               <p style={{ fontSize: 10, color: "#94A3B8", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 5 }}>Bulk Sales Helpline</p>
-              <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: "#0F172A", lineHeight: 1 }}>+91 728 9999 456</p>
-            </div>
+             <a
+  href="tel:+917289999456"
+  style={{
+    fontFamily: "'Outfit', sans-serif",
+    fontSize: 18,
+    fontWeight: 600,
+    color: "#0F172A",
+    lineHeight: 1,
+    textDecoration: "none",
+    cursor: "pointer",
+    transition: "color 0.2s ease",
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.color = "#0D9488";
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.color = "#0F172A";
+  }}
+>
+  +91 72899 99456
+</a>
+  </div>
           </div>
           <div className="bk-contact-card">
             <div className="bk-contact-icon"><Mail size={20} /></div>
             <div style={{ position: "relative", zIndex: 1 }}>
               <p style={{ fontSize: 10, color: "#94A3B8", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 5 }}>Enterprise Email</p>
-              <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "#0D9488", lineHeight: 1 }}>connect@jplmedwin.com</p>
-            </div>
+              <a
+  href="mailto:connect@jplmedwin.com"
+  style={{
+    fontFamily: "'Outfit', sans-serif",
+    fontSize: 20,
+    fontWeight: 700,
+    color: "#0F172A",
+    marginBottom: 4,
+    textDecoration: "none",
+    display: "inline-block",
+    transition: "color 0.2s ease",
+    cursor: "pointer",
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.color = "#0D9488";
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.color = "#0F172A";
+  }}
+>
+  connect@jplmedwin.com
+</a>
+</div>
           </div>
         </div>
 

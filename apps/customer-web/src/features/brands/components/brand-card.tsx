@@ -31,19 +31,18 @@ export function BrandCard({ brand }: Props) {
         justify-center
         gap-3
         h-[140px]
+        rounded-xl
         hover:shadow-lg
         transition-all
         duration-300
         hover:-translate-y-1
       "
     >
-      {/* Top-Left Corner Borders (Matching Brand Deep Teal) */}
-      <span className="absolute top-0 left-0 right-0 border-t-2 border-[#00828a] scale-x-0 origin-top-left transition-transform duration-300 group-hover:scale-x-100 z-10 pointer-events-none rounded-t-lg" />
-      <span className="absolute top-0 bottom-0 left-0 border-l-2 border-[#00828a] scale-y-0 origin-top-left transition-transform duration-300 group-hover:scale-y-100 z-10 pointer-events-none rounded-l-lg" />
+      {/* Top-Left Rounded L-Shape Hover Effect */}
+      <span className="absolute top-0 left-0 border-t-[3px] border-l-[3px] border-[#00828a] w-0 h-0 rounded-tl-xl transition-all duration-300 group-hover:w-7 group-hover:h-7 z-10 pointer-events-none" />
 
-      {/* Bottom-Right Corner Borders (Matching Brand Deep Teal) */}
-      <span className="absolute bottom-0 left-0 right-0 border-b-2 border-[#00828a] scale-x-0 origin-bottom-right transition-transform duration-300 group-hover:scale-x-100 z-10 pointer-events-none rounded-b-lg" />
-      <span className="absolute top-0 bottom-0 right-0 border-r-2 border-[#00828a] scale-y-0 origin-bottom-right transition-transform duration-300 group-hover:scale-y-100 z-10 pointer-events-none rounded-r-lg" />
+      {/* Bottom-Right Rounded L-Shape Hover Effect */}
+      <span className="absolute bottom-0 right-0 border-b-[3px] border-r-[3px] border-[#00828a] w-0 h-0 rounded-br-xl transition-all duration-300 group-hover:w-7 group-hover:h-7 z-10 pointer-events-none" />
 
       {/* LOGO */}
       <div className="relative w-full h-[70px] overflow-hidden">

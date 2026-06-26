@@ -133,14 +133,20 @@ export function PromotionalBanner({
             banner.imageUrl
           }
           alt="Promotional Banner"
-          /* Fixed layout issue: Passed explicit sizes and removed absolute fill layout constraints */
           width={1200}
           height={300}
           priority
+          quality={95}
+          unoptimized={
+            typeof banner.imageUrl === "string" &&
+            (banner.imageUrl.endsWith(".jfif") ||
+              banner.imageUrl.endsWith(".webp"))
+          }
           className="
             w-full
             h-auto
-            object-normal
+            object-cover
+            object-center
             transition-transform
             duration-300
             hover:scale-[1.02]
@@ -149,6 +155,10 @@ export function PromotionalBanner({
             (max-width: 1200px) 100vw,
             1200px
           "
+          style={{
+            filter: "contrast(1.04) saturate(1.05)",
+            imageRendering: "-webkit-optimize-contrast" as any,
+          }}
         />
       </button>
     </section>

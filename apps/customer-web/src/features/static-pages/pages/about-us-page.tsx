@@ -150,7 +150,7 @@ export function AboutUsPage() {
     <div style={{ fontFamily: "'DM Sans', sans-serif", color: "#0F172A", background: "#FFFFFF", width: "100%", overflowX: "hidden" }}>
       <style dangerouslySetInnerHTML={{
         __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500;600&display=swap');
+      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap');
 
         /* ── Reset ── */
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -190,13 +190,12 @@ export function AboutUsPage() {
         .stat-item:hover::after { transform: translateX(-50%) scaleX(1); }
         .stat-item:hover { transform: translateY(-3px); }
         .stat-value {
-          font-family: 'Playfair Display', serif;
-          font-size: clamp(36px, 4vw, 52px);
-          font-weight: 700;
-          color: #0F172A;
-          line-height: 1;
-          letter-spacing: -0.02em;
-        }
+  font-family: 'Outfit';
+  font-size: clamp(40px, 4vw, 56px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
         .stat-accent { color: #0D9488; }
 
         /* ── Who We Are ── */

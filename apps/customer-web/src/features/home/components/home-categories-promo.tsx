@@ -62,6 +62,7 @@ export function HomeCategoriespromo() {
    |--------------------------------------------------------------------------
    | HANDLER FOR SLUG-BASED ROUTING
    |--------------------------------------------------------------------------
+   |
    */
   const handleBannerClick = (image: any) => {
     if (!image) return;
@@ -125,7 +126,7 @@ export function HomeCategoriespromo() {
 
       {/* MOBILE */}
 
-      <div className="flex flex-col gap-3 sm:hidden">
+      <div className="flex flex-col gap-4 sm:hidden">
         {image1 && (
           <button
             type="button"
@@ -134,68 +135,97 @@ export function HomeCategoriespromo() {
               relative
               block
               w-full
-              aspect-[21/11]
+              aspect-[1200/630]
               overflow-hidden
               rounded-[16px]
-              bg-slate-100
-              shadow-sm
               text-left
             "
           >
             <Image
-              src={
-                image1.imageUrl
-              }
+              src={image1.imageUrl}
               alt="Category Banner"
               fill
               priority
-              className="
-                object-cover
-                object-center
-              "
+              className="object-cover object-center"
               sizes="100vw"
             />
           </button>
         )}
 
-        <div className="grid grid-cols-2 gap-3">
-          {[image2, image3, image4, image5]
-            .filter(Boolean)
-            .map(
-              (image) => (
-                <button
-                  type="button"
-                  onClick={() => handleBannerClick(image)}
-                  key={
-                    image!.id
-                  }
-                  className="
-                    relative
-                    block
-                    aspect-square
-                    overflow-hidden
-                    rounded-[16px]
-                    bg-slate-100
-                    shadow-sm
-                    text-left
-                  "
-                >
-                  <Image
-                    src={
-                      image!
-                        .imageUrl
-                    }
-                    alt="Category Banner"
-                    fill
-                    className="
-                      object-cover
-                      object-center
-                    "
-                    sizes="50vw"
-                  />
-                </button>
-              )
-            )}
+        {image2 && (
+          <button
+            type="button"
+            onClick={() => handleBannerClick(image2)}
+            className="
+              relative
+              block
+              w-full
+              aspect-[1200/630]
+              overflow-hidden
+              rounded-[16px]
+              text-left
+            "
+          >
+            <Image
+              src={image2.imageUrl}
+              alt="Category Banner"
+              fill
+              className="object-cover object-center"
+              sizes="100vw"
+            />
+          </button>
+        )}
+
+        {/* 900x1400 Portrait Image Layout */}
+        {image3 && (
+          <button
+            type="button"
+            onClick={() => handleBannerClick(image3)}
+            className="
+              relative
+              block
+              w-full
+              aspect-[900/1400]
+              overflow-hidden
+              rounded-[16px]
+              text-left
+            "
+          >
+            <Image
+              src={image3.imageUrl}
+              alt="Category Banner"
+              fill
+              className="object-cover object-center"
+              sizes="100vw"
+            />
+          </button>
+        )}
+
+        <div className="grid grid-cols-2 gap-4">
+          {[image4, image5].filter(Boolean).map((image) => (
+            <button
+              type="button"
+              onClick={() => handleBannerClick(image)}
+              key={image!.id}
+              className="
+                relative
+                block
+                w-full
+                aspect-[1200/630]
+                overflow-hidden
+                rounded-[16px]
+                text-left
+              "
+            >
+              <Image
+                src={image!.imageUrl}
+                alt="Category Banner"
+                fill
+                className="object-cover object-center"
+                sizes="50vw"
+              />
+            </button>
+          ))}
         </div>
       </div>
 

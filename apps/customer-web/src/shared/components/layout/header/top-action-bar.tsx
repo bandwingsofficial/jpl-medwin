@@ -121,10 +121,10 @@ const wishlistCount =
 
   const actionItems: ActionItem[] = [
     {
-      imageSrc: "/Logo/coin.mp4",
-      label: "Coins",
-      href: "/account/coins",
-    },
+  imageSrc: "/Logo/coin1.png",
+  label: "Coins",
+  href: "/account/coins",
+},
     {
       icon: Heart,
       label: "Wishlist",
@@ -307,18 +307,15 @@ const wishlistCount =
                     >
                       <div className="flex items-center gap-3">
                         <div className="relative flex items-center justify-center h-5 w-5">
-                          {imageSrc?.endsWith(".mp4") ? (
-                            <video
-                              src={imageSrc}
-                              autoPlay
-                              loop
-                              muted
-                              playsInline
-                              className="h-5 w-5 object-contain"
-                            />
-                          ) : imageSrc ? (
-                            <Image src={imageSrc} alt={label} width={24} height={24} className="object-contain h-5 w-5" />
-                          ) : (
+                          {imageSrc ? (
+  <Image
+    src={imageSrc}
+    alt={label}
+    width={32}
+    height={32}
+    className="h-full w-full object-contain animate-[spin_4s_linear_infinite]"
+  />
+) : (
                             <Icon className={`h-5 w-5 transition-all duration-300 ${iconClassName || "text-slate-700"}`} />
                           )}
 
@@ -402,7 +399,13 @@ const wishlistCount =
                     {imageSrc?.endsWith(".mp4") ? (
                       <video src={imageSrc} autoPlay loop muted playsInline className="h-8 w-8 object-contain" />
                     ) : imageSrc ? (
-                      <Image src={imageSrc} alt={label} width={24} height={24} className="object-contain h-full w-full" />
+                     <Image
+  src={imageSrc}
+  alt={label}
+  width={22}
+  height={22}
+  className="h-6 w-6 object-contain"
+/>
                     ) : (
                       <Icon className={`h-5 w-5 transition-all duration-300 ${iconClassName || "text-slate-700"}`} />
                     )}

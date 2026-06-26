@@ -213,7 +213,7 @@ export const collectionApi = {
     );
   },
 
-  // ===================================
+  /// ===================================
   // REMOVE PRODUCT
   // ===================================
   async removeProduct(
@@ -221,10 +221,11 @@ export const collectionApi = {
     productId: string
   ): Promise<boolean> {
     const response =
-      await apiClient.delete<CollectionDeleteResponse>(
+      await apiClient.delete<any>(
         `${BASE_URL}/${collectionId}/products/${productId}`
       );
 
-    return response.data.data.success;
+    // Using optional chaining ensures it never throws an unhandled undefined error
+    return !!(response.data?.data?.success || response.data?.success || response.data);
   },
 };

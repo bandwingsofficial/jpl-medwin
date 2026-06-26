@@ -16,7 +16,13 @@ import {
 } from "@/features/products/types/product.type";
 
 import { useAddToCart } from "@/features/cart/hooks/use-add-to-cart";
-import { useAuth } from "@/features/auth/hooks/use-auth";
+import { useAuth } from "@/features/auth/hooks/use-auth";import { useAuthGuard } from "@/features/auth/hooks/use-auth-guard";
+
+import { useWishlist } from "@/features/wishlist/hooks/use-wishlist";
+
+import { useAddToWishlist } from "@/features/wishlist/hooks/use-add-to-wishlist";
+
+import { useRemoveFromWishlist } from "@/features/wishlist/hooks/use-remove-from-wishlist";
 import { useCart } from "@/features/cart/hooks/use-cart";
 
 import { cartApi } from "@/features/cart/api/cart.api";
@@ -63,6 +69,37 @@ export function ProductActions({
     isAuthenticated,
     isLoading: isAuthLoading,
   } = useAuth();
+  const { requireAuth } =
+  useAuthGuard();
+
+const {
+  wishlistIds,
+} = useWishlist();
+
+const {
+  mutateAsync:
+    addToWishlist,
+  isPending:
+    isAddingWishlist,
+} =
+  useAddToWishlist();
+
+const {
+  mutateAsync:
+    removeFromWishlist,
+  isPending:
+    isRemovingWishlist,
+} =
+  useRemoveFromWishlist();
+
+const isWishlisted =
+  wishlistIds?.has(
+    product.id
+  ) ?? false;
+
+const isWishlistLoading =
+  isAddingWishlist ||
+  isRemovingWishlist;
 
   /*
    |--------------------------------------------------------------------------
@@ -297,8 +334,35 @@ export function ProductActions({
    |--------------------------------------------------------------------------
    */
 
-  const handleWishlist = () => {
+ const handleWishlist =
+  async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
 
+    e.stopPropagation();
+
+    if (!requireAuth()) {
+      return;
+    }
+
+    try {
+      if (
+        isWishlisted
+      ) {
+        await removeFromWishlist(
+          product.id
+        );
+
+        return;
+      }
+
+      await addToWishlist(
+        product.id
+      );
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -464,31 +528,46 @@ export function ProductActions({
         {/* WISHLIST */}
         {/* ====================================================== */}
 
-        <button
-          type="button"
-          onClick={
-            handleWishlist
-          }
-          className="
-            flex
-            h-12
-            w-12
-            items-center
-            justify-center
-            rounded-xl
-            border
-            border-gray-300
-            bg-white
-            transition-all
-            duration-200
-            hover:bg-gray-50
-          "
-        >
-          <Heart
-            size={20}
-            className="text-gray-700"
-          />
-        </button>
+       <button
+  type="button"
+  onClick={
+    handleWishlist
+  }
+  disabled={
+    isWishlistLoading
+  }
+  className="
+    flex
+    h-12
+    w-12
+    items-center
+    justify-center
+    rounded-xl
+    border
+    border-gray-300
+    bg-white
+    transition-all
+    duration-200
+    hover:bg-gray-50
+    disabled:opacity-50
+  "
+>
+  {isWishlistLoading ? (
+    <Loader2
+      size={20}
+      className="animate-spin"
+    />
+  ) : (
+    <Heart
+      size={20}
+      className={
+        isWishlisted
+          ? "fill-red-500 text-red-500"
+          : "text-gray-700"
+      }
+    />
+  )}
+</button>
       </div>
 
       {/* ====================================================== */}

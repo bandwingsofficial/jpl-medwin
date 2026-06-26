@@ -7,11 +7,14 @@ import {
   User,
   Package,
   Loader2,
+  MapPin,
 } from "lucide-react";
 import { toast } from "sonner";
 import { customerApi } from "@/features/customer-management/api/customer.api";
+import { orderApi } from "../api/order.api";
 import { useEffect, useState } from "react";
 import { ReturnRequest } from "../types/return.type";
+import { Order } from "../types/order.type";
 
 import { ReturnStatusBadge } from "./return-status-badge";
 
@@ -52,26 +55,40 @@ export default function ReturnDetailsDrawer({
   const completeMutation =
     useCompleteReturn();
   const [customer, setCustomer] =
-  useState<any>(null);
+    useState<any>(null);
+  const [order, setOrder] = 
+    useState<Order | null>(null);
+
   useEffect(() => {
-  if (!returnData?.userId) return;
+    if (!returnData?.userId) return;
 
-  customerApi
-    .getById(returnData.userId)
-    .then((res) => {
-      const customerData =
-        res?.data ?? res;
+    customerApi
+      .getById(returnData.userId)
+      .then((res) => {
+        const customerData =
+          res?.data ?? res;
 
-      setCustomer(customerData);
-    })
-    .catch(console.error);
-}, [returnData?.userId]);
+        setCustomer(customerData);
+      })
+      .catch(console.error);
+  }, [returnData?.userId]);
+
+  useEffect(() => {
+    if (!returnData?.orderId) return;
+
+    orderApi
+      .getOrderDetails(returnData.orderId)
+      .then((res) => {
+        setOrder(res);
+      })
+      .catch(console.error);
+  }, [returnData?.orderId]);
 
   /*
   |--------------------------------------------------------------------------
   | CLOSED
   |--------------------------------------------------------------------------
-  */
+  |*/
 
   if (!open) {
     return null;
@@ -81,7 +98,7 @@ export default function ReturnDetailsDrawer({
   |--------------------------------------------------------------------------
   | LOADING
   |--------------------------------------------------------------------------
-  */
+  |*/
 
   if (loading) {
     return (
@@ -98,9 +115,9 @@ export default function ReturnDetailsDrawer({
             bg-black/40
           "
           onClick={() => {
-  toast.info("Closing return details");
-  onClose();
-}}
+            toast.info("Closing return details");
+            onClose();
+          }}
         />
 
         <div
@@ -132,7 +149,7 @@ export default function ReturnDetailsDrawer({
   |--------------------------------------------------------------------------
   | NO DATA
   |--------------------------------------------------------------------------
-  */
+  |*/
 
   if (!returnData) {
     return null;
@@ -161,9 +178,9 @@ export default function ReturnDetailsDrawer({
           backdrop-blur-[2px]
         "
         onClick={() => {
-  toast.info("Closing return details");
-  onClose();
-}}
+          toast.info("Closing return details");
+          onClose();
+        }}
       />
 
       {/* DRAWER */}
@@ -339,26 +356,104 @@ export default function ReturnDetailsDrawer({
                 </div>
 
                 <div>
-  <p className="text-gray-500">
-    Customer Name
-  </p>
+                  <p className="text-gray-500">
+                    Customer Name
+                  </p>
 
-  <p className="font-medium">
-    {customer?.profile?.name || "-"}
-  </p>
-</div>
+                  <p className="font-medium">
+                    {customer?.profile?.name || "-"}
+                  </p>
+                </div>
 
-<div>
-  <p className="text-gray-500">
-    Phone Number
-  </p>
+                <div>
+                  <p className="text-gray-500">
+                    Phone Number
+                  </p>
 
-  <p className="font-medium">
-    {customer?.profile?.phoneNumber || "-"}
-  </p>
-</div>
+                  <p className="font-medium">
+                    {customer?.profile?.phoneNumber || "-"}
+                  </p>
+                </div>
               </div>
             </div>
+
+            {/* SHIPPING ADDRESS */}
+
+            {order && order.shippingAddress && (
+              <div className="rounded-xl border bg-white p-4 shadow-sm">
+                <div className="mb-3 flex items-center gap-2">
+                  <MapPin
+                    size={16}
+                    className="text-red-500"
+                  />
+
+                  <h3 className="text-sm font-semibold text-gray-900">
+                    Shipping Address
+                  </h3>
+                </div>
+
+                <div className="space-y-1 text-sm text-gray-700">
+                  <p className="font-semibold text-gray-900">
+                    {order.shippingAddress.name}
+                  </p>
+
+                  {order.shippingAddress.phone && (
+                    <p className="text-gray-600">
+                      {order.shippingAddress.phone}
+                    </p>
+                  )}
+
+                  <p>{order.shippingAddress.line1}</p>
+
+                  <p>
+                    {order.shippingAddress.city}, {order.shippingAddress.state}
+                  </p>
+
+                  <p>{order.shippingAddress.postalCode}</p>
+
+                  <p>{order.shippingAddress.country}</p>
+                </div>
+              </div>
+            )}
+
+            {/* BILLING ADDRESS */}
+
+            {order && order.billingAddress && (
+              <div className="rounded-xl border bg-white p-4 shadow-sm">
+                <div className="mb-3 flex items-center gap-2">
+                  <MapPin
+                    size={16}
+                    className="text-indigo-600"
+                  />
+
+                  <h3 className="text-sm font-semibold text-gray-900">
+                    Billing Address
+                  </h3>
+                </div>
+
+                <div className="space-y-1 text-sm text-gray-700">
+                  <p className="font-semibold text-gray-900">
+                    {order.billingAddress.name}
+                  </p>
+
+                  {order.billingAddress.phone && (
+                    <p className="text-gray-600">
+                      {order.billingAddress.phone}
+                    </p>
+                  )}
+
+                  <p>{order.billingAddress.line1}</p>
+
+                  <p>
+                    {order.billingAddress.city}, {order.billingAddress.state}
+                  </p>
+
+                  <p>{order.billingAddress.postalCode}</p>
+
+                  <p>{order.billingAddress.country}</p>
+                </div>
+              </div>
+            )}
 
             {/* TIMELINE */}
 
@@ -442,30 +537,30 @@ export default function ReturnDetailsDrawer({
                 loading={
                   actionLoading
                 }
-               onApprove={() => {
-  toast.info("Approving return...");
-  approveMutation.mutate(
-    returnData.id
-  );
-}}
+                onApprove={() => {
+                  toast.info("Approving return...");
+                  approveMutation.mutate(
+                    returnData.id
+                  );
+                }}
                 onReject={() => {
-  toast.info("Rejecting return...");
-  rejectMutation.mutate(
-    returnData.id
-  );
-}}
-               onPickup={() => {
-  toast.info("Processing pickup...");
-  pickupMutation.mutate(
-    returnData.id
-  );
-}}
+                  toast.info("Rejecting return...");
+                  rejectMutation.mutate(
+                    returnData.id
+                  );
+                }}
+                onPickup={() => {
+                  toast.info("Processing pickup...");
+                  pickupMutation.mutate(
+                    returnData.id
+                  );
+                }}
                 onComplete={() => {
-  toast.info("Completing return...");
-  completeMutation.mutate(
-    returnData.id
-  );
-}}
+                  toast.info("Completing return...");
+                  completeMutation.mutate(
+                    returnData.id
+                  );
+                }}
               />
             </div>
           </div>

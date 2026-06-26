@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import {
   Dialog,
@@ -13,6 +13,8 @@ import { Button } from "@/shared/components/ui/button";
 
 import {
   useAssignProduct,
+  useCollection,
+  useRemoveProduct,
 } from "@/features/collection-management/hooks/use-collections";
 
 import {
@@ -35,37 +37,102 @@ export function AssignProductModal({
   collectionId,
   onClose,
 }: Props) {
+  // Keeps track of newly selected product IDs only
   const [selectedProductIds, setSelectedProductIds] =
     useState<string[]>([]);
+    
+  // State for immediate input feedback
+  const [searchQuery, setSearchQuery] = useState("");
+  // State for the debounced search keyword used to filter the list
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState("");
 
   const {
     data: products = [],
-    isLoading,
+    isLoading: isProductsLoading,
   } = useProductsForCollection();
 
-  const assignMutation =
-    useAssignProduct();
+  // Fetching the collection details to know which products are already selected
+  const {
+    data: collectionData,
+    isLoading: isCollectionLoading,
+  } = useCollection(collectionId);
+
+  const assignMutation = useAssignProduct();
+  const removeMutation = useRemoveProduct();
+
+  // Combine loading states
+  const isLoading = isProductsLoading || isCollectionLoading;
+
+  // Track the IDs that are already assigned to this collection
+  const assignedProductIds = useMemo(() => {
+    if (!collectionData?.products || !Array.isArray(collectionData.products)) {
+      return new Set<string>();
+    }
+    return new Set<string>(
+      collectionData.products.map((p: any) => p.id || p.productId).filter(Boolean)
+    );
+  }, [collectionData]);
+
+  // 300ms Debounce implementation
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
+
+  // Reset search and selections when modal closes/opens
+  useEffect(() => {
+    if (!open) {
+      setSearchQuery("");
+      setDebouncedSearchQuery("");
+      setSelectedProductIds([]);
+    }
+  }, [open]);
 
   const options = useMemo(() => {
     const productList = Array.isArray(products)
       ? products
       : [];
 
-    return productList.map(
-      (product: any) => ({
+    return productList
+      .map((product: any) => ({
         id: product.id,
         name: product.name,
-      })
-    );
-  }, [products]);
+      }))
+      .filter((product) =>
+        product.name.toLowerCase().includes(debouncedSearchQuery.toLowerCase())
+      );
+  }, [products, debouncedSearchQuery]);
 
-  const handleToggleProduct = (id: string) => {
+  const handleToggleProduct = (id: string, isAlreadyAssigned: boolean) => {
+    if (isAlreadyAssigned) return; // Prevention check
+    
     setSelectedProductIds((prev) =>
       prev.includes(id)
         ? prev.filter((item) => item !== id)
         : [...prev, id]
     );
   };
+
+  async function handleRemoveProduct(productId: string) {
+    try {
+      await removeMutation.mutateAsync({
+        collectionId,
+        productId,
+      });
+      showSuccess("Product removed successfully");
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to remove product";
+      showError(message);
+    }
+  }
 
   async function handleAssign() {
     if (selectedProductIds.length === 0) {
@@ -163,6 +230,30 @@ export function AssignProductModal({
         {/* BODY */}
 
         <div className="px-6 py-6">
+          {/* SEARCH INPUT BAR */}
+          <div className="mb-4">
+            <input
+              type="text"
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="
+                w-full
+                px-3
+                py-2
+                text-sm
+                border
+                border-gray-300
+                rounded-lg
+                focus:outline-none
+                focus:ring-2
+                focus:ring-teal-500
+                focus:border-teal-500
+                placeholder-gray-400
+              "
+            />
+          </div>
+
           <label
             className="
               block
@@ -172,7 +263,7 @@ export function AssignProductModal({
               mb-2
             "
           >
-            Products ({selectedProductIds.length} selected)
+            Products ({selectedProductIds.length} selected to add)
           </label>
 
           {isLoading ? (
@@ -198,40 +289,68 @@ export function AssignProductModal({
               "
             >
               {options.map((option) => {
-                const isChecked = selectedProductIds.includes(option.id);
+                const isAlreadyAssigned = assignedProductIds.has(option.id);
+                const isChecked = isAlreadyAssigned || selectedProductIds.includes(option.id);
+                
                 return (
-                  <label
+                  <div
                     key={option.id}
                     className="
                       flex
                       items-center
+                      justify-between
                       gap-3
                       px-4
                       py-3
-                      text-sm
-                      text-gray-900
-                      cursor-pointer
                       hover:bg-slate-50
                       transition-colors
                     "
                   >
-                    <input
-                      type="checkbox"
-                      checked={isChecked}
-                      onChange={() => handleToggleProduct(option.id)}
-                      className="
-                        h-4
-                        w-4
-                        rounded
-                        border-gray-300
-                        text-teal-600
-                        focus:ring-teal-500
-                      "
-                    />
-                    <span className="font-medium select-none">
-                      {option.name}
-                    </span>
-                  </label>
+                    <label
+                      className={`
+                        flex
+                        items-center
+                        gap-3
+                        text-sm
+                        text-gray-900
+                        flex-1
+                        select-none
+                        ${isAlreadyAssigned ? "cursor-not-allowed opacity-70" : "cursor-pointer"}
+                      `}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        disabled={isAlreadyAssigned}
+                        onChange={() => handleToggleProduct(option.id, isAlreadyAssigned)}
+                        className="
+                          h-4
+                          w-4
+                          rounded
+                          border-gray-300
+                          text-teal-600
+                          focus:ring-teal-500
+                          disabled:bg-gray-200
+                          disabled:text-gray-400
+                          disabled:border-gray-300
+                        "
+                      />
+                      <span className="font-medium">
+                        {option.name}
+                      </span>
+                    </label>
+
+                    {isAlreadyAssigned && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => handleRemoveProduct(option.id)}
+                        className="h-7 px-3 text-xs"
+                      >
+                        Remove
+                      </Button>
+                    )}
+                  </div>
                 );
               })}
             </div>

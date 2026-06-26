@@ -381,13 +381,17 @@ export function Footer() {
               <p>JPL Markwin Private Limited,<br />Bengaluru,<br />India – 110074</p>
             </div>
             <div className="ft-contact-item">
-              <div className="ft-contact-icon"><Phone size={13} /></div>
-              <p>+91-728-9999-456</p>
-            </div>
+  <div className="ft-contact-icon"><Phone size={13} /></div>
+  <a href="tel:+917289999456" className="hover:underline">
+    <p>+91-72899 99456</p>
+  </a>
+</div>
             <div className="ft-contact-item">
-              <div className="ft-contact-icon"><Mail size={13} /></div>
-              <p>connect@jplmedwin.com</p>
-            </div>
+  <div className="ft-contact-icon"><Mail size={13} /></div>
+  <a href="mailto:connect@jplmedwin.com" className="hover:underline">
+    <p>connect@jplmedwin.com</p>
+  </a>
+</div>
             <div className="ft-contact-item">
               <div className="ft-contact-icon"><Clock3 size={13} /></div>
               <p>Mon – Sun, 9:00 AM – 9:00 PM</p>

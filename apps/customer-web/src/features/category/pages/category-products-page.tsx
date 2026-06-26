@@ -312,7 +312,7 @@ export default function CategoryProductsPage({
           ) : (
             <div className="bg-white border border-gray-200 rounded-xl py-20 text-center px-4">
               <p className="text-gray-400 text-sm font-medium">
-                No products found matching your active filter choices.
+               Proucts Coming Soon...
               </p>
             </div>
           )}

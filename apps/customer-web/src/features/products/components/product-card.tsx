@@ -342,7 +342,7 @@ export function ProductCard({
         animation: typing 2.5s steps(12, end) infinite alternate;
       }
     `}</style>
-    <span className="absolute top-[16px] left-[-26px] block w-[100px] -rotate-45 bg-amber-500 py-0.5 text-center text-[8.5px] font-extrabold uppercase tracking-widest text-slate-900 shadow-md">
+    <span className="absolute top-[16px] left-[-26px] block w-[100px] -rotate-45 bg-purple-200 py-0.5 text-center text-[8.5px] font-extrabold uppercase tracking-widest text-purple-900 shadow-md">
       <span className="animate-tag-type mx-auto max-w-full">
         {truncateTagText(product.tags[0])}
       </span>

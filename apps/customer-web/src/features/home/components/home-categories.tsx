@@ -237,7 +237,7 @@ export function HomeCategories() {
                 border
                 border-gray-100
                 bg-gradient-to-b from-white to-gray-50/30
-                p-4
+                p-1
                 shadow-[0_2px_8px_rgba(0,0,0,0.02)]
                 transition-all
                 duration-300

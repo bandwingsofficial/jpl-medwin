@@ -425,8 +425,29 @@ export function ContactUsPage() {
             </div>
             <div className="ct-icon-wrap"><Phone size={20} /></div>
             <div className="ct-eyebrow" style={{ color: "#0D9488", marginBottom: 12 }}>Call Us</div>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: "#0F172A", marginBottom: 4 }}>
-              +91 728 9999 456
+            <div style={{ fontFamily: "'outfit', serif", fontSize: 22, fontWeight: 700, color: "#0F172A", marginBottom: 4 }}>
+              <a
+  href="tel:+917289999456"
+  style={{
+    fontFamily: "'Outfit', sans-serif",
+    fontSize: 18,
+    fontWeight: 600,
+    color: "#0F172A",
+    marginBottom: 4,
+    textDecoration: "none",
+    display: "inline-block",
+    cursor: "pointer",
+    transition: "color 0.2s ease",
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.color = "#0D9488";
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.color = "#0F172A";
+  }}
+>
+  +91 728 9999 456
+</a>
             </div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#64748B", fontWeight: 300, lineHeight: 1.6 }}>
               Direct line for immediate procurement help and urgent medical supply inquiries.
@@ -444,9 +465,28 @@ export function ContactUsPage() {
             </div>
             <div className="ct-icon-wrap"><Mail size={20} /></div>
             <div className="ct-eyebrow" style={{ color: "#0D9488", marginBottom: 12 }}>Email Us</div>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "#0F172A", marginBottom: 4 }}>
-              connect@jplmedwin.com
-            </div>
+            <a
+  href="mailto:connect@jplmedwin.com"
+  style={{
+    fontFamily: "'Outfit', sans-serif",
+    fontSize: 18,
+    fontWeight: 600,
+    color: "#0F172A",
+    marginBottom: 4,
+    textDecoration: "none",
+    display: "inline-block",
+    transition: "color 0.2s ease",
+    cursor: "pointer",
+  }}
+  onMouseEnter={(e) => {
+    e.currentTarget.style.color = "#0D9488";
+  }}
+  onMouseLeave={(e) => {
+    e.currentTarget.style.color = "#0F172A";
+  }}
+>
+  connect@jplmedwin.com
+</a>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#64748B", fontWeight: 300, lineHeight: 1.6 }}>
               For detailed product quotes, catalogue requests, and partnership inquiries.
             </p>
@@ -463,7 +503,7 @@ export function ContactUsPage() {
             </div>
             <div className="ct-icon-wrap"><Clock size={20} /></div>
             <div className="ct-eyebrow" style={{ color: "#0D9488", marginBottom: 12 }}>Our Hours</div>
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 700, color: "#0F172A", marginBottom: 4 }}>
+            <div style={{ fontFamily: "'outfit', serif", fontSize: 22, fontWeight: 700, color: "#0F172A", marginBottom: 4 }}>
               9:00 AM – 6:00 PM
             </div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#64748B", fontWeight: 300, lineHeight: 1.6 }}>

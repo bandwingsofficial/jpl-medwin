@@ -33,7 +33,7 @@ export function CollectionProductsGrid({
               text-gray-900
             "
           >
-            No Products Found
+            Proucts Coming Soon...
           </h3>
 
           <p

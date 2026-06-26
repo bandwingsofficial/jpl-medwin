@@ -1,6 +1,14 @@
 "use client";
-
 import { Card } from "@/shared/components/ui/card";
+
+import {
+  ShoppingBag,
+  IndianRupee,
+  Wallet,
+  Receipt,
+  BadgeIndianRupee,
+} from "lucide-react";
+
 import { useDashboardOrders } from "../hooks/useDashboardOrders";
 import { useDashboardRevenue } from "../hooks/useDashboardRevenue";
 
@@ -28,7 +36,7 @@ export function DashboardStatsCards({ period }: Props) {
     {
       title: "Total Orders",
       value: orders?.totalOrders ?? 0,
-      trend: "+12.5%",
+     icon: ShoppingBag,
       positive: true,
       bgClass: "bg-gradient-to-br from-blue-50 to-indigo-50/50 border-blue-100",
       iconColor: "text-blue-600",
@@ -36,7 +44,7 @@ export function DashboardStatsCards({ period }: Props) {
     {
       title: "Gross Revenue",
       value: formatCurrency(revenue?.grossRevenue ?? 0),
-      trend: "+10.4%",
+     icon: IndianRupee,
       positive: true,
       bgClass: "bg-gradient-to-br from-amber-50 to-orange-50/50 border-amber-100",
       iconColor: "text-amber-600",
@@ -44,7 +52,7 @@ export function DashboardStatsCards({ period }: Props) {
     {
       title: "Net Revenue",
       value: formatCurrency(revenue?.netRevenue ?? 0),
-      trend: "-2.1%",
+       icon: Wallet,
       positive: false,
       bgClass: "bg-gradient-to-br from-rose-50 to-pink-50/50 border-rose-100",
       iconColor: "text-rose-600",
@@ -52,7 +60,7 @@ export function DashboardStatsCards({ period }: Props) {
     {
       title: "Average Order Value",
       value: formatCurrency(revenue?.averageOrderValue ?? 0),
-      trend: "+4.8%",
+     icon: BadgeIndianRupee,
       positive: true,
       bgClass: "bg-gradient-to-br from-cyan-50 to-sky-50/50 border-cyan-100",
       iconColor: "text-cyan-600",
@@ -104,23 +112,20 @@ export function DashboardStatsCards({ period }: Props) {
               </p>
 
               <div
-                className={`
-                  px-2
-                  py-0.5
-                  rounded-full
-                  text-[10px]
-                  font-bold
-                  shrink-0
-                  shadow-xs
-                  ${
-                    item.positive
-                      ? "bg-emerald-500 text-white"
-                      : "bg-rose-500 text-white"
-                  }
-                `}
-              >
-                {item.trend}
-              </div>
+  className="
+    flex
+    h-7
+    w-7
+    shrink-0
+    items-center
+    justify-center
+  "
+>
+  <item.icon
+    size={20}
+    className={item.iconColor}
+  />
+</div>
             </div>
 
             <div>
