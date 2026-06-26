@@ -274,7 +274,7 @@ export function ContactUsPage() {
           font-weight: 600;
           text-decoration: none;
           white-space: nowrap;
-          transition: all 0.2s ease;
+          transition: z-index 0.2s ease;
           flex-shrink: 0;
           position: relative;
           z-index: 1;
@@ -326,72 +326,81 @@ export function ContactUsPage() {
       `}} />
 
       {/* ══════════════════════════════════════
-          HERO
+          HERO (Now configured with outer padding alignment)
       ══════════════════════════════════════ */}
       <section style={{
-        position: "relative",
-        background: "linear-gradient(120deg, #042F2E 0%, #0D9488 100%)",
-        padding: "64px 24px 72px",
-        overflow: "hidden",
+        width: "100%",
+        maxWidth: 1100,
+        margin: "0 auto",
+        padding: "24px 24px 0px 24px", // Top and side paddings line up with the rest of your sections
       }}>
-        {/* Ambient geometry */}
         <div style={{
-          position: "absolute", top: "-80px", right: "-80px",
-          width: 360, height: 360, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(45,212,191,0.12) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }} />
-        <div style={{
-          position: "absolute", bottom: "-40px", left: "30%",
-          width: 220, height: 220, borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(252,211,77,0.06) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }} />
-        {/* Large ghost text */}
-        <div style={{
-          position: "absolute", right: 0, top: "50%",
-          transform: "translateY(-50%)",
-          fontFamily: "'Playfair Display', serif",
-          fontSize: "clamp(120px, 16vw, 220px)",
-          fontWeight: 700,
-          color: "rgba(255,255,255,0.035)",
-          lineHeight: 1,
-          letterSpacing: "-0.04em",
-          pointerEvents: "none",
-          userSelect: "none",
-          whiteSpace: "nowrap",
-        }}>Contact</div>
+          position: "relative",
+          background: "linear-gradient(120deg, #042F2E 0%, #0D9488 100%)",
+          padding: "64px 40px 72px",   // Internal padding inside the hero image block
+          borderRadius: "8px",         // Premium rounded card appearance
+          overflow: "hidden",
+          boxShadow: "0 20px 40px -15px rgba(4,47,46,0.15)"
+        }}>
+          {/* Ambient geometry */}
+          <div style={{
+            position: "absolute", top: "-80px", right: "-80px",
+            width: 360, height: 360, borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(45,212,191,0.12) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }} />
+          <div style={{
+            position: "absolute", bottom: "-40px", left: "30%",
+            width: 220, height: 220, borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(252,211,77,0.06) 0%, transparent 70%)",
+            pointerEvents: "none",
+          }} />
+          {/* Large ghost text */}
+          <div style={{
+            position: "absolute", right: 24, top: "50%",
+            transform: "translateY(-50%)",
+            fontFamily: "'Playfair Display', serif",
+            fontSize: "clamp(120px, 16vw, 220px)",
+            fontWeight: 700,
+            color: "rgba(255,255,255,0.035)",
+            lineHeight: 1,
+            letterSpacing: "-0.04em",
+            pointerEvents: "none",
+            userSelect: "none",
+            whiteSpace: "nowrap",
+          }}>Contact</div>
 
-        <div style={{ maxWidth: 1100, margin: "0 auto", position: "relative", zIndex: 2 }}>
-          <div className="ct-fade-up" style={{ animationDelay: "0.1s" }}>
-            <div className="ct-eyebrow" style={{ color: "#2DD4BF", marginBottom: 16 }}>JPL Markwin Private Limited</div>
-          </div>
-          <div className="ct-fade-up" style={{ animationDelay: "0.22s" }}>
-            <h1 style={{
-              fontFamily: "'Playfair Display', serif",
-              fontSize: "clamp(32px, 5vw, 54px)",
-              fontWeight: 700,
-              color: "#FFFFFF",
-              lineHeight: 1.1,
-              letterSpacing: "-0.01em",
-              marginBottom: 18,
-              maxWidth: 640,
-            }}>
-              Let's Start a<br />
-              <span style={{ color: "#FCD34D" }}>Conversation</span>
-            </h1>
-          </div>
-          <div className="ct-fade-up" style={{ animationDelay: "0.34s" }}>
-            <p style={{
-              fontFamily: "'DM Sans', sans-serif",
-              color: "rgba(255,255,255,0.65)",
-              fontSize: 15,
-              lineHeight: 1.65,
-              maxWidth: 520,
-            }}>
-              For product inquiries, order support, or service-related questions, the{" "}
-              <span style={{ color: "#2DD4BF", fontWeight: 500 }}>JPL Markwin</span> team is here to provide expert assistance.
-            </p>
+          <div style={{ position: "relative", zIndex: 2 }}>
+            <div className="ct-fade-up" style={{ animationDelay: "0.1s" }}>
+              <div className="ct-eyebrow" style={{ color: "#2DD4BF", marginBottom: 16 }}>JPL Markwin Private Limited</div>
+            </div>
+            <div className="ct-fade-up" style={{ animationDelay: "0.22s" }}>
+              <h1 style={{
+                fontFamily: "'Playfair Display', serif",
+                fontSize: "clamp(32px, 5vw, 54px)",
+                fontWeight: 700,
+                color: "#FFFFFF",
+                lineHeight: 1.1,
+                letterSpacing: "-0.01em",
+                marginBottom: 18,
+                maxWidth: 640,
+              }}>
+                Let's Start a<br />
+                <span style={{ color: "#FCD34D" }}>Conversation</span>
+              </h1>
+            </div>
+            <div className="ct-fade-up" style={{ animationDelay: "0.34s" }}>
+              <p style={{
+                fontFamily: "'DM Sans', sans-serif",
+                color: "rgba(255,255,255,0.65)",
+                fontSize: 15,
+                lineHeight: 1.65,
+                maxWidth: 520,
+              }}>
+                For product inquiries, order support, or service-related questions, the{" "}
+                <span style={{ color: "#2DD4BF", fontWeight: 500 }}>JPL Markwin</span> team is here to provide expert assistance.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -436,7 +445,7 @@ export function ContactUsPage() {
             <div className="ct-icon-wrap"><Mail size={20} /></div>
             <div className="ct-eyebrow" style={{ color: "#0D9488", marginBottom: 12 }}>Email Us</div>
             <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "#0F172A", marginBottom: 4 }}>
-              support@jplmedwin.com
+              connect@jplmedwin.com
             </div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#64748B", fontWeight: 300, lineHeight: 1.6 }}>
               For detailed product quotes, catalogue requests, and partnership inquiries.

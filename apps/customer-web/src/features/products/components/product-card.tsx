@@ -330,13 +330,25 @@ export function ProductCard({
           "
         >
           {/* TOP-LEFT OVERLAY FLOATING BADGE FOR PRODUCT TAGS */}
-          {product.tags?.[0] && (
-            <div className="absolute top-2.5 left-2.5 z-10 pointer-events-none">
-              <span className="bg-teal-600/90 backdrop-blur-[2px] text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md shadow-sm max-w-[90px] block truncate">
-                {truncateTagText(product.tags[0])}
-              </span>
-            </div>
-          )}
+{product.tags?.[0] && (
+  <div className="absolute top-0 left-0 z-10 h-20 w-20 overflow-hidden pointer-events-none rounded-tl-xl">
+    {/* Injecting the inline keyframes for the typing effect seamlessly */}
+    <style>{`
+      @keyframes typing { from { width: 0 } to { width: 100% } }
+      .animate-tag-type {
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        animation: typing 2.5s steps(12, end) infinite alternate;
+      }
+    `}</style>
+    <span className="absolute top-[16px] left-[-26px] block w-[100px] -rotate-45 bg-amber-500 py-0.5 text-center text-[8.5px] font-extrabold uppercase tracking-widest text-slate-900 shadow-md">
+      <span className="animate-tag-type mx-auto max-w-full">
+        {truncateTagText(product.tags[0])}
+      </span>
+    </span>
+  </div>
+)}
 
           <WishlistButton
             productId={product.id}

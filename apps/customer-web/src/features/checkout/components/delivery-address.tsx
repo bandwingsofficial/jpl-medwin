@@ -254,8 +254,8 @@ const [addressMode, setAddressMode] =
                     group relative cursor-pointer rounded-lg border p-3.5 text-left transition-all
                     ${
                       isSelected
-                        ? "border-slate-900 bg-slate-50 ring-1 ring-slate-900"
-                        : "border-slate-200 bg-white hover:border-slate-300"
+  ? "border-teal-600 bg-teal-50/50 ring-1 ring-teal-600"
+  : "border-slate-200 bg-white hover:border-slate-300"
                     }
                   `}
                 >
@@ -273,9 +273,9 @@ const [addressMode, setAddressMode] =
                       className={`
                         flex h-8 w-8 shrink-0 items-center justify-center rounded-md
                         ${
-                          isSelected
-                            ? "bg-slate-900 text-white"
-                            : "bg-slate-100 text-slate-500"
+                         isSelected
+  ? "bg-teal-600 text-white"
+  : "bg-slate-100 text-slate-500"
                         }
                       `}
                     >
@@ -392,9 +392,9 @@ const [addressMode, setAddressMode] =
               text-left
               transition-all
               ${
-                isSelected
-                  ? "border-slate-900 bg-slate-50 ring-1 ring-slate-900"
-                  : "border-slate-200 bg-white hover:border-slate-300"
+               isSelected
+  ? "border-teal-600 bg-teal-50/50 ring-1 ring-teal-600"
+  : "border-slate-200 bg-white hover:border-slate-300"
               }
             `}
           >
@@ -419,8 +419,8 @@ const [addressMode, setAddressMode] =
                   rounded-md
                   ${
                     isSelected
-                      ? "bg-slate-900 text-white"
-                      : "bg-slate-100 text-slate-500"
+  ? "bg-teal-600 text-white"
+  : "bg-slate-100 text-slate-500"
                   }
                 `}
               >

@@ -292,23 +292,28 @@ export function Footer() {
 
         {/* Col 1 — Brand */}
         <div>
-          <Link href="/" style={{
-            display: "inline-block",
-            padding: "8px 12px",
-            background: "rgba(255,255,255,0.06)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: 6,
-            marginBottom: 20,
-          }}>
-            <Image
-              src="/Logo/JPL Medwin1.png"
-              alt="JPL Medwin"
-              width={160}
-              height={80}
-              priority
-              style={{ height: "auto", width: "auto", objectFit: "contain", filter: "brightness(0) invert(1)" }}
-            />
-          </Link>
+          <Link 
+  href="/" 
+  style={{
+    display: "inline-block",
+    padding: "2px",
+    borderRadius: 6,
+    marginBottom: 15, // Slightly reduced to match the smaller logo scale
+  }}
+>
+  <Image
+    src="/Logo/JPL Medwin2.png" // Make sure to export a white version of the SVG/PNG here
+    alt="JPL Medwin"
+    width={220}  // Reduced from 120 for a cleaner look
+    height={100} // Reduced from 60 to maintain aspect ratio
+    priority
+    style={{ 
+      objectFit: "contain",
+      maxWidth: "100%",
+      height: "auto" 
+    }}
+  />
+</Link>
           <p style={{
             fontFamily: "'DM Sans', sans-serif",
             fontSize: 13,
@@ -381,7 +386,7 @@ export function Footer() {
             </div>
             <div className="ft-contact-item">
               <div className="ft-contact-icon"><Mail size={13} /></div>
-              <p>support@jplmedwin.com</p>
+              <p>connect@jplmedwin.com</p>
             </div>
             <div className="ft-contact-item">
               <div className="ft-contact-icon"><Clock3 size={13} /></div>

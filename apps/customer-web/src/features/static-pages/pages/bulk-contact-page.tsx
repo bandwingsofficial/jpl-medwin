@@ -383,7 +383,7 @@ export function BulkContactPage() {
             <div className="bk-contact-icon"><Mail size={20} /></div>
             <div style={{ position: "relative", zIndex: 1 }}>
               <p style={{ fontSize: 10, color: "#94A3B8", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 5 }}>Enterprise Email</p>
-              <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "#0D9488", lineHeight: 1 }}>bulk@jplmedwin.com</p>
+              <p style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "#0D9488", lineHeight: 1 }}>connect@jplmedwin.com</p>
             </div>
           </div>
         </div>

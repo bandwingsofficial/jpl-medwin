@@ -136,6 +136,25 @@ export interface OrderSummary {
 */
 
 export interface Order {
+ totals?: {
+  subtotal: number;
+
+  couponDiscount: number;
+
+  shippingCharge: number;
+
+  tax: number;
+
+  grandTotal: number;
+
+  totalSavings: number;
+
+  redeemedCoins: number;
+
+  redeemedAmount: number;
+
+  earnedCoins: number;
+};
   id: string;
 
   orderNumber: string;
@@ -207,12 +226,12 @@ export interface Order {
   */
 
   shipment?: {
-    trackingId?: string;
+  trackingId?: string;
 
-    courierName?: string;
+  courierName?: string;
 
-    shippedAt?: string;
-  };
+  shippedAt?: string;
+};
 
   /*
   |--------------------------------------------------------------------------
@@ -220,10 +239,34 @@ export interface Order {
   |--------------------------------------------------------------------------
   */
 
-  refund?: {
-    refundedAt?: string;
-  };
+refund?: Record<string, unknown>;
+cancellation?: Record<string, unknown>;
+timeline?: {
+  createdAt?: string;
 
+  updatedAt?: string;
+};
+returnRequest?: {
+  id?: string;
+
+  status?: string;
+
+  type?: string;
+
+  reason?: string;
+
+  requestedAt?: string;
+
+  replacementOrder?: {
+    id?: string;
+
+    orderNumber?: string;
+
+    status?: string;
+
+    createdAt?: string;
+  };
+};
   /*
   |--------------------------------------------------------------------------
   | NOTES

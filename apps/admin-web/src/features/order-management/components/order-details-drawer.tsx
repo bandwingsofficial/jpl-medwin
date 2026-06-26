@@ -207,6 +207,39 @@ export default function OrderDetailsDrawer({
             px-4 py-4
           "
         >
+          {order.timeline && (
+  <div className="rounded-xl border bg-white p-4 my-2 shadow-sm">
+    <h3 className="mb-4 text-sm font-semibold text-gray-900">
+      Timeline
+    </h3>
+
+    <div className="space-y-2 text-sm">
+      <div className="flex justify-between">
+        <span className="text-gray-500">
+          Created
+        </span>
+
+        <span>
+          {new Date(
+            order.timeline.createdAt!
+          ).toLocaleString("en-IN")}
+        </span>
+      </div>
+
+      <div className="flex justify-between">
+        <span className="text-gray-500">
+          Updated
+        </span>
+
+        <span>
+          {new Date(
+            order.timeline.updatedAt!
+          ).toLocaleString("en-IN")}
+        </span>
+      </div>
+    </div>
+  </div>
+)}
           <div className="space-y-4">
             {/* STATUS GRID */}
 
@@ -360,6 +393,60 @@ export default function OrderDetailsDrawer({
                 </p>
               </div>
             </div>
+            {/* BILLING ADDRESS */}
+
+<div className="rounded-xl border bg-white p-4 shadow-sm">
+  <div className="mb-3 flex items-center gap-2">
+    <MapPin
+      size={16}
+      className="text-indigo-600"
+    />
+
+    <h3 className="text-sm font-semibold text-gray-900">
+      Billing Address
+    </h3>
+  </div>
+
+  <div className="space-y-1 text-sm text-gray-700">
+    <p className="font-semibold">
+      {order.billingAddress?.fullName ||
+        order.billingAddress?.name}
+    </p>
+
+    <p>
+      {order.billingAddress?.phoneNumber ||
+        order.billingAddress?.phone}
+    </p>
+
+    <p>
+      {order.billingAddress?.line1}
+    </p>
+
+    <p>
+      {order.billingAddress?.city},{" "}
+      {order.billingAddress?.state}
+    </p>
+
+    <p>
+      {order.billingAddress?.postalCode}
+    </p>
+
+    <p>
+      {order.billingAddress?.country}
+    </p>
+  </div>
+</div>
+{order.notes?.customerNote && (
+  <div className="rounded-xl border bg-white p-4 shadow-sm">
+    <h3 className="mb-2 text-sm font-semibold text-gray-900">
+      Customer Note
+    </h3>
+
+    <p className="text-sm text-gray-700">
+      {order.notes.customerNote}
+    </p>
+  </div>
+)}
 
             {/* ITEMS */}
 
@@ -500,7 +587,7 @@ export default function OrderDetailsDrawer({
     <span className="font-medium">
       ₹
       {Number(
-        order.subtotal ||
+        order.totals?.subtotal ||
         items.reduce(
           (acc, item) =>
             acc +
@@ -534,7 +621,7 @@ export default function OrderDetailsDrawer({
     <span className="font-medium">
       ₹
       {Number(
-        order.tax || 0
+        order.totals?.tax || 0
       ).toFixed(2)}
     </span>
   </div>
@@ -547,7 +634,7 @@ export default function OrderDetailsDrawer({
     <span className="font-medium">
       ₹
       {Number(
-        order.shippingCharge || 0
+        order.totals?.shippingCharge || 0
       ).toFixed(2)}
     </span>
   </div>
@@ -561,7 +648,7 @@ export default function OrderDetailsDrawer({
       <span className="text-lg font-bold text-gray-900">
         ₹
         {Number(
-          order.grandTotal ||
+          order.totals?.grandTotal ||
           (
             items.reduce(
               (acc, item) =>

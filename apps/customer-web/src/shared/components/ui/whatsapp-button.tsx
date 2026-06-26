@@ -16,7 +16,8 @@ export function WhatsappButton() {
       rel="noopener noreferrer"
       className="
         fixed
-        bottom-6
+        bottom-24
+        md:bottom-6
         right-6
         z-[9999]
         flex

@@ -248,34 +248,17 @@ billingAddress: {
     |----------------------------------------------------------------
     */
 
-    subtotal:
-      Number(
-        raw.subtotal || 0
-      ),
+    totals: raw.totals,
 
-    tax: Number(
-      raw.tax || 0
-    ),
+subtotal: Number(raw.totals?.subtotal ?? 0),
 
-    shippingCharge:
-      Number(
-        raw.shippingCharge || 0
-      ),
+tax: Number(raw.totals?.tax ?? 0),
 
-    discount:
-      Number(
-        raw.discount || 0
-      ),
+shippingCharge: Number(raw.totals?.shippingCharge ?? 0),
 
-    grandTotal:
-      Number(
-        raw.grandTotal || 0
-      ),
+grandTotal: Number(raw.totals?.grandTotal ?? 0),
 
-    totalSavings:
-      Number(
-        raw.totalSavings || 0
-      ),
+totalSavings: Number(raw.totals?.totalSavings ?? 0),
   };
 
   return normalizedOrder;

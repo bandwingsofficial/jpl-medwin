@@ -5,8 +5,9 @@ import Link from "next/link";
 
 import {
   X,
-  ShoppingCart,
-  Sparkles,
+  ShoppingBag,
+  ArrowRight,
+  Package,
 } from "lucide-react";
 
 import {
@@ -17,7 +18,6 @@ import {
 } from "react";
 
 import { usePathname } from "next/navigation";
-
 import { useCart } from "@/features/cart/hooks/use-cart";
 
 export function FloatingCartBar() {
@@ -27,8 +27,7 @@ export function FloatingCartBar() {
    |--------------------------------------------------------------------------
    */
 
-  const pathname =
-    usePathname();
+  const pathname = usePathname();
 
   /*
    |--------------------------------------------------------------------------
@@ -36,9 +35,7 @@ export function FloatingCartBar() {
    |--------------------------------------------------------------------------
    */
 
-  const hiddenRoutes = [
-    "/checkout",
-  ];
+  const hiddenRoutes = ["/checkout"];
 
   /*
    |--------------------------------------------------------------------------
@@ -46,11 +43,8 @@ export function FloatingCartBar() {
    |--------------------------------------------------------------------------
    */
 
-  const { data } =
-    useCart();
-
-  const cart =
-    data;
+  const { data } = useCart();
+  const cart = data;
 
   /*
    |--------------------------------------------------------------------------
@@ -58,16 +52,11 @@ export function FloatingCartBar() {
    |--------------------------------------------------------------------------
    */
 
-  const [isClosed, setIsClosed] =
-    useState(false);
-
-  const [
-    showCelebration,
-    setShowCelebration,
-  ] = useState(false);
-
-  const prevCountRef =
-    useRef(0);
+  const [isClosed, setIsClosed] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [pulse, setPulse] = useState(false);
+  const prevCountRef = useRef(0);
 
   /*
    |--------------------------------------------------------------------------
@@ -75,41 +64,45 @@ export function FloatingCartBar() {
    |--------------------------------------------------------------------------
    */
 
-  const items =
-    cart?.cartItems || [];
-
-  const totalQuantity =
-    cart?.totalQuantity || 0;
-
-  const totalAmount =
-    cart?.summary?.grandTotal || 0;
+  const items = cart?.cartItems || [];
+  const totalQuantity = cart?.totalQuantity || 0;
+  const totalAmount = cart?.summary?.grandTotal || 0;
 
   /*
    |--------------------------------------------------------------------------
-   | FIRST ADD CELEBRATION
+   | MOUNT ANIMATION
    |--------------------------------------------------------------------------
    */
 
   useEffect(() => {
-    if (
-      prevCountRef.current === 0 &&
-      totalQuantity === 1
-    ) {
+    if (items.length && !isClosed) {
+      const t = setTimeout(() => setIsVisible(true), 80);
+      return () => clearTimeout(t);
+    } else {
+      setIsVisible(false);
+    }
+  }, [items.length, isClosed]);
+
+  /*
+   |--------------------------------------------------------------------------
+   | FIRST ADD CELEBRATION + QUANTITY PULSE
+   |--------------------------------------------------------------------------
+   */
+
+  useEffect(() => {
+    if (prevCountRef.current === 0 && totalQuantity === 1) {
       setShowCelebration(true);
-
-      const timer =
-        setTimeout(() => {
-          setShowCelebration(
-            false
-          );
-        }, 2200);
-
-      return () =>
-        clearTimeout(timer);
+      const t = setTimeout(() => setShowCelebration(false), 2800);
+      return () => clearTimeout(t);
     }
 
-    prevCountRef.current =
-      totalQuantity;
+    if (totalQuantity > prevCountRef.current && prevCountRef.current > 0) {
+      setPulse(true);
+      const t = setTimeout(() => setPulse(false), 600);
+      return () => clearTimeout(t);
+    }
+
+    prevCountRef.current = totalQuantity;
   }, [totalQuantity]);
 
   /*
@@ -118,17 +111,12 @@ export function FloatingCartBar() {
    |--------------------------------------------------------------------------
    */
 
-  const previewImages =
-    useMemo(() => {
-      return items
-        .slice(0, 3)
-        .map(
-          (item) =>
-            item.variant
-              ?.images?.main
-        )
-        .filter(Boolean);
-    }, [items]);
+  const previewImages = useMemo(() => {
+    return items
+      .slice(0, 3)
+      .map((item) => item.variant?.images?.main)
+      .filter(Boolean);
+  }, [items]);
 
   /*
    |--------------------------------------------------------------------------
@@ -136,25 +124,13 @@ export function FloatingCartBar() {
    |--------------------------------------------------------------------------
    */
 
-  if (
-    hiddenRoutes.includes(
-      pathname
-    )
-  ) {
-    return null;
-  }
-
-  if (
-    !items.length ||
-    isClosed
-  ) {
-    return null;
-  }
+  if (hiddenRoutes.includes(pathname)) return null;
+  if (!items.length || isClosed) return null;
 
   return (
     <>
       {/* ====================================================== */}
-      {/* CELEBRATION */}
+      {/* CELEBRATION TOAST */}
       {/* ====================================================== */}
 
       {showCelebration && (
@@ -166,35 +142,53 @@ export function FloatingCartBar() {
             left-1/2
             z-[1000]
             -translate-x-1/2
-            animate-[cartPop_2.2s_ease-out_forwards]
           "
+          style={{ animation: "celebrationPop 2.8s ease-out forwards" }}
         >
           <div
             className="
               flex
               items-center
-              gap-2
+              gap-2.5
               rounded-full
-              bg-emerald-600
               px-5
               py-3
-              shadow-2xl
             "
+            style={{
+              background: "linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)",
+              boxShadow: "0 8px 32px rgba(5, 150, 105, 0.45), 0 0 0 1px rgba(255,255,255,0.15) inset",
+            }}
           >
-            <img 
-  src="/logo/sparkle.jpg" 
-  alt="Sparkle effect" 
-  className="h-7 w-7 object-contain mix-blend-screen" 
-/>
-            <span
-              className="
-                whitespace-nowrap
-                text-sm
-                font-semibold
-                text-white
-              "
+            {/* Inline SVG bag icon — no external image */}
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
             >
-              Item added to cart 
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+
+            <span className="whitespace-nowrap text-sm font-semibold text-white tracking-wide">
+              Added to cart!
+            </span>
+
+            {/* Confetti dots */}
+            <span className="flex gap-1" aria-hidden="true">
+              {["#fbbf24", "#34d399", "#f472b6", "#60a5fa"].map((c, i) => (
+                <span
+                  key={i}
+                  className="inline-block h-1.5 w-1.5 rounded-full"
+                  style={{ background: c, animation: `confettiDot 0.6s ${i * 0.1}s ease-out both` }}
+                />
+              ))}
             </span>
           </div>
         </div>
@@ -205,268 +199,221 @@ export function FloatingCartBar() {
       {/* ====================================================== */}
 
       <div
-  className="
-    fixed
-    bottom-3
-    left-1/2
-    z-[999]
-    w-[84%]
-    max-w-[360px]
-    -translate-x-1/2
-    sm:bottom-4
-    sm:w-[420px]
-    sm:max-w-[420px]
-  "
->
+        className="
+          fixed
+          bottom-4
+          left-1/2
+          z-[999]
+          w-[88%]
+          max-w-[400px]
+          -translate-x-1/2
+          sm:bottom-5
+          sm:w-[460px]
+          sm:max-w-[460px]
+        "
+        style={{
+          transform: `translateX(-50%) translateY(${isVisible ? "0" : "110%"})`,
+          opacity: isVisible ? 1 : 0,
+          transition: "transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease",
+        }}
+      >
+        {/* GLOW RING BEHIND BAR */}
         <div
-  className="
-    relative
-    overflow-hidden
-    rounded-[22px]
-    border
-    border-neutral-200
-    bg-white
-    shadow-[0_12px_35px_rgba(0,0,0,0.14)]
-  "
->
-          {/* TOP GRADIENT */}
+          className="absolute inset-0 -z-10 rounded-[26px]"
+          style={{
+            background: "linear-gradient(135deg, #059669, #10b981, #6ee7b7)",
+            filter: "blur(14px)",
+            opacity: 0.28,
+            transform: "scale(1.04) translateY(4px)",
+          }}
+        />
 
+        {/* MAIN CARD */}
+        <div
+          className="relative overflow-hidden rounded-[22px]"
+          style={{
+            background: "rgba(255,255,255,0.97)",
+            backdropFilter: "blur(20px) saturate(180%)",
+            border: "1px solid rgba(255,255,255,0.9)",
+            boxShadow:
+              "0 20px 50px rgba(0,0,0,0.15), 0 4px 16px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.06)",
+          }}
+        >
+          {/* TOP SHIMMER STRIPE */}
           <div
-            className="
-              absolute
-              inset-x-0
-              top-0
-              h-[3px]
-              bg-gradient-to-r
-              from-emerald-500
-              via-lime-400
-              to-emerald-500
-            "
+            className="absolute inset-x-0 top-0 h-[2.5px] rounded-t-full"
+            style={{
+              background: "linear-gradient(90deg, #059669 0%, #34d399 30%, #a3e635 60%, #059669 100%)",
+              backgroundSize: "200% 100%",
+              animation: "shimmerStripe 3s linear infinite",
+            }}
           />
 
-          <div
-            className="
-  flex
-  items-center
-  gap-2
-  px-2
-  py-2
-  sm:gap-3
-  sm:px-4
-  sm:py-3
-"
-          >
+          {/* INNER CONTENT */}
+          <div className="flex items-center gap-2 px-2.5 py-2.5 sm:gap-3 sm:px-3.5 sm:py-3">
+
             {/* ====================================================== */}
-            {/* LEFT CONTENT */}
+            {/* LEFT: IMAGE + BADGE */}
             {/* ====================================================== */}
 
             <Link
               href="/cart"
-              className="
-                flex
-                min-w-0
-                flex-1
-                items-center
-                gap-2
-                sm:gap-3
-              "
+              className="flex min-w-0 flex-1 items-center gap-2.5 sm:gap-3"
             >
-              {/* PRODUCT IMAGE */}
-
-              <div className="relative flex items-center">
-                {previewImages
-                  .slice(0, 1)
-                  .map(
-                    (
-                      image,
-                      index
-                    ) => (
+              {/* PRODUCT THUMBNAIL STACK */}
+              <div className="relative shrink-0">
+                {previewImages.length > 0 ? (
+                  <>
+                    {previewImages.slice(0, 2).map((image, index) => (
                       <div
                         key={`${image}-${index}`}
-                        className="
-                          relative
-                          h-11
-                          w-11
-                          overflow-hidden
-                          rounded-full
-                          border-2
-                          border-white
-                          bg-neutral-100
-                          shadow-md
-                          sm:h-12
-                          sm:w-12
-                        "
+                        className="absolute overflow-hidden rounded-2xl border-2 border-white bg-neutral-100"
+                        style={{
+                          width: 44,
+                          height: 44,
+                          left: index * 6,
+                          top: index * -3,
+                          zIndex: previewImages.length - index,
+                          boxShadow: "0 3px 10px rgba(0,0,0,0.12)",
+                          display: index > 0 ? (previewImages.length > 1 ? "block" : "none") : "block",
+                        }}
                       >
                         <Image
                           src={image}
-                          alt="Cart Product"
+                          alt="Cart item"
                           fill
-                          sizes="48px"
+                          sizes="44px"
                           className="object-cover"
                         />
                       </div>
-                    )
-                  )}
+                    ))}
+                    {/* spacer to push content right */}
+                    <div style={{ width: previewImages.length > 1 ? 54 : 44, height: 44 }} />
+                  </>
+                ) : (
+                  /* Fallback icon when no images */
+                  <div
+                    className="flex items-center justify-center rounded-2xl"
+                    style={{
+                      width: 44,
+                      height: 44,
+                      background: "linear-gradient(135deg, #d1fae5, #a7f3d0)",
+                      boxShadow: "0 3px 10px rgba(5,150,105,0.18)",
+                    }}
+                  >
+                    <Package size={20} className="text-emerald-600" />
+                  </div>
+                )}
 
-                {/* COUNT BADGE */}
-
+                {/* QUANTITY BADGE */}
                 <div
                   className="
                     absolute
                     -right-1
                     -top-1
+                    z-20
                     flex
-                    h-5
-                    min-w-[20px]
+                    h-[18px]
+                    min-w-[18px]
                     items-center
                     justify-center
                     rounded-full
-                    bg-gradient-to-r
-                    from-red-500
-                    to-rose-500
                     px-1
                     text-[10px]
                     font-bold
                     text-white
-                    ring-2
-                    ring-white
                   "
+                  style={{
+                    background: "linear-gradient(135deg, #ef4444, #f43f5e)",
+                    boxShadow: "0 2px 6px rgba(239,68,68,0.5), 0 0 0 2px white",
+                    transform: pulse ? "scale(1.35)" : "scale(1)",
+                    transition: "transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  }}
                 >
                   {totalQuantity}
                 </div>
               </div>
 
-              {/* TEXT */}
-
+              {/* TEXT BLOCK */}
               <div className="min-w-0 flex-1">
-                <div
-                  className="
-                    flex
-                    items-center
-                    gap-2
-                  "
+                <p
+                  className="truncate font-semibold text-neutral-900 leading-tight"
+                  style={{ fontSize: 13.5 }}
                 >
-                  {/* DESKTOP CART ICON */}
-
-                  <div
-                    className="
-                      hidden
-                      h-9
-                      w-9
-                      items-center
-                      justify-center
-                      rounded-full
-                      bg-emerald-100
-                      text-emerald-700
-                      sm:flex
-                    "
-                  >
-                    <ShoppingCart
-                      size={18}
-                    />
-                  </div>
-
-                  <div className="min-w-0">
-                    <p
-                      className="
-                        truncate
-                        text-[13px]
-                        font-semibold
-                        text-neutral-900
-                        sm:text-[15px]
-                      "
-                    >
-                      Ready to Checkout
-                    </p>
-
-                    <p
-                      className="
-                        mt-0.5
-                        truncate
-                        text-[10px]
-                        font-medium
-                        text-neutral-500
-                        sm:text-xs
-                      "
-                    >
-                      {totalQuantity}{" "}
-                      {totalQuantity === 1
-                        ? "item"
-                        : "items"}{" "}
-                      • ₹{totalAmount}
-                    </p>
-                  </div>
-                </div>
+                  Ready to checkout
+                </p>
+                <p
+                  className="mt-0.5 truncate text-neutral-500 leading-tight"
+                  style={{ fontSize: 11 }}
+                >
+                  {totalQuantity} {totalQuantity === 1 ? "item" : "items"}
+                  <span className="mx-1.5 text-neutral-300">•</span>
+                  <span className="font-semibold text-emerald-600">₹{totalAmount.toLocaleString("en-IN")}</span>
+                </p>
               </div>
 
-              {/* DESKTOP CTA */}
-
-              <div
-                className="
-                  hidden
-                  shrink-0
-                  sm:flex
-                  sm:items-center
-                "
-              >
-                <span
-                  className="
-                    rounded-full
-                    bg-gradient-to-r
-                    from-emerald-500
-                    to-green-600
-                    px-4
-                    py-2
-                    text-sm
-                    font-semibold
-                    text-white
-                    shadow-md
-                  "
+              {/* DESKTOP: Cart icon pill */}
+              <div className="hidden sm:flex items-center gap-1.5 shrink-0">
+                <div
+                  className="flex items-center justify-center rounded-full"
+                  style={{
+                    width: 34,
+                    height: 34,
+                    background: "linear-gradient(135deg, #ecfdf5, #d1fae5)",
+                  }}
                 >
-                  View Cart
-                </span>
+                  <ShoppingBag size={15} className="text-emerald-600" />
+                </div>
               </div>
             </Link>
 
             {/* ====================================================== */}
-            {/* MOBILE CTA */}
+            {/* CTA BUTTON */}
             {/* ====================================================== */}
 
             <Link
               href="/cart"
               className="
-                flex
-                h-9
+                group
+                relative
                 shrink-0
-                items-center
-                justify-center
-                rounded-xl
-                bg-gradient-to-r
-                from-emerald-500
-                to-green-600
-                px-3
+                overflow-hidden
+                rounded-[14px]
                 text-xs
                 font-semibold
                 text-white
-                shadow-md
                 transition-all
                 duration-200
                 active:scale-95
-                sm:hidden
               "
+              style={{
+                padding: "9px 14px",
+                background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
+                boxShadow: "0 4px 14px rgba(5,150,105,0.4), 0 1px 3px rgba(5,150,105,0.3)",
+              }}
             >
-              View
+              {/* shimmer sweep on hover */}
+              <span
+                className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"
+                style={{
+                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+                }}
+              />
+              <span className="relative flex items-center gap-1">
+                <span className="hidden sm:inline">View Cart</span>
+                <span className="sm:hidden">View</span>
+                <ArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-0.5" />
+              </span>
             </Link>
 
             {/* ====================================================== */}
-            {/* CLOSE */}
+            {/* CLOSE BUTTON */}
             {/* ====================================================== */}
 
             <button
               type="button"
-              onClick={() =>
-                setIsClosed(true)
-              }
+              onClick={() => setIsClosed(true)}
+              aria-label="Dismiss cart bar"
               className="
                 flex
                 h-8
@@ -475,60 +422,44 @@ export function FloatingCartBar() {
                 items-center
                 justify-center
                 rounded-full
-                bg-neutral-100
-                text-neutral-500
+                text-neutral-400
                 transition-all
                 duration-200
-                hover:bg-neutral-200
-                hover:text-neutral-700
-                active:scale-95
-                sm:h-10
-                sm:w-10
+                hover:bg-neutral-100
+                hover:text-neutral-600
+                active:scale-90
               "
             >
-              <X
-                size={16}
-                className="sm:h-[18px] sm:w-[18px]"
-              />
+              <X size={15} />
             </button>
           </div>
         </div>
       </div>
 
       {/* ====================================================== */}
-      {/* ANIMATION */}
+      {/* KEYFRAMES */}
       {/* ====================================================== */}
 
-      <style>
-        {`
-          @keyframes cartPop {
-            0% {
-              opacity: 0;
-              transform: translate(-50%, 80px) scale(0.8);
-            }
+      <style>{`
+        @keyframes shimmerStripe {
+          0%   { background-position: 0% 0; }
+          100% { background-position: 200% 0; }
+        }
 
-            20% {
-              opacity: 1;
-              transform: translate(-50%, 0px) scale(1.05);
-            }
+        @keyframes celebrationPop {
+          0%   { opacity: 0; transform: translateX(-50%) translateY(60px) scale(0.75); }
+          18%  { opacity: 1; transform: translateX(-50%) translateY(0px) scale(1.07); }
+          32%  { opacity: 1; transform: translateX(-50%) translateY(-6px) scale(1); }
+          78%  { opacity: 1; transform: translateX(-50%) translateY(-10px) scale(1); }
+          100% { opacity: 0; transform: translateX(-50%) translateY(-28px) scale(0.9); }
+        }
 
-            40% {
-              opacity: 1;
-              transform: translate(-50%, -10px) scale(1);
-            }
-
-            80% {
-              opacity: 1;
-              transform: translate(-50%, -18px) scale(1);
-            }
-
-            100% {
-              opacity: 0;
-              transform: translate(-50%, -40px) scale(0.92);
-            }
-          }
-        `}
-      </style>
+        @keyframes confettiDot {
+          0%   { transform: translateY(0) scale(0); opacity: 0; }
+          50%  { transform: translateY(-8px) scale(1.2); opacity: 1; }
+          100% { transform: translateY(4px) scale(0.8); opacity: 0.6; }
+        }
+      `}</style>
     </>
   );
 }
