@@ -77,10 +77,6 @@ export function CollectionProductsTable({
             </th>
 
             <th className="px-5 py-3 text-left">
-              Stock
-            </th>
-
-            <th className="px-5 py-3 text-left">
               Status
             </th>
 
@@ -137,11 +133,7 @@ export function CollectionProductsTable({
                   }
                 </td>
 
-                <td className="px-5 py-3">
-                  {product.inStock
-                    ? "In Stock"
-                    : "Out Of Stock"}
-                </td>
+              
 
                 <td className="px-5 py-3">
                   {product.status}

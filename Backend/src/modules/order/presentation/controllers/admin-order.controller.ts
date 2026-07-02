@@ -1,7 +1,7 @@
 // src/modules/order/presentation/controllers/admin-order.controller.ts
 
-import { Body, Controller, Param, Post, UseGuards, Get, Query } from '@nestjs/common';
-
+import { Body, Controller, Param, Post, UseGuards, Get, Query ,Res} from '@nestjs/common';
+import { Response } from 'express';
 import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
 
 import { RolesGuard } from '@/modules/auth/presentation/guards/role.guard';
@@ -9,9 +9,11 @@ import { RolesGuard } from '@/modules/auth/presentation/guards/role.guard';
 import { Roles } from '@/modules/auth/presentation/decorators/roles.decorator';
 
 import { UserRole } from '@/domain/enums/user-role.enum';
+import { OrderStatus } from '../../domain/enums/order-status.enum';
+import { PaymentStatus } from '../../domain/enums/payment-status.enum';
 
 import { GetOrdersUseCase } from '../../application/use-cases/get-admin-order.use-case';
-
+import { ExportOrdersUseCase } from '../../application/use-cases/export-orders.use-case';
 import { GetOrderByIdUseCase } from '../../application/use-cases/get-admin-order-by-id.use-case';
 
 import { MarkOrderPaidUseCase } from '../../application/use-cases/mark-order-paid.use-case';
@@ -43,9 +45,57 @@ export class AdminOrderController {
 
     private readonly refundOrderUseCase: RefundOrderUseCase,
     private readonly getOrdersUseCase: GetOrdersUseCase,
-
+    private readonly exportOrdersUseCase: ExportOrdersUseCase,
     private readonly getOrderByIdUseCase: GetOrderByIdUseCase,
   ) {}
+
+   // =======================
+// 📁 EXPORT ORDERS
+// =======================
+
+@Get('export')
+async exportOrders(
+  @Query()
+  query: {
+    from?: string;
+
+    to?: string;
+
+    status?: OrderStatus;
+
+    paymentStatus?: PaymentStatus;
+
+    search?: string;
+  },
+
+  @Res()
+  res: Response,
+) {
+  const result = await this.exportOrdersUseCase.execute({
+    from: query.from ? new Date(query.from) : undefined,
+
+    to: query.to ? new Date(query.to) : undefined,
+
+    status: query.status,
+
+    paymentStatus: query.paymentStatus,
+
+    search: query.search,
+  });
+
+  res.setHeader(
+    'Content-Type',
+    result.file.mimeType,
+  );
+
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename="${result.file.name}"`,
+  );
+
+  return res.end(result.buffer);
+}
+
 
   //============================
   // GET ORDERS
@@ -77,6 +127,7 @@ export class AdminOrderController {
     };
   }
 
+ 
   // =======================
   // 💳 MARK ORDER PAID
   // =======================

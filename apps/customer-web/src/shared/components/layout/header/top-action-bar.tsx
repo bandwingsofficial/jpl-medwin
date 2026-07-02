@@ -121,7 +121,7 @@ const wishlistCount =
 
   const actionItems: ActionItem[] = [
     {
-  imageSrc: "/Logo/coin1.png",
+  imageSrc: "/Logo/coin2.png",
   label: "Coins",
   href: "/account/coins",
 },
@@ -399,14 +399,14 @@ const wishlistCount =
                     {imageSrc?.endsWith(".mp4") ? (
                       <video src={imageSrc} autoPlay loop muted playsInline className="h-8 w-8 object-contain" />
                     ) : imageSrc ? (
-                     <Image
-  src={imageSrc}
-  alt={label}
-  width={22}
-  height={22}
-  className="h-6 w-6 object-contain"
-/>
-                    ) : (
+  <Image
+    src={imageSrc}
+    alt={label}
+    width={28} // Updated from 22 to 24 (+2px)
+    height={28} // Updated from 22 to 24 (+2px)
+    className="h-[26px] w-[26px] object-contain" // Updated from h-6 w-6 (24px) to h-[26px] w-[26px] (+2px)
+  />
+) : (
                       <Icon className={`h-5 w-5 transition-all duration-300 ${iconClassName || "text-slate-700"}`} />
                     )}
                   </div>

@@ -19,11 +19,14 @@ const values = [
     title: "Compassion",
     desc: "Understanding and supporting the deep needs of healthcare professionals and the patient lives they actively protect daily.",
   },
-  {
+ {
     icon: (
-      <svg width="24" height="24" viewBox="0 0 28 28" fill="none">
-        <path d="M9 12L11 14L15 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M13 3L16.5 7.5H23L19.5 12L23 16.5H16.5L13 21L9.5 16.5H3L6.5 12L3 7.5H9.5L13 3Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" fill="none" />
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        {/* Lightbulb outline */}
+        <path d="M9 18h6M10 21h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M12 3a7 7 0 00-7 7c0 2.34 1.15 4.42 2.92 5.7A2 2 0 018.7 17.2V18h6.6v-.8a2 2 0 01.78-1.5A7 7 0 0012 3z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        {/* Spark/Innovation ray */}
+        <path d="M12 7v2M10 8h4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
     title: "Innovation",

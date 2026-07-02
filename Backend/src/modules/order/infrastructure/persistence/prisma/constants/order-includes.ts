@@ -7,5 +7,10 @@ export const ORDER_ADDRESS_INCLUDE = {
 
 export const ORDER_DEFAULT_INCLUDE = {
   ...ORDER_ADDRESS_INCLUDE,
+
   returns: true,
+
+  items: true,
+
+  user: true,
 } as const;

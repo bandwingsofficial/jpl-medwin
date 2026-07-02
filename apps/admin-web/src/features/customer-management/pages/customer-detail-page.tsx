@@ -3,7 +3,7 @@
 import { Loader } from "@/shared/components/ui/loader";
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { useCustomer } from "@/features/customer-management/hooks/use-customer";
-
+import { CustomerOrderTable } from "@/features/customer-management/components/customer-order-table";
 interface Props {
   customerId: string;
 }
@@ -121,6 +121,11 @@ export function CustomerDetailPage({ customerId }: Props) {
         </div>
 
       </div>
+          {/* Customer Orders */}
+
+<CustomerOrderTable
+  customerId={customerId}
+/>
     </div>
   );
 }

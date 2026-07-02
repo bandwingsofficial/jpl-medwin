@@ -38,6 +38,8 @@ import { UpdateProductStatusUseCase } from './application/use-cases/update-produ
 
 import { ImportProductsUseCase } from './application/use-cases/import-products.use-case';
 import { ExportProductsUseCase } from './application/use-cases/export-products.use-case';
+import { ExportProductsByCreatedAtUseCase } from './application/use-cases/export-products-by-created-at.use-case';
+import { ExportProductsByUpdatedAtUseCase } from './application/use-cases/export-products-by-updated-at.use-case';
 import { PreviewProductImportUseCase } from './application/use-cases/preview-product-import.use-case';
 import { PublicGetProductsUseCase } from './application/use-cases/public-get-products.use-case';
 
@@ -129,6 +131,8 @@ import { PrismaProductImageRepository } from './infrastructure/persistence/prism
     ExportProductsUseCase,
     PreviewProductImportUseCase,
     PublicGetProductsUseCase,
+    ExportProductsByCreatedAtUseCase,
+    ExportProductsByUpdatedAtUseCase,
 
     // =======================
     // VARIANT USE CASES

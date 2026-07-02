@@ -330,25 +330,47 @@ export function ProductCard({
           "
         >
           {/* TOP-LEFT OVERLAY FLOATING BADGE FOR PRODUCT TAGS */}
-{product.tags?.[0] && (
-  <div className="absolute top-0 left-0 z-10 h-20 w-20 overflow-hidden pointer-events-none rounded-tl-xl">
-    {/* Injecting the inline keyframes for the typing effect seamlessly */}
-    <style>{`
-      @keyframes typing { from { width: 0 } to { width: 100% } }
-      .animate-tag-type {
-        display: inline-block;
-        white-space: nowrap;
-        overflow: hidden;
-        animation: typing 2.5s steps(12, end) infinite alternate;
-      }
-    `}</style>
-    <span className="absolute top-[16px] left-[-26px] block w-[100px] -rotate-45 bg-purple-200 py-0.5 text-center text-[8.5px] font-extrabold uppercase tracking-widest text-purple-900 shadow-md">
-      <span className="animate-tag-type mx-auto max-w-full">
-        {truncateTagText(product.tags[0])}
-      </span>
-    </span>
-  </div>
-)}
+          {product.tags?.[0] && (
+            <div className="absolute top-0 left-0 z-10 h-20 w-20 overflow-hidden pointer-events-none rounded-tl-xl">
+              {/* Injecting the inline keyframes for the typing effect seamlessly */}
+              <style>{`
+                @keyframes typing { from { width: 0 } to { width: 100% } }
+                .animate-tag-type {
+                  display: inline-block;
+                  white-space: nowrap;
+                  overflow: hidden;
+                  animation: typing 2.5s steps(12, end) infinite alternate;
+                }
+              `}</style>
+              <span className="absolute top-[16px] left-[-26px] block w-[100px] -rotate-45 bg-purple-200 py-0.5 text-center text-[8.5px] font-extrabold uppercase tracking-widest text-purple-900 shadow-md">
+                <span className="animate-tag-type mx-auto max-w-full">
+                  {truncateTagText(product.tags[0])}
+                </span>
+              </span>
+            </div>
+          )}
+
+          {/* BOTTOM-LEFT FLOATING BADGE FOR DISCOUNT PERCENTAGE */}
+          {discountPercentage > 0 && (
+            <span
+              className="
+                absolute
+                bottom-2
+                left-2
+                z-10
+                rounded
+                bg-blue-600
+                px-1.5
+                py-0.5
+                text-[10px]
+                font-bold
+                text-white
+                shadow-sm
+              "
+            >
+              {discountPercentage}% OFF
+            </span>
+          )}
 
           <WishlistButton
             productId={product.id}
@@ -392,37 +414,47 @@ export function ProductCard({
             py-2
           "
         >
-          {!!product.brand?.name && (
-            <p
-              className="
-                text-[10px]
-                font-semibold
-                uppercase
-                tracking-wide
-                text-gray-500
-              "
-            >
-              {product.brand.name}
-            </p>
-          )}
+          {/* BRAND & RATING SIDE-BY-SIDE CONTAINER */}
+          <div className="flex items-center justify-between gap-2 min-h-[22px]">
+            {!!product.brand?.name ? (
+              <p
+                className="
+                  text-[11px]
+                  font-bold
+                  uppercase
+                  tracking-wide
+                  text-slate-700
+                  group-hover:bg-gradient-to-r
+              group-hover:from-blue-600
+              group-hover:via-teal-600
+              group-hover:to-emerald-500
+              group-hover:bg-clip-text
+              group-hover:text-transparent
+                "
+              >
+                {product.brand.name}
+              </p>
+            ) : (
+              <div />
+            )}
 
-          {/* RATING & REVIEWS SECTION */}
-          {averageRating > 0 && (
-            <div className="flex items-center gap-1.5 mt-0.5 mb-1 text-xs">
-              <div className="flex items-center gap-0.5 bg-amber-50 px-1.5 py-0.5 rounded text-amber-700 font-bold text-[11px]">
-                <span>{averageRating.toFixed(1)}</span>
-                <Star size={11} className="fill-amber-500 stroke-amber-500" />
+            {/* RATING & REVIEWS ALIGNED RIGHT OF BRAND */}
+            {averageRating > 0 && (
+              <div className="flex items-center gap-1 text-xs flex-shrink-0">
+                <div className="flex items-center gap-0.5 bg-amber-50 px-1.5 py-0.5 rounded text-amber-700 font-bold text-[10px]">
+                  <span>{averageRating.toFixed(1)}</span>
+                  <Star size={10} className="fill-amber-500 stroke-amber-500" />
+                </div>
+                {reviewCount > 0 && (
+                  <span className="text-gray-400 text-[10px] font-medium">
+                    ({reviewCount})
+                  </span>
+                )}
               </div>
-              {reviewCount > 0 && (
-                <span className="text-gray-400 text-[11px] font-medium">
-                  ({reviewCount})
-                </span>
-              )}
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* PRODUCT NAME */}
-
+          {/* PRODUCT NAME (WITH PREMIUM GRADIENT SHINY EFFECT ON HOVER) */}
           <h3
             className="
               min-h-[40px]
@@ -431,6 +463,9 @@ export function ProductCard({
               font-semibold
               leading-[21px]
               text-gray-900
+              transition-all
+              duration-300
+              
             "
           >
             {product.name}
@@ -493,20 +528,6 @@ export function ProductCard({
                 gap-2
               "
             >
-              {discountPercentage >
-                0 && (
-                <span
-                  className="
-                    text-[12px]
-                    font-semibold
-                    text-teal-600
-                  "
-                >
-                  {discountPercentage}
-                  % Off
-                </span>
-              )}
-
               <span
                 className="
                   text-[10px]

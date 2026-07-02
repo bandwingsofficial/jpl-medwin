@@ -570,30 +570,7 @@ const isWishlistLoading =
 </button>
       </div>
 
-      {/* ====================================================== */}
-      {/* DELIVERY INFO */}
-      {/* ====================================================== */}
-
-      <div
-        className="
-          rounded-xl
-          border
-          border-blue-100
-          bg-blue-50
-          p-4
-        "
-      >
-        <p
-          className="
-            text-sm
-            font-medium
-            text-blue-900
-          "
-        >
-          Delivery within 3–7
-          business days
-        </p>
-      </div>
+      
     </div>
   );
 }

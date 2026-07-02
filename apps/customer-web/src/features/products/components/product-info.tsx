@@ -136,6 +136,30 @@ export function ProductInfo({
           </p>
         )}
       </div>
+      {/* ====================================================== */}
+      {/* DELIVERY INFO */}
+      {/* ====================================================== */}
+
+      <div
+        className="
+          rounded-xl
+          border
+          border-blue-100
+          bg-blue-50
+          p-4
+        "
+      >
+        <p
+          className="
+            text-sm
+            font-medium
+            text-blue-900
+          "
+        >
+          Delivery within 3–7
+          business days
+        </p>
+      </div>
 
       {/* META */}
       <div
@@ -193,14 +217,16 @@ export function ProductInfo({
                 <span
                   key={note}
                   className="
-                    rounded-full
-                    bg-orange-50
-                    px-3
-                    py-1
-                    text-xs
-                    font-semibold
-                    text-orange-700
-                  "
+  rounded-full
+  bg-purple-100
+  px-3
+  py-1
+  text-xs
+  font-semibold
+  text-purple-700
+  border
+  border-purple-200
+"
                 >
                   {note}
                 </span>

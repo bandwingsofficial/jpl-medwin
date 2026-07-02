@@ -40,8 +40,7 @@ export function CartPage() {
    | PREVENT MULTIPLE UNLOCKS
    |--------------------------------------------------------------------------
    */
-  const hasUnlockedCart =
-    useRef(false);
+ 
 
   useEffect(() => {
     setMounted(true);
@@ -75,53 +74,6 @@ const cart = data;
    | without deleting checkout session.
    |--------------------------------------------------------------------------
    */
-  useEffect(() => {
-    if (!mounted) {
-      return;
-    }
-
-    if (!cart) {
-      return;
-    }
-
-    if (
-      cart.status !== "LOCKED"
-    ) {
-      return;
-    }
-
-    if (
-      hasUnlockedCart.current
-    ) {
-      return;
-    }
-
-    hasUnlockedCart.current =
-      true;
-
-    async function unlockCart() {
-      try {
-        await cartApi.unlockCart();
-        /*
-         |--------------------------------------------------------------------------
-         | REFRESH CART
-         |--------------------------------------------------------------------------
-         */
-        await refetch();
-      } catch (error) {
-        console.error(
-          "AUTO UNLOCK CART ERROR:",
-          error
-        );
-      }
-    }
-
-    unlockCart();
-  }, [
-    mounted,
-    cart,
-    refetch,
-  ]);
 
   /*
    |--------------------------------------------------------------------------

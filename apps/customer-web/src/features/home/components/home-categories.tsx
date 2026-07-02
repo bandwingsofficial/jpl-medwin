@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-import { ChevronRight } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 import { useCategories } from "@/features/category/hooks/use-category";
 
@@ -16,6 +17,9 @@ export function HomeCategories() {
     isError,
   } = useCategories();
 
+  // State to control inline viewing expansion
+  const [isExpanded, setIsExpanded] = useState(false);
+
   // 🔹 LOADING
   if (isLoading) {
     return <CategorySkeleton />;
@@ -26,27 +30,17 @@ export function HomeCategories() {
     return null;
   }
 
-  /*
-   |--------------------------------------------------------------------------
-   | MOBILE => ONLY 6
-   |--------------------------------------------------------------------------
-   */
-
-  const mobileCategories =
-    categories.slice(0, 6);
+  // 🔹 CHECK MORE THAN 6
+  const hasMore = categories.length > 6;
 
   /*
    |--------------------------------------------------------------------------
-   | DESKTOP => 12
+   | RENDERING SLICES BASED ON TOGGLE STATE
    |--------------------------------------------------------------------------
    */
-
-  const desktopCategories =
-    categories.slice(0, 12);
-
-  // 🔹 CHECK MORE
-  const hasMore =
-    categories.length > 12;
+  const displayedCategories = isExpanded 
+    ? categories  
+    : categories.slice(0, 6);
 
   return (
     <section className="space-y-6">
@@ -70,79 +64,86 @@ export function HomeCategories() {
       {/* 🔥 HEADER */}
       <div className="flex items-center justify-between px-1">
         <div>
-                  <div className="relative h-12 w-60 md:h-16 md:w-80">
-  <Image
-    src="/Images/image13.png"
-    alt="Top Categories Banner"
-    fill
-    className="object-contain object-left scale-125 md:scale-150 origin-left"
-    priority
-  />
-</div>
+          <div className="relative h-12 w-60 md:h-16 md:w-80">
+            <Image
+              src="/Images/image13.png"
+              alt="Top Categories Banner"
+              fill
+              className="object-contain object-left scale-125 md:scale-150 origin-left"
+              priority
+            />
+          </div>
         </div>
 
-        {/* DESKTOP VIEW */}
+        {/* DROPDOWN ACTIONS */}
         {hasMore && (
-          <Link
-            href="/categories"
-            className="
-              hidden
-              text-sm
-              font-semibold
-              text-teal-600
-              transition-colors
-              duration-300
-              hover:text-teal-700
-              hover:underline
+          <>
+            {/* DESKTOP BROWSER DROP-TRIGGER BUTTON */}
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="
+                hidden
+                items-center
+                gap-1
+                text-sm
+                font-semibold
+                text-blue-600
+                transition-colors
+                duration-300
+                hover:text-blue-700
+                hover:underline
+                md:flex
+              "
+            >
+              {isExpanded ? "Show Less" : "View All"}
+              <ChevronDown
+                size={16}
+                className={`transition-transform duration-300 ${
+                  isExpanded ? "rotate-180" : "rotate-0"
+                }`}
+              />
+            </button>
 
-              md:block
-            "
-          >
-            View All
-          </Link>
-        )}
-
-        {/* MOBILE VIEW */}
-        {hasMore && (
-          <Link
-            href="/categories"
-            className="
-              flex
-              h-8
-              w-8
-              items-center
-              justify-center
-              rounded-full
-              bg-gray-50
-              transition-transform
-              active:scale-95
-
-              md:hidden
-            "
-          >
-            <ChevronRight
-              size={18}
-              strokeWidth={2.2}
-              className="text-[#64748B]"
-            />
-          </Link>
+            {/* MOBILE BROWSER DROP-TRIGGER ICON */}
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="
+                flex
+                h-8
+                w-8
+                items-center
+                justify-center
+                rounded-full
+                bg-gray-50
+                transition-transform
+                active:scale-95
+                md:hidden
+              "
+            >
+              <ChevronDown
+                size={18}
+                strokeWidth={2.2}
+                className={`text-[#64748B] transition-transform duration-300 ${
+                  isExpanded ? "rotate-180" : "rotate-0"
+                }`}
+              />
+            </button>
+          </>
         )}
       </div>
 
       {/* ===================================================== */}
       {/* 🔥 MOBILE GRID */}
       {/* ===================================================== */}
-
       <div
         className="
           grid
           grid-cols-3
           gap-4
-
           md:hidden
         "
       >
-        {mobileCategories.map((category) => (
+        {displayedCategories.map((category) => (
           <Link
             key={category.id}
             href={`/categories/${category.id}`}
@@ -159,16 +160,14 @@ export function HomeCategories() {
                 border-gray-100
                 bg-white
                 shadow-sm
-                transition-transform
+                transition-all
                 duration-200
                 active:scale-95
+                group-hover:border-blue-500/40
               "
             >
               <Image
-                src={
-                  category.imageUrl ||
-                  "/placeholder.png"
-                }
+                src={category.imageUrl || "/placeholder.png"}
                 alt={category.name}
                 width={400}
                 height={400}
@@ -194,7 +193,8 @@ export function HomeCategories() {
                   leading-snug
                   text-gray-800
                   transition-colors
-                  group-hover:text-teal-600
+                  duration-200
+                  group-hover:text-blue-600
                 "
               >
                 {category.name}
@@ -207,20 +207,18 @@ export function HomeCategories() {
       {/* ===================================================== */}
       {/* 🔥 DESKTOP/TABLET GRID */}
       {/* ===================================================== */}
-
       <div
         className="
           hidden
           grid-cols-2
           gap-5
-
           sm:grid-cols-3
           md:grid
           md:grid-cols-4
           lg:grid-cols-6
         "
       >
-        {desktopCategories.map((category) => (
+        {displayedCategories.map((category) => (
           <Link
             key={category.id}
             href={`/categories/${category.id}`}
@@ -244,19 +242,16 @@ export function HomeCategories() {
                 ease-out
                 
                 group-hover:-translate-y-1.5
-                group-hover:border-teal-500/30
+                group-hover:border-blue-500/40
                 group-hover:bg-white
-                group-hover:shadow-[0_12px_24px_-8px_rgba(13,148,136,0.15)]
+                group-hover:shadow-[0_12px_24px_-8px_rgba(37,99,235,0.15)]
               "
             >
-              {/* Subtle radial light flash effect on background corner */}
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.06),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              {/* Subtle Blue radial light flash effect on background corner */}
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.08),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
               <Image
-                src={
-                  category.imageUrl ||
-                  "/placeholder.png"
-                }
+                src={category.imageUrl || "/placeholder.png"}
                 alt={category.name}
                 width={400}
                 height={400}
@@ -284,7 +279,7 @@ export function HomeCategories() {
                   text-gray-700
                   transition-colors
                   duration-200
-                  group-hover:text-teal-600
+                  group-hover:text-blue-600
                 "
               >
                 {category.name}
@@ -312,7 +307,6 @@ function CategorySkeleton() {
           grid
           grid-cols-3
           gap-4
-
           md:hidden
         "
       >
@@ -326,7 +320,6 @@ function CategorySkeleton() {
                 bg-gray-100
               "
             />
-
             <Skeleton
               className="
                 mx-auto
@@ -346,14 +339,13 @@ function CategorySkeleton() {
           hidden
           grid-cols-2
           gap-5
-
           sm:grid-cols-3
           md:grid
           md:grid-cols-4
           lg:grid-cols-6
         "
       >
-        {[...Array(12)].map((_, i) => (
+        {[...Array(6)].map((_, i) => (
           <div key={i} className="space-y-3">
             <Skeleton
               className="
@@ -363,7 +355,6 @@ function CategorySkeleton() {
                 bg-gray-100
               "
             />
-
             <Skeleton
               className="
                 mx-auto

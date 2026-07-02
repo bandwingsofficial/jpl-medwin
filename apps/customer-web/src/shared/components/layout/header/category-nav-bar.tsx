@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { BrandsMegaMenu } from "./brands-mega-menu";
 import { CategoryMegaMenu } from "./category-mega-menu";
 import { Phone } from "lucide-react";
+import { CollectionMegaMenu } from "./collection-mega-menu";
 
 import {
   useCollections,
@@ -82,6 +83,10 @@ export function CategoryNavBar() {
 
   const [showCategory, setShowCategory] =
     useState(false);
+  const [
+    hoveredCollection,
+    setHoveredCollection,
+  ] = useState<string | null>(null);
 
   const [isMobile, setIsMobile] =
     useState(false);
@@ -113,9 +118,8 @@ export function CategoryNavBar() {
 
   return (
     <>
-      {/* Outer wrapper provides container-relative grid bounds instead of the small inner text link bounds */}
-      <div className="relative border-b bg-teal-600">
-        <div
+      {/* Outer wrapper updated with blue to green gradient */}
+  <div className="relative border-b border-white/10 bg-gradient-to-r from-teal-600 to-emerald-500">   <div
           className="
             mx-auto
             flex
@@ -162,14 +166,17 @@ export function CategoryNavBar() {
                       flex-shrink-0
                       rounded-md
                       border
-                      border-slate-200
-                      bg-slate-50
+                      border-white/20
+                      bg-white/10
+                      backdrop-blur-sm
                       px-3
                       py-2
                       text-[13px]
                       whitespace-nowrap
-                      text-teal-800
+                      text-white
                       font-semibold
+                      hover:bg-white/20
+                      transition-colors
                     "
                   >
                     {item.label}
@@ -186,14 +193,17 @@ export function CategoryNavBar() {
                     flex-shrink-0
                     rounded-md
                     border
-                    border-slate-200
-                    bg-slate-50
+                    border-white/20
+                    bg-white/10
+                    backdrop-blur-sm
                     px-3
                     py-2
                     text-[13px]
                     whitespace-nowrap
-                    text-teal-800
+                    text-white
                     font-semibold
+                    hover:bg-white/20
+                    transition-colors
                   "
                 >
                   {collection.name}
@@ -293,12 +303,42 @@ export function CategoryNavBar() {
 
               {/* COLLECTIONS */}
               {collections.map((collection) => (
-                <ShinyNavLink
+                <div
                   key={collection.id}
-                  href={`/collections/${collection.id}`}
+                  className="flex items-center h-full flex-shrink-0"
+                  onMouseEnter={() =>
+                    setHoveredCollection(collection.id)
+                  }
+                  onMouseLeave={() =>
+                    setHoveredCollection(null)
+                  }
                 >
-                  {collection.name}
-                </ShinyNavLink>
+                  <ShinyNavLink
+                    href={`/collections/${collection.id}`}
+                  >
+                    {collection.name}
+                  </ShinyNavLink>
+
+                  {hoveredCollection === collection.id && (
+                    <div
+                      className="
+                        absolute
+                        left-1/2
+                        top-full
+                        z-50
+                        mt-0
+                        -translate-x-1/2
+                        animate-in
+                        fade-in
+                        duration-150
+                      "
+                    >
+                      <CollectionMegaMenu
+                        collectionId={collection.id}
+                      />
+                    </div>
+                  )}
+                </div>
               ))}
 
               {/* PHONE (Included directly after collection elements to automatically inherit the design layout gaps) */}
@@ -333,7 +373,7 @@ export function CategoryNavBar() {
           .shiny-glow {
             background: radial-gradient(
               80px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
-              rgba(255, 255, 255, 0.3),
+              rgba(255, 255, 255, 0.35),
               transparent 80%
             );
           }

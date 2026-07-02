@@ -1,19 +1,37 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/shared/components/ui/button";
-import { ProductTable } from "./product-table";
-import { CreateProductModal } from "./create-product-modal";
-import { ImportProductsModal } from "./import-products-modal";
-import { useProductExport } from "../hooks/use-product-export";
-import { useProduct } from "../hooks/use-product";
+
 import { Download } from "lucide-react";
 
-export function ProductPage() {
-  const [open, setOpen] = useState(false);
-  const [importOpen, setImportOpen] = useState(false);
+import { Button } from "@/shared/components/ui/button";
 
-  const { productsQuery } = useProduct();
+import { ProductTable } from "./product-table";
+
+import { CreateProductModal } from "./create-product-modal";
+
+import { ImportProductsModal } from "./import-products-modal";
+
+import ExportProductsDialog from "./export-products-dialog";
+
+import { useProduct } from "../hooks/use-product";
+
+export function ProductPage() {
+  const [open, setOpen] =
+    useState(false);
+
+  const [
+    importOpen,
+    setImportOpen,
+  ] = useState(false);
+
+  const [
+    exportOpen,
+    setExportOpen,
+  ] = useState(false);
+
+  const { productsQuery } =
+    useProduct();
 
   const {
     data: responseBody,
@@ -21,17 +39,16 @@ export function ProductPage() {
   } = productsQuery;
 
   const totalProductsCount =
-    responseBody?.pagination?.total ??
+    responseBody?.pagination
+      ?.total ??
     responseBody?.data?.length ??
     0;
-
-  const { exportProducts } =
-    useProductExport();
 
   return (
     <div className="space-y-6">
       {/* HEADER ACTION SECTION */}
-      <div className="flex p-0 items-start justify-between gap-4">
+
+      <div className="flex items-start justify-between gap-4 p-0">
         <div>
           <h1
             className="
@@ -43,8 +60,8 @@ export function ProductPage() {
               bg-clip-text
               text-[28px]
               font-bold
-              text-transparent
               tracking-tight
+              text-transparent
             "
           >
             Products
@@ -58,7 +75,8 @@ export function ProductPage() {
               text-teal-600
             "
           >
-            Total Products Available:{" "}
+            Total Products
+            Available:{" "}
             {isLoading
               ? "..."
               : totalProductsCount}
@@ -67,30 +85,35 @@ export function ProductPage() {
 
         <div className="flex items-center gap-3">
           {/* EXPORT EXCEL BUTTON */}
+
           <Button
             variant="primary"
             disabled={isLoading}
-            onClick={exportProducts}
+            onClick={() =>
+              setExportOpen(true)
+            }
             className="
-      inline-flex
-      shrink-0
-      items-center
-      gap-2
-      rounded-lg
-      bg-teal-600
-      px-4
-      py-2.5
-      text-sm
-      font-medium
-      text-white
-      transition
-      hover:bg-teal-700
-    "
-          > <Download size={16} />
+              inline-flex
+              shrink-0
+              items-center
+              gap-2
+              rounded-lg
+              bg-teal-600
+              px-4
+              py-2.5
+              text-sm
+              font-medium
+              text-white
+              transition
+              hover:bg-teal-700
+            "
+          >
+            <Download size={16} />
             Export Excel
           </Button>
 
           {/* IMPORT EXCEL BUTTON */}
+
           <Button
             variant="primary"
             disabled={isLoading}
@@ -99,37 +122,40 @@ export function ProductPage() {
             }
             className="
               h-10
-              px-4
               rounded-xl
               bg-teal-600
-              text-white
-              hover:bg-teal-700
-              transition-all
-              font-medium
+              px-4
               text-sm
+              font-medium
+              text-white
               shadow-sm
               shadow-teal-600/10
+              transition-all
+              hover:bg-teal-700
             "
           >
             Import Excel
           </Button>
 
           {/* ADD PRODUCT BUTTON */}
+
           <Button
             disabled={isLoading}
-            onClick={() => setOpen(true)}
+            onClick={() =>
+              setOpen(true)
+            }
             className="
               h-10
-              px-4
               rounded-xl
               bg-teal-600
-              text-white
-              hover:bg-teal-700
-              transition-all
-              font-medium
+              px-4
               text-sm
+              font-medium
+              text-white
               shadow-sm
               shadow-teal-600/10
+              transition-all
+              hover:bg-teal-700
             "
           >
             + Add Product
@@ -137,10 +163,12 @@ export function ProductPage() {
         </div>
       </div>
 
-      {/* PRODUCT DATA TABLE VIEW CONTAINER */}
+      {/* PRODUCT TABLE */}
+
       <ProductTable />
 
-      {/* DATA MANIPULATION LAYER: MODALS */}
+      {/* MODALS */}
+
       <CreateProductModal
         open={open}
         onClose={() =>
@@ -152,6 +180,13 @@ export function ProductPage() {
         open={importOpen}
         onClose={() =>
           setImportOpen(false)
+        }
+      />
+
+      <ExportProductsDialog
+        open={exportOpen}
+        onClose={() =>
+          setExportOpen(false)
         }
       />
     </div>

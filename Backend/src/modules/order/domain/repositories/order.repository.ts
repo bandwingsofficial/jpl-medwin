@@ -124,4 +124,22 @@ export interface OrderRepository {
   findByPeriod(params: { from?: Date; to?: Date }): Promise<Order[]>;
 
   countByStatus(params: { status: OrderStatus; from?: Date; to?: Date }): Promise<number>;
+
+  findManyForExport(params: {
+  search?: string;
+
+  status?: OrderStatus;
+
+  paymentStatus?: PaymentStatus;
+
+  userId?: string;
+
+  from?: Date;
+
+  to?: Date;
+
+  sortBy?: string;
+
+  sortOrder?: 'asc' | 'desc';
+}): Promise<any[]>;
 }

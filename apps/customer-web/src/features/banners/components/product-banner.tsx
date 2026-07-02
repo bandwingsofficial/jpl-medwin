@@ -176,7 +176,7 @@ export function ProductBanner({
           className="
             h-auto
             w-full
-            object-normal
+            object-contain
             transition-all
             duration-500
           "

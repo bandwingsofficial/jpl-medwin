@@ -49,7 +49,7 @@ export function CoinsPage() {
       <div className="flex items-center gap-2 pb-1">
         <div className="bg-amber-50 h-7 w-7 rounded-full overflow-hidden flex items-center justify-center shrink-0">
           <Image 
-            src="/Logo/coin.png" 
+            src="/Logo/coin2.png" 
             alt="Coins" 
             width={28} 
             height={28} 

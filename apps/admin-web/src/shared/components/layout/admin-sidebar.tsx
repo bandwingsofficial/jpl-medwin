@@ -16,7 +16,8 @@ import {
   Folder,
   GitFork,
   Layers,
-  Bookmark,
+  Tag,
+  BadgeCheck,
   Ticket,
   Coins,
   LogOut,
@@ -27,13 +28,13 @@ import {
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Products", href: "/products", icon: Package }, // Swapped to Package for explicit inventory/product feel
+  { name: "Products", href: "/products", icon: Package },
   { name: "Orders", href: "/orders", icon: ShoppingCart },
   { name: "Customers", href: "/customers", icon: Users },
   { name: "Categories", href: "/categories", icon: Folder },
-  { name: "Subcategories", href: "/sub-categories", icon: GitFork }, // Swapped to GitFork to show an explicit child branch/sub-level relation
-  { name: "Mini-Categories", href: "/mini", icon: Layers }, // Keeps Layers to showcase a micro/nested deep stack
-  { name: "Brands", href: "/brands", icon: Bookmark }, // Swapped to Bookmark/Tag alternative to look like premium brand labeling
+  { name: "Subcategories", href: "/sub-categories", icon: GitFork }, 
+  { name: "Mini-Categories", href: "/mini", icon: Layers }, 
+  { name: "Brands", href: "/brands", icon: Tag }, 
   { name: "Coupons", href: "/coupons", icon: Ticket },
   { name: "Coins", href: "/coins", icon: Coins },
   { name: "Collections", href: "/collections", icon: LayoutGrid },

@@ -48,6 +48,10 @@ import { OrderNumberService } from './application/services/order-number.service'
 import { OrderResponseBuilderService } from './application/services/order-response-builder.service';
 
 import { OrderAddressValidationService } from './application/services/order-address-validation.service';
+import { OrderExportBuilderService } from './application/services/order-export-builder.service';
+import { OrderExportMapperService } from './application/services/order-export.mapper.service';
+import { OrderExportFlattenerService } from './application/services/order-export-flattener.service';
+import { OrderExportExcelService } from './application/services/order-export-excel.service';
 
 // =======================
 // USE CASES
@@ -76,6 +80,7 @@ import { RefundOrderUseCase } from './application/use-cases/refund-order.use-cas
 import { GetOrdersUseCase } from './application/use-cases/get-admin-order.use-case';
 
 import { GetOrderByIdUseCase } from './application/use-cases/get-admin-order-by-id.use-case';
+import { ExportOrdersUseCase } from './application/use-cases/export-orders.use-case';
 
 // =======================
 // IMPORTS
@@ -126,6 +131,10 @@ import { SavedAddressModule } from '../saved-address/saved-address.module';
     OrderNumberService,
     OrderResponseBuilderService,
     OrderAddressValidationService,
+    OrderExportBuilderService,
+    OrderExportMapperService,
+    OrderExportFlattenerService,
+    OrderExportExcelService,
 
     // =======================
     // USE CASES
@@ -153,6 +162,7 @@ import { SavedAddressModule } from '../saved-address/saved-address.module';
 
     GetOrderByIdUseCase,
     GetOrdersUseCase,
+    ExportOrdersUseCase,
   ],
 
   exports: [
@@ -180,6 +190,11 @@ import { SavedAddressModule } from '../saved-address/saved-address.module';
 
     OrderNumberService,
     OrderResponseBuilderService,
+    OrderAddressValidationService,
+    OrderExportBuilderService,
+    OrderExportMapperService,
+    OrderExportFlattenerService,
+    OrderExportExcelService,
 
     // =======================
     // USE CASES
@@ -204,6 +219,9 @@ import { SavedAddressModule } from '../saved-address/saved-address.module';
     DeliverOrderUseCase,
 
     RefundOrderUseCase,
+    GetOrderByIdUseCase,
+    GetOrdersUseCase,
+    ExportOrdersUseCase,
   ],
 })
 export class OrderModule {}

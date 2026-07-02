@@ -9,7 +9,8 @@ import { ProductDescription } from "@/features/products/components/product-descr
 import { ProductDetailsError } from "@/features/products/components/product-details-error";
 import { ProductDetailsSkeleton } from "@/features/products/components/product-details-skeleton";
 import { ProductGallery } from "@/features/products/components/product-gallery";
-import { ProductInfo } from "@/features/products/components/product-info";
+import { ProductHeaderInfo } from "@/features/products/components/ProductHeaderInfo";
+import { ProductCommercialDetails } from "@/features/products/components/ProductCommercialDetails";
 import { ProductSpecifications } from "@/features/products/components/product-specifications";
 import { ProductVariantSelector } from "@/features/products/components/product-variant-selector";
 
@@ -26,78 +27,50 @@ export function ProductDetailsPage({
    |--------------------------------------------------------------------------
    | API
    |--------------------------------------------------------------------------
-   |
    */
 
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-  } = useProductDetails(productSlug);
-
+  const { data, isLoading, isError, error } = useProductDetails(productSlug);
   const product = data?.data;
 
   /*
    |--------------------------------------------------------------------------
    | VARIANT STATE
    |--------------------------------------------------------------------------
-   |
    */
 
-  const [selectedVariantId, setSelectedVariantId] =
-    useState<string | null>(null);
+  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
 
   /*
    |--------------------------------------------------------------------------
    | SELECTED VARIANT
    |--------------------------------------------------------------------------
-   |
    */
 
-  const selectedVariant =
-    useMemo<ProductVariant | null>(() => {
-      if (!product?.variants?.length) {
-        return null;
-      }
+  const selectedVariant = useMemo<ProductVariant | null>(() => {
+    if (!product?.variants?.length) {
+      return null;
+    }
 
-      return (
-        product.variants.find(
-          (variant) =>
-            variant.id ===
-            selectedVariantId
-        ) || product.variants[0]
-      );
-    }, [
-      product?.variants,
-      selectedVariantId,
-    ]);
+    return (
+      product.variants.find((variant) => variant.id === selectedVariantId) ||
+      product.variants[0]
+    );
+  }, [product?.variants, selectedVariantId]);
 
   /*
    |--------------------------------------------------------------------------
-   | LOADING
+   | LOADING / ERROR STATES
    |--------------------------------------------------------------------------
-   |
    */
 
   if (isLoading) {
     return <ProductDetailsSkeleton />;
   }
 
-  /*
-   |--------------------------------------------------------------------------
-   | ERROR
-   |--------------------------------------------------------------------------
-   |
-   */
-
   if (isError || !product) {
     return (
       <ProductDetailsError
-        message={
-          error?.message ||
-          "Failed to load product."
-        }
+        message={error?.message || "Failed to load product."}
       />
     );
   }
@@ -134,10 +107,7 @@ export function ProductDetailsPage({
           lg:gap-12
         "
       >
-        {/* ====================================================== */}
         {/* LEFT SIDE (GALLERY) */}
-        {/* ====================================================== */}
-
         <div
           className="
             relative
@@ -159,26 +129,16 @@ export function ProductDetailsPage({
           "
         >
           <ProductGallery
-            mainImage={
-              selectedVariant?.images
-                ?.main ||
-              product.images?.main
-            }
+            mainImage={selectedVariant?.images?.main || product.images?.main}
             images={
-              selectedVariant?.images
-                ?.gallery?.length
-                ? selectedVariant
-                    .images.gallery
-                : product.images
-                    ?.gallery || []
+              selectedVariant?.images?.gallery?.length
+                ? selectedVariant.images.gallery
+                : product.images?.gallery || []
             }
           />
         </div>
 
-        {/* ====================================================== */}
         {/* RIGHT SIDE (INFO & ACTIONS) */}
-        {/* ====================================================== */}
-
         <div
           className="
             flex
@@ -200,38 +160,40 @@ export function ProductDetailsPage({
             lg:gap-6
           "
         >
-          {/* PRODUCT INFO */}
-          <ProductInfo
-            product={product}
-            selectedVariant={
-              selectedVariant
-            }
-          />
-
-          {/* VARIANT SELECTOR */}
-          {!!product.variants
-            ?.length && (
-            <ProductVariantSelector
-              variants={
-                product.variants
-              }
-              selectedVariantId={
-                selectedVariant?.id ||
-                ""
-              }
-              onChange={
-                setSelectedVariantId
-              }
+          {/* 1. HEADER INFO (Brand, Title, Delivery, Ratings) */}
+          <div className="order-1 lg:order-none">
+            <ProductHeaderInfo
+              product={product}
+              selectedVariant={selectedVariant}
             />
+          </div>
+
+          {/* 2. VARIANT SELECTOR */}
+          {!!product.variants?.length && (
+            <div className="order-2 lg:order-none">
+              <ProductVariantSelector
+                variants={product.variants}
+                selectedVariantId={selectedVariant?.id || ""}
+                onChange={setSelectedVariantId}
+              />
+            </div>
           )}
 
-          {/* ACTIONS */}
-          <ProductActions
-            product={product}
-            selectedVariant={
-              selectedVariant
-            }
-          />
+          {/* 3. ACTIONS (ADD TO CART) */}
+          <div className="order-3 lg:order-none">
+            <ProductActions
+              product={product}
+              selectedVariant={selectedVariant}
+            />
+          </div>
+
+          {/* 4. COMMERCIAL DETAILS (Pricing, Stock, Specifications, Features) */}
+          <div className="order-4 lg:order-none flex flex-col gap-5 lg:gap-0">
+            <ProductCommercialDetails
+              product={product}
+              selectedVariant={selectedVariant}
+            />
+          </div>
         </div>
       </div>
 
@@ -239,7 +201,7 @@ export function ProductDetailsPage({
       {/* BOTTOM SECTION */}
       {/* ====================================================== */}
 
-      <div 
+      <div
         className="
           mt-6 
           space-y-6
@@ -261,38 +223,20 @@ export function ProductDetailsPage({
       >
         {/* DESCRIPTION */}
         <ProductDescription
-          descriptions={
-            product.descriptions
-          }
-          packing={
-            product.packing || []
-          }
-          directionOfUse={
-            product.directionOfUse ||
-            []
-          }
-          additionalInfo={
-            product.additionalInfo ||
-            []
-          }
+          descriptions={product.descriptions}
+          packing={product.packing || []}
+          directionOfUse={product.directionOfUse || []}
+          additionalInfo={product.additionalInfo || []}
           faq={product.faq || []}
         />
 
         {/* SPECIFICATIONS */}
-        <ProductSpecifications
-          specifications={
-            product.specifications ||
-            []
-          }
-        />
-        
+        <ProductSpecifications specifications={product.specifications || []} />
+
+        {/* RELATED PRODUCTS */}
         <RelatedProducts
-          currentProductId={
-            product.id
-          }
-          categoryId={
-            product.category?.id
-          }
+          currentProductId={product.id}
+          categoryId={product.category?.id}
         />
       </div>
     </div>

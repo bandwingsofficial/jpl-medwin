@@ -56,6 +56,8 @@ import { RolesGuard } from '@/modules/auth/presentation/guards/role.guard';
 import { UserRole } from '@/modules/auth/domain/enums/user-role.enum';
 import { Roles } from '@/modules/category/presentation/decorators/roles.decorator';
 import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
+import { ExportProductsByUpdatedAtUseCase } from '../../application/use-cases/export-products-by-updated-at.use-case';
+import { ExportProductsByCreatedAtUseCase } from '../../application/use-cases/export-products-by-created-at.use-case';
 
 @Controller('admin/products')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -73,6 +75,8 @@ export class AdminProductController {
     private readonly previewImportUseCase: PreviewProductImportUseCase,
     private readonly importProductsUseCase: ImportProductsUseCase,
     private readonly exportProductsUseCase: ExportProductsUseCase,
+    private readonly exportProductsByCreatedAtUseCase: ExportProductsByCreatedAtUseCase,
+    private readonly exportProductsByUpdatedAtUseCase: ExportProductsByUpdatedAtUseCase,
 
     // 🔥 VARIANTS
     // private readonly deleteVariantUseCase: DeleteVariantUseCase,
@@ -1022,6 +1026,54 @@ export class AdminProductController {
 
     return res.end(buffer);
   }
+
+@Get('export/created-at')
+async exportByCreatedAt(
+  @Query('fromDate') fromDate: string,
+  @Query('toDate') toDate: string,
+  @Res() res: Response,
+) {
+  const result = await this.exportProductsByCreatedAtUseCase.execute(
+    new Date(fromDate),
+    new Date(toDate),
+  );
+
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  );
+
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename="${result.file.name}"`,
+  );
+
+  return res.end(result.buffer);
+}
+
+@Get('export/updated-at')
+async exportByUpdatedAt(
+  @Query('fromDate') fromDate: string,
+  @Query('toDate') toDate: string,
+  @Res() res: Response,
+) {
+  const result = await this.exportProductsByUpdatedAtUseCase.execute(
+    new Date(fromDate),
+    new Date(toDate),
+  );
+
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  );
+
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename="${result.file.name}"`,
+  );
+
+  return res.end(result.buffer);
+}
   // ================= GET product + details =================
 
   @Get()

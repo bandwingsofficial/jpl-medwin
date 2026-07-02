@@ -136,152 +136,302 @@ export class PrismaOrderRepository implements OrderRepository {
   }
 
   async findMany(params: {
-    page?: number;
+  page?: number;
 
-    limit?: number;
+  limit?: number;
 
-    search?: string;
+  search?: string;
 
-    status?: OrderStatus;
+  status?: OrderStatus;
 
-    paymentStatus?: PaymentStatus;
+  paymentStatus?: PaymentStatus;
 
-    userId?: string;
+  userId?: string;
 
-    from?: Date;
+  from?: Date;
 
-    to?: Date;
+  to?: Date;
 
-    sortBy?: string;
+  sortBy?: string;
 
-    sortOrder?: 'asc' | 'desc';
-  }): Promise<{
-    data: Order[];
+  sortOrder?: 'asc' | 'desc';
+}): Promise<{
+  data: Order[];
 
-    total: number;
-  }> {
-    const page = params.page ?? 1;
+  total: number;
+}> {
+  const where: Prisma.OrderWhereInput = {
+    deletedAt: null,
+  };
 
-    const limit = params.limit ?? 10;
+  // =======================
+  // 🔍 SEARCH
+  // =======================
 
-    const skip = (page - 1) * limit;
-
-    const where: Prisma.OrderWhereInput = {
-      deletedAt: null,
-    };
-
-    // =======================
-    // 🔍 SEARCH
-    // =======================
-
-    if (params.search) {
-      where.OR = [
-        {
-          orderNumber: {
-            contains: params.search,
-            mode: 'insensitive',
-          },
+  if (params.search) {
+    where.OR = [
+      {
+        orderNumber: {
+          contains: params.search,
+          mode: 'insensitive',
         },
-
-        {
-          user: {
-            is: {
-              name: {
-                contains: params.search,
-                mode: 'insensitive',
-              },
+      },
+      {
+        user: {
+          is: {
+            name: {
+              contains: params.search,
+              mode: 'insensitive',
             },
           },
         },
-      ];
-    }
-
-    // =======================
-    // 📦 STATUS
-    // =======================
-
-    if (params.status) {
-      where.status = params.status;
-    }
-
-    // =======================
-    // 💳 PAYMENT STATUS
-    // =======================
-
-    if (params.paymentStatus) {
-      where.paymentStatus = params.paymentStatus;
-    }
-
-    // =======================
-    // 👤 USER
-    // =======================
-
-    if (params.userId) {
-      where.userId = params.userId;
-    }
-
-    // =======================
-    // 📅 DATE FILTER
-    // =======================
-
-    if (params.from || params.to) {
-      where.createdAt = {
-        ...(params.from && {
-          gte: params.from,
-        }),
-
-        ...(params.to && {
-          lte: params.to,
-        }),
-      };
-    }
-
-    // =======================
-    // ↕️ SORTING
-    // =======================
-
-    const allowedSortFields = [
-      'createdAt',
-      'updatedAt',
-      'orderNumber',
-      'status',
-      'paymentStatus',
-      'totalAmount',
+      },
     ];
+  }
 
-    const sortBy = allowedSortFields.includes(params.sortBy ?? '') ? params.sortBy! : 'createdAt';
+  
 
-    const sortOrder = params.sortOrder ?? 'desc';
+  // =======================
+  // 📦 STATUS
+  // =======================
 
-    const [orders, total] = await Promise.all([
-      this.prisma.order.findMany({
-        where,
+  if (params.status) {
+    where.status = params.status;
+  }
 
-        skip,
+  // =======================
+  // 💳 PAYMENT STATUS
+  // =======================
 
-        take: limit,
+  if (params.paymentStatus) {
+    where.paymentStatus = params.paymentStatus;
+  }
 
-        orderBy: {
-          [sortBy]: sortOrder,
-        },
+  // =======================
+  // 👤 USER
+  // =======================
 
-        include: {
-          user: true,
-          ...ORDER_ADDRESS_INCLUDE,
-        },
+  if (params.userId) {
+    where.userId = params.userId;
+  }
+
+  // =======================
+  // 📅 DATE FILTER
+  // =======================
+
+  if (params.from || params.to) {
+    where.createdAt = {
+      ...(params.from && {
+        gte: params.from,
       }),
 
-      this.prisma.order.count({
-        where,
+      ...(params.to && {
+        lte: params.to,
       }),
-    ]);
-
-    return {
-      data: orders.map((o) => OrderMapper.toDomain(o)),
-
-      total,
     };
   }
+
+  // =======================
+  // ↕️ SORTING
+  // =======================
+
+  const allowedSortFields = [
+    'createdAt',
+    'updatedAt',
+    'orderNumber',
+    'status',
+    'paymentStatus',
+    'grandTotal',
+  ];
+
+  const sortBy = allowedSortFields.includes(params.sortBy ?? '')
+    ? params.sortBy!
+    : 'createdAt';
+
+  const sortOrder = params.sortOrder ?? 'desc';
+
+  const query: Prisma.OrderFindManyArgs = {
+    where,
+
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+
+    include: {
+      user: true,
+
+      shippingAddress: true,
+
+      billingAddress: true,
+
+      returns: true,
+
+      items: {
+        where: {
+          deletedAt: null,
+        },
+      },
+    },
+  };
+  
+
+  // =======================
+  // 📄 PAGINATION
+  // =======================
+
+  if (
+    params.page !== undefined &&
+    params.limit !== undefined
+  ) {
+    query.skip = (params.page - 1) * params.limit;
+
+    query.take = params.limit;
+  }
+
+  const [orders, total] = await Promise.all([
+    this.prisma.order.findMany(query),
+
+    this.prisma.order.count({
+      where,
+    }),
+  ]);
+
+  return {
+    data: orders.map((o) => OrderMapper.toDomain(o)),
+
+    total,
+  };
+}
+
+async findManyForExport(params: {
+  search?: string;
+
+  status?: OrderStatus;
+
+  paymentStatus?: PaymentStatus;
+
+  userId?: string;
+
+  from?: Date;
+
+  to?: Date;
+
+  sortBy?: string;
+
+  sortOrder?: 'asc' | 'desc';
+}): Promise<any[]> {
+  const where: Prisma.OrderWhereInput = {
+    deletedAt: null,
+  };
+
+  // =======================
+  // 🔍 SEARCH
+  // =======================
+
+  if (params.search) {
+    where.OR = [
+      {
+        orderNumber: {
+          contains: params.search,
+          mode: 'insensitive',
+        },
+      },
+      {
+        user: {
+          is: {
+            name: {
+              contains: params.search,
+              mode: 'insensitive',
+            },
+          },
+        },
+      },
+    ];
+  }
+
+  // =======================
+  // 📦 STATUS
+  // =======================
+
+  if (params.status) {
+    where.status = params.status;
+  }
+
+  // =======================
+  // 💳 PAYMENT STATUS
+  // =======================
+
+  if (params.paymentStatus) {
+    where.paymentStatus = params.paymentStatus;
+  }
+
+  // =======================
+  // 👤 USER
+  // =======================
+
+  if (params.userId) {
+    where.userId = params.userId;
+  }
+
+  // =======================
+  // 📅 DATE FILTER
+  // =======================
+
+  if (params.from || params.to) {
+    where.createdAt = {
+      ...(params.from && {
+        gte: params.from,
+      }),
+
+      ...(params.to && {
+        lte: params.to,
+      }),
+    };
+  }
+
+  // =======================
+  // ↕️ SORTING
+  // =======================
+
+  const allowedSortFields = [
+    'createdAt',
+    'updatedAt',
+    'orderNumber',
+    'status',
+    'paymentStatus',
+    'grandTotal',
+  ];
+
+  const sortBy = allowedSortFields.includes(params.sortBy ?? '')
+    ? params.sortBy!
+    : 'createdAt';
+
+  const sortOrder = params.sortOrder ?? 'desc';
+
+  return this.prisma.order.findMany({
+    where,
+
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+
+    include: {
+      user: true,
+
+      shippingAddress: true,
+
+      billingAddress: true,
+
+      returns: true,
+
+      items: {
+        where: {
+          deletedAt: null,
+        },
+      },
+    },
+  });
+}
 
   // =======================
   // 🧠 CHECKS
@@ -310,6 +460,8 @@ export class PrismaOrderRepository implements OrderRepository {
 
     return count > 0;
   }
+
+  
 
   // =======================
   // ✍️ WRITE

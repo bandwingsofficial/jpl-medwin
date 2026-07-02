@@ -11,7 +11,7 @@ import { useProducts } from "@/features/products/hooks/use-products";
 export const HomeProducts = () => {
   const { data, isLoading } =
     useProducts({
-      limit: 12,
+      limit: 30,
     });
 
   const rawProducts =
