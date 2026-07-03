@@ -129,13 +129,14 @@ export function ProductDetailsPage({
           "
         >
           <ProductGallery
-            mainImage={selectedVariant?.images?.main || product.images?.main}
-            images={
-              selectedVariant?.images?.gallery?.length
-                ? selectedVariant.images.gallery
-                : product.images?.gallery || []
-            }
-          />
+  product={product}
+  mainImage={selectedVariant?.images?.main || product.images?.main}
+  images={
+    selectedVariant?.images?.gallery?.length
+      ? selectedVariant.images.gallery
+      : product.images?.gallery || []
+  }
+/>
         </div>
 
         {/* RIGHT SIDE (INFO & ACTIONS) */}

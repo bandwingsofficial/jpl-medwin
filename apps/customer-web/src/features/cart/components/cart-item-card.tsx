@@ -136,16 +136,9 @@ export function CartItemCard({
                     hover:text-black
                   "
                 >
-                  {item.productName}
+                  {item.productName}-{item.variant.name}
                 </h3>
               </Link>
-
-              {/* VARIANT */}
-              <p className="mt-1 text-xs text-gray-500">
-                Variant:
-                {" "}
-                {item.variant.name}
-              </p>
             </div>
 
             {/* REMOVE */}

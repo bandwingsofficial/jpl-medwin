@@ -129,8 +129,7 @@ export function SubCategoryBanner() {
         className="
           relative
           w-full
-          /* Restricts stretching beyond the 1100px width + 150px tolerance limit */
-          max-w-[1250px]
+          max-w-5xl
           mx-auto
         "
       >

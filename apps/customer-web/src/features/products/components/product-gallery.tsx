@@ -1,4 +1,11 @@
 "use client";
+import { Loader2 } from "lucide-react";
+
+import { useWishlist } from "@/features/wishlist/hooks/use-wishlist";
+import { useAddToWishlist } from "@/features/wishlist/hooks/use-add-to-wishlist";
+import { useRemoveFromWishlist } from "@/features/wishlist/hooks/use-remove-from-wishlist";
+
+import { useAuthGuard } from "@/features/auth/hooks/use-auth-guard";
 
 import Image from "next/image";
 import {
@@ -7,7 +14,7 @@ import {
   useRef,
   useState,
 } from "react";
-
+import { Product } from "@/features/products/types/product.type";
 import {
   ChevronDown,
   ChevronUp,
@@ -16,6 +23,8 @@ import {
 } from "lucide-react";
 
 interface ProductGalleryProps {
+  product: Product;
+
   mainImage?: string | null;
 
   images?: (
@@ -29,6 +38,7 @@ const PLACEHOLDER_IMAGE =
   "/images/product-placeholder.png";
 
 export function ProductGallery({
+  product,
   mainImage,
   images = [],
 }: ProductGalleryProps) {
@@ -79,8 +89,40 @@ export function ProductGallery({
    |----------------------------------------------------------------------
    */
 
-  const [isWishlisted, setIsWishlisted] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
+ const [isCopied, setIsCopied] =
+  useState(false);
+
+const { requireAuth } =
+  useAuthGuard();
+
+const {
+  wishlistIds,
+} = useWishlist();
+
+const {
+  mutateAsync:
+    addToWishlist,
+  isPending:
+    isAddingWishlist,
+} =
+  useAddToWishlist();
+
+const {
+  mutateAsync:
+    removeFromWishlist,
+  isPending:
+    isRemovingWishlist,
+} =
+  useRemoveFromWishlist();
+
+const isWishlisted =
+  wishlistIds?.has(
+    product.id
+  ) ?? false;
+
+const isWishlistLoading =
+  isAddingWishlist ||
+  isRemovingWishlist;
 
   /*
    |----------------------------------------------------------------------
@@ -163,6 +205,34 @@ export function ProductGallery({
       } catch (err) {
         console.error("Failed to copy link:", err);
       }
+    }
+  };
+  const handleWishlist =
+  async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+
+    e.stopPropagation();
+
+    if (!requireAuth()) {
+      return;
+    }
+
+    try {
+      if (isWishlisted) {
+        await removeFromWishlist(
+          product.id
+        );
+
+        return;
+      }
+
+      await addToWishlist(
+        product.id
+      );
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -350,8 +420,9 @@ export function ProductGallery({
         <div className="absolute right-4 top-4 z-20 flex flex-col gap-2.5">
           {/* WISHLIST TRIGGER ACTION */}
           <button
-            type="button"
-            onClick={() => setIsWishlisted(!isWishlisted)}
+  type="button"
+  onClick={handleWishlist}
+  disabled={isWishlistLoading}
             className="
               flex
               h-9
@@ -370,14 +441,21 @@ export function ProductGallery({
               active:scale-95
             "
           >
-            <Heart
-              size={19}
-              className={`transition-colors duration-200 ${
-                isWishlisted 
-                  ? "fill-red-500 text-red-500" 
-                  : "text-gray-500 hover:text-red-500"
-              }`}
-            />
+            {isWishlistLoading ? (
+  <Loader2
+    size={19}
+    className="animate-spin"
+  />
+) : (
+  <Heart
+    size={19}
+    className={`transition-colors duration-200 ${
+      isWishlisted
+        ? "fill-red-500 text-red-500"
+        : "text-gray-500 hover:text-red-500"
+    }`}
+  />
+)}
           </button>
 
           {/* SHARE TRIGGER ACTION */}

@@ -130,169 +130,60 @@ export const cartApi = {
   },
 
   /*
-   |--------------------------------------------------------
-   | ADD ITEM
-   |--------------------------------------------------------
-   */
-  async addItem(
-    payload: AddToCartPayload
-  ): Promise<CartResponse> {
-    try {
-      const response =
-        await apiClient.post(
-          API_ENDPOINTS.CART.ADD_ITEM,
-          payload
-        );
+ |--------------------------------------------------------
+ | ADD ITEM
+ |--------------------------------------------------------
+ */
+async addItem(
+  payload: AddToCartPayload
+): Promise<CartResponse> {
+  await ensureEditableCart();
 
-      return response.data;
-    } catch (error) {
-      /*
-       |--------------------------------------------------------------------------
-       | LOCKED CART RECOVERY
-       |--------------------------------------------------------------------------
-       */
-      if (
-        axios.isAxiosError(error)
-      ) {
-        const message =
-          error.response?.data
-            ?.message || "";
+  const response = await apiClient.post(
+    API_ENDPOINTS.CART.ADD_ITEM,
+    payload
+  );
 
-        const isLockedError =
-          message
-            .toLowerCase()
-            .includes(
-              "cart is locked"
-            );
-
-        if (isLockedError) {
-          console.warn(
-            "LOCKED CART DETECTED → RECOVERING"
-          );
-
-          await ensureEditableCart();
-
-          /*
-           |--------------------------------------------------------------------------
-           | RETRY ADD ITEM
-           |--------------------------------------------------------------------------
-           */
-          const retryResponse =
-            await apiClient.post(
-              API_ENDPOINTS.CART.ADD_ITEM,
-              payload
-            );
-
-          return retryResponse.data;
-        }
-      }
-
-      throw error;
-    }
-  },
-
+  return response.data;
+},
   /*
-   |--------------------------------------------------------
-   | UPDATE ITEM
-   |--------------------------------------------------------
-   */
-  async updateItem(
-    cartItemId: string,
-    payload: UpdateCartPayload
-  ): Promise<CartResponse> {
-    try {
-      const response =
-        await apiClient.patch(
-          API_ENDPOINTS.CART.UPDATE_ITEM(
-            cartItemId
-          ),
-          payload
-        );
+ |--------------------------------------------------------
+ | UPDATE ITEM
+ |--------------------------------------------------------
+ */
+async updateItem(
+  cartItemId: string,
+  payload: UpdateCartPayload
+): Promise<CartResponse> {
+  await ensureEditableCart();
 
-      return response.data;
-    } catch (error) {
-      if (
-        axios.isAxiosError(error)
-      ) {
-        const message =
-          error.response?.data
-            ?.message || "";
+  const response = await apiClient.patch(
+    API_ENDPOINTS.CART.UPDATE_ITEM(
+      cartItemId
+    ),
+    payload
+  );
 
-        const isLockedError =
-          message
-            .toLowerCase()
-            .includes(
-              "cart is locked"
-            );
-
-        if (isLockedError) {
-          await ensureEditableCart();
-
-          const retryResponse =
-            await apiClient.patch(
-              API_ENDPOINTS.CART.UPDATE_ITEM(
-                cartItemId
-              ),
-              payload
-            );
-
-          return retryResponse.data;
-        }
-      }
-
-      throw error;
-    }
-  },
-
+  return response.data;
+},
   /*
-   |--------------------------------------------------------
-   | REMOVE ITEM
-   |--------------------------------------------------------
-   */
-  async removeItem(
-    cartItemId: string
-  ): Promise<CartResponse> {
-    try {
-      const response =
-        await apiClient.delete(
-          API_ENDPOINTS.CART.REMOVE_ITEM(
-            cartItemId
-          )
-        );
+ |--------------------------------------------------------
+ | REMOVE ITEM
+ |--------------------------------------------------------
+ */
+async removeItem(
+  cartItemId: string
+): Promise<CartResponse> {
+  await ensureEditableCart();
 
-      return response.data;
-    } catch (error) {
-      if (
-        axios.isAxiosError(error)
-      ) {
-        const message =
-          error.response?.data
-            ?.message || "";
+  const response = await apiClient.delete(
+    API_ENDPOINTS.CART.REMOVE_ITEM(
+      cartItemId
+    )
+  );
 
-        const isLockedError =
-          message
-            .toLowerCase()
-            .includes(
-              "cart is locked"
-            );
-
-        if (isLockedError) {
-          await ensureEditableCart();
-
-          const retryResponse =
-            await apiClient.delete(
-              API_ENDPOINTS.CART.REMOVE_ITEM(
-                cartItemId
-              )
-            );
-
-          return retryResponse.data;
-        }
-      }
-
-      throw error;
-    }
-  },
+  return response.data;
+},
 
   /*
    |--------------------------------------------------------

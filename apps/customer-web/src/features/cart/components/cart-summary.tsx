@@ -11,6 +11,7 @@ import CartCoupon from "./cart-coupon";
 import { showError } from "@/shared/store/toast.store";
 
 import { useRemoveCoupon } from "@/features/cart/hooks/use-remove-coupon";
+import { X, Trash2 } from "lucide-react";
 
 interface CartSummaryProps {
   cart: Cart;
@@ -232,30 +233,28 @@ export function CartSummary({
         </p>
 
         <button
-          type="button"
-          onClick={
-            handleRemoveCoupon
-          }
-          disabled={isPending}
-          className="
-            rounded-lg
-            border
-            border-red-200
-            bg-red-50
-            px-2
-            py-1
-            text-[10px]
-            font-semibold
-            text-red-600
-            transition-all
-            duration-200
-            hover:bg-red-100
-            disabled:cursor-not-allowed
-            disabled:opacity-50
-          "
-        >
-          Remove
-        </button>
+  type="button"
+  onClick={handleRemoveCoupon}
+  disabled={isPending}
+  aria-label="Remove coupon"
+  className="
+    flex
+    h-6
+    w-6
+    items-center
+    justify-center
+    rounded-full
+    text-red-500
+    transition-colors
+    duration-200
+    hover:bg-red-50
+    hover:text-red-600
+    disabled:cursor-not-allowed
+    disabled:opacity-50
+  "
+>
+  <Trash2  className="h-4 w-4" />
+</button>
       </div>
     </div>
 

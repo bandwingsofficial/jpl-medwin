@@ -25,9 +25,15 @@ export function CollectionHeader({
       <div>
         <h2
           className="
-            text-3xl
-            font-bold
-          "
+           animate-text-shine
+            bg-gradient-to-r 
+            from-[#001f3f] 
+            via-[#0d9488] 
+            to-[#001f3f] 
+            bg-clip-text 
+            text-[28px] 
+            font-bold 
+            text-transparent"
         >
           {collection.name}
         </h2>

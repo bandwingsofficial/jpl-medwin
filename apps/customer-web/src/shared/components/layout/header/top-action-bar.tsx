@@ -55,6 +55,7 @@ export function TopActionBar() {
    |------------------------------------------------------------------
    | TYPEWRITER PLACEHOLDER LOGIC
    |------------------------------------------------------------------
+   |
    */
   const placeholders = useMemo(() => ["microscopes...", "dumbbells...", "reactors...", "forklifts..."], []);
   const [currentText, setCurrentText] = useState("");
@@ -92,6 +93,7 @@ export function TopActionBar() {
    |------------------------------------------------------------------
    | AUTH
    |------------------------------------------------------------------
+   |
    */
 
   const { isAuthenticated, isLoading } = useAuth();
@@ -100,6 +102,7 @@ export function TopActionBar() {
    |------------------------------------------------------------------
    | CART
    |------------------------------------------------------------------
+   |
    */
 
   const { data } = useCart();
@@ -117,11 +120,12 @@ const wishlistCount =
    |------------------------------------------------------------------
    | ACTION ITEMS
    |------------------------------------------------------------------
+   |
    */
 
   const actionItems: ActionItem[] = [
     {
-  imageSrc: "/Logo/coin2.png",
+  imageSrc: "/Logo/coin3.png",
   label: "Coins",
   href: "/account/coins",
 },
@@ -146,6 +150,7 @@ const wishlistCount =
    |------------------------------------------------------------------
    | HYDRATION FIX
    |------------------------------------------------------------------
+   |
    */
 
   useEffect(() => {
@@ -156,6 +161,7 @@ const wishlistCount =
    |------------------------------------------------------------------
    | PROFILE CLICK
    |------------------------------------------------------------------
+   |
    */
 
   const handleProfileClick = () => {
@@ -176,6 +182,7 @@ const wishlistCount =
    |------------------------------------------------------------------
    | LOGOUT
    |------------------------------------------------------------------
+   |
    */
 
   const handleLogout = async () => {
@@ -218,53 +225,53 @@ const wishlistCount =
               />
             </Link>
 
-            {/* ACCOUNT BUTTON */}
-
-            <div className="relative">
-              <button
-                type="button"
-                onClick={handleProfileClick}
-                className="group flex items-center gap-2 rounded-xl border border-slate-200 bg-teal-600 px-3 py-2 text-xs font-medium text-slate-700 transition-all duration-300 hover:bg-slate-100"
-              >
-                <UserCircle2 className="h-4 w-4 text-slate-600 group-hover:text-teal-600" />
-
-                <span>
-                  {!mounted
-                    ? "Account"
-                    : isLoading
-                    ? "Loading..."
-                    : isAuthenticated
-                    ? "Account"
-                    : "Login"}
+            {/* RIGHT ALIGNED CONTROLS (LOCATION + ACCOUNT CONTAINER) */}
+            <div className="flex items-center gap-2">
+              {/* LOCATION DISPLAY */}
+              <div className="flex items-center gap-1 text-xs bg-slate-50/80 border border-slate-100 px-2.5 py-1.5 rounded-full max-w-[120px] truncate shadow-sm">
+                <MapPin className="h-3.5 w-3.5 text-teal-600 shrink-0 stroke-[2.5]" />
+                <span className="truncate font-medium text-slate-600">
+                  {loading ? "..." : location?.city || "No Loc"}
                 </span>
-              </button>
+              </div>
 
-              {/* ACCOUNT DROPDOWN */}
+              {/* ACCOUNT BUTTON */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={handleProfileClick}
+                  className="group flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-slate-50 transition-all duration-300 hover:bg-slate-100"
+                >
+                  <UserCircle2 className="h-5 w-5 text-slate-600 group-hover:text-teal-600 transition-colors" />
+                </button>
 
-              {mounted && open && isAuthenticated && (
-                <div className="absolute right-0 z-50 mt-3 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOpen(false);
-                      router.push("/account");
-                    }}
-                    className="block w-full px-4 py-3 text-left text-sm transition hover:bg-gray-50"
-                  >
-                    My Profile
-                  </button>
+                {/* ACCOUNT DROPDOWN */}
 
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="flex w-full items-center gap-2 px-4 py-3 text-sm text-red-500 transition hover:bg-red-50"
-                  >
-                    <LogOut className="h-4 w-4" />
+                {mounted && open && isAuthenticated && (
+                  <div className="absolute right-0 z-50 mt-3 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setOpen(false);
+                        router.push("/account");
+                      }}
+                      className="block w-full px-4 py-3 text-left text-sm transition hover:bg-gray-50"
+                    >
+                      My Profile
+                    </button>
 
-                    Logout
-                  </button>
-                </div>
-              )}
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2 px-4 py-3 text-sm text-red-500 transition hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" />
+
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 

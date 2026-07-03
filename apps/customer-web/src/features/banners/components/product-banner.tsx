@@ -61,12 +61,15 @@ export function ProductBanner({
     return (
       <div
         className="
-          h-[160px]
+          mx-auto
+          h-[140px]
           w-full
+          max-w-4xl
           animate-pulse
           rounded-[20px]
           bg-slate-100
-          md:h-[300px]
+          sm:h-[200px]
+          md:h-[240px]
         "
       />
     );
@@ -144,9 +147,12 @@ export function ProductBanner({
     <section
       className="
         relative
+        mx-auto
         w-full
+        max-w-6xl
         overflow-hidden
         rounded-[20px]
+        px-4
       "
     >
       <button
@@ -160,35 +166,42 @@ export function ProductBanner({
           w-full
           overflow-hidden
           rounded-[20px]
-          text-left
+          text-center
         "
       >
-        <Image
-          src={
-            banner.imageUrl
-          }
-          alt={`Product Banner ${
-            currentIndex + 1
-          }`}
-          width={1200}
-          height={300}
-          priority
+        {/* Aspect-ratio container to keep sizes controlled and neat across screen sizes */}
+        <div 
           className="
-            h-auto
-            w-full
-            object-contain
-            transition-all
-            duration-500
+            relative 
+            h-[140px] 
+            w-full 
+            sm:h-[200px] 
+            md:h-[240px]
           "
-          sizes="(max-width: 1200px) 100vw, 1200px"
-        />
+        >
+          <Image
+            src={
+              banner.imageUrl
+            }
+            alt={`Product Banner ${
+              currentIndex + 1
+            }`}
+            fill
+            priority
+            className="
+              object-cover
+              transition-all
+              duration-500
+            "
+            sizes="(max-width: 896px) 100vw, 896px"
+          />
+        </div>
       </button>
 
       {images.length >
         1 && (
         <>
           {/* Indicators */}
-
           <div
             className="
               absolute
@@ -221,8 +234,8 @@ export function ProductBanner({
                     ${
                       currentIndex ===
                       index
-                        ? "h-3 w-10 bg-white"
-                        : "h-3 w-3 bg-white/60"
+                        ? "h-2.5 w-8 bg-white"
+                        : "h-2.5 w-2.5 bg-white/60"
                     }
                   `}
                 />

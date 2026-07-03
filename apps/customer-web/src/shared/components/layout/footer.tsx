@@ -13,7 +13,7 @@ import {
 
 const socialLinks = [
   { icon: FaFacebookF, href: "#", label: "Facebook", bg: "#1877F2" },
-  { icon: FaInstagram, href: "#", label: "Instagram", gradient: "linear-gradient(135deg, #FFB13D, #E23469, #9934B8)" },
+  { icon: FaInstagram, href: "#", label: "Instagram", gradient: "radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)" },
   { icon: FaXTwitter, href: "#", label: "X", bg: "#000000" },
   { icon: FaYoutube, href: "#", label: "YouTube", bg: "#FF0000" },
   { icon: FaLinkedinIn, href: "#", label: "LinkedIn", bg: "#0A66C2" },
@@ -50,14 +50,13 @@ export function Footer() {
     <footer style={{
       position: "relative",
       overflow: "hidden",
-      backgroundColor: "#F8FAFC",
-      borderTop: "1px solid #E2E8F0",
+      background: "linear-gradient(135deg, #0F766E 0%, #0B4F4A 45%, #052E2B 100%)",
+      borderTop: "1px solid rgba(255,255,255,0.08)",
       fontFamily: "'DM Sans', sans-serif",
     }}>
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
 
-        /* ── Social icons ── */
         .ft-social {
           width: 38px;
           height: 38px;
@@ -76,19 +75,18 @@ export function Footer() {
           content: '';
           position: absolute;
           inset: 0;
-          background: linear-gradient(to right, transparent, rgba(255,255,255,0.18), transparent);
+          background: linear-gradient(to right, transparent, rgba(255,255,255,0.25), transparent);
           transform: translateX(-120%);
           transition: transform 0.6s ease;
         }
-        .ft-social:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+        .ft-social:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.35); }
         .ft-social:hover::after { transform: translateX(120%); }
 
-        /* ── Nav links ── */
         .ft-link {
           display: inline-flex;
           align-items: center;
           gap: 0;
-          color: #475569;
+          color: rgba(255,255,255,0.75);
           font-size: 13px;
           font-weight: 400;
           text-decoration: none;
@@ -103,16 +101,16 @@ export function Footer() {
           left: 0;
           width: 0;
           height: 1px;
-          background: #14B8A6;
+          background: #5EEAD4;
           transition: width 0.3s cubic-bezier(0.16,1,0.3,1);
         }
-        .ft-link:hover { color: #0F172A; gap: 4px; }
+        .ft-link:hover { color: #FFFFFF; gap: 4px; }
         .ft-link:hover::after { width: 100%; }
         .ft-link-arrow {
           opacity: 0;
           transform: translateX(-4px);
           transition: opacity 0.25s ease, transform 0.25s ease;
-          color: #14B8A6;
+          color: #5EEAD4;
           flex-shrink: 0;
         }
         .ft-link:hover .ft-link-arrow {
@@ -120,14 +118,13 @@ export function Footer() {
           transform: translateX(0);
         }
 
-        /* ── Section heading ── */
         .ft-heading {
           font-family: 'DM Sans', sans-serif;
           font-size: 12px;
           font-weight: 700;
           letter-spacing: 0.12em;
           text-transform: uppercase;
-          color: #0F172A;
+          color: #FFFFFF;
           margin-bottom: 20px;
           display: flex;
           align-items: center;
@@ -138,70 +135,66 @@ export function Footer() {
           display: inline-block;
           width: 16px;
           height: 2px;
-          background: #14B8A6;
+          background: #5EEAD4;
           flex-shrink: 0;
         }
 
-        /* ── Contact items ── */
         .ft-contact-item {
           display: flex;
           align-items: flex-start;
           gap: 12px;
-          color: #475569;
+          color: rgba(255,255,255,0.75);
           font-size: 13px;
           line-height: 1.6;
           font-weight: 400;
           transition: color 0.25s ease;
         }
-        .ft-contact-item:hover { color: #0F172A; }
+        .ft-contact-item:hover { color: #FFFFFF; }
         .ft-contact-icon {
           width: 30px;
           height: 30px;
           border-radius: 8px;
-          background: rgba(20, 184, 166, 0.08);
-          border: 1px solid rgba(20, 184, 166, 0.15);
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.15);
           display: flex;
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          color: #14B8A6;
+          color: #5EEAD4;
           transition: background 0.25s ease, transform 0.25s ease;
           margin-top: 2px;
         }
         .ft-contact-item:hover .ft-contact-icon { 
-          background: rgba(20, 184, 166, 0.15); 
+          background: rgba(255, 255, 255, 0.16); 
           transform: scale(1.05);
         }
 
-        /* ── Business Service items ── */
         .ft-service-item {
           display: flex;
           align-items: center;
           gap: 10px;
-          color: #475569;
+          color: rgba(255,255,255,0.75);
           font-size: 13.5px;
           font-weight: 400;
           transition: transform 0.25s ease, color 0.25s ease;
         }
         .ft-service-item:hover {
-          color: #0F172A;
+          color: #FFFFFF;
           transform: translateX(4px);
         }
         .ft-service-icon {
-          color: #14B8A6;
+          color: #5EEAD4;
           flex-shrink: 0;
         }
 
-        /* ── Divider ── */
         .ft-rule {
           height: 1px;
-          background: #E2E8F0;
+          background: rgba(255,255,255,0.1);
         }
 
-        /* ── Copyright bar ── */
         .ft-bottom {
-          background: #0F172A;
-          padding: 20px 40px;
+          background: #052E2B;
+          padding: 18px 40px;
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -224,14 +217,13 @@ export function Footer() {
           padding: 5px 12px;
           border-radius: 20px;
           font-size: 12px;
-          color: #94A3B8;
+          color: #A7F3D0;
           font-weight: 500;
         }
 
-        /* ── Social row ── */
         .ft-social-row {
           padding: 24px 40px;
-          border-bottom: 1px solid #E2E8F0;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
           display: flex;
           flex-direction: column;
           align-items: center;
@@ -246,12 +238,11 @@ export function Footer() {
           }
         }
 
-        /* ── Grid ── */
         .ft-grid {
           display: grid;
           grid-template-columns: 1fr;
           gap: 40px;
-          padding: 56px 40px 52px;
+          padding: 40px 40px 52px;
           max-width: 1340px;
           margin: 0 auto;
         }
@@ -262,173 +253,109 @@ export function Footer() {
           }
         }
 
-        @media (max-width: 640px) {
-          .ft-social-row { padding: 20px; }
-          .ft-grid { padding: 40px 20px; gap: 36px; }
-          .ft-bottom { padding: 18px 20px; }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .ft-social, .ft-link, .ft-contact-item, .ft-service-item { transition: none !important; }
+        .ft-logo-link {
+          display: block;
+          line-height: 0;
+          margin: -18px 0 -14px -14px;
+          width: fit-content;
         }
       `}} />
 
-      {/* ── Ambient background soft visual effects ── */}
-      <div style={{
-        position: "absolute", top: -100, right: -100,
-        width: 450, height: 450, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(20,184,166,0.04) 0%, transparent 70%)",
-        pointerEvents: "none",
-      }} />
-      <div style={{
-        position: "absolute", bottom: -60, left: "10%",
-        width: 350, height: 350, borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(20,184,166,0.03) 0%, transparent 70%)",
-        pointerEvents: "none",
-      }} />
+      {/* Hexagon pattern overlay, matches the reference footer's subtle geometric texture */}
+      <svg
+        aria-hidden="true"
+        style={{ position: "absolute", top: 0, right: 0, width: "55%", height: "100%", opacity: 0.06, pointerEvents: "none" }}
+        viewBox="0 0 600 600"
+        preserveAspectRatio="xMaxYMid slice"
+      >
+        <defs>
+          <pattern id="ft-hex" width="56" height="97" patternUnits="userSpaceOnUse" patternTransform="scale(1.1)">
+            <polygon
+              points="28,0 56,16 56,48 28,64 0,48 0,16"
+              fill="none"
+              stroke="#FFFFFF"
+              strokeWidth="1.4"
+            />
+            <polygon
+              points="28,32.5 56,48.5 56,80.5 28,96.5 0,80.5 0,48.5"
+              fill="none"
+              stroke="#FFFFFF"
+              strokeWidth="1.4"
+            />
+          </pattern>
+        </defs>
+        <rect width="600" height="600" fill="url(#ft-hex)" />
+      </svg>
 
-      {/* ══════════════════════
-          SOCIAL ROW
-       ══════════════════════ */}
+      <div style={{ position: "absolute", top: -100, right: -100, width: 450, height: 450, borderRadius: "50%", background: "radial-gradient(circle, rgba(94,234,212,0.10) 0%, transparent 70%)", pointerEvents: "none" }} />
+
       <div className="ft-social-row" style={{ position: "relative", zIndex: 2 }}>
         <div>
-          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#475569", fontWeight: 500 }}>
-            Stay connected with us
-          </p>
+          <p style={{ fontSize: 14, color: "#FFFFFF", fontWeight: 500 }}>Stay connected with us</p>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           {socialLinks.map(({ icon: Icon, href, label, bg, gradient }, i) => (
-            <a
-              key={i}
-              href={href}
-              aria-label={label}
-              className="ft-social"
-              style={{ background: gradient || bg }}
-            >
+            <a key={i} href={href} aria-label={label} className="ft-social" style={{ background: gradient || bg }}>
               <Icon style={{ width: 15, height: 15 }} />
             </a>
           ))}
         </div>
       </div>
 
-      {/* ══════════════════════
-          MAIN GRID
-       ══════════════════════ */}
       <div className="ft-grid" style={{ position: "relative", zIndex: 2 }}>
-
-        {/* Col 1 — Brand & Contact Information */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-          <div>
-            <Link 
-              href="/" 
-              style={{
-                display: "inline-block",
-                marginBottom: 12,
-              }}
-            >
-              <Image
-                src="/Logo/JPL Medwin2.png"
-                alt="JPL Medwin"
-                width={190}
-                height={85}
-                priority
-                style={{ 
-                  objectFit: "contain",
-                  maxWidth: "100%",
-                  height: "auto" 
-                }}
-              />
-            </Link>
-          </div>
-
-          {/* Combined Contact Blocks */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 12, borderTop: "1px solid #E2E8F0", paddingTop: 20 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <Link href="/" className="ft-logo-link">
+            <Image src="/Logo/JPL Medwin2.png" alt="JPL Medwin" width={190} height={85} priority style={{ objectFit: "contain", maxWidth: "100%", height: "auto" }} />
+          </Link>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12, borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 16 }}>
             <div className="ft-contact-item">
               <div className="ft-contact-icon"><MapPin size={14} /></div>
-              <p style={{ color: "#475569" }}>JPL Markwin Private Limited,<br />Bengaluru, India – 110074</p>
+              <p style={{ color: "inherit" }}>JPL Markwin Private Limited,<br />Bengaluru, India – 110074</p>
             </div>
             <div className="ft-contact-item">
               <div className="ft-contact-icon"><Phone size={14} /></div>
-              <a href="tel:+917289999456" style={{ textDecoration: "none", color: "inherit" }} className="hover:underline">
-                <p>+91-72899 99456</p>
-              </a>
+              <a href="tel:+917289999456" style={{ textDecoration: "none", color: "inherit" }}><p>+91-72899 99456</p></a>
             </div>
             <div className="ft-contact-item">
               <div className="ft-contact-icon"><Mail size={14} /></div>
-              <a href="mailto:connect@jplmedwin.com" style={{ textDecoration: "none", color: "inherit" }} className="hover:underline">
-                <p>connect@jplmedwin.com</p>
-              </a>
+              <a href="mailto:connect@jplmedwin.com" style={{ textDecoration: "none", color: "inherit" }}><p>connect@jplmedwin.com</p></a>
             </div>
           </div>
         </div>
 
-        {/* Col 2 — Company */}
         <div>
           <div className="ft-heading">Company</div>
           <ul style={{ display: "flex", flexDirection: "column", gap: 14, listStyle: "none", padding: 0, margin: 0 }}>
             {companyLinks.map((item, i) => (
-              <li key={i}>
-                <Link href={item.href} className="ft-link">
-                  <ArrowUpRight size={13} className="ft-link-arrow" />
-                  {item.label}
-                </Link>
-              </li>
+              <li key={i}><Link href={item.href} className="ft-link"><ArrowUpRight size={13} className="ft-link-arrow" />{item.label}</Link></li>
             ))}
           </ul>
         </div>
 
-        {/* Col 3 — Policies */}
         <div>
           <div className="ft-heading">Policies</div>
           <ul style={{ display: "flex", flexDirection: "column", gap: 14, listStyle: "none", padding: 0, margin: 0 }}>
             {policyLinks.map((item, i) => (
-              <li key={i}>
-                <Link href={item.href} className="ft-link">
-                  <ArrowUpRight size={13} className="ft-link-arrow" />
-                  {item.label}
-                </Link>
-              </li>
+              <li key={i}><Link href={item.href} className="ft-link"><ArrowUpRight size={13} className="ft-link-arrow" />{item.label}</Link></li>
             ))}
           </ul>
         </div>
 
-        {/* Col 4 — JPL Business Services */}
         <div>
           <div className="ft-heading">JPL Business Services</div>
           <ul style={{ display: "flex", flexDirection: "column", gap: 16, listStyle: "none", padding: 0, margin: 0 }}>
             {businessServices.map((service, i) => (
-              <li key={i} className="ft-service-item">
-                <CheckCircle2 size={16} className="ft-service-icon" />
-                <span>{service}</span>
-              </li>
+              <li key={i} className="ft-service-item"><CheckCircle2 size={16} className="ft-service-icon" /><span>{service}</span></li>
             ))}
           </ul>
         </div>
       </div>
 
-      {/* ── Divider ── */}
-      <div style={{ padding: "0 40px", position: "relative", zIndex: 2 }}>
-        <div className="ft-rule" />
-      </div>
+      <div style={{ padding: "0 40px", position: "relative", zIndex: 2 }}><div className="ft-rule" /></div>
 
-      {/* ══════════════════════
-          COPYRIGHT BAR
-       ══════════════════════ */}
       <div className="ft-bottom" style={{ position: "relative", zIndex: 2 }}>
-        <p style={{
-          fontFamily: "'DM Sans', sans-serif",
-          fontSize: 12.5,
-          color: "#94A3B8",
-          fontWeight: 400,
-          letterSpacing: "0.02em",
-          margin: 0
-        }}>
-          © 2026 JPL MEDWIN · Powered by JPL Markwin Private Limited
-        </p>
-        <div className="ft-india-badge">
-          <span style={{ fontSize: 14 }}>🇮🇳</span>
-          Crafted with ❤️ in India
-        </div>
+        <p style={{ fontSize: 12.5, color: "#A7F3D0", fontWeight: 400, margin: 0 }}>© 2026 JPL MEDWIN · Powered by JPL Markwin Private Limited</p>
+        <div className="ft-india-badge"><span>🇮🇳</span> Crafted with ❤️ in India</div>
       </div>
     </footer>
   );

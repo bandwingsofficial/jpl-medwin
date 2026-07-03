@@ -105,7 +105,7 @@ export function PromotionalBanner({
     <section
       className="
         w-full
-        max-w-[1200px]
+        max-w-5xl
         mx-auto
         overflow-hidden
         rounded-[20px]

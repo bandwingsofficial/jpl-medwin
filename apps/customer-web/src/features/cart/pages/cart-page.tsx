@@ -204,7 +204,7 @@ const cart = data;
 
   return (
     <div className="bg-[#F8FAFC]">
-      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-6 lg:py-10">
+      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-6 lg:py-5">
         {/* ====================================================== */}
         {/* TOP BAR */}
         {/* ====================================================== */}

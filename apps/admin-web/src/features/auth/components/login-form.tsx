@@ -27,207 +27,132 @@ export function LoginForm() {
     }
 
     setError(null);
-
     sessionStorage.setItem("admin_login", JSON.stringify(form));
-
     router.push("/verify-otp");
   };
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col items-center justify-center bg-[#f8fafc] p-4 overflow-hidden">
-      
-      {/* PREMIUM AMBIENT BACKDROP GLOWS */}
-      <div className="absolute top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-teal-200/20 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full bg-cyan-200/15 blur-[150px] pointer-events-none" />
-
-      {/* DYNAMIC BACKGROUND ANIMATION KEYFRAMES */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-            @keyframes meshShine {
-              0% { background-position: 0% 50%; }
-              50% { background-position: 100% 50%; }
-              100% { background-position: 0% 50%; }
-            }
-            .animate-mesh-shine {
-              background-size: 200% 200%;
-              animation: meshShine 8s ease infinite;
-            }
-          `,
-        }}
-      />
-
-      {/* COMPACT CENTRALIZED MAIN PANEL CONTAINER */}
-      <div 
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
+      {/* MAIN PANEL */}
+      <div
         className="
-          relative 
-          z-10 
-          w-full 
-          max-w-[920px] 
-          min-h-[440px]
-          md:h-[470px] 
-          bg-white 
-          rounded-[24px] 
-          shadow-[0_20px_50px_-12px_rgba(15,23,42,0.06)] 
-          border 
-          border-slate-200/50 
-          flex 
-          overflow-hidden 
-          transition-all 
-          duration-500
-          animate-in 
-          fade-in 
-          zoom-in-95 
-          duration-500
+          relative z-10 w-full max-w-[900px] min-h-[500px] md:h-[520px]
+          bg-white rounded-2xl
+          border border-slate-200/80
+          shadow-[0_20px_50px_-12px_rgba(15,23,42,0.06)]
+          flex flex-col md:flex-row overflow-hidden
+          animate-in fade-in zoom-in-95 duration-500
         "
       >
-        
         {/* ===================================================== */}
-        {/* 🔥 LEFT PANEL - BALANCED & CENTERED TEXT CORES */}
+        {/* LEFT — MEDICAL VISUAL SIDEBAR */}
         {/* ===================================================== */}
-        <div 
-          className="
-            hidden 
-            md:flex 
-            w-1/2 
-            relative 
-            animate-mesh-shine
-            bg-gradient-to-br from-[#001f3f] via-teal-800 to-cyan-950 
-            p-10 
-            flex-col 
-            justify-center 
-            items-center
-            overflow-hidden
-          "
-        >
-          {/* Subtle Inner Glass Layer Accent */}
-          <div className="absolute inset-0 bg-white/[0.01] backdrop-blur-[0.5px]" />
-
-          {/* Fully Centered Content Block */}
-          <div className="relative z-10 space-y-6 text-center max-w-[320px]">
-            <div 
-              className="
-                inline-flex 
-                items-center 
-                justify-center 
-                p-3.5 
-                bg-white 
-                rounded-xl 
-                shadow-sm 
-                transition-transform 
-                duration-500 
-                hover:scale-105
-              "
-            >
-              <img
-                src="/Logo/JPL Markwin.png"
-                alt="JPL Markwin"
-                className="w-36 h-auto object-contain"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <h2 className="text-white text-2xl font-bold tracking-tight leading-tight">
-                JPL Markwin Admin Portal
-              </h2>
-              <p className="text-slate-300/80 text-xs leading-relaxed">
-                Manage your platform efficiently with secure access, robust analytics monitoring, and live tracking variables.
-              </p>
-            </div>
-
-            {/* Compact Badges */}
-            <div className="grid grid-cols-2 gap-2 pt-2 border-t border-white/10">
-              <div className="bg-white/[0.03] border border-white/[0.05] p-2 rounded-lg">
-                <p className="text-[9px] font-bold text-teal-300 tracking-wider uppercase">Security</p>
-                <p className="text-xs font-medium text-white mt-0.5">256-Bit SSL</p>
-              </div>
-              <div className="bg-white/[0.03] border border-white/[0.05] p-2 rounded-lg">
-                <p className="text-[9px] font-bold text-cyan-300 tracking-wider uppercase">System</p>
-                <p className="text-xs font-medium text-white mt-0.5">Live Node</p>
-              </div>
-            </div>
-          </div>
+        <div className="hidden md:block md:w-1/2 relative bg-slate-100">
+          <img
+            src="Logo/login.png" 
+            alt="Medical Professional"
+            className="w-full h-full object-cover"
+          />
+          {/* Subtle overlay matching light-themed aesthetic */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-slate-900/10 via-transparent to-transparent mix-blend-multiply" />
         </div>
 
         {/* ===================================================== */}
-        {/* 🔥 RIGHT PANEL - COMPACT LOGIN GRID */}
+        {/* RIGHT — CLEAN & SIMPLE FORM PANEL */}
         {/* ===================================================== */}
-        <div className="flex w-full md:w-1/2 flex-col justify-center items-center px-6 py-8 lg:px-12 bg-white">
-          <div className="w-full max-w-sm space-y-5">
+        <div className="flex w-full md:w-1/2 flex-col justify-center px-8 py-10 lg:px-12 bg-white">
+          <div className="w-full max-w-sm mx-auto space-y-6">
             
+            {/* Brand Identity Rendered Perfectly via Code - Centered horizontally */}
+            <div className="flex flex-col items-center justify-center text-center space-y-2.5">
+              <div className="inline-flex items-center justify-center p-2.5 bg-white rounded-xl shadow-xs border border-slate-100 w-fit">
+                <img
+                  src="/Logo/JPL Markwin.png"
+                  alt="JPL Markwin"
+                  className="w-28 h-auto object-contain"
+                />
+              </div>
+              <p className="text-[9px] tracking-[0.25em] text-teal-600 uppercase font-mono font-semibold block">
+                • Admin Console
+              </p>
+            </div>
+
             {/* Form Intro */}
             <div className="space-y-1">
-              <h1 className="text-xl font-bold tracking-tight text-slate-900">
-                Admin Login
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+                Sign in to console
               </h1>
-              <p className="text-xs text-slate-400">
-                Welcome back! Please enter your credentials.
+              <p className="text-xs text-slate-500">
+                Enter your administrative credentials to continue.
               </p>
             </div>
 
             {/* Error Layer */}
             {error && (
-              <div className="p-2.5 bg-red-50 border border-red-100 rounded-lg text-xs font-medium text-red-500 text-center">
+              <div className="px-3 py-2 bg-rose-50 border border-rose-200 rounded-lg text-xs font-medium text-rose-600 flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                <span className="text-[9px] text-rose-500 uppercase tracking-wider font-mono font-bold">
+                  Error
+                </span>
                 {error}
               </div>
             )}
 
-            {/* Inputs Track */}
-            <div className="space-y-2.5">
-              <Input
-                placeholder="Email Address"
-                value={form.email}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, email: e.target.value }))
-                }
-                className="w-full h-10 px-3.5 rounded-lg border border-slate-200 bg-slate-50/50 text-xs font-medium transition-all focus:bg-white focus:border-teal-500 focus:ring-[4px] focus:ring-teal-500/10"
-              />
+            {/* Inputs */}
+            <div className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-[10px] tracking-[0.12em] text-slate-500 uppercase font-mono font-bold">
+                  Email Address
+                </label>
+                <Input
+                  placeholder="admin@example.com"
+                  value={form.email}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, email: e.target.value }))
+                  }
+                  className="w-full h-10 px-3.5 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 text-sm font-medium transition-all focus:bg-white focus:border-teal-500 focus:ring-[3px] focus:ring-teal-500/10"
+                />
+              </div>
 
-              <Input
-                type="password"
-                placeholder="Password"
-                value={form.password}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, password: e.target.value }))
-                }
-                className="w-full h-10 px-3.5 rounded-lg border border-slate-200 bg-slate-50/50 text-xs font-medium transition-all focus:bg-white focus:border-teal-500 focus:ring-[4px] focus:ring-teal-500/10"
-              />
+              <div className="space-y-1.5">
+                <label className="text-[10px] tracking-[0.12em] text-slate-500 uppercase font-mono font-bold">
+                  Password
+                </label>
+                <Input
+                  type="password"
+                  placeholder="••••••••"
+                  value={form.password}
+                  onChange={(e) =>
+                    setForm((prev) => ({ ...prev, password: e.target.value }))
+                  }
+                  className="w-full h-10 px-3.5 rounded-lg border border-slate-200 bg-slate-50/50 text-slate-900 placeholder:text-slate-400 text-sm font-medium transition-all focus:bg-white focus:border-teal-500 focus:ring-[3px] focus:ring-teal-500/10"
+                />
+              </div>
             </div>
 
             {/* Submit Action */}
-            <div className="pt-1">
-              <Button
-                onClick={handleNext}
-                className="
-                  w-full 
-                  h-10 
-                  rounded-lg 
-                  bg-gradient-to-r from-teal-600 to-cyan-600 
-                  text-white 
-                  text-xs 
-                  font-bold 
-                  tracking-wide 
-                  shadow-sm 
-                  transition-all 
-                  duration-300 
-                  
-                  hover:-translate-y-0.5 
-                  hover:opacity-95 
-                  active:translate-y-0
-                "
-              >
-                Continue to Verification
-              </Button>
-            </div>
+            <Button
+              onClick={handleNext}
+              className="
+                w-full h-11 rounded-lg
+                bg-gradient-to-r from-teal-600 to-blue-600
+                hover:from-teal-700 hover:to-blue-700
+                text-white text-xs font-bold tracking-wide uppercase
+                shadow-[0_4px_14px_rgba(13,148,136,0.2)]
+                transition-all duration-200
+                hover:-translate-y-0.5 active:translate-y-0
+                flex items-center justify-center gap-2
+                border-none
+              "
+            >
+              Continue to verification
+              <span aria-hidden="true">→</span>
+            </Button>
 
+            <p className="text-center text-[9px] text-slate-400 tracking-wide font-mono font-medium pt-1">
+              256-bit SSL · Session encrypted end-to-end
+            </p>
           </div>
         </div>
-
-      </div>
-
-      {/* REPOSITIONED OUTSIDE FOOTER STAMP (PREVENTS INNER SECTION BLOCKS STRATCHING) */}
-      <div className="mt-4 text-[10px] text-slate-400 font-medium tracking-wide pointer-events-none select-none">
-        © 2026 JPL MARKWIN PRIVATE LIMITED
       </div>
     </div>
   );

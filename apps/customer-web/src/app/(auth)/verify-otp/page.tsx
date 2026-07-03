@@ -4,7 +4,7 @@ import { OtpForm } from "@/features/auth/components/otp-form";
 
 export default function Page() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-white px-4">
       <OtpForm />
     </div>
   );

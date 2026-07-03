@@ -37,19 +37,6 @@ export function ProductCommercialDetails({
 
   return (
     <div className="space-y-4 mt-4">
-      {/* DESCRIPTION */}
-      {!!product.descriptions?.short && (
-        <p
-          className="
-            text-sm
-            leading-6
-            text-gray-600
-          "
-        >
-          {product.descriptions.short}
-        </p>
-      )}
-
       {/* DELIVERY INFO */}
       <div
         className="
@@ -71,6 +58,20 @@ export function ProductCommercialDetails({
         </p>
       </div>
 
+      {/* DESCRIPTION */}
+      {!!product.descriptions?.short && (
+        <p
+          className="
+            text-sm
+            leading-6
+            text-gray-600
+          "
+        >
+          {product.descriptions.short}
+        </p>
+      )}
+
+      
       {/* PRICE SECTION */}
       <div
         className="
@@ -189,59 +190,6 @@ export function ProductCommercialDetails({
           </div>
         </div>
       </div>
-
-      {/* VARIANT ATTRIBUTES */}
-      {!!Object.keys(attributes).length && (
-        <div className="space-y-2">
-          <h3
-            className="
-              text-sm
-              font-semibold
-              text-gray-900
-            "
-          >
-            Variant Details
-          </h3>
-
-          <div className="flex flex-wrap gap-2">
-            {Object.entries(attributes).map(([key, value]) => (
-              <div
-                key={key}
-                className="
-                  rounded-xl
-                  border
-                  border-gray-200
-                  bg-white
-                  px-4
-                  py-2.5
-                "
-              >
-                <p
-                  className="
-                    text-[10px]
-                    uppercase
-                    tracking-wide
-                    text-gray-400
-                  "
-                >
-                  {key}
-                </p>
-
-                <p
-                  className="
-                    mt-0.5
-                    text-sm
-                    font-semibold
-                    text-gray-900
-                  "
-                >
-                  {String(value)}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* FEATURES */}
       {!!product.features?.length && (
