@@ -28,11 +28,14 @@ async function bootstrap() {
 
   // 🌍 CORS
   app.enableCors({
-    origin: isProd
-      ? ['https://yourdomain.com']
-      : ['http://localhost:3000', 'http://localhost:3001'],
-    credentials: true,
-  });
+  origin: [
+    'https://admin.jplmedwin.com',
+    'https://jplmedwin.com',
+    'http://localhost:3000',
+    'http://localhost:3001',
+  ],
+  credentials: true,
+});
 
   // ✅ VALIDATION (🔥 UPDATED)
   app.useGlobalPipes(
