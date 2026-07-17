@@ -1,0 +1,146 @@
+// src/modules/order/application/use-cases/mark-order-paid.use-case.ts
+
+import { Inject, Injectable } from '@nestjs/common';
+
+import { TOKENS } from '@/common/constants/tokens';
+
+import { OrderRepository } from '../../domain/repositories/order.repository';
+
+import { OrderItemRepository } from '../../domain/repositories/order-item.repository';
+
+import { OrderNotFoundException } from '../../domain/exceptions/order-not-found.exception';
+
+import { RedeemCouponUseCase } from '@/modules/coupon/application/use-cases/redeem-coupon.use-case';
+import { CouponApplicationService } from '@/modules/coupon/application/services/coupon-application.service';
+
+import { OrderDomainService } from '../../domain/services/order-domain.service';
+
+@Injectable()
+export class MarkOrderPaidUseCase {
+  constructor(
+    @Inject(TOKENS.ORDER_REPO)
+    private readonly orderRepo: OrderRepository,
+
+    @Inject(TOKENS.ORDER_ITEM_REPO)
+    private readonly orderItemRepo: OrderItemRepository,
+
+    private readonly domainService: OrderDomainService,
+    private readonly couponApplicationService: CouponApplicationService,
+
+  private readonly redeemCouponUseCase: RedeemCouponUseCase,
+  ) {}
+
+  async execute(input: { orderId: string }) {
+    // =======================
+    // 🔍 FIND ORDER
+    // =======================
+
+    const order = await this.orderRepo.findById(input.orderId);
+
+    // =======================
+    // ❌ NOT FOUND
+    // =======================
+
+    if (!order) {
+      throw new OrderNotFoundException({
+        orderId: input.orderId,
+      });
+    }
+
+    // =======================
+    // 🛡 VALIDATE
+    // =======================
+
+    this.domainService.ensureOrderUsable(order);
+
+    this.domainService.ensurePaymentPending(order);
+
+    // =======================
+    // 💳 MARK SUCCESS
+    // =======================
+
+    order.markPaymentSuccess();
+
+    // =======================
+    // ✅ AUTO CONFIRM
+    // =======================
+
+    order.confirm();
+
+    // =======================
+    // 💾 SAVE
+    // =======================
+
+    const updated = await this.orderRepo.update(order);
+
+    // =======================
+// 🎟 REDEEM COUPON
+// =======================
+
+if (updated.couponCode && updated.couponDiscount > 0) {
+  const coupon = await this.couponApplicationService.findCouponByCode(
+    updated.couponCode,
+  );
+
+  await this.redeemCouponUseCase.execute({
+    couponId: coupon.id,
+    userId: updated.userId,
+    orderId: updated.id,
+    discountAmount: updated.couponDiscount,
+  });
+}
+
+    // =======================
+    // 📦 ITEMS
+    // =======================
+
+    const items = await this.orderItemRepo.findByOrderId(updated.id);
+
+    // =======================
+    // 🚀 RESPONSE
+    // =======================
+
+    return {
+      success: true,
+
+      data: {
+        id: updated.id,
+
+        orderNumber: updated.orderNumber,
+
+        status: updated.status,
+
+        paymentStatus: updated.paymentStatus,
+
+        totals: {
+          subtotal: updated.subtotal,
+
+          couponDiscount: updated.couponDiscount,
+
+          shippingCharge: updated.shippingCharge,
+
+          tax: updated.tax,
+          redeemedCoins: updated.redeemedCoins,
+
+          redeemedAmount: updated.redeemedAmount,
+
+          earnedCoins: updated.earnedCoins,
+
+          grandTotal: updated.grandTotal,
+
+          totalSavings: updated.totalSavings,
+        },
+
+        itemCount: items.length,
+
+        totalQuantity: items.reduce(
+          (total, item) => total + item.quantity,
+
+          0,
+        ),
+
+        updatedAt: updated.updatedAt,
+      },
+    };
+  }
+}
