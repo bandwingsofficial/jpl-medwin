@@ -10,7 +10,10 @@ import { RedisService } from './redis.service';
     {
       provide: REDIS,
       useFactory: () => {
-        return new Redis(process.env.REDIS_URL!, {
+        return new Redis({
+          host: process.env.REDIS_HOST!,
+          port: Number(process.env.REDIS_PORT),
+          password: process.env.REDIS_PASSWORD!,
           maxRetriesPerRequest: null,
           enableReadyCheck: true,
         });
