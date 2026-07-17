@@ -101,20 +101,6 @@ export function LoginForm() {
       className="flex min-h-screen items-center justify-center bg-white p-4 sm:p-6 md:p-10"
       style={{ fontFamily: BODY_FONT }}
     >
-      <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap");
-        @keyframes pulse-draw {
-          0% {
-            stroke-dashoffset: 1;
-          }
-          55% {
-            stroke-dashoffset: 0;
-          }
-          100% {
-            stroke-dashoffset: -1;
-          }
-        }
-      `}</style>
 
       {/* MAIN UNIFIED CONTAINER BOX */}
       <div className="flex w-full max-w-5xl overflow-hidden rounded-[28px] border border-[#DCE6E2] bg-white shadow-[0_24px_60px_-24px_rgba(14,107,92,0.18)]">

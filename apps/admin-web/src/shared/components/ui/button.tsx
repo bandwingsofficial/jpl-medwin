@@ -4,7 +4,13 @@ import * as React from "react";
 
 import { cn } from "@/shared/lib/cn";
 
-type Variant = "primary" | "secondary" | "ghost";
+type Variant =
+  | "primary"
+  | "secondary"
+  | "ghost"
+  | "outline"
+  | "destructive";
+
 type Size = "sm" | "md" | "lg" | "icon";
 
 interface ButtonProps
@@ -35,16 +41,21 @@ export function Button({
   };
 
   const variants: Record<Variant, string> = {
-    // ✅ Updated to logo matching teal/green color
-    primary:
-      "bg-teal-600 text-white hover:bg-teal-700 shadow-md focus:ring-teal-500",
+  primary:
+    "bg-teal-600 text-white hover:bg-teal-700 shadow-md focus:ring-teal-500",
 
-    secondary:
-      "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 shadow-sm focus:ring-gray-400",
+  secondary:
+    "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 shadow-sm focus:ring-gray-400",
 
-    ghost:
-      "text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-200",
-  };
+  outline:
+    "border border-gray-300 bg-transparent text-gray-700 hover:bg-gray-50 focus:ring-gray-400",
+
+  ghost:
+    "text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:ring-gray-200",
+
+  destructive:
+    "bg-red-600 text-white hover:bg-red-700 shadow-md focus:ring-red-500",
+};
 
   return (
     <button

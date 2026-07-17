@@ -13,10 +13,10 @@ export const couponSchema = z
     ]),
 
     discountValue: z
-      .number({
-        required_error: "Discount value is required",
-      })
-      .positive(),
+  .number({
+    error: "Discount value is required",
+  })
+  .positive("Discount value must be greater than 0"),
 
     minimumOrderAmount: z
       .number()

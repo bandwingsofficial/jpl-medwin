@@ -45,33 +45,29 @@ export function EditBannerImageDialog({
   }
 
   async function handleSubmit(
-    file: File | undefined,
-    productId: string,
-    sortOrder: number
-  ) {
-    try {
-      await bannerService.updateImage(
-        image.id,
-        {
-          image: file,
-          productId,
-          sortOrder,
-        }
-      );
+  file: File | undefined,
+  productId: string,
+  sortOrder: number
+) {
+  if (!image) return;
 
-      toast.success(
-        "Image updated successfully"
-      );
+  const imageId = image.id;
 
-      onSuccess();
+  try {
+    await bannerService.updateImage(imageId, {
+      image: file,
+      productId,
+      sortOrder,
+    });
 
-      onOpenChange(false);
-    } catch {
-      toast.error(
-        "Failed to update image"
-      );
-    }
+    toast.success("Image updated successfully");
+
+    onSuccess();
+    onOpenChange(false);
+  } catch {
+    toast.error("Failed to update image");
   }
+}
 
   return (
     <Dialog

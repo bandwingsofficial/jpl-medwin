@@ -1,0 +1,60 @@
+version: "3.9"
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - markwin-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: markwin-api
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    env_file:
+      - ./apps/api/.env
+    depends_on:
+      - redis
+    networks:
+      - markwin-network
+
+  admin:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    container_name: markwin-admin
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./apps/admin-web/.env
+    depends_on:
+      - api
+    networks:
+      - markwin-network
+
+  customer:
+    build:
+      context: .
+      dockerfile: Dockerfile.customer
+    container_name: markwin-customer
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./apps/customer-web/.env
+    depends_on:
+      - api
+    networks:
+      - markwin-network
+
+networks:
+  markwin-network:
+    driver: bridge

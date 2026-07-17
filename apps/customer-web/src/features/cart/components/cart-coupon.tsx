@@ -71,13 +71,13 @@ export default function CartCoupon({
    * REMOVE COUPON
    */
   const handleRemoveCoupon =
-    async () => {
-      try {
-        await removeCouponMutation.mutateAsync();
-      } catch (error: any) {
-        console.error(error);
-      }
-    };
+  async () => {
+    try {
+      await removeCouponMutation.removeCoupon();
+    } catch (error: any) {
+      console.error(error);
+    }
+  };
 
   return (
     <div

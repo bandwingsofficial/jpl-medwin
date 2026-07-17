@@ -43,24 +43,21 @@ export function DeleteBannerImageDialog({
   }
 
   async function handleDelete() {
-    try {
-      await bannerService.deleteImage(
-        image.id
-      );
+  if (!image) return;
 
-      toast.success(
-        "Image deleted successfully"
-      );
+  const imageId = image.id;
 
-      onSuccess();
+  try {
+    await bannerService.deleteImage(imageId);
 
-      onOpenChange(false);
-    } catch {
-      toast.error(
-        "Failed to delete image"
-      );
-    }
+    toast.success("Image deleted successfully");
+
+    onSuccess();
+    onOpenChange(false);
+  } catch {
+    toast.error("Failed to delete image");
   }
+}
 
   return (
     <Dialog
