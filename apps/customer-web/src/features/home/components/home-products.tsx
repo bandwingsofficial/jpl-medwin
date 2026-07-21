@@ -89,7 +89,7 @@ export const HomeProducts = () => {
             sm:block
           "
         >
-          View All
+         Explore More
         </Link>
       </div>
 

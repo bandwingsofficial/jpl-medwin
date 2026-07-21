@@ -105,7 +105,7 @@ export function HomeBrands() {
             md:block
           "
         >
-          VIEW ALL
+          Explore More
         </Link>
 
         {/* MOBILE VIEW */}

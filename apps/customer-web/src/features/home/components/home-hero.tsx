@@ -20,7 +20,7 @@ export function HomeHero() {
 
   const router = useRouter();
   const queryClient = useQueryClient();
-  const DEFAULT_BANNER = "/Images/Home-Banner.png";
+  const DEFAULT_BANNER = "/Images/hero6.jpg";
 
   const {
     images,
@@ -133,9 +133,38 @@ export function HomeHero() {
    |
    */
 
-  if (isError) {
-    return null;
-  }
+ if (isError) {
+  return (
+    <section
+      className="
+        relative
+        w-full
+        overflow-hidden
+        rounded-[16px]
+        bg-white
+
+        md:rounded-[24px]
+      "
+    >
+      <Image
+        src={DEFAULT_BANNER}
+        alt="Default Home Banner"
+        width={1920}
+        height={700}
+        priority
+        className="
+          h-[190px]
+          w-full
+          rounded-[16px]
+          object-cover
+
+          md:h-auto
+          md:rounded-[24px]
+        "
+      />
+    </section>
+  );
+}
 
   /*
 |--------------------------------------------------------------------------

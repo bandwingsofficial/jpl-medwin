@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -29,14 +28,28 @@ interface Props {
   loading?: boolean;
 }
 
+const REASONS = [
+  "I cannot find my preferred payment method",
+  "I found a better price or product elsewhere",
+  "I want to add or modify items in my cart",
+  "I find pricing too high or unclear",
+  "I am not sure about quality and return/exchange policy",
+  "I am facing issue in applying coupons",
+  "I am not sure about the delivery dates",
+  "Other"
+];
+
 export const CancelOrderDialog = ({
   open,
   onClose,
   onConfirm,
   loading,
 }: Props) => {
-  const [reason, setReason] =
-    useState("");
+  const [selectedReason, setSelectedReason] = useState("");
+  const [customReason, setCustomReason] = useState("");
+
+  const isOther = selectedReason === "Other";
+  const finalReason = isOther ? customReason : selectedReason;
 
   return (
     <Dialog
@@ -67,17 +80,29 @@ export const CancelOrderDialog = ({
             <label className="mb-2 block text-sm font-semibold text-black">
               Cancellation Reason
             </label>
+            
+            <select
+              value={selectedReason}
+              onChange={(e) => {
+                setSelectedReason(e.target.value);
+                if (e.target.value !== "Other") setCustomReason("");
+              }}
+              className="w-full mb-3 rounded-xl border border-gray-200 p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+            >
+              <option value="" disabled>Select a reason</option>
+              {REASONS.map((r) => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
 
-            <Textarea
-              placeholder="Tell us why you want to cancel this order..."
-              value={reason}
-              onChange={(e) =>
-                setReason(
-                  e.target.value
-                )
-              }
-              className="min-h-[120px] rounded-2xl border-gray-200 focus-visible:ring-red-500"
-            />
+            {isOther && (
+              <Textarea
+                placeholder="Please specify your reason..."
+                value={customReason}
+                onChange={(e) => setCustomReason(e.target.value)}
+                className="min-h-[100px] rounded-2xl border-gray-200 focus-visible:ring-red-500"
+              />
+            )}
           </div>
 
           <div className="rounded-2xl border border-orange-200 bg-orange-50 p-4">
@@ -98,10 +123,10 @@ export const CancelOrderDialog = ({
 
             <Button
               disabled={
-                !reason || loading
+                !finalReason || loading
               }
               onClick={() =>
-                onConfirm(reason)
+                onConfirm(finalReason)
               }
               className="rounded-xl bg-red-600 hover:bg-red-700"
             >

@@ -5,173 +5,103 @@ import {
   PackageCheck,
   AlertTriangle,
   ShieldCheck,
+  Undo2,
+  RefreshCw,
+  FileText,
 } from "lucide-react";
 import { StaticContentLayout } from "../components/static-content-layout";
 
-const shippingHighlights = [
-  {
-    icon: Clock3,
-    title: "24–48 Hr Processing",
-    description: "Orders are packed and dispatched quickly",
-    color: "text-blue-600",
-    bg: "bg-blue-50/50",
-  },
-  {
-    icon: Truck,
-    title: "Pan India Delivery",
-    description: "Based on serviceable courier pin codes",
-    color: "text-emerald-600",
-    bg: "bg-emerald-50/50",
-  },
-  {
-    icon: PackageCheck,
-    title: "Secure Packaging",
-    description: "Safe packing for medical & dental products",
-    color: "text-amber-600",
-    bg: "bg-amber-50/50",
-  },
-];
-
 export function ShippingPolicyPage() {
   return (
-    <StaticContentLayout title="Shipping Policy">
-      {/* Expanded wrapper to max-w-7xl for full screen usage */}
-      <div className="max-w-7xl mx-auto px-4 pb-12 space-y-6 text-slate-600 antialiased">
+    <StaticContentLayout title="Shipping & Returns Policy">
+      <div className="max-w-5xl mx-auto px-4 pb-12 space-y-10 text-slate-600 antialiased">
         
-        {/* ── TOP ACTION SUMMARY CARDS ── */}
-        <div className="grid gap-4 grid-cols-1 sm:grid-cols-3">
-          {shippingHighlights.map((item) => {
-            const Icon = item.icon;
+        {/* 1. Return, Replacement & Refund Policy */}
+        <section className="space-y-4">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+            <div className="p-2 bg-rose-50 rounded-lg text-rose-600">
+              <Undo2 className="h-5 w-5" />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900">1. Return, Replacement & Refund Policy</h2>
+          </div>
+          <p className="text-sm leading-relaxed">
+            At <strong>JPL Markwin Private Limited</strong>, customer satisfaction is our priority. We offer a <strong>7-day Return & Replacement policy</strong> from the confirmed delivery date.
+          </p>
+          <ul className="grid gap-2 text-sm list-none">
+            {[
+              "Return & Replacement Window: Within 7 days of confirmed delivery.",
+              "Damage/Missing Items: Must be reported within 48 hours of delivery with supporting photos/videos.",
+              "Eligibility: Products must be unused, unopened, in original packaging, with factory seals intact.",
+              "Free Reverse Pickup: Available for eligible return and replacement requests.",
+              "Replacement First: We prioritize sending a replacement; refunds are processed only if the replacement is unavailable.",
+              "Refund Processing: Credited to the original payment method within 7–10 business days after inspection.",
+              "Non-Eligible Returns: Used, opened, tampered, or misused products are not eligible.",
+              "Shipping Charges: Non-refundable unless the return is due to an incorrect, defective, or damaged product supplied by us."
+            ].map((item, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="text-rose-500 font-bold">•</span> {item}
+              </li>
+            ))}
+          </ul>
+        </section>
 
-            return (
-              <div 
-                key={item.title} 
-                className="flex flex-col items-center text-center p-4 bg-white border border-slate-100 rounded-xl shadow-xs"
-              >
-                <div className={`p-2.5 rounded-lg ${item.bg} ${item.color} shrink-0 mb-2`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-                <h3 className="text-sm font-bold text-slate-900">
-                  {item.title}
-                </h3>
-                <p className="mt-1 text-xs text-slate-500 leading-normal">
-                  {item.description}
-                </p>
-              </div>
-            );
-          })}
+        {/* 2. Delivery Verification & Claims */}
+        <div className="grid md:grid-cols-2 gap-6">
+          <section className="space-y-4">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+              <PackageCheck className="h-5 w-5 text-emerald-600" />
+              <h2 className="text-lg font-bold text-slate-900">2. Delivery Verification</h2>
+            </div>
+            <ul className="text-sm space-y-3 list-disc pl-4">
+              <li>If the outer shipping container or seal is broken, <strong>refuse the delivery</strong>.</li>
+              <li>If outer package is secure, accept and inspect all inner components immediately.</li>
+              <li>Missing, incorrect, or transit-damaged items must be reported within <strong>48 hours</strong>.</li>
+            </ul>
+            <div className="bg-amber-50 p-3 rounded-lg border border-amber-100 text-xs text-amber-800 font-medium">
+              Notice: Delivery discrepancy claims submitted after 48 hours cannot be processed.
+            </div>
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
+              <FileText className="h-5 w-5 text-blue-600" />
+              <h2 className="text-lg font-bold text-slate-900">3. How to Open a Claim</h2>
+            </div>
+            <ol className="text-sm space-y-2 list-decimal pl-4">
+              <li>Navigate to your dashboard and open <strong>My Orders</strong>.</li>
+              <li>Locate your transaction and click <strong>Return / Replace</strong>.</li>
+              <li>Provide your reason for the request.</li>
+              <li>Upon approval, a free reverse doorstep pickup will be scheduled.</li>
+            </ol>
+            <p className="text-xs text-slate-500 italic">
+              *If your PIN code is unserviceable for pickup, self-shipping coverage will be reimbursed.
+            </p>
+          </section>
         </div>
 
-        {/* ── MAIN SECTIONS CONTENT ── */}
-        <div className="space-y-6">
-          
-          {/* Row 1: Order Processing & Delivery Coverage side by side */}
-          <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-            
-            {/* Section 1: Order Processing & Dispatch */}
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-2 pb-1.5 border-b border-slate-100">
-                <Truck className="h-4 w-4 text-slate-900 shrink-0" />
-                <h2 className="text-sm md:text-base font-bold text-slate-900">
-                  1. Order Processing & Dispatch
-                </h2>
-              </div>
-              <p className="text-xs md:text-sm text-slate-600 leading-relaxed">
-                At <strong className="text-slate-900 font-medium">JPL Markwin</strong>, most orders are processed within{" "}
-                <strong className="text-slate-900 font-semibold">24–48 business hours</strong> after successful payment confirmation.
-              </p>
-              <ul className="list-disc space-y-1 pl-4 text-xs md:text-sm text-slate-600 leading-relaxed">
-                <li>Orders are dispatched only after stock verification.</li>
-                <li>Bulk and specialized equipment may need extra processing time.</li>
-                <li>Weekend and holiday orders may be delayed slightly.</li>
-              </ul>
-            </div>
-
-            {/* Section 2: Delivery Coverage */}
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-2 pb-1.5 border-b border-slate-100">
-                <MapPinned className="h-4 w-4 text-emerald-600 shrink-0" />
-                <h2 className="text-sm md:text-base font-bold text-slate-900">
-                  2. Delivery Coverage
-                </h2>
-              </div>
-              <p className="text-xs md:text-sm text-slate-600 leading-relaxed">
-                Delivery is available across serviceable pin codes supported by our courier and logistics partners.
-              </p>
-              <ul className="list-disc space-y-1 pl-4 text-xs md:text-sm text-slate-600 leading-relaxed">
-                <li>Remote locations may require additional delivery time.</li>
-                <li>Courier partner availability may vary by region.</li>
-                <li>Some sensitive medical devices may be restricted in select areas.</li>
-              </ul>
-            </div>
-
+        {/* 3. Shipping Policy */}
+        <section className="space-y-4 bg-slate-50 p-6 rounded-xl border border-slate-100">
+          <div className="flex items-center gap-3 pb-3">
+            <Truck className="h-5 w-5 text-indigo-600" />
+            <h2 className="text-lg font-bold text-slate-900">4. Shipping Policy</h2>
           </div>
-
-          {/* Row 2: Timelines & Delays side by side */}
-          <div className="grid gap-6 grid-cols-1 lg:grid-cols-2 pt-2">
-            
-            {/* Section 3: Estimated Delivery Timeline */}
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-2 pb-1.5 border-b border-slate-100">
-                <Clock3 className="h-4 w-4 text-blue-600 shrink-0" />
-                <h2 className="text-sm md:text-base font-bold text-slate-900">
-                  3. Estimated Delivery Timeline
-                </h2>
-              </div>
-              <p className="text-xs md:text-sm text-slate-600 leading-relaxed">
-                Standard delivery timelines typically range between{" "}
-                <strong className="text-slate-900 font-semibold">3–7 business days</strong> depending on location, product type, and courier network.
-              </p>
-              <p className="text-xs text-blue-700 font-medium">
-                * Large equipment, bulk institutional orders, and fragile items may require 5–10 business days.
-              </p>
-            </div>
-
-            {/* Section 4: Delays & Exceptional Situations */}
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-2 pb-1.5 border-b border-slate-100">
-                <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0" />
-                <h2 className="text-sm md:text-base font-bold text-slate-900">
-                  4. Delays & Exceptional Situations
-                </h2>
-              </div>
-              <p className="text-xs md:text-sm text-slate-600 leading-relaxed">
-                While we aim to meet promised timelines, delays may occur due to extreme weather conditions, festive sale periods, unexpected courier disruptions, or inventory reconciliation delays.
-              </p>
-              <p className="text-xs text-amber-700 font-medium">
-                * JPL Markwin is not liable for courier delays caused by external logistics partners or force majeure conditions.
-              </p>
-            </div>
-
-          </div>
-
-          {/* Section 5: Shipment Tracking (Full span baseline) */}
-          <div className="space-y-2.5 pt-2">
-            <div className="flex items-center gap-2 pb-1.5 border-b border-slate-100">
-              <PackageCheck className="h-4 w-4 text-sky-600 shrink-0" />
-              <h2 className="text-sm md:text-base font-bold text-slate-900">
-                5. Shipment Tracking
-              </h2>
-            </div>
-            <p className="text-xs md:text-sm text-slate-600 leading-relaxed">
-              Once your order is shipped, tracking details will be available under <strong className="text-slate-900 font-medium">My Orders</strong>:
-            </p>
-            <ul className="list-disc space-y-1 pl-4 text-xs md:text-sm text-slate-600 leading-relaxed">
-              <li>Live courier status updates and shipment dispatch confirmation.</li>
-              <li>Expected delivery date and delivery completion updates.</li>
+          <div className="grid md:grid-cols-2 gap-4 text-sm text-slate-700">
+            <ul className="space-y-2">
+              <li>• Processing Time: 1–2 business days.</li>
+              <li>• Standard Delivery: 3–7 business days.</li>
+              <li>• Stock verification required before dispatch.</li>
+            </ul>
+            <ul className="space-y-2">
+              <li>• Bulk/Specialized items: May require extra time.</li>
+              <li>• Weekends/Holidays: Processing may delay slightly.</li>
+              <li>• Tracking: Shared once the order is dispatched.</li>
             </ul>
           </div>
-
-        </div>
-
-        {/* ── FOOTER NOTE ── */}
-        <div className="rounded-xl border border-emerald-100 bg-emerald-50/30 p-3.5 flex gap-2.5 items-start">
-          <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
-          <p className="text-xs md:text-sm font-medium text-emerald-800 leading-normal">
-            For damaged packages, tampered seals, or missing items, please report within <strong>48 hours</strong> of delivery for quick resolution under our return and replacement policy.
+          <p className="text-xs text-slate-500 pt-2 border-t border-slate-200">
+            * Delivery is available pan-India. Remote locations may require additional time. Some sensitive medical devices may be restricted in select areas.
           </p>
-        </div>
-        
+        </section>
+
       </div>
     </StaticContentLayout>
   );

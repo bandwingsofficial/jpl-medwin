@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useLogin } from "../hooks/use-login";
 
 import { Input } from "@/shared/components/ui/input";
@@ -47,16 +48,14 @@ function PulseLine() {
 function Wordmark() {
   return (
     <div className="flex items-center gap-3">
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#0E6B5C]">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M12 3v18M3 12h18"
-            stroke="#F5F8F7"
-            strokeWidth="3.2"
-            strokeLinecap="round"
-          />
-        </svg>
-      </span>
+      <div className="relative h-9 w-9 overflow-hidden rounded-xl">
+        <Image 
+          src="/Images/Icon.jpeg" 
+          alt="JPL Medwin Icon" 
+          fill 
+          className="object-cover" 
+        />
+      </div>
       <span
         className="text-md font-semibold tracking-tight text-[#12231F]"
         style={{ fontFamily: DISPLAY_FONT }}
@@ -101,6 +100,7 @@ export function LoginForm() {
       className="flex min-h-screen items-center justify-center bg-white p-4 sm:p-6 md:p-10"
       style={{ fontFamily: BODY_FONT }}
     >
+    
 
       {/* MAIN UNIFIED CONTAINER BOX */}
       <div className="flex w-full max-w-5xl overflow-hidden rounded-[28px] border border-[#DCE6E2] bg-white shadow-[0_24px_60px_-24px_rgba(14,107,92,0.18)]">
@@ -146,7 +146,7 @@ export function LoginForm() {
               <Button
                 onClick={handleSubmit}
                 loading={isPending}
-                className="h-11 w-full rounded-xl bg-[#0E6B5C] text-[14px] font-semibold text-white hover:bg-[#0A5347]"
+                className="h-11 w-full rounded-xl bg-[#0D9488] text-[14px] font-semibold text-white hover:bg-[#0D9488]"
               >
                 {isPending ? "Signing in..." : "Continue"}
               </Button>
@@ -177,7 +177,7 @@ export function LoginForm() {
         {/* RIGHT — BRAND PANEL */}
         <div className="relative hidden w-1/2 md:block">
           <img
-            src="/Images/login-Image.jpg"
+            src="/Images/login-Image2.jpeg"
             alt="Pharmacist reviewing a prescription"
             className="h-full w-full object-cover"
           />
@@ -188,36 +188,11 @@ export function LoginForm() {
               className="max-w-xs text-[26px] font-semibold leading-[1.2] text-white"
               style={{ fontFamily: DISPLAY_FONT }}
             >
-              Your prescriptions, refilled without the waiting room.
+              Empowering Healthcare. Delivering Excellence.
             </h2>
             <p className="max-w-xs text-[13px] leading-relaxed text-white/75">
-              Licensed pharmacists review every order before it ships, so what
-              reaches your door is exactly what your doctor intended.
-            </p>
-
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {[
-                "Licensed pharmacy",
-                "Verified prescriptions",
-                "24/7 support",
-              ].map((label) => (
-                <span
-                  key={label}
-                  className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-sm"
-                >
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M5 13l4 4L19 7"
-                      stroke="#7CE0C6"
-                      strokeWidth="2.4"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                  {label}
-                </span>
-              ))}
-            </div>
+             Driven by innovation, quality, and trust, JPL Medwin is committed to providing world-class dental and medical products while building long-term partnerships with healthcare professionals across India.
+            </p>            
           </div>
         </div>
 

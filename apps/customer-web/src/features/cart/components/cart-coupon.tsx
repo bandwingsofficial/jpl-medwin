@@ -5,13 +5,11 @@ import { useState } from "react";
 import { Tag, X } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
-
 import { Input } from "@/shared/components/ui/input";
 
 import { AppliedCoupon } from "../types/coupon.type";
 
 import { useApplyCoupon } from "../hooks/use-apply-coupon";
-
 import { useRemoveCoupon } from "../hooks/use-remove-coupon";
 
 import {
@@ -26,52 +24,41 @@ interface Props {
 export default function CartCoupon({
   appliedCoupon,
 }: Props) {
-  const [couponCode, setCouponCode] =
-    useState("");
+  const [couponCode, setCouponCode] = useState("");
+  const [error, setError] = useState("");
 
-  const [error, setError] =
-    useState("");
-
-  const applyCouponMutation =
-    useApplyCoupon();
-
-  const removeCouponMutation =
-    useRemoveCoupon();
+  const applyCouponMutation = useApplyCoupon();
+  const removeCouponMutation = useRemoveCoupon();
 
   /**
    * APPLY COUPON
    */
-  const handleApplyCoupon =
-    async () => {
-      try {
-        setError("");
+  const handleApplyCoupon = async () => {
+    try {
+      setError("");
 
-        if (!couponCode.trim()) {
-          setError(
-            COUPON_MESSAGES.EMPTY_COUPON
-          );
-
-          return;
-        }
-
-        await applyCouponMutation.mutateAsync(
-          couponCode.trim().toUpperCase()
-        );
-
-        setCouponCode("");
-      } catch (error: any) {
-        setError(
-          error?.response?.data?.message ||
-            COUPON_MESSAGES.INVALID_COUPON
-        );
+      if (!couponCode.trim()) {
+        setError(COUPON_MESSAGES.EMPTY_COUPON);
+        return;
       }
-    };
+
+      await applyCouponMutation.mutateAsync(
+        couponCode.trim().toUpperCase()
+      );
+
+      setCouponCode("");
+    } catch (error: any) {
+      setError(
+        error?.response?.data?.message ||
+          COUPON_MESSAGES.INVALID_COUPON
+      );
+    }
+  };
 
   /**
    * REMOVE COUPON
    */
-  const handleRemoveCoupon =
-  async () => {
+  const handleRemoveCoupon = async () => {
     try {
       await removeCouponMutation.removeCoupon();
     } catch (error: any) {
@@ -113,8 +100,7 @@ export default function CartCoupon({
           </h3>
 
           <p className="text-sm text-gray-500">
-            Enter coupon code to get
-            discount
+            Enter coupon code to get discount
           </p>
         </div>
       </div>
@@ -148,9 +134,7 @@ export default function CartCoupon({
                   text-white
                 "
               >
-                {
-                  appliedCoupon.couponCode
-                }
+                {appliedCoupon.couponCode}
               </span>
 
               <span
@@ -171,16 +155,13 @@ export default function CartCoupon({
                 text-emerald-700
               "
             >
-              You saved ₹
-              {appliedCoupon.discount}
+              You saved ₹{appliedCoupon.discount}
             </p>
           </div>
 
           <button
             onClick={handleRemoveCoupon}
-            disabled={
-              removeCouponMutation.isPending
-            }
+            disabled={removeCouponMutation.isPending}
             className="
               flex
               h-9
@@ -204,23 +185,15 @@ export default function CartCoupon({
             <Input
               placeholder="Enter coupon code"
               value={couponCode}
-              onChange={(e) =>
-                setCouponCode(
-                  e.target.value
-                )
-              }
-              maxLength={
-                COUPON_INPUT_MAX_LENGTH
-              }
+              onChange={(e) => setCouponCode(e.target.value)}
+              maxLength={COUPON_INPUT_MAX_LENGTH}
               className="h-12 uppercase"
             />
 
             <Button
               type="button"
               onClick={handleApplyCoupon}
-              loading={
-                applyCouponMutation.isPending
-              }
+              loading={applyCouponMutation.isPending}
               className="
                 h-12
                 min-w-[120px]

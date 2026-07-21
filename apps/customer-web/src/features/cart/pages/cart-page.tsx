@@ -209,7 +209,7 @@ const cart = data;
         {/* TOP BAR */}
         {/* ====================================================== */}
 
-        <div className="mb-6">
+        <div className="mb-3">
           <Link
             href="/products"
             className="

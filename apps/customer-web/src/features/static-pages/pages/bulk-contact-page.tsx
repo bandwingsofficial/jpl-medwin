@@ -304,7 +304,7 @@ export function BulkContactPage() {
             <button
   className="bk-quote-btn"
   onClick={() => {
-    const phone = "917289999456"; // Your WhatsApp number (country code, no +)
+    const phone = "919187969350"; // Your WhatsApp number (country code, no +)
     const message =
   "Hello JPL Markwin,%0A%0AI would like to place a bulk order for your products. Could you please guide me through the process?";
     window.open(`https://wa.me/${phone}?text=${message}`, "_blank");
@@ -385,7 +385,7 @@ export function BulkContactPage() {
             <div style={{ position: "relative", zIndex: 1 }}>
               <p style={{ fontSize: 10, color: "#94A3B8", fontWeight: 600, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 5 }}>Bulk Sales Helpline</p>
              <a
-  href="tel:+917289999456"
+  href="tel:+919187969350"
   style={{
     fontFamily: "'Outfit', sans-serif",
     fontSize: 18,
@@ -403,7 +403,7 @@ export function BulkContactPage() {
     e.currentTarget.style.color = "#0F172A";
   }}
 >
-  +91 72899 99456
+  +91 91879 69350  
 </a>
   </div>
           </div>

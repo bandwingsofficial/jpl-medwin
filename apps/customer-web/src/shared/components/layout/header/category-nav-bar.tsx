@@ -349,13 +349,13 @@ export function CategoryNavBar() {
               ))}
 
               {/* PHONE (Included directly after collection elements to automatically inherit the design layout gaps) */}
-              <ShinyNavLink href="tel:+919876152430" className="phone-link">
+              <ShinyNavLink href="tel:+919187969350" className="phone-link">
                 <span className="flex items-center gap-2">
                   <span className="phone-ring-wrap relative flex items-center justify-center">
                     <span className="phone-ring absolute inline-flex h-full w-full rounded-full bg-white/60" />
                     <Phone size={16} className="relative z-10" />
                   </span>
-                  +91 98761 52430
+                  +91 91879 69350    
                 </span>
               </ShinyNavLink>
             </div>

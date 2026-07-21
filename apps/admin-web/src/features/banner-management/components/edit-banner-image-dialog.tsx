@@ -49,23 +49,31 @@ export function EditBannerImageDialog({
   productId: string,
   sortOrder: number
 ) {
-  if (!image) return;
-
-  const imageId = image.id;
+  if (!image) {
+    return;
+  }
 
   try {
-    await bannerService.updateImage(imageId, {
-      image: file,
-      productId,
-      sortOrder,
-    });
+    await bannerService.updateImage(
+      image.id,
+      {
+        image: file,
+        productId,
+        sortOrder,
+      }
+    );
 
-    toast.success("Image updated successfully");
+    toast.success(
+      "Image updated successfully"
+    );
 
     onSuccess();
+
     onOpenChange(false);
   } catch {
-    toast.error("Failed to update image");
+    toast.error(
+      "Failed to update image"
+    );
   }
 }
 

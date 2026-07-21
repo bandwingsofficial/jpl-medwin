@@ -7,6 +7,7 @@ import {
 } from "react";
 
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { useVerifyOtp } from "../hooks/use-verify-otp";
@@ -58,16 +59,14 @@ function PulseLine() {
 function Wordmark() {
   return (
     <div className="flex items-center gap-3">
-      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M12 3v18M3 12h18"
-            stroke="#F5F8F7"
-            strokeWidth="3.2"
-            strokeLinecap="round"
-          />
-        </svg>
-      </span>
+      <div className="relative h-9 w-9 overflow-hidden rounded-xl">
+        <Image 
+          src="/Images/Icon.jpeg" 
+          alt="JPL Medwin Icon" 
+          fill 
+          className="object-cover" 
+        />
+      </div>
       <span
         className="text-md font-semibold tracking-tight text-[#12231F]"
         style={{ fontFamily: DISPLAY_FONT }}
@@ -320,7 +319,7 @@ export function OtpForm() {
         {/* RIGHT — BRAND / TRUST PANEL */}
         <div className="relative hidden w-1/2 md:block">
           <img
-            src="/Images/login-Image.jpg"
+            src="/Images/login-Image2.jpeg"
             alt="Pharmacist verifying an order"
             className="h-full w-full object-cover"
           />
@@ -331,34 +330,11 @@ export function OtpForm() {
               className="max-w-xs text-[26px] font-semibold leading-[1.2] text-white"
               style={{ fontFamily: DISPLAY_FONT }}
             >
-              One more step to keep your account safe.
+              Shaping the Future of Healthcare Supply
             </h2>
             <p className="max-w-xs text-[13px] leading-relaxed text-white/75">
-              This code confirms it's really you before we unlock order
-              history, refills, and messages with your care team.
+              Our vision is to become India's most trusted healthcare and dental distribution partner by delivering quality products, innovative solutions, and exceptional service that empower healthcare professionals to provide better patient care.
             </p>
-
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {[
-                "256-bit encryption",
-                "HIPAA safeguards",
-                "Private & Encrypted",
-              ].map((label) => (
-                <span
-                  key={label}
-                  className="flex items-center gap-1 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-sm"
-                >
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3z"
-                      stroke="#7CE0C6"
-                      strokeWidth="1.6"
-                    />
-                  </svg>
-                  {label}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
 

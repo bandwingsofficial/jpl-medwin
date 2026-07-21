@@ -125,7 +125,7 @@ const wishlistCount =
 
   const actionItems: ActionItem[] = [
     {
-  imageSrc: "/Logo/coin3.png",
+  imageSrc: "/Logo/coin2.png",
   label: "Coins",
   href: "/account/coins",
 },
@@ -216,7 +216,7 @@ const wishlistCount =
 
             <Link href="/" className="shrink-0">
               <Image
-                src="/Logo/JPL Markwin.png"
+                src="/Logo/Jpl_Logo.png"
                 alt="JPL Medwin Logo"
                 width={160}
                 height={60}
@@ -358,7 +358,7 @@ const wishlistCount =
 
           <Link href="/" className="shrink-0">
             <Image
-              src="/Logo/JPL Medwin1.png"
+              src="/Logo/Header.png"
               alt="JPL Medwin Logo"
               width={160}
               height={80}

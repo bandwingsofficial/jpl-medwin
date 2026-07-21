@@ -67,7 +67,7 @@ export function Sidebar() {
   {/* The container is now justify-center and has a much larger height/width to scale the logo */}
   <div className="relative h-20 w-48 flex items-center justify-center">
     <Image
-      src="/Logo/JPL Medwin1.png"
+      src="/Logo/Jpl_Logo.png"
       alt="JPL Medwin Logo"
       fill
       sizes="(max-width: 768px) 100vw, 250px" // Adjusted sizes hint for performance

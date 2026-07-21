@@ -23,6 +23,7 @@ interface Job {
   title: string;
   department: string;
   location: string;
+  Experience: string;
   type: string;
 }
 
@@ -37,17 +38,19 @@ interface ApplicationFormData {
 const CURATED_JOBS: Job[] = [
   {
     id: "job-1",
-    title: "Senior Full-Stack Engineer",
+    title: "Area Sales Manager",
     department: "Engineering & Tech",
-    location: "Bengaluru, India (Hybrid)",
+    location: "Bangalore Bommasandra industrial Estate",
     type: "Full-Time",
+    Experience: "0-2 Years"
   },
   {
     id: "job-2",
-    title: "Technical Product Manager",
+    title: "Inside Sales Executive",
     department: "Product Strategy",
-    location: "Remote (India)",
+    location: "Bangalore Bommasandra industrial Estate",
     type: "Full-Time",
+    Experience: "0-2 Years"
   }
 ];
 
@@ -387,11 +390,32 @@ export default function CareersPage() {
                     {job.title}
                   </h3>
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 16, fontSize: 12, color: "#64748B", marginTop: 20, fontWeight: 400 }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: 4 }}><MapPin size={13} className="text-teal-600" /> {job.location}</span>
-                  <span style={{ display: "flex", alignItems: "center", gap: 4 }}><Clock size={13} className="text-teal-600" /> {job.type}</span>
-                </div>
-              </div>
+                <div style={{ 
+  display: "grid", 
+  gridTemplateColumns: "1fr 1fr", // Two-column layout for better readability
+  gap: "12px", 
+  marginTop: "24px" 
+}}>
+  
+  {/* Location - Full width if needed or first column */}
+  <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#64748B" }}>
+    <MapPin size={14} className="text-teal-600" />
+    <span style={{ whiteSpace: "nowrap" }}>{job.location}</span>
+  </div>
+
+  {/* Job Type */}
+  <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#64748B" }}>
+    <Clock size={14} className="text-teal-600" />
+    <span>{job.type}</span>
+  </div>
+
+  {/* Experience - Best to give it its own line or column with a Briefcase icon */}
+  <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#64748B", gridColumn: "span 2" }}>
+    <Briefcase size={14} className="text-teal-600" />
+    <span style={{ fontWeight: 600, color: "#334155" }}>{job.Experience}</span>
+  </div>
+
+</div> </div>
             ))}
           </div>
         </div>

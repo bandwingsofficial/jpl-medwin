@@ -94,14 +94,15 @@
   animation: typing 2s steps(12, end) infinite alternate, blink 0.5s step-end infinite;
 }
 
-@keyframes pulse-draw {
-  0% {
-    stroke-dashoffset: 1;
-  }
-  55% {
-    stroke-dashoffset: 0;
-  }
-  100% {
-    stroke-dashoffset: -1;
-  }
-}
+ @keyframes pulse-draw {
+          0% {
+            stroke-dashoffset: 1;
+          }
+          55% {
+            stroke-dashoffset: 0;
+          }
+          100% {
+            stroke-dashoffset: -1;
+          }
+        }
+

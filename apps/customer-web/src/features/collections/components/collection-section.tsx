@@ -105,7 +105,7 @@ export function CollectionSection({
               hover:bg-gray-50
             "
           >
-            View All
+            Explore More
           </Link>
         )}
       </div>

@@ -86,7 +86,7 @@ export default function VerifyOtpPage() {
         {/* ===================================================== */}
         <div className="hidden md:block md:w-1/2 relative bg-slate-100">
           <img
-            src="Logo/login.png" 
+            src="Logo/login2.png" 
             alt="Medical Professional"
             className="w-full h-full object-cover"
           />
@@ -104,7 +104,7 @@ export default function VerifyOtpPage() {
             <div className="flex flex-col items-center justify-center text-center space-y-2.5">
               <div className="inline-flex items-center justify-center p-2.5 bg-white rounded-xl shadow-xs border border-slate-100 w-fit">
                 <img
-                  src="/Logo/JPL Markwin.png"
+                  src="/Logo/JPl_logo.png"
                   alt="JPL Markwin"
                   className="w-36 h-auto object-contain"
                 />

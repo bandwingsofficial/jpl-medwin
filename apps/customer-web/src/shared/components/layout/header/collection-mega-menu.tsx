@@ -88,6 +88,11 @@ export function CollectionMegaMenu({
                   product.price?.min ||
                   0;
 
+                const mrp = 
+                  variant?.pricing?.mrp || 
+                  product.price?.max || 
+                  0;
+
                 const productSlug = product.slug || product.id;
 
                 return (
@@ -110,9 +115,16 @@ export function CollectionMegaMenu({
                         {product.name}
                       </h4>
 
-                      <p className="mt-1 text-xs font-bold text-[#0F9EA5]">
-                        ₹{sellingPrice.toLocaleString()}
-                      </p>
+                      <div className="mt-1 flex items-center gap-2">
+                        <p className="text-xs font-bold text-[#0F9EA5]">
+                          ₹{sellingPrice.toLocaleString()}
+                        </p>
+                        {mrp > sellingPrice && (
+                          <p className="text-[10px] text-gray-400 line-through">
+                            ₹{mrp.toLocaleString()}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </Link>
                 );
@@ -120,7 +132,6 @@ export function CollectionMegaMenu({
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

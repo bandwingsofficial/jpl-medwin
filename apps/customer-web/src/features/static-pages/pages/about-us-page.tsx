@@ -78,10 +78,10 @@ const values = [
 ];
 
 const team = [
-  { initials: "RP", name: "Rajesh Pillai", role: "Founder & CEO", color: "#115E59" },
-  { initials: "SM", name: "Sunita Menon", role: "Head of Procurement", color: "#115E59" },
-  { initials: "AK", name: "Arjun Khanna", role: "Director, Partnerships", color: "#115E59" },
-  { initials: "PD", name: "Priya Deshpande", role: "Customer Success Lead", color: "#115E59" },
+  { initials: "PM", name: "Ms. Padmaveni M", role: "Founder & Managing Director", color: "#115E59" },
+  { initials: "MK", name: "Markandaiah", role: "Director", color: "#115E59" },
+  { initials: "MN", name: "Mrs. Manjuveni M", role: "Legal Advisor", color: "#115E59" },
+  { initials: "DB", name: "Dushyant DB", role: "Technical Lead", color: "#115E59" },
 ];
 
 function AnimatedCounter({ target }: { target: string }) {
@@ -782,14 +782,39 @@ export function AboutUsPage() {
           <div className="eyebrow" style={{ justifyContent: "center" }}>The People Behind JPL Markwin</div>
           <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(24px, 3vw, 34px)", fontWeight: 700, color: "#0F172A", marginTop: 4 }}>Leadership Team</h2>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20 }}>
-          {team.map((m, i) => (
-            <div key={i} className="team-card">
-              <div className="team-avatar">{m.initials}</div>
-              <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, fontWeight: 700, color: "#0F172A", marginBottom: 4 }}>{m.name}</div>
-              <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "#64748B", fontWeight: 400 }}>{m.role}</div>
-            </div>
-          ))}
+        
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 32 }}>
+          
+          {/* Ms. Padmaveni M (Janaki) */}
+          <div className="team-card" style={{ padding: 24, border: "1px solid #E2E8F0", borderRadius: 8 }}>
+            <div className="team-avatar" style={{ marginBottom: 16 }}>PM</div>
+            <h3 style={{ fontSize: 18, marginBottom: 4 }}>Ms. Padmaveni M (Janaki)</h3>
+            <p style={{ fontSize: 13, color: "#3B82F6", marginBottom: 16, fontWeight: 600 }}>Founder & Managing Director</p>
+            <p style={{ fontSize: 14, lineHeight: 1.6, color: "#64748B" }}>
+              With 6+ years of dental industry expertise, I lead JPL Markwin with a focus on Compassion, Innovation, and Trust. My goal is to build a premier e-commerce destination that delivers genuine products, competitive pricing, and reliable service to healthcare professionals.
+            </p>
+          </div>
+
+          {/* Markandaiah */}
+          <div className="team-card" style={{ padding: 24, border: "1px solid #E2E8F0", borderRadius: 8 }}>
+            <div className="team-avatar" style={{ marginBottom: 16 }}>M</div>
+            <h3 style={{ fontSize: 18, marginBottom: 4 }}>Markandaiah</h3>
+            <p style={{ fontSize: 13, color: "#3B82F6", marginBottom: 16, fontWeight: 600 }}>Director</p>
+            <p style={{ fontSize: 14, lineHeight: 1.6, color: "#64748B" }}>
+              Driven by integrity and a passion for growth, I focus on the strategic vision of JPL Markwin. We are dedicated to transforming the medical e-commerce landscape by fostering meaningful partnerships and delivering consistent value through ethical business practices.
+            </p>
+          </div>
+
+          {/* Mrs. Manjuveni M Naveen Kumar */}
+          <div className="team-card" style={{ padding: 24, border: "1px solid #E2E8F0", borderRadius: 8 }}>
+            <div className="team-avatar" style={{ marginBottom: 16 }}>MM</div>
+            <h3 style={{ fontSize: 18, marginBottom: 4 }}>Mrs. Manjuveni M Naveen Kumar</h3>
+            <p style={{ fontSize: 13, color: "#3B82F6", marginBottom: 16, fontWeight: 600 }}>Legal Advisor</p>
+            <p style={{ fontSize: 14, lineHeight: 1.6, color: "#64748B" }}>
+              Leveraging 7+ years of legal experience, I ensure JPL Markwin maintains the highest standards of corporate governance and regulatory compliance. I am committed to protecting company interests while supporting sustainable, transparent growth.
+            </p>
+          </div>
+
         </div>
       </section>
 

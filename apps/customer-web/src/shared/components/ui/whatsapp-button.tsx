@@ -4,7 +4,7 @@ import React from "react";
 
 export function WhatsappButton() {
   // Replace this with your actual business phone number (include country code, no spaces or '+' symbols)
-  const WHATSAPP_NUMBER = "919876543210"; 
+  const WHATSAPP_NUMBER = "919187969350"; 
   const DEFAULT_MESSAGE = encodeURIComponent("Hello! I am looking for assistance regarding medical products.");
 
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${DEFAULT_MESSAGE}`;

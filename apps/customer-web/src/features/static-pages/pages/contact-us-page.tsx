@@ -427,7 +427,7 @@ export function ContactUsPage() {
             <div className="ct-eyebrow" style={{ color: "#0D9488", marginBottom: 12 }}>Call Us</div>
             <div style={{ fontFamily: "'outfit', serif", fontSize: 22, fontWeight: 700, color: "#0F172A", marginBottom: 4 }}>
               <a
-  href="tel:+917289999456"
+  href="tel:+919187969350"
   style={{
     fontFamily: "'Outfit', sans-serif",
     fontSize: 18,
@@ -446,7 +446,7 @@ export function ContactUsPage() {
     e.currentTarget.style.color = "#0F172A";
   }}
 >
-  +91 728 9999 456
+  +91 91879 69350  
 </a>
             </div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#64748B", fontWeight: 300, lineHeight: 1.6 }}>
@@ -606,9 +606,9 @@ export function ContactUsPage() {
               Our procurement specialists are just a call away for urgent medical supplies and order support.
             </p>
           </div>
-          <a href="tel:+917289999456" className="ct-call-btn">
+          <a href="tel:+919187969350" className="ct-call-btn">
             <Phone size={15} />
-            Call Now — +91 72899 99456
+            Call Now — +91 91879 69350  
           </a>
         </div>
       </section>

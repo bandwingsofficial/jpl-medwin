@@ -95,7 +95,7 @@ export function HomeCategories() {
                 md:flex
               "
             >
-              {isExpanded ? "Show Less" : "View All"}
+              {isExpanded ? "Show Less" : "Explore More"}
               <ChevronDown
                 size={16}
                 className={`transition-transform duration-300 ${
