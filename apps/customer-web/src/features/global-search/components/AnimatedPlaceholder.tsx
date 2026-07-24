@@ -30,7 +30,7 @@ export function AnimatedPlaceholder({
       {/* Search Icon */}
       <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center justify-center">
         <Search
-          className="h-5 w-5 text-teal-700 transition-all duration-300"
+          className="h-5 w-5 text-teal-700"
           strokeWidth={2.2}
         />
       </div>
@@ -38,16 +38,16 @@ export function AnimatedPlaceholder({
       {/* Placeholder */}
       <div
         className={cn(
-          'pointer-events-none absolute inset-y-0 left-11 flex items-center overflow-hidden',
+          'pointer-events-none absolute inset-y-0 left-11 right-4 flex items-center overflow-hidden',
           'whitespace-nowrap select-none',
           className
         )}
       >
-        <span className="typewriter-text relative">
+        <span className="typewriter-text relative truncate">
           {text}
         </span>
 
-        <span className="typewriter-cursor ml-[2px]">
+        <span className="typewriter-cursor ml-[2px] shrink-0">
           |
         </span>
       </div>

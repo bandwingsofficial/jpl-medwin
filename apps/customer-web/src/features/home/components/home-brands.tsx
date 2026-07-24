@@ -90,25 +90,25 @@ export function HomeBrands() {
               {/* Row 1 */}
 <div className="relative overflow-hidden py-4 [mask-image:linear-gradient(to_right,transparent,white_10%,white_90%,transparent)]">                
   <div className="flex animate-marquee-left gap-6 py-1">
-                  {[...(brands ?? []), ...(brands ?? [])].map((brand, index) => (
-                    <Link
-                      key={`${brand.id}-1-${index}`}
-                      href={`/products?brandId=${brand.id}`}
-                      className="shrink-0"
-                    >
-                      <div className="flex h-[105px] w-[105px] items-center justify-center rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-teal-500 hover:shadow-xl">
-                        <Image
-                          src={brand.imageUrl}
-                          alt={brand.name}
-                          width={70}
-                          height={70}
-                          className="object-contain"
-                        />
-                      </div>
-                    </Link>
-                  ))}
-                </div>
+                {[...(brands ?? []), ...(brands ?? [])].map((brand, index) => (
+                  <Link
+                    key={`${brand.id}-1-${index}`}
+                    href={`/products?brandId=${brand.id}`}
+                    className="shrink-0"
+                  >
+                    <div className="flex h-[105px] w-[105px] items-center justify-center rounded-3xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-teal-500 hover:bg-white">
+                      <Image
+                        src={brand.imageUrl}
+                        alt={brand.name}
+                        width={70}
+                        height={70}
+                        className="object-contain"
+                      />
+                    </div>
+                  </Link>
+                ))}
               </div>
+            </div>
 
               {/* Row 2 */}
               <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_10%,white_90%,transparent)]">
@@ -120,7 +120,7 @@ export function HomeBrands() {
                         href={`/products?brandId=${brand.id}`}
                         className="shrink-0"
                       >
-                        <div className="flex h-[105px] w-[105px] items-center justify-center rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-teal-500 hover:shadow-xl">
+                        <div className="flex h-[105px] w-[105px] items-center justify-center rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-teal-500 hover:bg-white hover:shadow-xl">
                           <Image
                             src={brand.imageUrl}
                             alt={brand.name}
@@ -146,7 +146,17 @@ export function HomeBrands() {
           </span>
 
           <h2 className="mt-4 text-3xl font-extrabold leading-tight text-slate-900">
-            Global Brand <span className="text-teal-600">Partners</span>
+            Global Brand<span
+  className="
+    bg-[linear-gradient(110deg,#0f766e_0%,#14b8a6_20%,#99f6e4_35%,#14b8a6_50%,#0d9488_70%,#14b8a6_85%,#99f6e4_100%)]
+    bg-[length:250%_100%]
+    bg-clip-text
+    text-transparent
+    animate-[shine_4s_linear_infinite]
+  "
+>
+  Partners
+</span>
           </h2>
 
           <p className="mt-3 text-sm leading-7 text-slate-600">
@@ -158,7 +168,7 @@ export function HomeBrands() {
         <div className="grid grid-cols-3 gap-4">
           {brands?.slice(0, 6).map((brand) => (
             <Link key={brand.id} href={`/products?brandId=${brand.id}`}>
-              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-teal-500 hover:shadow-lg">
+              <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-teal-500 hover:bg-white hover:shadow-lg">
                 <div className="flex h-16 items-center justify-center">
                   <Image
                     src={brand.imageUrl}
@@ -168,10 +178,6 @@ export function HomeBrands() {
                     className="object-contain"
                   />
                 </div>
-
-                <p className="mt-3 line-clamp-1 text-center text-xs font-semibold text-slate-700">
-                  {brand.name}
-                </p>
               </div>
             </Link>
           ))}

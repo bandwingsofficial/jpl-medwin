@@ -39,12 +39,6 @@ export function HomeCategories() {
       {/* ================================================================ */}
       <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#E3E7E4] px-1 pb-4">
         <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-wider text-[#6E7C78]">
-            <span className="h-1.5 w-1.5 rounded-[2px] bg-[#0D6E63]" />
-            Catalog
-            <span className="text-[#C7CFCC]">/</span>
-            {categories.length} categories
-          </div>
           <h2 className="text-[24px] font-semibold leading-tight tracking-tight text-[#12211D] md:text-[28px]">
             Shop by{' '}
             <span className="bg-gradient-to-r from-[#0D6E63] via-[#14B8A6] to-[#0D6E63] bg-clip-text text-transparent">
@@ -68,7 +62,7 @@ export function HomeCategories() {
             "
           >
             <LayoutGrid size={15} strokeWidth={2.2} />
-            {isExpanded ? 'Show less' : 'View all'}
+            {isExpanded ? 'Show less' : 'Explore More'}
             <ChevronDown
               size={15}
               strokeWidth={2.4}

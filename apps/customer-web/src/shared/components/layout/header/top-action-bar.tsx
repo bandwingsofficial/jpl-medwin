@@ -305,7 +305,7 @@ const wishlistCount =
   <div className="mt-3 flex items-center gap-2">
     <div className="flex-1">
       <GlobalSearch />
-    </div>
+    </div>s
 
     {/* MENU */}
 

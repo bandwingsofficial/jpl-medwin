@@ -198,22 +198,45 @@ export function CategoryNavBar() {
                     key={item.label}
                     href={item.href}
                     className="
-                    flex-shrink-0
-                    rounded-md
-                    border
-                    border-white/20
-                    bg-white/10
-                    backdrop-blur-sm
-                    px-3
-                    py-2
-                    text-[13px]
-                    whitespace-nowrap
-                    text-white
-                    font-semibold
-                    hover:bg-white/20
-                    active:scale-95
-                    transition-all
-                  "
+group
+relative
+flex
+h-10
+items-center
+justify-center
+flex-shrink-0
+overflow-hidden
+
+rounded-xl
+
+border
+border-white/15
+
+bg-gradient-to-b
+from-white/25
+via-white/10
+to-white/5
+
+px-5
+
+text-[13px]
+font-semibold
+tracking-wide
+text-white
+
+shadow-[0_4px_12px_rgba(0,0,0,0.18)]
+
+backdrop-blur-xl
+
+transition-all
+duration-300
+
+hover:-translate-y-0.5
+hover:border-cyan-200/60
+hover:shadow-[0_8px_20px_rgba(0,0,0,0.28)]
+
+active:scale-95
+"
                   >
                     {item.label}
                   </Link>
