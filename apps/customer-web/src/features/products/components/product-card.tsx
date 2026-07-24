@@ -1,117 +1,62 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
+import Image from 'next/image';
+import Link from 'next/link';
 
-import {
-  Heart,
-  Loader2,
-  Minus,
-  Plus,
-  ShoppingCart,
-  Star,
-} from "lucide-react";
+import { Heart, Loader2, Minus, Plus, ShoppingCart, Star } from 'lucide-react';
 
-import {
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { Product } from "@/features/products/types/product.type";
+import { Product } from '@/features/products/types/product.type';
 
-import { useAddToCart } from "@/features/cart/hooks/use-add-to-cart";
-import { useCart } from "@/features/cart/hooks/use-cart";
+import { useAddToCart } from '@/features/cart/hooks/use-add-to-cart';
+import { useCart } from '@/features/cart/hooks/use-cart';
 
-import { cartApi } from "@/features/cart/api/cart.api";
+import { cartApi } from '@/features/cart/api/cart.api';
 
-import { useAuthGuard } from "@/features/auth/hooks/use-auth-guard";
-import { WishlistButton } from "@/features/wishlist/components/wishlist-button";
+import { useAuthGuard } from '@/features/auth/hooks/use-auth-guard';
+import { WishlistButton } from '@/features/wishlist/components/wishlist-button';
 
 interface ProductCardProps {
   product: Product;
 }
 
-const PLACEHOLDER_IMAGE =
-  "/images/product-placeholder.png";
+const PLACEHOLDER_IMAGE = '/images/product-placeholder.png';
 
-export function ProductCard({
-  product,
-}: ProductCardProps) {
-  const queryClient =
-    useQueryClient();
+export function ProductCard({ product }: ProductCardProps) {
+  const queryClient = useQueryClient();
 
-  const { requireAuth } =
-    useAuthGuard();
+  const { requireAuth } = useAuthGuard();
 
   const variant =
-    product?.variants?.find(
-      (item) =>
-        item.id ===
-        product.defaultVariantId
-    ) || product?.variants?.[0];
+    product?.variants?.find((item) => item.id === product.defaultVariantId) ||
+    product?.variants?.[0];
 
-  const { data: cartData } =
-    useCart();
+  const { data: cartData } = useCart();
 
-  const {
-    mutateAsync: addToCart,
-    isPending:
-      isAddingToCart,
-  } = useAddToCart();
+  const { mutateAsync: addToCart, isPending: isAddingToCart } = useAddToCart();
 
-  const cartItem =
-  cartData?.cartItems?.find(
-    (item) =>
-      item.variantId === variant?.id
-  );
-  const cartQuantity =
-    cartItem?.variant
-      ?.quantity || 0;
+  const cartItem = cartData?.cartItems?.find((item) => item.variantId === variant?.id);
+  const cartQuantity = cartItem?.variant?.quantity || 0;
 
   const stockQuantity =
-    typeof variant?.stock ===
-    "number"
-      ? variant.stock
-      : variant?.stock
-          ?.quantity || 0;
+    typeof variant?.stock === 'number' ? variant.stock : variant?.stock?.quantity || 0;
 
-  const isInStock =
-    stockQuantity > 0;
+  const isInStock = stockQuantity > 0;
 
-  const mrp =
-    variant?.pricing?.mrp ||
-    product.price.max ||
-    0;
+  const mrp = variant?.pricing?.mrp || product.price.max || 0;
 
-  const sellingPrice =
-    variant?.pricing
-      ?.sellingPrice ||
-    product.price.min ||
-    0;
+  const sellingPrice = variant?.pricing?.sellingPrice || product.price.min || 0;
 
   const discountPercentage =
-    mrp > sellingPrice
-      ? Math.round(
-          ((mrp - sellingPrice) /
-            mrp) *
-            100
-        )
-      : 0;
+    mrp > sellingPrice ? Math.round(((mrp - sellingPrice) / mrp) * 100) : 0;
 
-  const productSlug =
-    product.slug || product.id;
+  const productSlug = product.slug || product.id;
 
   const productImage =
-    variant?.images?.main?.trim() ||
-    product.images?.main?.trim() ||
-    PLACEHOLDER_IMAGE;
+    variant?.images?.main?.trim() || product.images?.main?.trim() || PLACEHOLDER_IMAGE;
 
-  const {
-    mutateAsync:
-      updateCartItem,
-    isPending:
-      isUpdatingCart,
-  } = useMutation({
+  const { mutateAsync: updateCartItem, isPending: isUpdatingCart } = useMutation({
     mutationFn: ({
       cartItemId,
       quantity,
@@ -120,52 +65,30 @@ export function ProductCard({
 
       quantity: number;
     }) =>
-      cartApi.updateItem(
-        cartItemId,
-        {
-          quantity,
-        }
-      ),
+      cartApi.updateItem(cartItemId, {
+        quantity,
+      }),
 
     onSuccess: async () => {
-      await queryClient.invalidateQueries(
-        {
-          queryKey: ["cart"],
-        }
-      );
+      await queryClient.invalidateQueries({
+        queryKey: ['cart'],
+      });
     },
   });
 
-  const {
-    mutateAsync:
-      removeCartItem,
-    isPending:
-      isRemovingCart,
-  } = useMutation({
-    mutationFn: (
-      cartItemId: string
-    ) =>
-      cartApi.removeItem(
-        cartItemId
-      ),
+  const { mutateAsync: removeCartItem, isPending: isRemovingCart } = useMutation({
+    mutationFn: (cartItemId: string) => cartApi.removeItem(cartItemId),
 
     onSuccess: async () => {
-      await queryClient.invalidateQueries(
-        {
-          queryKey: ["cart"],
-        }
-      );
+      await queryClient.invalidateQueries({
+        queryKey: ['cart'],
+      });
     },
   });
 
-  const isCartLoading =
-    isAddingToCart ||
-    isUpdatingCart ||
-    isRemovingCart;
+  const isCartLoading = isAddingToCart || isUpdatingCart || isRemovingCart;
 
-  const handleAddToCart = async (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     e.stopPropagation();
@@ -186,28 +109,20 @@ export function ProductCard({
       await addToCart({
         productId: product.id,
 
-        variantId:
-          variant.id,
+        variantId: variant.id,
 
         quantity: 1,
       });
 
-      await queryClient.invalidateQueries(
-        {
-          queryKey: ["cart"],
-        }
-      );
+      await queryClient.invalidateQueries({
+        queryKey: ['cart'],
+      });
     } catch (error) {
-      console.error(
-        "ADD TO CART ERROR",
-        error
-      );
+      console.error('ADD TO CART ERROR', error);
     }
   };
 
-  const handleIncrease = async (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleIncrease = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     e.stopPropagation();
@@ -220,32 +135,22 @@ export function ProductCard({
       return;
     }
 
-    if (
-      cartQuantity >=
-      stockQuantity
-    ) {
+    if (cartQuantity >= stockQuantity) {
       return;
     }
 
     try {
       await updateCartItem({
-        cartItemId:
-          cartItem.id,
+        cartItemId: cartItem.id,
 
-        quantity:
-          cartQuantity + 1,
+        quantity: cartQuantity + 1,
       });
     } catch (error) {
-      console.error(
-        "UPDATE CART ERROR",
-        error
-      );
+      console.error('UPDATE CART ERROR', error);
     }
   };
 
-  const handleDecrease = async (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
+  const handleDecrease = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
     e.stopPropagation();
@@ -260,31 +165,24 @@ export function ProductCard({
 
     try {
       if (cartQuantity <= 1) {
-        await removeCartItem(
-          cartItem.id
-        );
+        await removeCartItem(cartItem.id);
 
         return;
       }
 
       await updateCartItem({
-        cartItemId:
-          cartItem.id,
+        cartItemId: cartItem.id,
 
-        quantity:
-          cartQuantity - 1,
+        quantity: cartQuantity - 1,
       });
     } catch (error) {
-      console.error(
-        "REMOVE CART ERROR",
-        error
-      );
+      console.error('REMOVE CART ERROR', error);
     }
   };
 
   /* Helper function to cap tag rendering length precisely around 10-12 characters max */
   const truncateTagText = (str: string) => {
-    if (!str) return "";
+    if (!str) return '';
     return str.length > 12 ? `${str.substring(0, 11)}...` : str;
   };
 
@@ -293,15 +191,12 @@ export function ProductCard({
   const reviewCount = product.ratings?.count || variant?.ratings?.count || 0;
 
   return (
-    <Link
-      href={`/products/${productSlug}`}
-      className="group block h-full"
-    >
+    <Link href={`/products/${productSlug}`} className="group block h-full">
       <article
         className="
           flex
           h-full
-          min-h-[330px]
+          min-h-[290px]
           flex-col
           overflow-hidden
           rounded-xl
@@ -372,9 +267,7 @@ export function ProductCard({
             </span>
           )}
 
-          <WishlistButton
-            productId={product.id}
-          />
+          <WishlistButton productId={product.id} />
           <div
             className="
               relative
@@ -446,9 +339,7 @@ export function ProductCard({
                   <Star size={10} className="fill-amber-500 stroke-amber-500" />
                 </div>
                 {reviewCount > 0 && (
-                  <span className="text-gray-400 text-[10px] font-medium">
-                    ({reviewCount})
-                  </span>
+                  <span className="text-gray-400 text-[10px] font-medium">({reviewCount})</span>
                 )}
               </div>
             )}
@@ -457,11 +348,10 @@ export function ProductCard({
           {/* PRODUCT NAME (WITH PREMIUM GRADIENT SHINY EFFECT ON HOVER) */}
           <h3
             className="
-              min-h-[40px]
               line-clamp-2
               text-[15px]
               font-semibold
-              leading-[21px]
+              leading-5
               text-gray-900
               transition-all
               duration-300
@@ -478,14 +368,13 @@ export function ProductCard({
               min-h-[30px]
               line-clamp-2
               text-[12px]
-              leading-[16px]
+              leading-4
               text-gray-500
             "
           >
-            {product.descriptions
-              ?.short ||
+            {product.descriptions?.short ||
               product.features?.[0] ||
-              "Professional medical equipment"}
+              'Professional medical equipment'}
           </p>
 
           {/* PRICE */}
@@ -501,12 +390,10 @@ export function ProductCard({
                   text-gray-900
                 "
               >
-                ₹
-                {sellingPrice.toLocaleString()}
+                ₹{sellingPrice.toLocaleString()}
               </span>
 
-              {mrp >
-                sellingPrice && (
+              {mrp > sellingPrice && (
                 <span
                   className="
                     mb-[2px]
@@ -515,8 +402,7 @@ export function ProductCard({
                     line-through
                   "
                 >
-                  ₹
-                  {mrp.toLocaleString()}
+                  ₹{mrp.toLocaleString()}
                 </span>
               )}
             </div>
@@ -556,12 +442,8 @@ export function ProductCard({
               >
                 <button
                   type="button"
-                  onClick={
-                    handleDecrease
-                  }
-                  disabled={
-                    isCartLoading
-                  }
+                  onClick={handleDecrease}
+                  disabled={isCartLoading}
                   className="
                     flex
                     h-full
@@ -575,14 +457,9 @@ export function ProductCard({
                   "
                 >
                   {isRemovingCart ? (
-                    <Loader2
-                      size={15}
-                      className="animate-spin"
-                    />
+                    <Loader2 size={15} className="animate-spin" />
                   ) : (
-                    <Minus
-                      size={15}
-                    />
+                    <Minus size={15} />
                   )}
                 </button>
 
@@ -597,26 +474,13 @@ export function ProductCard({
                     text-gray-900
                   "
                 >
-                  {isUpdatingCart ? (
-                    <Loader2
-                      size={15}
-                      className="animate-spin"
-                    />
-                  ) : (
-                    cartQuantity
-                  )}
+                  {isUpdatingCart ? <Loader2 size={15} className="animate-spin" /> : cartQuantity}
                 </div>
 
                 <button
                   type="button"
-                  onClick={
-                    handleIncrease
-                  }
-                  disabled={
-                    isCartLoading ||
-                    cartQuantity >=
-                      stockQuantity
-                  }
+                  onClick={handleIncrease}
+                  disabled={isCartLoading || cartQuantity >= stockQuantity}
                   className="
                     flex
                     h-full
@@ -635,13 +499,8 @@ export function ProductCard({
             ) : (
               <button
                 type="button"
-                onClick={
-                  handleAddToCart
-                }
-                disabled={
-                  !isInStock ||
-                  isAddingToCart
-                }
+                onClick={handleAddToCart}
+                disabled={!isInStock || isAddingToCart}
                 className="
                   flex
                   h-10
@@ -664,21 +523,14 @@ export function ProductCard({
               >
                 {isAddingToCart ? (
                   <>
-                    <Loader2
-                      size={15}
-                      className="animate-spin"
-                    />
+                    <Loader2 size={15} className="animate-spin" />
                     ADDING...
                   </>
                 ) : (
                   <>
-                    <ShoppingCart
-                      size={15}
-                    />
+                    <ShoppingCart size={15} />
 
-                    {isInStock
-                      ? "ADD TO CART"
-                      : "OUT OF STOCK"}
+                    {isInStock ? 'ADD TO CART' : 'OUT OF STOCK'}
                   </>
                 )}
               </button>

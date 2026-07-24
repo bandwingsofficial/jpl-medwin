@@ -332,3 +332,86 @@ export function HomeStatsBar() {
     </>
   );
 }
+
+// "use client";
+
+// import { useEffect, useRef, useState } from "react";
+
+// import { cn } from "@/lib/utils";
+
+// import { STATS } from "./home-stats.bar/stats-data";
+// import { StatsItem } from "./home-stats.bar/StatsItem";
+
+// export function HomeStatsBar() {
+//   const ref = useRef<HTMLDivElement>(null);
+//   const [visible, setVisible] = useState(false);
+
+//   useEffect(() => {
+//     if (!ref.current) return;
+
+//     const observer = new IntersectionObserver(
+//       ([entry]) => {
+//         if (entry.isIntersecting) {
+//           setVisible(true);
+//           observer.disconnect();
+//         }
+//       },
+//       {
+//         threshold: 0.15,
+//       }
+//     );
+
+//     observer.observe(ref.current);
+
+//     return () => observer.disconnect();
+//   }, []);
+
+//   return (
+//     <section className="relative bg-white py-6">
+//       <div className="mx-auto max-w-[1780px] px-5">
+//         <div
+//           ref={ref}
+//           className={cn(
+//             "relative isolate overflow-hidden rounded-[26px]",
+
+//             // Glass
+//             "border border-cyan-100/80",
+//             "bg-white/85 backdrop-blur-2xl",
+
+//             // Premium shadow
+//             "shadow-[0_14px_40px_rgba(15,23,42,.05)]",
+
+//             "transition-all duration-700",
+
+//             visible
+//               ? "translate-y-0 opacity-100"
+//               : "translate-y-4 opacity-0"
+//           )}
+//         >
+//           {/* Glass Reflection */}
+//           <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/60 via-white/20 to-transparent" />
+
+//           {/* Soft Ambient Glow */}
+//           <div className="pointer-events-none absolute left-1/2 top-1/2 h-72 w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-200/10 blur-[120px]" />
+
+//           {/* Top Shine */}
+//           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/70 to-transparent" />
+
+//           {/* Bottom Inner Glow */}
+//           <div className="pointer-events-none absolute inset-x-20 bottom-0 h-px bg-gradient-to-r from-transparent via-cyan-200/60 to-transparent" />
+
+//           {/* Grid */}
+//           <div className="relative grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+//             {STATS.map((item, index) => (
+//               <StatsItem
+//                 key={item.id}
+//                 {...item}
+//                 isLast={index === STATS.length - 1}
+//               />
+//             ))}
+//           </div>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }

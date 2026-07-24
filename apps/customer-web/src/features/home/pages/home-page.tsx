@@ -14,7 +14,7 @@ import {
 
 export default function HomePage() {
   return (
-    <main className="mx-auto max-w-7xl px-4 py-6">
+    <main className="mx-auto max-w-7xl px-2 pt-1 pb-6">
       {/* Hero + Stats */}
       <section className="space-y-8">
         <HomeHero />

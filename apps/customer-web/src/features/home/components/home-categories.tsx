@@ -1,21 +1,17 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import { useState } from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown } from 'lucide-react';
 
-import { useCategories } from "@/features/category/hooks/use-category";
+import { useCategories } from '@/features/category/hooks/use-category';
 
-import { Skeleton } from "@/shared/components/ui/skeleton";
+import { Skeleton } from '@/shared/components/ui/skeleton';
 
 export function HomeCategories() {
-  const {
-    data: categories,
-    isLoading,
-    isError,
-  } = useCategories();
+  const { data: categories, isLoading, isError } = useCategories();
 
   // State to control inline viewing expansion
   const [isExpanded, setIsExpanded] = useState(false);
@@ -38,9 +34,7 @@ export function HomeCategories() {
    | RENDERING SLICES BASED ON TOGGLE STATE
    |--------------------------------------------------------------------------
    */
-  const displayedCategories = isExpanded 
-    ? categories  
-    : categories.slice(0, 6);
+  const displayedCategories = isExpanded ? categories : categories.slice(0, 6);
 
   return (
     <section className="space-y-6">
@@ -95,11 +89,11 @@ export function HomeCategories() {
                 md:flex
               "
             >
-              {isExpanded ? "Show Less" : "Explore More"}
+              {isExpanded ? 'Show Less' : 'Explore More'}
               <ChevronDown
                 size={16}
                 className={`transition-transform duration-300 ${
-                  isExpanded ? "rotate-180" : "rotate-0"
+                  isExpanded ? 'rotate-180' : 'rotate-0'
                 }`}
               />
             </button>
@@ -124,7 +118,7 @@ export function HomeCategories() {
                 size={18}
                 strokeWidth={2.2}
                 className={`text-[#64748B] transition-transform duration-300 ${
-                  isExpanded ? "rotate-180" : "rotate-0"
+                  isExpanded ? 'rotate-180' : 'rotate-0'
                 }`}
               />
             </button>
@@ -144,11 +138,7 @@ export function HomeCategories() {
         "
       >
         {displayedCategories.map((category) => (
-          <Link
-            key={category.id}
-            href={`/categories/${category.id}`}
-            className="block group"
-          >
+          <Link key={category.id} href={`/categories/${category.id}`} className="block group">
             {/* IMAGE BOX */}
             <div
               className="
@@ -167,7 +157,7 @@ export function HomeCategories() {
               "
             >
               <Image
-                src={category.imageUrl || "/placeholder.png"}
+                src={category.imageUrl || '/placeholder.png'}
                 alt={category.name}
                 width={400}
                 height={400}
@@ -219,11 +209,7 @@ export function HomeCategories() {
         "
       >
         {displayedCategories.map((category) => (
-          <Link
-            key={category.id}
-            href={`/categories/${category.id}`}
-            className="block group"
-          >
+          <Link key={category.id} href={`/categories/${category.id}`} className="block group">
             {/* INTERACTIVE FLOATING BOX */}
             <div
               className="
@@ -251,7 +237,7 @@ export function HomeCategories() {
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.08),transparent_60%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
               <Image
-                src={category.imageUrl || "/placeholder.png"}
+                src={category.imageUrl || '/placeholder.png'}
                 alt={category.name}
                 width={400}
                 height={400}

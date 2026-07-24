@@ -11,6 +11,19 @@ interface Credentials {
   password: string;
 }
 
+const DEVICE_ID_KEY = "admin_device_id";
+
+function getDeviceId(): string {
+  let deviceId = localStorage.getItem(DEVICE_ID_KEY);
+
+  if (!deviceId) {
+    deviceId = crypto.randomUUID();
+    localStorage.setItem(DEVICE_ID_KEY, deviceId);
+  }
+
+  return deviceId;
+}
+
 export default function VerifyOtpPage() {
   const router = useRouter();
 
@@ -20,7 +33,7 @@ export default function VerifyOtpPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // ✅ Load credentials from step 1
+  // Load credentials from step 1
   useEffect(() => {
     const stored = sessionStorage.getItem("admin_login");
 
@@ -51,8 +64,8 @@ export default function VerifyOtpPage() {
       await adminLogin({
         ...credentials,
         totpCode: otp,
-        deviceId: "admin-device-1",
-        deviceName: "Chrome Windows",
+        deviceId: getDeviceId(),
+        deviceName: navigator.platform || "Unknown Device",
         platform: "WEB",
         ip: "::1",
         userAgent: navigator.userAgent,
@@ -70,7 +83,6 @@ export default function VerifyOtpPage() {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-      {/* MAIN PANEL */}
       <div
         className="
           relative z-10 w-full max-w-[900px] min-h-[500px] md:h-[520px]
@@ -81,65 +93,63 @@ export default function VerifyOtpPage() {
           animate-in fade-in zoom-in-95 duration-500
         "
       >
-        {/* ===================================================== */}
-        {/* LEFT — MEDICAL VISUAL SIDEBAR */}
-        {/* ===================================================== */}
+        {/* Left Panel */}
         <div className="hidden md:block md:w-1/2 relative bg-slate-100">
           <img
-            src="Logo/login2.png" 
+            src="/Logo/login2.png"
             alt="Medical Professional"
             className="w-full h-full object-cover"
           />
-          {/* Subtle overlay matching light-themed aesthetic */}
+
           <div className="absolute inset-0 bg-gradient-to-tr from-slate-900/10 via-transparent to-transparent mix-blend-multiply" />
         </div>
 
-        {/* ===================================================== */}
-        {/* RIGHT — CLEAN & SIMPLE FORM PANEL */}
-        {/* ===================================================== */}
+        {/* Right Panel */}
         <div className="flex w-full md:w-1/2 flex-col justify-center px-8 py-10 lg:px-12 bg-white">
           <div className="w-full max-w-sm mx-auto space-y-6">
-            
-            {/* Brand Identity Rendered Perfectly via Code - Centered horizontally */}
+            {/* Logo */}
             <div className="flex flex-col items-center justify-center text-center space-y-2.5">
               <div className="inline-flex items-center justify-center p-2.5 bg-white rounded-xl shadow-xs border border-slate-100 w-fit">
                 <img
-                  src="/Logo/JPl_logo.png"
+                  src="/Logo/Jpl_Logo.png"
                   alt="JPL Markwin"
                   className="w-36 h-auto object-contain"
                 />
               </div>
-              <p className="text-[9px] tracking-[0.25em] text-teal-600 uppercase font-mono font-semibold block">
+
+              <p className="text-[9px] tracking-[0.25em] text-teal-600 uppercase font-mono font-semibold">
                 • Admin Console
               </p>
             </div>
 
-            {/* Form Intro */}
+            {/* Heading */}
             <div className="space-y-1">
               <h1 className="text-2xl font-bold tracking-tight text-slate-900">
                 Verify OTP
               </h1>
+
               <p className="text-xs text-slate-500">
                 Enter the 6-digit code sent to your email.
               </p>
             </div>
 
-            {/* Error Layer */}
+            {/* Error */}
             {error && (
               <div className="px-3 py-2 bg-rose-50 border border-rose-200 rounded-lg text-xs font-medium text-rose-600 flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
                 <span className="text-[9px] text-rose-500 uppercase tracking-wider font-mono font-bold">
                   Error
                 </span>
+
                 {error}
               </div>
             )}
 
-            {/* OTP Input Container */}
+            {/* OTP */}
             <div className="py-2 flex justify-center">
               <TotpInput value={otp} onChange={setOtp} />
             </div>
 
-            {/* Submit Action */}
+            {/* Submit */}
             <Button
               onClick={handleVerify}
               loading={loading}
@@ -155,7 +165,7 @@ export default function VerifyOtpPage() {
                 border-none
               "
             >
-              Verify &amp; login
+              Verify &amp; Login
               <span aria-hidden="true">→</span>
             </Button>
 

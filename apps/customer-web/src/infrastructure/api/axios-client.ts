@@ -24,12 +24,24 @@ const processQueue = (error: any) => {
   queue = [];
 };
 
+const PROTECTED_ROUTES = [
+  "/account",
+  "/checkout",
+  "/wishlist",
+  "/cart",
+];
+
+const isProtectedRoute = (pathname: string) => {
+  return PROTECTED_ROUTES.some((route) =>
+    pathname.startsWith(route)
+  );
+};
+
 apiClient.interceptors.response.use(
   (response) => response,
 
   async (error) => {
-    const originalRequest =
-      error?.config;
+    const originalRequest = error?.config;
 
     // ========================================
     // SAFE GUARD
@@ -39,17 +51,16 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const errorCode =
-      error?.response?.data?.errorCode;
+    const errorCode = error?.response?.data?.errorCode;
+    const status = error?.response?.status;
+    const message = error?.response?.data?.message;
 
     // ========================================
     // NEVER REFRESH REFRESH API
     // ========================================
 
     if (
-      originalRequest?.url?.includes(
-        "/auth/refresh"
-      )
+      originalRequest?.url?.includes("/auth/refresh")
     ) {
       return Promise.reject(error);
     }
@@ -58,10 +69,14 @@ apiClient.interceptors.response.use(
     // SESSION REVOKED
     // ========================================
 
-    if (
-      errorCode === "SESSION.REVOKED"
-    ) {
-      window.location.href = "/login";
+    if (errorCode === "SESSION.REVOKED") {
+      if (typeof window !== "undefined") {
+        const currentPath = window.location.pathname;
+
+        if (isProtectedRoute(currentPath)) {
+          window.location.replace("/login");
+        }
+      }
 
       return Promise.reject(error);
     }
@@ -70,7 +85,14 @@ apiClient.interceptors.response.use(
     // ONLY HANDLE TOKEN ERRORS
     // ========================================
 
-    const status = error?.response?.status; const message = error?.response?.data?.message; const shouldRefresh = status === 401 && !originalRequest.url?.includes( "/auth/login" ) && ( errorCode === "AUTH.INVALID_TOKEN" || errorCode === "AUTH.TOKEN_EXPIRED" || message === "No auth token" );
+    const shouldRefresh =
+      status === 401 &&
+      !originalRequest.url?.includes("/auth/login") &&
+      (
+        errorCode === "AUTH.INVALID_TOKEN" ||
+        errorCode === "AUTH.TOKEN_EXPIRED" ||
+        message === "No auth token"
+      );
 
     if (
       shouldRefresh &&
@@ -94,7 +116,6 @@ apiClient.interceptors.response.use(
       }
 
       originalRequest._retry = true;
-
       isRefreshing = true;
 
       try {
@@ -102,38 +123,32 @@ apiClient.interceptors.response.use(
         // REFRESH TOKEN
         // ========================================
 
-        await apiClient.post(
-          "/auth/refresh"
-        );
-
-        // ========================================
-        // RETRY QUEUED REQUESTS
-        // ========================================
+        await apiClient.post("/auth/refresh");
 
         processQueue(null);
 
-        // ========================================
-        // RETRY ORIGINAL REQUEST
-        // ========================================
-
         return apiClient(originalRequest);
       } catch (refreshError) {
-  processQueue(refreshError);
+        processQueue(refreshError);
 
-  if (typeof window !== "undefined") {
-    localStorage.clear();
-    sessionStorage.clear();
+        if (typeof window !== "undefined") {
+          localStorage.clear();
+          sessionStorage.clear();
 
-    const currentPath =
-      window.location.pathname;
+          const currentPath =
+            window.location.pathname;
 
-    if (currentPath !== "/login") {
-      window.location.replace("/login");
-    }
-  }
+          // ========================================
+          // ONLY REDIRECT FROM PROTECTED PAGES
+          // ========================================
 
-  return Promise.reject(refreshError);
-} finally {
+          if (isProtectedRoute(currentPath)) {
+            window.location.replace("/login");
+          }
+        }
+
+        return Promise.reject(refreshError);
+      } finally {
         isRefreshing = false;
       }
     }

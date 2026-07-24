@@ -2,11 +2,11 @@ import "./globals.css";
 
 import { QueryProvider } from "@/providers/query-provider";
 
+import { LocationProvider } from "@/features/location/context/LocationProvider";
+
 import { FloatingCartBar } from "@/features/cart/components/floating-cart-bar";
 
 import { Toast } from "@/shared/components/ui/toast";
-
-// ✅ Imported your WhatsApp button component
 import { WhatsappButton } from "@/shared/components/ui/whatsapp-button";
 
 export default function RootLayout({
@@ -18,14 +18,15 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <QueryProvider>
-          {children}
+          <LocationProvider>
+            {children}
 
-          <FloatingCartBar />
+            <FloatingCartBar />
 
-          <Toast />
+            <Toast />
 
-          {/* ✅ Floating WhatsApp button added securely at the bottom */}
-          <WhatsappButton />
+            <WhatsappButton />
+          </LocationProvider>
         </QueryProvider>
       </body>
     </html>

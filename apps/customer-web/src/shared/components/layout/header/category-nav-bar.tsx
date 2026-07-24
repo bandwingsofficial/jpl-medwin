@@ -1,28 +1,26 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import { useEffect, useState, useRef } from "react";
-import { BrandsMegaMenu } from "./brands-mega-menu";
-import { CategoryMegaMenu } from "./category-mega-menu";
-import { Phone } from "lucide-react";
-import { CollectionMegaMenu } from "./collection-mega-menu";
+import Link from 'next/link';
+import { useEffect, useState, useRef } from 'react';
+import { BrandsMegaMenu } from './brands-mega-menu';
+import { CategoryMegaMenu } from './category-mega-menu';
+import { Phone } from 'lucide-react';
+import { CollectionMegaMenu } from './collection-mega-menu';
 
-import {
-  useCollections,
-} from "@/features/collections/hooks/use-collections";
+import { useCollections } from '@/features/collections/hooks/use-collections';
 
 const navItems = [
   {
-    label: "Categories",
-    href: "/categories",
+    label: 'Categories',
+    href: '/categories',
   },
   {
-    label: "Brands",
-    href: "/brands",
+    label: 'Brands',
+    href: '/brands',
   },
   {
-    label: "Products",
-    href: "/products",
+    label: 'Products',
+    href: '/products',
   },
 ];
 
@@ -30,24 +28,28 @@ const navItems = [
 function ShinyNavLink({
   href,
   children,
-  className = "",
+  className = '',
+  disableNavigation = false,
+  onClick,
 }: {
   href: string;
   children: React.ReactNode;
   className?: string;
+  disableNavigation?: boolean;
+  onClick?: () => void;
 }) {
   const linkRef = useRef<HTMLAnchorElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const el = linkRef.current;
     if (!el) return;
+
     const rect = el.getBoundingClientRect();
-    // Calculate cursor position relative to the element
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    el.style.setProperty("--mouse-x", `${x}px`);
-    el.style.setProperty("--mouse-y", `${y}px`);
+    el.style.setProperty('--mouse-x', `${x}px`);
+    el.style.setProperty('--mouse-y', `${y}px`);
   };
 
   return (
@@ -55,6 +57,12 @@ function ShinyNavLink({
       ref={linkRef}
       href={href}
       onMouseMove={handleMouseMove}
+      onClick={(e) => {
+        if (disableNavigation) {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
       className={`
         shiny-link
         relative
@@ -72,97 +80,117 @@ function ShinyNavLink({
     >
       {/* Background radial reflection tracker */}
       <span className="shiny-glow absolute inset-0 opacity-0 transition-opacity duration-300 pointer-events-none rounded-md" />
+
       <span className="relative z-10">{children}</span>
-      {/* Animated underline that expands from center on hover */}
+
+      {/* Animated underline */}
       <span className="shiny-underline pointer-events-none absolute left-1/2 bottom-1 h-[2px] w-0 -translate-x-1/2 rounded-full bg-white transition-all duration-300 ease-out" />
     </Link>
   );
 }
 
 export function CategoryNavBar() {
-  const [showBrands, setShowBrands] =
-    useState(false);
+  // Ref for detecting clicks outside navbar + mega menu
+  const navbarRef = useRef<HTMLDivElement>(null);
 
-  const [showCategory, setShowCategory] =
-    useState(false);
-  const [
-    hoveredCollection,
-    setHoveredCollection,
-  ] = useState<string | null>(null);
+  // Current hovered menu (temporary)
+  const [hoverMenu, setHoverMenu] = useState<string | null>(null);
 
-  const [isMobile, setIsMobile] =
-    useState(false);
+  // Clicked menu (stays open)
+  const [pinnedMenu, setPinnedMenu] = useState<string | null>(null);
 
-  const {
-    data: collections = [],
-  } = useCollections();
+  // Collections
+  const [hoveredCollection, setHoveredCollection] = useState<string | null>(null);
+
+  // Final menu to display
+  const activeMenu = hoverMenu ?? pinnedMenu;
+
+  // Mobile
+  const [isMobile, setIsMobile] = useState(false);
+
+  const { data: collections = [] } = useCollections();
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(
-        window.innerWidth < 640
-      );
+      setIsMobile(window.innerWidth < 640);
     };
 
     handleResize();
 
-    window.addEventListener(
-      "resize",
-      handleResize
-    );
+    window.addEventListener('resize', handleResize);
 
-    return () =>
-      window.removeEventListener(
-        "resize",
-        handleResize
-      );
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Close pinned mega menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+
+      if (navbarRef.current && !navbarRef.current.contains(target)) {
+        setHoverMenu(null);
+        setPinnedMenu(null);
+        setHoveredCollection(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
   return (
     <>
-    <div className="relative border-b border-white/10 bg-gradient-to-r from-[#0BACAE] via-[#089981] to-[#0F8A6B]">  {/* continuous diagonal shimmer sweep across the whole bar */}
-      <span className="navbar-shimmer pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-        <span className="navbar-shimmer-streak" />
-      </span>
+      <div className="relative border-b border-white/10 bg-gradient-to-r from-[#0BACAE] via-[#089981] to-[#0F8A6B]">
+        {/* continuous diagonal shimmer sweep across the whole bar */}
+        <span
+          className="navbar-shimmer pointer-events-none absolute inset-0 overflow-hidden"
+          aria-hidden="true"
+        >
+          <span className="navbar-shimmer-streak" />
+        </span>
 
         <div
+          ref={navbarRef}
           className="
-            relative
-            mx-auto
-            flex
-            h-14
-            max-w-[1280px]
-            items-center
-            px-4
-            sm:px-6
-          "
+          relative
+          mx-auto
+          flex
+          h-14
+          max-w-[1280px]
+          items-center
+          px-4
+          sm:px-6
+        "
         >
           <nav
             className="
-              scrollbar-hide
-              flex
-              w-full
-              items-center
-              overflow-x-auto
-              whitespace-nowrap
-              text-sm
-              font-medium
-              text-white
-            "
+            scrollbar-hide
+            flex
+            w-full
+            items-center
+            overflow-x-auto
+            whitespace-nowrap
+            text-sm
+            font-medium
+            text-white
+          "
           >
             {/* ===================================================== */}
             {/* MOBILE VIEW */}
             {/* ===================================================== */}
             <div
               className="
-                scrollbar-hide
-                flex
-                items-center
-                gap-3
-                sm:hidden
-                w-full
-                overflow-x-auto
-              "
+              scrollbar-hide
+              flex
+              items-center
+              gap-3
+              sm:hidden
+              w-full
+              overflow-x-auto
+            "
             >
               {navItems.map((item) => {
                 return (
@@ -170,34 +198,6 @@ export function CategoryNavBar() {
                     key={item.label}
                     href={item.href}
                     className="
-                      flex-shrink-0
-                      rounded-md
-                      border
-                      border-white/20
-                      bg-white/10
-                      backdrop-blur-sm
-                      px-3
-                      py-2
-                      text-[13px]
-                      whitespace-nowrap
-                      text-white
-                      font-semibold
-                      hover:bg-white/20
-                      active:scale-95
-                      transition-all
-                    "
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
-
-              {/* DYNAMIC COLLECTIONS ADDED TO MOBILE VIEW */}
-              {collections.map((collection) => (
-                <Link
-                  key={collection.id}
-                  href={`/collections/${collection.id}`}
-                  className="
                     flex-shrink-0
                     rounded-md
                     border
@@ -214,6 +214,34 @@ export function CategoryNavBar() {
                     active:scale-95
                     transition-all
                   "
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+
+              {/* DYNAMIC COLLECTIONS ADDED TO MOBILE VIEW */}
+              {collections.map((collection) => (
+                <Link
+                  key={collection.id}
+                  href={`/collections/${collection.id}`}
+                  className="
+                  flex-shrink-0
+                  rounded-md
+                  border
+                  border-white/20
+                  bg-white/10
+                  backdrop-blur-sm
+                  px-3
+                  py-2
+                  text-[13px]
+                  whitespace-nowrap
+                  text-white
+                  font-semibold
+                  hover:bg-white/20
+                  active:scale-95
+                  transition-all
+                "
                 >
                   {collection.name}
                 </Link>
@@ -225,139 +253,254 @@ export function CategoryNavBar() {
             {/* ===================================================== */}
             <div
               className="
-                scrollbar-hide
-                hidden
-                w-full
-                items-center
-                justify-center
-                gap-4
-                lg:gap-6
-                sm:flex
-                h-full
-                overflow-x-auto
-              "
+    scrollbar-hide
+    hidden
+    w-full
+    items-center
+    justify-center
+    gap-4
+    lg:gap-6
+    sm:flex
+    h-full
+    overflow-x-auto
+  "
             >
-              {navItems.map((item) => {
-                // 🔥 CATEGORY WITH DROPDOWN PRESERVED (Removed inner relative positioning wrapper)
-                if (item.label === "Categories") {
-                  return (
-                    <div
-                      key={item.label}
-                      className="flex items-center h-full flex-shrink-0"
-                      onMouseEnter={() => setShowCategory(true)}
-                      onMouseLeave={() => setShowCategory(false)}
-                    >
-                      <ShinyNavLink href={item.href}>
-                        {item.label}
-                      </ShinyNavLink>
+              {navItems.map((item, index) => {
+  const separator = index !== 0 && (
+    <span
+      className="
+        mx-2
+        text-white/70
+        text-[11px]
+        animate-pulse
+        select-none
+      "
+    >
+      ✦
+    </span>
+  );
 
-                      {showCategory && (
-                        <div
-                          className="
-                            mega-menu-pop
-                            absolute
-                            left-1/2
-                            top-full
-                            z-50
-                            mt-0
-                            -translate-x-1/2
-                          "
-                        >
-                          <CategoryMegaMenu />
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
+  // ==========================
+  // CATEGORIES
+  // ==========================
+  if (item.label === "Categories") {
+    return (
+      <div
+        key={item.label}
+        className="flex items-center h-full flex-shrink-0"
+        onMouseEnter={() => {
+          setHoverMenu("categories");
+        }}
+        onMouseLeave={() => {
+          setHoverMenu(null);
+        }}
+      >
+        {separator}
 
-                // 🔥 BRANDS WITH DROPDOWN PRESERVED (Removed inner relative positioning wrapper)
-                if (item.label === "Brands") {
-                  return (
-                    <div
-                      key={item.label}
-                      className="flex items-center h-full flex-shrink-0"
-                      onMouseEnter={() => setShowBrands(true)}
-                      onMouseLeave={() => setShowBrands(false)}
-                    >
-                      <ShinyNavLink href={item.href}>
-                        {item.label}
-                      </ShinyNavLink>
+        <ShinyNavLink
+          href={item.href}
+          disableNavigation
+          onClick={() => {
+            setPinnedMenu((prev) =>
+              prev === "categories"
+                ? null
+                : "categories"
+            );
+          }}
+        >
+          {item.label}
+        </ShinyNavLink>
 
-                      {showBrands && (
-                        <div
-                          className="
-                            mega-menu-pop
-                            absolute
-                            left-1/2
-                            top-full
-                            z-50
-                            mt-0
-                            -translate-x-1/2
-                          "
-                        >
-                          <BrandsMegaMenu />
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
+        {activeMenu === "categories" && (
+          <div
+            className="
+              mega-menu-pop
+              absolute
+              left-1/2
+              top-full
+              z-50
+              mt-0
+              -translate-x-1/2
+            "
+          >
+            <CategoryMegaMenu
+              onClose={() => {
+                setHoverMenu(null);
+                setPinnedMenu(null);
+              }}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
 
-                // 🔥 NORMAL LINKS WITH SHINY HOVER EFFECT
-                return (
-                  <ShinyNavLink key={item.label} href={item.href}>
-                    {item.label}
-                  </ShinyNavLink>
-                );
-              })}
 
-              {/* COLLECTIONS */}
-              {collections.map((collection) => (
-                <div
-                  key={collection.id}
-                  className="flex items-center h-full flex-shrink-0"
-                  onMouseEnter={() =>
-                    setHoveredCollection(collection.id)
-                  }
-                  onMouseLeave={() =>
-                    setHoveredCollection(null)
-                  }
-                >
-                  <ShinyNavLink
-                    href={`/collections/${collection.id}`}
-                  >
-                    {collection.name}
-                  </ShinyNavLink>
+  // ==========================
+  // BRANDS
+  // ==========================
+  if (item.label === "Brands") {
+    return (
+      <div
+        key={item.label}
+        className="flex items-center h-full flex-shrink-0"
+        onMouseEnter={() => {
+          setHoverMenu("brands");
+        }}
+        onMouseLeave={() => {
+          setHoverMenu(null);
+        }}
+      >
+        {separator}
 
-                  {hoveredCollection === collection.id && (
-                    <div
-                      className="
-                        mega-menu-pop
-                        absolute
-                        left-1/2
-                        top-full
-                        z-50
-                        mt-0
-                        -translate-x-1/2
-                      "
-                    >
-                      <CollectionMegaMenu
-                        collectionId={collection.id}
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
+        <ShinyNavLink
+          href={item.href}
+          disableNavigation
+          onClick={() => {
+            setPinnedMenu((prev) =>
+              prev === "brands"
+                ? null
+                : "brands"
+            );
+          }}
+        >
+          {item.label}
+        </ShinyNavLink>
 
-              {/* PHONE (Included directly after collection elements to automatically inherit the design layout gaps) */}
-              <ShinyNavLink href="tel:+919187969350" className="phone-link">
-                <span className="flex items-center gap-2">
-                  <span className="phone-ring-wrap relative flex items-center justify-center">
-                    <span className="phone-ring absolute inline-flex h-full w-full rounded-full bg-white/60" />
-                    <Phone size={16} className="relative z-10" />
-                  </span>
-                  +91 91879 69350    
-                </span>
-              </ShinyNavLink>
+        {activeMenu === "brands" && (
+          <div
+            className="
+              mega-menu-pop
+              absolute
+              left-1/2
+              top-full
+              z-50
+              mt-0
+              -translate-x-1/2
+            "
+          >
+            <BrandsMegaMenu
+              onClose={() => {
+                setHoverMenu(null);
+                setPinnedMenu(null);
+              }}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+
+  // ==========================
+  // NORMAL LINKS
+  // ==========================
+  return (
+    <div
+      key={item.label}
+      className="flex items-center h-full flex-shrink-0"
+    >
+      {separator}
+
+      <ShinyNavLink href={item.href}>
+        {item.label}
+      </ShinyNavLink>
+    </div>
+  );
+})}
+{/* ========================== */}
+{/* COLLECTIONS */}
+{/* ========================== */}
+{collections.map((collection) => (
+  <div
+    key={collection.id}
+    className="flex items-center h-full flex-shrink-0"
+    onMouseEnter={() => {
+      setHoverMenu(collection.id);
+    }}
+    onMouseLeave={() => {
+      setHoverMenu(null);
+    }}
+  >
+
+    {/* Separator */}
+    <span
+      className="
+        mx-2
+        text-white/70
+        text-[11px]
+        animate-pulse
+        select-none
+      "
+    >
+      ✦
+    </span>
+
+    <ShinyNavLink
+      href={`/collections/${collection.id}`}
+      disableNavigation
+      onClick={() => {
+        setPinnedMenu((prev) =>
+          prev === collection.id
+            ? null
+            : collection.id
+        );
+      }}
+    >
+      {collection.name}
+    </ShinyNavLink>
+
+    {activeMenu === collection.id && (
+      <div
+        className="
+          mega-menu-pop
+          absolute
+          left-1/2
+          top-full
+          z-50
+          mt-0
+          -translate-x-1/2
+        "
+      >
+        <CollectionMegaMenu
+  collectionId={collection.id}
+  onClose={() => {
+    setHoverMenu(null);
+    setPinnedMenu(null);
+  }}
+/>
+      </div>
+    )}
+  </div>
+))}
+
+
+{/* PHONE */}
+<span
+  className="
+    mx-2
+    text-white/70
+    text-[11px]
+    animate-pulse
+    select-none
+  "
+>
+  ✦
+</span>
+
+<ShinyNavLink
+  href="tel:+919187969350"
+  className="phone-link"
+>
+  <span className="flex items-center gap-2">
+    <span className="phone-ring-wrap relative flex items-center justify-center">
+      <span className="phone-ring absolute inline-flex h-full w-full rounded-full bg-white/60" />
+      <Phone size={16} className="relative z-10" />
+    </span>
+
+    +91 91879 69350
+  </span>
+</ShinyNavLink>
             </div>
           </nav>
         </div>

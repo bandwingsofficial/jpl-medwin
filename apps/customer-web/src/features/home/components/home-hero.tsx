@@ -20,7 +20,7 @@ export function HomeHero() {
 
   const router = useRouter();
   const queryClient = useQueryClient();
-  const DEFAULT_BANNER = "/Images/hero6.jpg";
+  const DEFAULT_BANNER = "/Images/banner.png";
 
   const {
     images,

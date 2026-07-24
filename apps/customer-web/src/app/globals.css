@@ -106,3 +106,114 @@
           }
         }
 
+
+
+@keyframes lineMove {
+  0% {
+    transform: translateX(-60px);
+  }
+  100% {
+    transform: translateX(180px);
+  }
+}
+
+.animate-line {
+  animation: lineMove 2.8s linear infinite;
+}
+
+/* ===========================
+   Premium Typewriter Effect
+=========================== */
+
+.typewriter-text {
+  position: relative;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(66, 73, 84);
+
+  opacity: 1;
+  filter: blur(0);
+
+  animation: placeholderFocus .18s ease;
+}
+
+/* Blur -> Clear */
+
+@keyframes placeholderFocus {
+  from {
+    opacity: .55;
+    filter: blur(4px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* Premium Shine */
+
+.typewriter-text::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255,255,255,.85) 48%,
+    transparent 100%
+  );
+
+  transform: translateX(-140%);
+  animation: placeholderShine 2.8s ease-in-out infinite;
+
+  pointer-events: none;
+}
+
+@keyframes placeholderShine {
+  0% {
+    transform: translateX(-140%);
+  }
+
+  45% {
+    transform: translateX(-140%);
+  }
+
+  100% {
+    transform: translateX(140%);
+  }
+}
+
+/* Cursor */
+
+.typewriter-cursor {
+  color: rgb(11, 47, 44);
+
+  animation: cursorBlink .9s ease-in-out infinite;
+}
+
+@keyframes cursorBlink {
+  0%,45% {
+    opacity: 1;
+  }
+
+  46%,100% {
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-250%);
+  }
+
+  100% {
+    transform: translateX(500%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 6s linear infinite;
+}
