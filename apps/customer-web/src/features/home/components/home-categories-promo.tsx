@@ -105,23 +105,15 @@ export function HomeCategoriespromo() {
   };
 
   return (
-    <section className="w-full px-4 py-6 md:py-10 max-w-[1400px] mx-auto">
+    <section className="w-full px-4 py-6 md:py-10 max-w-[1400px] mx-auto space-y-6">
       {/* SECTION HEADING */}
-
-      <div className="relative h-12 w-60 md:h-16 md:w-80 pb-4">
-        <Image
-          src="/Images/Featured.png"
-          alt="Featured Categories"
-          fill
-          priority
-          className="
-            object-contain
-            object-left
-            scale-125
-            md:scale-150
-            origin-left
-          "
-        />
+      <div>
+        <h2 className="text-[24px] font-semibold leading-tight tracking-tight text-[#12211D] md:text-[28px]">
+          Featured{' '}
+          <span className="bg-gradient-to-r from-[#0D6E63] via-[#14B8A6] to-[#0D6E63] bg-clip-text text-transparent">
+            Categories
+          </span>
+        </h2>
       </div>
 
       {/* MOBILE */}

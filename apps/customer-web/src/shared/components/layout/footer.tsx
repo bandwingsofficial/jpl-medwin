@@ -516,17 +516,6 @@ transform:scale(1.15);
     />
 
     <div>
-      <h3
-        style={{
-          margin: 0,
-          color: "#111827",
-          fontSize: 22,
-          fontWeight: 700,
-        }}
-      >
-        JPL Medwin
-      </h3>
-
       <p
         style={{
           marginTop: 6,

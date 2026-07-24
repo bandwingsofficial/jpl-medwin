@@ -16,10 +16,10 @@ export function BrandsMegaMenu({
 
   return (
     <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-[800px] z-50 select-none">
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-2xl p-6 overflow-hidden">
+      <div className="bg-white/95 backdrop-blur-xl border border-gray-200/50 rounded-2xl shadow-2xl p-6 overflow-hidden">
 
         {/* HEADER */}
-        <div className="flex items-center justify-between mb-5 pb-3 border-b border-gray-50">
+        <div className="flex items-center justify-between mb-5 pb-3 border-b border-gray-100">
           <div className="flex items-center gap-2">
 
             <h3
@@ -113,6 +113,7 @@ export function BrandsMegaMenu({
                     hover:shadow-sm
                     transition-all
                     bg-white
+                    hover:bg-gray-50/50
                   "
                 >
 

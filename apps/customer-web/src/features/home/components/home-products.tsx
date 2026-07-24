@@ -116,9 +116,9 @@ export const HomeProducts = () => {
 
       md:grid-cols-3
 
-      lg:grid-cols-5
+      lg:grid-cols-6
 
-      xl:grid-cols-5
+      xl:grid-cols-6
 
       2xl:grid-cols-5
     "

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 import {
   useCollectionProducts,
@@ -44,6 +45,11 @@ export function CollectionSection({
   const showViewAll =
     products.length > 6;
 
+  // Split the collection name into words to apply the shiny effect to the last word
+  const words = collectionName.trim().split(" ");
+  const firstName = words.slice(0, -1).join(" ");
+  const lastName = words[words.length - 1];
+
   return (
     <section
       className="
@@ -59,7 +65,7 @@ export function CollectionSection({
         lg:px-12
       "
     >
-      {/* Collection Banner Image */}
+      {/* Collection Header */}
       <div
         className="
           flex
@@ -68,44 +74,40 @@ export function CollectionSection({
         "
       >
         <div>
-          {collectionImage ? (
-            <img
-  src={collectionImage}
-  alt={collectionName}
-  className="
-    h-12
-    w-auto
-    object-contain
-    md:h-16
-  "
-/>
-          ) : (
-            <h2
-              className="
-                text-2xl
-                font-bold
-                text-gray-900
-              "
-            >
-              {collectionName}
-            </h2>
-          )}
+          <h2
+            className="
+              text-2xl
+              font-bold
+              text-gray-900
+            "
+          >
+            {firstName ? `${firstName} ` : ""}
+            <span className="bg-gradient-to-r from-[#0D6E63] via-[#14B8A6] to-[#0D6E63] bg-clip-text text-transparent">
+              {lastName}
+            </span>
+          </h2>
         </div>
 
         {showViewAll && (
           <Link
             href={`/collections/${collectionId}`}
             className="
-              rounded-full
-              border
-              px-6
-              py-2
+              group
+              flex
+              items-center
+              gap-1
               text-sm
               font-medium
-              hover:bg-gray-50
+              text-[#0D6E63]
             "
           >
-            Explore More
+            <span className="transition-all duration-300 group-hover:bg-gradient-to-r group-hover:from-[#0D6E63] group-hover:via-[#14B8A6] group-hover:to-[#0D6E63] group-hover:bg-clip-text group-hover:text-transparent">
+              Explore More
+            </span>
+            <ChevronRight
+              size={16}
+              className="transition-transform duration-300 group-hover:translate-x-1"
+            />
           </Link>
         )}
       </div>
