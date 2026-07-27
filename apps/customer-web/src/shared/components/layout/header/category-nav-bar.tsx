@@ -275,19 +275,20 @@ active:scale-95
             {/* DESKTOP CENTERED NAV WITH CONTROLLER SCROLLBAR HIDE */}
             {/* ===================================================== */}
             <div
-              className="
+  className="
     scrollbar-hide
     hidden
     w-full
+    min-w-max
     items-center
-    justify-center
-    gap-4
-    lg:gap-6
+    justify-start
+    gap-2
+    lg:gap-3
     sm:flex
     h-full
     overflow-x-auto
-  "
-            >
+"
+>
               {navItems.map((item, index) => {
   const separator = index !== 0 && (
     <span

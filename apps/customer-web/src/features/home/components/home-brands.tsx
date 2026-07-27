@@ -111,7 +111,7 @@ export function HomeBrands() {
             </div>
 
               {/* Row 2 */}
-              <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,white_10%,white_90%,transparent)]">
+              <div className="relative overflow-hidden py-4 [mask-image:linear-gradient(to_right,transparent,white_10%,white_90%,transparent)]">
                 <div className="flex animate-marquee-right gap-6 py-1">
                   {[...(brands ?? []).slice().reverse(), ...(brands ?? []).slice().reverse()].map(
                     (brand, index) => (

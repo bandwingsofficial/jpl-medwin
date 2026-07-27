@@ -305,7 +305,7 @@ const wishlistCount =
   <div className="mt-3 flex items-center gap-2">
     <div className="flex-1">
       <GlobalSearch />
-    </div>s
+    </div>
 
     {/* MENU */}
 
@@ -349,7 +349,7 @@ const wishlistCount =
                         alt={label}
                         width={32}
                         height={32}
-                        className="h-full w-full object-contain animate-[spin_4s_linear_infinite]"
+                        className="h-full w-full object-contain"
                       />
                     ) : (
                       <Icon
