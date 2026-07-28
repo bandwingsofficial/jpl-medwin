@@ -171,7 +171,7 @@ variants: paginated.map((variant) => {
           stock: {
             quantity: variant.quantity,
 
-            inStock: variant.quantity > 0,
+            inStock: variant.status === 'ACTIVE',
           },
 
           ratings: {

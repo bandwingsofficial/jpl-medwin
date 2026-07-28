@@ -4,6 +4,7 @@ export interface Brand {
   id: string;
   name: string;
   slug: string;
+  skuPrefix: string;
   imageUrl: string;
   description: string;
   metaDescription: string;
@@ -14,6 +15,7 @@ export interface Brand {
 
 export interface CreateBrandPayload {
   name: string;
+  skuPrefix: string;
   image?: File | string;
   description?: string;
   metaDescription?: string;

@@ -252,9 +252,8 @@ const startIndex =
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Brand</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Category</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Price</div></TableHead>
-                  <TableHead><div className="text-xs font-semibold whitespace-nowrap">Stock</div></TableHead>
+                  <TableHead><div className="text-xs font-semibold whitespace-nowrap">Availability</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Variants</div></TableHead>
-                  <TableHead><div className="text-xs font-semibold whitespace-nowrap">Warranty</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Status</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap text-right">Actions</div></TableHead>
                 </TableRow>
@@ -264,7 +263,7 @@ const startIndex =
                 {paginatedProducts.map((p: any) => {
                   const variantCount = p.variants?.length || 0;
                   const firstVariant = p.variants?.[0];
-                  const inStock = p.stock?.inStock === true;
+                  const isAvailable = p.status === "ACTIVE";
                   const price = p.price?.min ? `₹${p.price.min.toLocaleString()}` : "N/A";
                   const isDeleted = !!p.deletedAt;
                   const isInactive = p.status === "INACTIVE";
@@ -316,8 +315,8 @@ const startIndex =
 
                       <TableCell>
                         <div className="py-2 whitespace-nowrap">
-                          <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium ${inStock ? "border-green-100 bg-green-50 text-green-700" : "border-red-100 bg-red-50 text-red-600"}`}>
-                            {inStock ? "In Stock" : "Out of Stock"}
+                          <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium ${isAvailable ? "border-green-100 bg-green-50 text-green-700" : "border-red-100 bg-red-50 text-red-600"}`}>
+                            {isAvailable ? "Available" : "Unavailable"}
                           </span>
                         </div>
                       </TableCell>
@@ -331,11 +330,7 @@ const startIndex =
                         </div>
                       </TableCell>
 
-                      <TableCell>
-                        <div className="py-2 whitespace-nowrap text-sm text-gray-600">
-                          {firstVariant?.warrantyMonths ? `${firstVariant.warrantyMonths} Months` : "N/A"}
-                        </div>
-                      </TableCell>
+                      
 
                       <TableCell>
                         <div className="py-2 whitespace-nowrap">

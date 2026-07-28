@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, HttpStatus } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
@@ -13,6 +13,10 @@ import { MiniCategoryNotFoundException } from '@/modules/category/domain/excepti
 import { InvalidCategoryHierarchyException } from '@/modules/category/domain/exceptions/invalid-category-hierarchy.exception';
 
 import { BrandNotFoundException } from '@/modules/brand/domain/exceptions/brand-not-found.exception';
+import { BaseException } from '@/common/exceptions/base.exception';
+import { ErrorCode } from '@/common/constants/error-codes';
+
+import { CustomerType } from '../../domain/enums/customer-type.enum';
 
 @Injectable()
 export class ProductValidationService {
@@ -33,10 +37,10 @@ export class ProductValidationService {
   async validate(input: {
     categoryId: string;
     subCategoryId: string;
-    miniCategoryId: string;
+    miniCategoryId?: string | null;
     brandId: string;
+    customerType?: CustomerType;
   }) {
-    // 🔥 avoid findById(undefined)
     if (!input.categoryId) {
       throw new CategoryNotFoundException({
         categoryId: input.categoryId,
@@ -49,22 +53,24 @@ export class ProductValidationService {
       });
     }
 
-    if (!input.miniCategoryId) {
-      throw new MiniCategoryNotFoundException({
-        miniCategoryId: input.miniCategoryId,
-      });
-    }
-
     if (!input.brandId) {
       throw new BrandNotFoundException({
         brandId: input.brandId,
       });
     }
 
-    const [category, sub, mini, brand] = await Promise.all([
+    if (!input.customerType) {
+      throw new BaseException(
+        'Customer Type is required.',
+        ErrorCode.PRODUCT.INVALID,
+        HttpStatus.BAD_REQUEST,
+        { field: 'customerType' },
+      );
+    }
+
+    const [category, sub, brand] = await Promise.all([
       this.categoryRepo.findById(input.categoryId),
       this.subCategoryRepo.findById(input.subCategoryId),
-      this.miniCategoryRepo.findById(input.miniCategoryId),
       this.brandRepo.findById(input.brandId),
     ]);
 
@@ -80,16 +86,19 @@ export class ProductValidationService {
       });
     }
 
-    if (!mini) {
-      throw new MiniCategoryNotFoundException({
-        miniCategoryId: input.miniCategoryId,
-      });
-    }
-
     if (!brand) {
       throw new BrandNotFoundException({
         brandId: input.brandId,
       });
+    }
+
+    if (!brand.skuPrefix?.trim()) {
+      throw new BaseException(
+        'Brand SKU Prefix not configured.',
+        ErrorCode.BRAND.INVALID,
+        HttpStatus.BAD_REQUEST,
+        { field: 'brandId' },
+      );
     }
 
     if (sub.categoryId !== category.id) {
@@ -99,11 +108,23 @@ export class ProductValidationService {
       });
     }
 
-    if (mini.subCategoryId !== sub.id) {
-      throw new InvalidCategoryHierarchyException({
-        subCategoryId: sub.id,
-        miniCategoryId: mini.id,
-      });
+    let mini: Awaited<ReturnType<MiniCategoryRepository['findById']>> = null;
+
+    if (input.miniCategoryId) {
+      mini = await this.miniCategoryRepo.findById(input.miniCategoryId);
+
+      if (!mini) {
+        throw new MiniCategoryNotFoundException({
+          miniCategoryId: input.miniCategoryId,
+        });
+      }
+
+      if (mini.subCategoryId !== sub.id) {
+        throw new InvalidCategoryHierarchyException({
+          subCategoryId: sub.id,
+          miniCategoryId: mini.id,
+        });
+      }
     }
 
     return {

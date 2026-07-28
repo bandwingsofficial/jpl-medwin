@@ -186,7 +186,7 @@ export class GetProductDetailUseCase {
       stock: {
         quantity: safeVariants.reduce((sum, v) => sum + v.quantity, 0),
 
-        inStock: safeVariants.some((v) => v.quantity > 0),
+        inStock: product.status === 'ACTIVE',
       },
 
       isWeighted: product.isWeighted ?? false,
@@ -246,7 +246,7 @@ export class GetProductDetailUseCase {
           stock: {
             quantity: v.quantity,
 
-            inStock: v.quantity > 0,
+            inStock: v.status === 'ACTIVE',
           },
 
           ratings: {

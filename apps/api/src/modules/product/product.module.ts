@@ -56,11 +56,13 @@ import { RestoreVariantUseCase } from './application/use-cases/restore-variant.u
 // =======================
 
 import { ProductValidationService } from './application/services/product-validation.service';
+import { ProductCreateValidator } from './application/services/product-create.validator';
 import { ProductSlugService } from './application/services/product-slug.service';
 import { ProductBuilderService } from './application/services/product-builder.service';
 import { ProductImageService } from './application/services/product-image.service';
 import { VariantCreatorService } from './application/services/variant-creator.service';
 import { ProductPriceService } from './application/services/product-price.service';
+import { ProductSkuService } from './application/services/product-sku.service';
 
 import { UpdateProductBuilderService } from './application/services/update-product-builder.service';
 import { VariantSyncService } from './application/services/variant-sync.service';
@@ -147,11 +149,13 @@ import { PrismaProductImageRepository } from './infrastructure/persistence/prism
     // =======================
 
     ProductValidationService,
+    ProductCreateValidator,
     ProductSlugService,
     ProductBuilderService,
     ProductImageService,
     VariantCreatorService,
     ProductPriceService,
+    ProductSkuService,
 
     UpdateProductBuilderService,
     VariantSyncService,

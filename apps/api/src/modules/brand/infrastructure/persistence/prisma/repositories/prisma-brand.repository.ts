@@ -62,6 +62,19 @@ export class PrismaBrandRepository implements BrandRepository {
     return data ? BrandMapper.toDomain(data) : null;
   }
 
+  async findBySkuPrefix(skuPrefix: string): Promise<Brand | null> {
+    const normalized = skuPrefix.trim().toUpperCase();
+
+    const data = await this.prisma.brand.findFirst({
+      where: {
+        skuPrefix: normalized,
+        deletedAt: null,
+      },
+    });
+
+    return data ? BrandMapper.toDomain(data) : null;
+  }
+
   async findAll(): Promise<Brand[]> {
     const data = await this.prisma.brand.findMany({
       where: { deletedAt: null },
@@ -78,6 +91,20 @@ export class PrismaBrandRepository implements BrandRepository {
   async existsBySlug(slug: string): Promise<boolean> {
     const count = await this.prisma.brand.count({
       where: { slug, deletedAt: null },
+    });
+
+    return count > 0;
+  }
+
+  async existsBySkuPrefix(skuPrefix: string, excludeId?: string): Promise<boolean> {
+    const normalized = skuPrefix.trim().toUpperCase();
+
+    const count = await this.prisma.brand.count({
+      where: {
+        skuPrefix: normalized,
+        deletedAt: null,
+        ...(excludeId ? { NOT: { id: excludeId } } : {}),
+      },
     });
 
     return count > 0;

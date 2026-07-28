@@ -20,6 +20,7 @@ import { UpdateBrandStatusUseCase } from '@/modules/brand/application/use-cases/
 // =======================
 
 import { BrandDomainService } from '@/modules/brand/domain/services/brand-domain.service';
+import { BrandSkuPrefixService } from '@/modules/brand/domain/services/brand-sku-prefix.service';
 
 // =======================
 // PORTS (TOKENS)
@@ -59,6 +60,7 @@ import { AuthModule } from '@/modules/auth/auth.module';
     // DOMAIN SERVICES
     // =======================
     BrandDomainService,
+    BrandSkuPrefixService,
 
     // =======================
     // REPOSITORY
@@ -70,6 +72,6 @@ import { AuthModule } from '@/modules/auth/auth.module';
   ],
 
   // 🔥🔥🔥 THIS IS THE FIX
-  exports: [TOKENS.BRAND_REPO],
+  exports: [TOKENS.BRAND_REPO, BrandSkuPrefixService],
 })
 export class BrandModule {}

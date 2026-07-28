@@ -6,6 +6,10 @@ export type ProductType =
   | "SIMPLE"
   | "VARIABLE";
 
+export type CustomerType =
+  | "DOCTOR"
+  | "HOSPITAL";
+
 // =========================================
 // FAQ
 // =========================================
@@ -91,6 +95,8 @@ export interface CreateProductPayload {
 
   type: ProductType;
 
+  customerType: CustomerType;
+
   categoryId: string;
 
   subCategoryId: string;
@@ -98,6 +104,8 @@ export interface CreateProductPayload {
   miniCategoryId: string;
 
   brandId: string;
+
+  hsnCode?: string;
 
   shortDescription: string;
 
@@ -228,6 +236,8 @@ export interface ProductResponse {
 
   type: ProductType;
 
+  customerType: CustomerType;
+
   status: ProductStatus;
 
   currency: string;
@@ -259,6 +269,8 @@ export interface ProductResponse {
   shortDescription: string | null;
 
   longDescription: string | null;
+
+  hsnCode: string | null;
 
   ratings: {
     average: number;
@@ -330,6 +342,8 @@ export interface Product {
 
   type: ProductType;
 
+  customerType: CustomerType;
+
   status: ProductStatus;
 
   currency: string;
@@ -337,6 +351,8 @@ export interface Product {
   shortDescription: string | null;
 
   longDescription: string | null;
+
+  hsnCode: string | null;
 
   brand: {
     id: string;

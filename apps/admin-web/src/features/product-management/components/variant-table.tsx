@@ -400,11 +400,6 @@ export function VariantTable(
               </div>
             </TableHead>
 
-            <TableHead>
-              <div className="text-xs font-semibold whitespace-nowrap">
-                Attributes
-              </div>
-            </TableHead>
 
             <TableHead>
               <div className="text-xs font-semibold whitespace-nowrap">
@@ -418,11 +413,6 @@ export function VariantTable(
               </div>
             </TableHead>
 
-            <TableHead>
-              <div className="text-xs font-semibold whitespace-nowrap">
-                Warranty
-              </div>
-            </TableHead>
 
             <TableHead>
               <div className="text-xs font-semibold whitespace-nowrap">
@@ -448,11 +438,6 @@ export function VariantTable(
 
           {variants.map(
             (variant) => {
-
-              const attributes =
-                Object.entries(
-                  variant.attributes || {}
-                );
 
               const isDeleted =
                 !!variant.deletedAt;
@@ -559,48 +544,6 @@ export function VariantTable(
                     </div>
                   </TableCell>
 
-                  {/* ATTRIBUTES */}
-
-                  <TableCell>
-                    <div
-                      className="
-                        py-2
-                        flex
-                        items-center
-                        gap-1.5
-                        whitespace-nowrap
-                      "
-                    >
-                      {attributes.length ? (
-                        attributes.map(
-                          ([key, value]) => (
-                            <span
-                              key={key}
-                              className="
-                                inline-flex
-                                items-center
-                                rounded-md
-                                border
-                                border-gray-200
-                                bg-gray-50
-                                px-2
-                                py-1
-                                text-[10px]
-                                font-medium
-                                text-gray-700
-                              "
-                            >
-                              {key}: {value}
-                            </span>
-                          )
-                        )
-                      ) : (
-                        <span className="text-sm text-gray-400">
-                          N/A
-                        </span>
-                      )}
-                    </div>
-                  </TableCell>
 
                   {/* PRICING */}
 
@@ -654,15 +597,15 @@ export function VariantTable(
                             font-medium
 
                             ${
-                              variant.stock?.inStock
+                              variant.status === "ACTIVE"
                                 ? "border-green-100 bg-green-50 text-green-700"
                                 : "border-red-100 bg-red-50 text-red-600"
                             }
                           `}
                         >
-                          {variant.stock?.inStock
-                            ? "In Stock"
-                            : "Out of Stock"}
+                          {variant.status === "ACTIVE"
+                            ? "Available"
+                            : "Unavailable"}
                         </span>
 
                         <span
@@ -679,22 +622,6 @@ export function VariantTable(
                     </div>
                   </TableCell>
 
-                  {/* WARRANTY */}
-
-                  <TableCell>
-                    <div className="py-2 whitespace-nowrap">
-                      <span
-                        className="
-                          text-sm
-                          text-gray-700
-                        "
-                      >
-                        {variant.warrantyMonths
-                          ? `${variant.warrantyMonths} Months`
-                          : "N/A"}
-                      </span>
-                    </div>
-                  </TableCell>
 
                   {/* STATUS */}
 

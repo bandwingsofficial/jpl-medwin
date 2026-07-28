@@ -78,6 +78,14 @@ const buildProductFormData = (
       jsonPayload.brandId || ""
     ).trim(),
 
+    customerType: String(
+      jsonPayload.customerType || ""
+    ).trim(),
+
+    hsnCode: String(
+      jsonPayload.hsnCode || ""
+    ).trim(),
+
     shortDescription: String(
       jsonPayload.shortDescription || ""
     ).trim(),
@@ -169,13 +177,20 @@ const buildProductFormData = (
   if (
     !normalizedPayload.categoryId ||
     !normalizedPayload.subCategoryId ||
-    !normalizedPayload.miniCategoryId ||
     !normalizedPayload.brandId
   ) {
 
     throw new Error(
-      "Category/SubCategory/MiniCategory/Brand missing"
+      "Category/SubCategory/Brand missing"
     );
+  }
+
+  if (!normalizedPayload.miniCategoryId) {
+    delete (normalizedPayload as { miniCategoryId?: string }).miniCategoryId;
+  }
+
+  if (!normalizedPayload.hsnCode) {
+    delete (normalizedPayload as { hsnCode?: string }).hsnCode;
   }
 
   // =========================================
@@ -590,4 +605,26 @@ exportProducts: async () => {
 
   return response;
 },
+
+  previewSku: async (payload: {
+    brandId: string;
+    customerType: "DOCTOR" | "HOSPITAL";
+    productType: "SIMPLE" | "VARIABLE";
+    productName?: string;
+    productId?: string;
+    excludeVariantIds?: string[];
+    variants?: Array<{ tempId?: string; variantName?: string }>;
+  }) => {
+    console.log("[SKU_TRACE] FE previewSku request payload", payload);
+
+    const response = await apiClient.post("/admin/products/sku/preview", payload);
+
+    console.log("[SKU_TRACE] FE previewSku response.data", response.data);
+    console.log(
+      "[SKU_TRACE] FE previewSku response.data.data?.sku",
+      response.data?.data?.sku,
+    );
+
+    return response;
+  },
 };

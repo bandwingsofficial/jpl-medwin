@@ -8,7 +8,9 @@ import { BrandNotFoundException } from '../../domain/exceptions/brand-not-found.
 
 import { BrandNameVO } from '../../domain/value-objects/brand-name.vo';
 import { BrandSlugVO } from '../../domain/value-objects/brand-slug.vo';
+import { BrandSkuPrefixVO } from '../../domain/value-objects/brand-sku-prefix.vo';
 import { BrandSlugExistsException } from '../../domain/exceptions/brand-slug-exists.exception';
+import { BrandSkuPrefixExistsException } from '../../domain/exceptions/brand-sku-prefix-exists.exception';
 
 @Injectable()
 export class UpdateBrandUseCase {
@@ -22,6 +24,7 @@ export class UpdateBrandUseCase {
   async execute(input: {
     id: string;
     name?: string;
+    skuPrefix?: string;
     imageUrl?: string;
     description?: string;
     metaDescription?: string;
@@ -44,6 +47,19 @@ export class UpdateBrandUseCase {
       brand.slug = newSlug;
     }
 
+    if (input.skuPrefix !== undefined) {
+      const skuPrefixVO = new BrandSkuPrefixVO(input.skuPrefix);
+
+      if (skuPrefixVO.getValue() !== brand.skuPrefix) {
+        await this.domainService.validateBrandSkuPrefixForUpdate(
+          skuPrefixVO.getValue(),
+          brand.id,
+        );
+      }
+
+      brand.skuPrefix = skuPrefixVO.getValue();
+    }
+
     if (input.imageUrl !== undefined) brand.imageUrl = input.imageUrl;
     if (input.description !== undefined) {
       brand.description = input.description;
@@ -56,6 +72,12 @@ export class UpdateBrandUseCase {
       return await this.brandRepo.update(brand);
     } catch (err: any) {
       if (err?.code === 'P2002') {
+        if (input.skuPrefix) {
+          throw new BrandSkuPrefixExistsException({
+            skuPrefix: input.skuPrefix,
+          });
+        }
+
         throw new BrandSlugExistsException({
           slug: input.name ?? 'unknown',
         });

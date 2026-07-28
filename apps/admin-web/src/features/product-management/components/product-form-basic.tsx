@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 
 import { Input } from "@/shared/components/ui/input";
 import { Textarea } from "@/shared/components/ui/textarea";
 
 import { CategoryBrandSelector } from "./category-brand-selector";
+
+import { getSimpleSkuPlaceholder, createEmptyVariant } from "../utils/product-form.utils";
 
 import {
   UploadCloud,
@@ -22,12 +24,44 @@ interface Props {
     field: string,
     value: any
   ) => void;
+
+  showExtendedSections?: boolean;
+
+  isEditMode?: boolean;
+
+  skuPreviewLoading?: boolean;
+
+  fieldErrors?: Array<{ field: string; message: string }>;
 }
 
 export function ProductFormBasic({
   data,
   onChange,
+  showExtendedSections = false,
+  isEditMode = false,
+  skuPreviewLoading = false,
+  fieldErrors = [],
 }: Props) {
+
+  const fieldError = (field: string) =>
+    fieldErrors.find((item) => item.field === field)?.message;
+
+  const simpleVariant = data.variants?.[0] || createEmptyVariant();
+
+  const updateSimpleVariant = (field: string, value: any) => {
+    onChange("variants", [
+      {
+        ...simpleVariant,
+        [field]: value,
+      },
+    ]);
+  };
+
+  useEffect(() => {
+    if (data.type === "SIMPLE") {
+      console.log("[SKU_TRACE] render SKU input value", data.previewSku);
+    }
+  }, [data.type, data.previewSku]);
 
   // =========================================
   // MAIN IMAGE PREVIEW
@@ -318,13 +352,13 @@ export function ProductFormBasic({
       {/* BASIC INFORMATION */}
       {/* ===================================== */}
 
-      <Section title="Basic Information">
+      <Section title="General Information">
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Field
             label="Product Name"
             required
+            error={fieldError("name")}
           >
             <Input
               value={
@@ -341,8 +375,46 @@ export function ProductFormBasic({
           </Field>
 
           <Field
+            label="Customer Type"
+            required
+            error={fieldError("customerType")}
+          >
+            <select
+              className="
+                flex h-10 w-full rounded-md
+                border border-input bg-background
+                px-3 py-2 text-sm
+                focus:ring-2
+                focus:ring-purple-500
+                outline-none
+              "
+              value={data.customerType || ""}
+              onChange={(e) =>
+                onChange(
+                  "customerType",
+                  e.target.value
+                )
+              }
+            >
+              <option value="">Select Customer Type</option>
+              <option value="DOCTOR">Doctor</option>
+              <option value="HOSPITAL">Hospital</option>
+            </select>
+          </Field>
+        </div>
+
+        <CategoryBrandSelector
+          data={data}
+          onChange={onChange}
+          fieldErrors={fieldErrors}
+        />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <Field
             label="Product Type"
             required
+            error={fieldError("type")}
           >
             <select
               className="
@@ -354,7 +426,7 @@ export function ProductFormBasic({
                 outline-none
               "
               value={
-                data.type
+                data.type || ""
               }
               onChange={(e) =>
                 onChange(
@@ -363,12 +435,16 @@ export function ProductFormBasic({
                 )
               }
             >
+              <option value="">
+                Select Product Type
+              </option>
+
               <option value="SIMPLE">
-                SIMPLE
+                Non Variant
               </option>
 
               <option value="VARIABLE">
-                VARIABLE
+                Variant
               </option>
             </select>
           </Field>
@@ -408,16 +484,113 @@ export function ProductFormBasic({
 
         </div>
 
-        <CategoryBrandSelector
-          data={data}
-          onChange={onChange}
-        />
+        {showExtendedSections && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {data.type === "SIMPLE" && (
+              <Field label="SKU">
+                <div className="space-y-1">
+                  <Input
+                    readOnly
+                    value={data.previewSku || ""}
+                    placeholder={getSimpleSkuPlaceholder(data)}
+                    className="bg-gray-50 font-mono h-10"
+                  />
+                  {!isEditMode && skuPreviewLoading && !data.previewSku && (
+                    <p className="text-xs text-gray-500">
+                      Generating SKU preview…
+                    </p>
+                  )}
+                  {(data.previewSku || isEditMode) && (
+                    <p className="text-xs text-gray-500">
+                      Read only — SKU is generated automatically.
+                    </p>
+                  )}
+                </div>
+              </Field>
+            )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Field
+              label="HSN Code"
+              className={data.type !== "SIMPLE" ? "lg:col-span-2" : undefined}
+              error={fieldError("hsnCode")}
+            >
+              <Input
+                value={data.hsnCode || ""}
+                onChange={(e) =>
+                  onChange(
+                    "hsnCode",
+                    e.target.value
+                  )
+                }
+                placeholder="Enter HSN code"
+                className="h-10"
+              />
+            </Field>
+          </div>
+        )}
+
+        {showExtendedSections && data.type === "SIMPLE" && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Field
+              label="Selling Price"
+              required
+              error={fieldError("variants[0].sellingPrice")}
+            >
+              <Input
+                type="number"
+                value={simpleVariant.sellingPrice ?? ""}
+                onChange={(e) => updateSimpleVariant("sellingPrice", e.target.value)}
+                placeholder="Required"
+                className="h-10"
+              />
+            </Field>
+
+            <Field
+              label="Purchase Price"
+              error={fieldError("variants[0].purchasePrice")}
+            >
+              <Input
+                type="number"
+                value={simpleVariant.purchasePrice ?? ""}
+                onChange={(e) => updateSimpleVariant("purchasePrice", e.target.value)}
+                placeholder="Optional"
+                className="h-10"
+              />
+            </Field>
+
+            <Field
+              label="MRP"
+              error={fieldError("variants[0].mrp")}
+            >
+              <Input
+                type="number"
+                value={simpleVariant.mrp ?? ""}
+                onChange={(e) => updateSimpleVariant("mrp", e.target.value)}
+                placeholder="Optional"
+                className="h-10"
+              />
+            </Field>
+
+            <Field
+              label="Quantity"
+              error={fieldError("variants[0].quantity")}
+            >
+              <Input
+                type="number"
+                value={simpleVariant.quantity ?? ""}
+                onChange={(e) => updateSimpleVariant("quantity", e.target.value)}
+                placeholder="Optional"
+                className="h-10"
+              />
+            </Field>
+          </div>
+        )}
+
+        {showExtendedSections && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           <Field
             label="Short Description"
-            required
           >
             <Input
               value={
@@ -429,13 +602,13 @@ export function ProductFormBasic({
                   e.target.value
                 )
               }
-              placeholder="Enter short description"
+              placeholder="Enter short description (optional)"
+              className="h-10"
             />
           </Field>
 
           <Field
             label="Long Description"
-            required
           >
             <Textarea
               value={
@@ -449,20 +622,24 @@ export function ProductFormBasic({
               }
               placeholder="Enter long description"
               rows={3}
+              className="min-h-10 resize-y"
             />
           </Field>
 
         </div>
+        )}
 
       </Section>
 
+      {showExtendedSections && (
+      <>
       {/* ===================================== */}
       {/* MEDIA */}
       {/* ===================================== */}
 
       <Section title="Media">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* ================================= */}
           {/* MAIN IMAGE */}
@@ -713,6 +890,8 @@ export function ProductFormBasic({
         </div>
 
       </Section>
+      </>
+      )}
 
     </div>
   );
@@ -748,10 +927,18 @@ function Field({
   label,
   children,
   required,
-}: any) {
+  className,
+  error,
+}: {
+  label: string;
+  children: React.ReactNode;
+  required?: boolean;
+  className?: string;
+  error?: string;
+}) {
 
   return (
-    <div className="space-y-2">
+    <div className={cn("space-y-2", className)}>
 
       <label
         className="
@@ -772,6 +959,10 @@ function Field({
       </label>
 
       {children}
+
+      {error && (
+        <p className="text-xs text-red-500">{error}</p>
+      )}
 
     </div>
   );

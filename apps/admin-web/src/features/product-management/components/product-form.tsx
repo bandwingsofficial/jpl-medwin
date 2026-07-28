@@ -1,8 +1,10 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
@@ -15,748 +17,616 @@ import { ProductSummaryView } from "./product-summary-view";
 import { Button } from "@/shared/components/ui/button";
 
 import { useProduct } from "../hooks/use-product";
+import { productApi } from "@/infrastructure/api/product.api";
+
+import { Product } from "../types/product.type";
+import { showError, showSuccess } from "@/shared/store/toast.store";
+import { extractApiError, ApiFieldError } from "@/shared/lib/extract-api-error";
 
 import {
-  Product,
-  ProductImage,
-} from "../types/product.type";
-import { showError, showSuccess } from "@/shared/store/toast.store";
-
-// =========================================
-// TYPES
-// =========================================
+  canPreviewSimpleSku,
+  canPreviewVariantSku,
+  createEmptyVariant,
+  extractProductSkuPrefix,
+  extractSkuPreview,
+  extractVariantSkuPreview,
+  getVariantProductPrefix,
+  hasProductBasics,
+  mapProductToForm,
+  recalculateVariantSkus,
+  validatePricingFields,
+  getVariantLabel,
+} from "../utils/product-form.utils";
 
 interface Props {
   mode?: "create" | "edit";
-
   initialData?: Product | null;
-
   onSuccess: () => void;
 }
 
-// =========================================
-// PRODUCT FORM
-// =========================================
+const EMPTY_FORM = {
+  name: "",
+  type: "",
+  customerType: "",
+  status: "ACTIVE",
+  categoryId: "",
+  subCategoryId: "",
+  miniCategoryId: "",
+  brandId: "",
+  hsnCode: "",
+  mainImage: null,
+  existingMainImage: "",
+  images: [],
+  shortDescription: "",
+  longDescription: "",
+  features: [],
+  tags: [],
+  displayNotes: [],
+  packing: [],
+  directionOfUse: [],
+  additionalInfo: [],
+  specifications: [],
+  faq: [],
+  isWeighted: false,
+  warrantyMonths: 0,
+  previewSku: "",
+  variantSkuPrefix: "",
+  variants: [],
+};
 
 export function ProductForm({
   mode = "create",
   initialData = null,
   onSuccess,
 }: Props) {
+  const { createProduct, updateProduct } = useProduct();
+  const isEditMode = mode === "edit";
 
-  const {
-    createProduct,
-    updateProduct,
-  } = useProduct();
+  const initialForm = useMemo(() => {
+    if (isEditMode && initialData) {
+      return mapProductToForm(initialData);
+    }
 
-  // =========================================
-  // MODE
-  // =========================================
+    return EMPTY_FORM;
+  }, [isEditMode, initialData]);
 
-  const isEditMode =
-    mode === "edit";
+  const [form, setForm] = useState<any>(initialForm);
+  const [fieldErrors, setFieldErrors] = useState<ApiFieldError[]>([]);
+  const [skuPreviewLoading, setSkuPreviewLoading] = useState(false);
+  const previewTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const previewRequestId = useRef(0);
+  const formRef = useRef(form);
 
-  // =========================================
-  // INITIAL FORM
-  // =========================================
+  useEffect(() => {
+    formRef.current = form;
+  }, [form]);
 
-  const initialForm =
-    useMemo(() => {
+  useEffect(() => {
+    if (initialData) {
+      setForm(initialForm);
+    }
+  }, [initialData, initialForm]);
 
-      // =====================================
-      // EDIT MODE
-      // =====================================
+  const basicsReady = hasProductBasics(form);
+  const typeSelected = Boolean(form.type);
+  const showExtendedSections = basicsReady && typeSelected;
+  const isSimple = form.type === "SIMPLE";
+  const isVariable = form.type === "VARIABLE";
 
-      if (
-        isEditMode &&
-        initialData
-      ) {
+  const refreshSkuPreview = useCallback(
+    async (nextForm: any) => {
+      console.log("[SKU_TRACE] refreshSkuPreview called", {
+        isEditMode,
+        type: nextForm.type,
+        brandId: nextForm.brandId,
+        categoryId: nextForm.categoryId,
+        subCategoryId: nextForm.subCategoryId,
+        canPreviewSimple: canPreviewSimpleSku(nextForm),
+        currentPreviewSku: nextForm.previewSku,
+      });
 
-        return {
-
-          id:
-            initialData.id,
-
-          name:
-            initialData.name || "",
-
-          type:
-            initialData.type || "SIMPLE",
-
-          status:
-            initialData.status || "ACTIVE",
-
-          categoryId:
-  initialData.category.id ||
-  initialData.category?.id ||
-  "",
-
-subCategoryId:
-  initialData.subCategory.id ||
-  initialData.subCategory?.id ||
-  "",
-
-miniCategoryId:
-  initialData.miniCategory.id ||
-  initialData.miniCategory?.id ||
-  "",
-
-brandId:
-  initialData.brand.id ||
-  initialData.brand?.id ||
-  "",
-
-mainImage:
-  null,
-
-existingMainImage:
- initialData.images.main ||
-  initialData.images?.main ||
-  "",
-
-images:
-  (
-    initialData.images.gallery ||
-    initialData.images?.gallery ||
-    []
-  ).map(
-    (url: string) => ({
-      url,
-    })
-  ),
-
-shortDescription:
-  initialData.shortDescription ||
-  "",
-
-longDescription:
-  initialData.longDescription ||
-  "",
-          features:
-            initialData.features || [],
-
-          tags:
-            initialData.tags || [],
-
-          displayNotes:
-            initialData.displayNotes || [],
-
-          packing:
-            initialData.packing || [],
-
-          directionOfUse:
-            initialData.directionOfUse || [],
-
-          additionalInfo:
-            initialData.additionalInfo || [],
-
-          specifications:
-            initialData.specifications || [],
-
-          faq:
-            initialData.faq || [],
-
-          isWeighted:
-            initialData.isWeighted || false,
-
-          warrantyMonths:
-            initialData.warrantyMonths || 0,
-
-          variants:
-            (
-              initialData.variants || []
-            ).map((variant: any) => ({
-
-              id:
-                variant.id,
-
-              sku:
-                variant.sku,
-
-              name:
-                variant.name,
-
-              purchasePrice:
-                variant.pricing
-                  ?.purchasePrice || 0,
-
-              sellingPrice:
-                variant.pricing
-                  ?.sellingPrice || 0,
-
-              mrp:
-                variant.pricing
-                  ?.mrp || 0,
-
-              quantity:
-                variant.stock || 0,
-
-              averageRating:
-                variant.ratings
-                  ?.average || 0,
-
-              reviewCount:
-                variant.ratings
-                  ?.count || 0,
-
-              isWeighted:
-                variant.isWeighted || false,
-
-              warrantyMonths:
-                variant.warrantyMonths || 0,
-
-              attributes:
-                variant.attributes || {},
-
-              existingMainImage:
-                variant.images?.main || "",
-
-              mainFile:
-                null,
-
-              images:
-                (
-                  variant.images
-                    ?.gallery || []
-                ).map(
-                  (url: string) => ({
-                    url,
-                  })
-                ),
-            })),
-        };
+      if (isEditMode && nextForm.type === "SIMPLE") {
+        console.log("[SKU_TRACE] refreshSkuPreview skipped — edit mode SIMPLE");
+        return;
       }
 
-      // =====================================
-      // CREATE MODE
-      // =====================================
+      if (nextForm.type === "SIMPLE") {
+        if (!canPreviewSimpleSku(nextForm)) {
+          console.log("[SKU_TRACE] refreshSkuPreview skipped — canPreviewSimpleSku false");
+          return;
+        }
 
-      return {
+        const requestId = ++previewRequestId.current;
+        setSkuPreviewLoading(true);
 
-        name: "",
+        try {
+          console.log("[SKU_TRACE] refreshSkuPreview firing SIMPLE API request", requestId);
 
-        type: "SIMPLE",
+          const response = await productApi.previewSku({
+            brandId: nextForm.brandId,
+            customerType: nextForm.customerType,
+            productType: "SIMPLE",
+            productName: nextForm.name,
+            productId: nextForm.id,
+          });
 
-        status: "ACTIVE",
+          if (requestId !== previewRequestId.current) {
+            console.log("[SKU_TRACE] refreshSkuPreview stale SIMPLE response discarded", {
+              requestId,
+              current: previewRequestId.current,
+            });
+            return;
+          }
 
-        categoryId: "",
+          const sku = extractSkuPreview(response);
 
-        subCategoryId: "",
+          console.log("[SKU_TRACE] refreshSkuPreview extracted sku", sku);
 
-        miniCategoryId: "",
+          setForm((prev: any) => {
+            const updated = {
+              ...prev,
+              previewSku: sku || prev.previewSku,
+            };
 
-        brandId: "",
+            console.log("[SKU_TRACE] refreshSkuPreview setForm previewSku", updated.previewSku);
 
-        mainImage: null,
+            return updated;
+          });
+        } catch (error) {
+          console.error("[SKU_TRACE] SKU preview failed", error);
+        } finally {
+          if (requestId === previewRequestId.current) {
+            setSkuPreviewLoading(false);
+          }
+        }
 
-        existingMainImage: "",
+        return;
+      }
 
-        images: [],
+      if (!canPreviewVariantSku(nextForm)) {
+        console.log("[SKU_TRACE] refreshSkuPreview skipped — canPreviewVariantSku false");
+        return;
+      }
 
-        shortDescription: "",
+      const requestId = ++previewRequestId.current;
+      setSkuPreviewLoading(true);
 
-        longDescription: "",
+      try {
+        console.log("[SKU_TRACE] refreshSkuPreview firing VARIABLE API request", requestId);
 
-        features: [],
+        const response = await productApi.previewSku({
+          brandId: nextForm.brandId,
+          customerType: nextForm.customerType,
+          productType: "VARIABLE",
+          productName: nextForm.name,
+          productId: nextForm.id,
+        });
 
-        tags: [],
+        if (requestId !== previewRequestId.current) {
+          console.log("[SKU_TRACE] refreshSkuPreview stale VARIABLE response discarded", {
+            requestId,
+            current: previewRequestId.current,
+          });
+          return;
+        }
 
-        displayNotes: [],
+        const skus = extractVariantSkuPreview(response);
+        const firstSku = skus[0]?.sku || "";
+        const prefix = extractProductSkuPrefix(firstSku);
 
-        packing: [],
+        console.log("[SKU_TRACE] refreshSkuPreview VARIABLE prefix", prefix);
 
-        directionOfUse: [],
+        setForm((prev: any) => {
+          if (!prefix) {
+            return prev;
+          }
 
-        additionalInfo: [],
+          const updatedVariants = recalculateVariantSkus(prev.variants || [], prefix);
 
-        specifications: [],
+          console.log(
+            "[SKU_TRACE] refreshSkuPreview VARIABLE setForm skus",
+            updatedVariants
+              .filter((v: any) => !v.isDeleted)
+              .map((v: any) => ({ id: v.id, name: v.name, sku: v.sku })),
+          );
 
-        faq: [],
+          return {
+            ...prev,
+            variantSkuPrefix: prefix,
+            variants: updatedVariants,
+          };
+        });
+      } catch (error) {
+        console.error("[SKU_TRACE] VARIABLE SKU preview failed", error);
+      } finally {
+        if (requestId === previewRequestId.current) {
+          setSkuPreviewLoading(false);
+        }
+      }
+    },
+    [isEditMode],
+  );
 
-        isWeighted: false,
-
-        warrantyMonths: 0,
-
-        variants: [],
-      };
-
-    }, [
-      isEditMode,
-      initialData,
-    ]);
-
-  // =========================================
-  // STATE
-  // =========================================
-
-  const [form, setForm] =
-    useState<any>(
-      initialForm
-    );
-useEffect(() => {
-
-  if (
-    initialData
-  ) {
-
-    setForm(
-      initialForm
-    );
-
-  }
-
-}, [
-  initialData,
-  initialForm,
-]);
-  // =========================================
-  // RESET ON DATA CHANGE
-  // =========================================
-  // =========================================
-  // FIELD UPDATE
-  // =========================================
-
-  const updateField = (
-    field: string,
-    value: any
-  ) => {
-
-    setForm((prev: any) => ({
-      ...prev,
-      [field]: value,
-    }));
-
-  };
-
-  // =========================================
-  // VALIDATION
-  // =========================================
-
-  const validateForm = () => {
-
-    if (!form.name?.trim()) {
-      showError("Product name is required");
-      return false;
+  const scheduleSkuPreview = useCallback(() => {
+    if (previewTimer.current) {
+      clearTimeout(previewTimer.current);
     }
 
-    if (!form.categoryId?.trim()) {
-      showError("Category is required");
-      return false;
-    }
+    previewTimer.current = setTimeout(() => {
+      refreshSkuPreview(formRef.current);
+    }, 400);
+  }, [refreshSkuPreview]);
 
-    if (!form.subCategoryId?.trim()) {
-      showError("Sub Category is required");
-      return false;
-    }
-
-    if (!form.miniCategoryId?.trim()) {
-      showError("Mini Category is required");
-      return false;
-    }
-
-    if (!form.brandId?.trim()) {
-      showError("Brand is required");
-      return false;
-    }
-
-    // CREATE ONLY
-    if (
-      !isEditMode &&
-      !form.mainImage
-    ) {
-
-      showError(
-        "Main image is required"
-      );
-
-      return false;
-    }
-
-    if (
-      !form.shortDescription?.trim()
-    ) {
-
-      showError(
-        "Short description is required"
-      );
-
-      return false;
-    }
-
-    if (
-      !form.variants?.length
-    ) {
-
-      showError(
-        "At least one variant is required"
-      );
-
-      return false;
-    }
-
-    return true;
-  };
-
-  // =========================================
-  // SUBMIT
-  // =========================================
-
-  const handleSubmit = async () => {
-
-    if (!validateForm()) {
+  useEffect(() => {
+    if (isEditMode && form.type === "SIMPLE") {
       return;
     }
 
-    try {
+    if (form.type === "SIMPLE" && canPreviewSimpleSku(form)) {
+      scheduleSkuPreview();
+      return;
+    }
 
-      // =====================================
-      // VARIANT MAIN IMAGES
-      // =====================================
+    if (form.type === "VARIABLE" && canPreviewVariantSku(form)) {
+      scheduleSkuPreview();
+    }
+  }, [
+    isEditMode,
+    form.brandId,
+    form.customerType,
+    form.type,
+    scheduleSkuPreview,
+  ]);
 
-      const variantMainImages =
-        form.variants
-          .map((v: any) =>
-            v.mainFile
-          )
-          .filter(Boolean);
+  const skuAffectingFields = [
+    "customerType",
+    "brandId",
+    "type",
+  ];
 
-      // =====================================
-      // VARIANT GALLERY IMAGES
-      // =====================================
-
-      const variantImages =
-        form.variants
-          .flatMap((v: any) =>
-            (v.images || [])
-              .filter(
-                (img: any) =>
-                  img?.file instanceof File
-              )
-              .map(
-                (img: any) =>
-                  img.file
-              )
-          );
-
-      // =====================================
-      // MAP VARIANTS
-      // =====================================
-
-      const mappedVariants =
-        form.variants.map(
-          (v: any) => ({
-
-            id:
-              v.id,
-
-            sku:
-              String(
-                v.sku || ""
-              ).trim(),
-
-            name:
-              String(
-                v.name ||
-                form.name
-              ).trim(),
-
-            purchasePrice:
-              Number(
-                v.purchasePrice || 0
-              ),
-
-            sellingPrice:
-              Number(
-                v.sellingPrice || 0
-              ),
-
-            mrp:
-              Number(
-                v.mrp || 0
-              ),
-
-            quantity:
-              Number(
-                v.quantity || 0
-              ),
-
-            averageRating:
-              Number(
-                v.averageRating || 0
-              ),
-
-            reviewCount:
-              Number(
-                v.reviewCount || 0
-              ),
-
-            isWeighted:
-              v.isWeighted === true,
-
-            warrantyMonths:
-              Number(
-                v.warrantyMonths || 0
-              ),
-
-            attributes:
-              v.attributes || {},
-
-            images:
-              v.images || [],
-          })
-        );
-
-      // =====================================
-      // PAYLOAD
-      // =====================================
-
-      const payload = {
-
-        name:
-          String(
-            form.name || ""
-          ).trim(),
-
-        type:
-          form.type,
-
-        status:
-          form.status,
-
-        categoryId:
-          String(
-            form.categoryId || ""
-          ).trim(),
-
-        subCategoryId:
-          String(
-            form.subCategoryId || ""
-          ).trim(),
-
-        miniCategoryId:
-          String(
-            form.miniCategoryId || ""
-          ).trim(),
-
-        brandId:
-          String(
-            form.brandId || ""
-          ).trim(),
-
-        shortDescription:
-          String(
-            form.shortDescription || ""
-          ).trim(),
-
-        longDescription:
-          String(
-            form.longDescription || ""
-          ).trim(),
-
-        features:
-          Array.isArray(
-            form.features
-          )
-            ? form.features
-            : [],
-
-        tags:
-          Array.isArray(
-            form.tags
-          )
-            ? form.tags
-            : [],
-
-        displayNotes:
-          Array.isArray(
-            form.displayNotes
-          )
-            ? form.displayNotes
-            : [],
-
-        packing:
-          Array.isArray(
-            form.packing
-          )
-            ? form.packing
-            : [],
-
-        directionOfUse:
-          Array.isArray(
-            form.directionOfUse
-          )
-            ? form.directionOfUse
-            : [],
-
-        additionalInfo:
-          Array.isArray(
-            form.additionalInfo
-          )
-            ? form.additionalInfo
-            : [],
-
-        specifications:
-          Array.isArray(
-            form.specifications
-          )
-            ? form.specifications
-            : [],
-
-        faq:
-          Array.isArray(
-            form.faq
-          )
-            ? form.faq
-            : [],
-
-        isWeighted:
-          form.isWeighted === true,
-
-        warrantyMonths:
-          Number(
-            form.warrantyMonths || 0
-          ),
-
-        mainImage:
-          form.mainImage,
-
-        images:
-          form.images || [],
-
-        variants:
-          mappedVariants,
-
-        variantMainImages,
-
-        variantImages,
+  const handleVariantsChange = (variants: any[]) => {
+    setForm((prev: any) => {
+      const next = {
+        ...prev,
+        variants,
       };
 
-      // =====================================
-      // CREATE
-      // =====================================
+      const prefix = getVariantProductPrefix(next);
 
-      if (!isEditMode) {
-
-        await createProduct.mutateAsync(
-          payload
-        );
-
-        showSuccess(
-          "Product created successfully"
-        );
-
+      if (prefix && canPreviewVariantSku(next)) {
+        return {
+          ...next,
+          variantSkuPrefix: prefix,
+          variants: recalculateVariantSkus(variants, prefix),
+        };
       }
 
-      // =====================================
-      // UPDATE
-      // =====================================
+      return next;
+    });
+  };
 
-      else {
+  const updateField = (
+    field: string,
+    value: any,
+    options?: { schedulePreview?: boolean },
+  ) => {
+    const shouldSchedulePreview = options?.schedulePreview !== false;
+    let shouldPreview = false;
 
-        await updateProduct.mutateAsync({
+    setForm((prev: any) => {
+      const next = {
+        ...prev,
+        [field]: value,
+      };
 
-          productId:
-            form.id,
+      if (field === "type") {
+        if (
+          value === "VARIABLE" &&
+          !(prev.variants || []).filter((v: any) => !v.isDeleted).length
+        ) {
+          next.variants = [createEmptyVariant()];
+        }
 
-          payload,
-        });
-
-        showSuccess(
-          "Product updated successfully"
-        );
+        if (value === "SIMPLE") {
+          next.variants = [createEmptyVariant()];
+          next.variantSkuPrefix = "";
+        }
       }
 
-      onSuccess();
+      if (skuAffectingFields.includes(field)) {
+        if (next.type === "SIMPLE" && !isEditMode) {
+          next.previewSku = "";
+        }
 
-    } catch (error) {
+        if (next.type === "VARIABLE") {
+          next.variantSkuPrefix = "";
+        }
+      }
 
-      console.error(
-        "PRODUCT SUBMIT FAILED =>",
-        error
-      );
+      if (
+        shouldSchedulePreview &&
+        skuAffectingFields.includes(field)
+      ) {
+        shouldPreview = true;
+      }
 
-      showError(
-        isEditMode
-          ? "Failed to update product"
-          : "Failed to create product"
-      );
+      return next;
+    });
+
+    if (shouldPreview) {
+      console.log("[SKU_TRACE] updateField scheduling preview", { field });
+      scheduleSkuPreview();
     }
   };
 
-  // =========================================
-  // UI
-  // =========================================
+  const validateForm = (): ApiFieldError[] => {
+    const errors: ApiFieldError[] = [];
+
+    if (!form.name?.trim()) {
+      errors.push({ field: "name", message: "Product name is required." });
+    }
+
+    if (!form.categoryId?.trim()) {
+      errors.push({ field: "categoryId", message: "Category is required." });
+    }
+
+    if (!form.subCategoryId?.trim()) {
+      errors.push({ field: "subCategoryId", message: "Sub Category is required." });
+    }
+
+    if (!form.brandId?.trim()) {
+      errors.push({ field: "brandId", message: "Brand is required." });
+    }
+
+    if (!form.customerType?.trim()) {
+      errors.push({ field: "customerType", message: "Customer Type is required." });
+    }
+
+    if (!form.type) {
+      errors.push({ field: "type", message: "Product type is required." });
+    }
+
+    if (!isEditMode && !form.mainImage) {
+      errors.push({ field: "mainImage", message: "Main image is required." });
+    }
+
+    if (isSimple && !isEditMode && !form.previewSku?.trim()) {
+      errors.push({
+        field: "previewSku",
+        message:
+          "SKU preview is not ready yet. Check customer type, brand and product type.",
+      });
+    }
+
+    if (isSimple) {
+      const variant = (form.variants || [])[0] || {};
+      const prefix = "variants[0]";
+      const label = getVariantLabel(variant, 0);
+
+      const pricingError = validatePricingFields(variant, label);
+
+      if (pricingError) {
+        errors.push({
+          field: `${prefix}.sellingPrice`,
+          message: pricingError,
+        });
+      }
+    }
+
+    if (isVariable) {
+      const activeVariants = (form.variants || []).filter(
+        (variant: any) => !variant.isDeleted,
+      );
+
+      if (!activeVariants.length) {
+        errors.push({
+          field: "variants",
+          message: "At least one variant is required.",
+        });
+      }
+
+      activeVariants.forEach((variant: any, index: number) => {
+        const prefix = `variants[${index}]`;
+        const label = getVariantLabel(variant, index);
+
+        if (!variant.name?.trim()) {
+          errors.push({
+            field: `${prefix}.name`,
+            message: `${label}: Variant Name is required.`,
+          });
+        }
+
+        if (!variant.isPersisted && !variant.sku?.trim()) {
+          errors.push({
+            field: `${prefix}.sku`,
+            message: `${label}: SKU preview is pending.`,
+          });
+        }
+
+        const pricingError = validatePricingFields(variant, label);
+
+        if (pricingError) {
+          errors.push({
+            field: `${prefix}.sellingPrice`,
+            message: pricingError,
+          });
+        }
+      });
+    }
+
+    return errors;
+  };
+
+  const handleSubmit = async () => {
+    const clientErrors = validateForm();
+
+    if (clientErrors.length) {
+      setFieldErrors(clientErrors);
+      showError(clientErrors[0].message);
+      return;
+    }
+
+    setFieldErrors([]);
+
+    try {
+      const activeVariants = isSimple
+        ? [(form.variants || [])[0] || {}]
+        : (form.variants || []).filter((variant: any) => !variant.isDeleted);
+
+      const variantMainImages = activeVariants
+        .map((variant: any) => variant.mainFile)
+        .filter(Boolean);
+
+      const variantImages = activeVariants.flatMap((variant: any) =>
+        (variant.images || [])
+          .filter((img: any) => img?.file instanceof File)
+          .map((img: any) => img.file),
+      );
+
+      const mappedVariants = activeVariants.map((variant: any, index: number) => ({
+        id: variant.id,
+        name: String(variant.name || form.name).trim(),
+        purchasePrice:
+          variant.purchasePrice === ""
+            ? undefined
+            : Number(variant.purchasePrice || 0),
+        sellingPrice: Number(variant.sellingPrice || 0),
+        mrp: variant.mrp === "" ? undefined : Number(variant.mrp || 0),
+        quantity:
+          variant.quantity === "" ? undefined : Number(variant.quantity || 0),
+        averageRating: Number(variant.averageRating || 0),
+        reviewCount: Number(variant.reviewCount || 0),
+        isWeighted: variant.isWeighted === true,
+        warrantyMonths: Number(variant.warrantyMonths || 0),
+        attributes: variant.attributes || {},
+        images: variant.images || [],
+        priorityOrder: index,
+        isDeleted: variant.isDeleted === true,
+      }));
+
+      const deletedVariants = (form.variants || [])
+        .filter((variant: any) => variant.isDeleted && variant.id)
+        .map((variant: any) => ({
+          id: variant.id,
+          isDeleted: true,
+        }));
+
+      const payload: any = {
+        name: String(form.name || "").trim(),
+        type: form.type,
+        customerType: form.customerType,
+        status: form.status,
+        categoryId: String(form.categoryId || "").trim(),
+        subCategoryId: String(form.subCategoryId || "").trim(),
+        brandId: String(form.brandId || "").trim(),
+        hsnCode: String(form.hsnCode || "").trim(),
+        shortDescription: String(form.shortDescription || "").trim(),
+        longDescription: String(form.longDescription || "").trim(),
+        features: Array.isArray(form.features) ? form.features : [],
+        tags: Array.isArray(form.tags) ? form.tags : [],
+        displayNotes: Array.isArray(form.displayNotes) ? form.displayNotes : [],
+        packing: Array.isArray(form.packing) ? form.packing : [],
+        directionOfUse: Array.isArray(form.directionOfUse)
+          ? form.directionOfUse
+          : [],
+        additionalInfo: Array.isArray(form.additionalInfo)
+          ? form.additionalInfo
+          : [],
+        specifications: Array.isArray(form.specifications)
+          ? form.specifications
+          : [],
+        faq: Array.isArray(form.faq) ? form.faq : [],
+        isWeighted: form.isWeighted === true,
+        warrantyMonths: Number(form.warrantyMonths || 0),
+        mainImage: form.mainImage,
+        images: form.images || [],
+        variants: [...mappedVariants, ...deletedVariants],
+        variantMainImages,
+        variantImages,
+      };
+
+      if (form.miniCategoryId?.trim()) {
+        payload.miniCategoryId = String(form.miniCategoryId).trim();
+      }
+
+      if (!isEditMode) {
+        await createProduct.mutateAsync(payload);
+        showSuccess("Product created successfully");
+      } else {
+        await updateProduct.mutateAsync({
+          productId: form.id,
+          payload,
+        });
+        showSuccess("Product updated successfully");
+      }
+
+      onSuccess();
+    } catch (error) {
+      console.error("PRODUCT SUBMIT FAILED =>", error);
+
+      const parsed = extractApiError(error);
+
+      setFieldErrors(parsed.errors);
+      showError(parsed.message);
+    }
+  };
 
   return (
     <div className="space-y-8 pb-4 relative">
-
-      {/* BASIC */}
+      {fieldErrors.length > 0 && (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 space-y-1">
+          <p className="font-semibold">Please fix the following:</p>
+          <ul className="list-disc pl-5 space-y-1">
+            {fieldErrors.map((item, index) => (
+              <li key={`${item.field}-${index}`}>{item.message}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <ProductFormBasic
         data={form}
         onChange={updateField}
+        showExtendedSections={showExtendedSections}
+        isEditMode={isEditMode}
+        skuPreviewLoading={skuPreviewLoading}
+        fieldErrors={fieldErrors}
       />
 
-      {/* DETAILS */}
+      {showExtendedSections && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <ProductHighlightsSection data={form} onChange={updateField} />
+          <ProductDetailsSection data={form} onChange={updateField} />
+        </div>
+      )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-        <ProductHighlightsSection
-          data={form}
-          onChange={updateField}
+      {showExtendedSections && isVariable && (
+        <VariantManager
+          variants={form.variants}
+          onChange={handleVariantsChange}
+          isEditMode={isEditMode}
+          fieldErrors={fieldErrors}
         />
+      )}
 
-        <ProductDetailsSection
-          data={form}
-          onChange={updateField}
-        />
+      {showExtendedSections && <ProductSummaryView data={form} />}
 
-      </div>
+      {showExtendedSections && (
+        <div className="sticky bottom-[-24px] mx-[-24px] px-8 py-4 bg-white border-t flex justify-end gap-3 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] rounded-b-2xl">
+          <Button variant="secondary" onClick={onSuccess}>
+            Cancel
+          </Button>
 
-      {/* VARIANTS */}
-
-      <VariantManager
-        variants={form.variants}
-        onChange={(variants) =>
-          updateField(
-            "variants",
-            variants
-          )
-        }
-      />
-
-      {/* SUMMARY */}
-
-      <ProductSummaryView
-        data={form}
-      />
-
-      {/* FOOTER */}
-
-      <div className="sticky bottom-[-24px] mx-[-24px] px-8 py-4 bg-white border-t flex justify-end gap-3 z-30 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] rounded-b-2xl">
-
-        <Button
-          variant="secondary"
-          onClick={onSuccess}
-        >
-          Cancel
-        </Button>
-
-        <Button
-          size="lg"
-          onClick={handleSubmit}
-          loading={
-            createProduct.isPending ||
-            updateProduct.isPending
-          }
-          className="bg-purple-600 hover:bg-purple-700 text-white px-8"
-        >
-          {isEditMode
-            ? "Update Product"
-            : "Save Product"}
-        </Button>
-
-      </div>
+          <Button
+            size="lg"
+            onClick={handleSubmit}
+            loading={createProduct.isPending || updateProduct.isPending}
+            className="bg-purple-600 hover:bg-purple-700 text-white px-8"
+          >
+            {isEditMode ? "Update Product" : "Save Product"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

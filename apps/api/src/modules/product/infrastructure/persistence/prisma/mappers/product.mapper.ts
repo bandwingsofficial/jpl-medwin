@@ -17,6 +17,7 @@ import { ProductStatus } from '../../../../domain/enums/product-status.enum';
 import { ImageOwnerType } from '../../../../domain/enums/image-owner-type.enum';
 import { ImageType } from '../../../../domain/enums/image-type.enum';
 import { ProductType } from '../../../../domain/enums/product-type.enum';
+import { CustomerType } from '../../../../domain/enums/customer-type.enum';
 
 export class ProductMapper {
   // =======================
@@ -33,6 +34,14 @@ export class ProductMapper {
 
   private static toDomainProductType(t: PrismaProductType) {
     return t as ProductType;
+  }
+
+  private static toDomainCustomerType(t: any) {
+    return t as CustomerType;
+  }
+
+  private static toPrismaCustomerType(t: CustomerType) {
+    return t as any;
   }
 
   private static toPrismaProductType(t: ProductType) {
@@ -98,15 +107,17 @@ export class ProductMapper {
   // =======================
 
   static toDomainProduct(p: PrismaProduct): Product {
-    return new Product(
+    const product = new Product(
       p.id,
       p.name,
       p.slug,
       this.toDomainProductType(p.type),
+      this.toDomainCustomerType(p.customerType),
+      p.hsnCode ?? null,
 
       p.categoryId,
       p.subCategoryId,
-      p.miniCategoryId,
+      p.miniCategoryId ?? null,
       p.brandId,
 
       p.defaultVariantId ?? undefined,
@@ -140,6 +151,8 @@ export class ProductMapper {
       p.updatedAt,
       p.deletedAt ?? undefined,
     );
+
+    return product;
   }
 
   static toCreatePersistenceProduct(e: Product): Prisma.ProductUncheckedCreateInput {
@@ -148,10 +161,12 @@ export class ProductMapper {
       name: e.name,
       slug: e.slug,
       type: this.toPrismaProductType(e.type),
+      customerType: this.toPrismaCustomerType(e.customerType),
+      hsnCode: e.hsnCode ?? null,
 
       categoryId: e.categoryId,
       subCategoryId: e.subCategoryId,
-      miniCategoryId: e.miniCategoryId,
+      miniCategoryId: e.miniCategoryId ?? null,
       brandId: e.brandId,
 
       defaultVariantId: e.defaultVariantId ?? null,
@@ -192,10 +207,12 @@ export class ProductMapper {
       name: e.name,
       slug: e.slug,
       type: this.toPrismaProductType(e.type),
+      customerType: this.toPrismaCustomerType(e.customerType),
+      hsnCode: e.hsnCode ?? null,
 
       categoryId: e.categoryId,
       subCategoryId: e.subCategoryId,
-      miniCategoryId: e.miniCategoryId,
+      miniCategoryId: e.miniCategoryId ?? null,
       brandId: e.brandId,
 
       defaultVariantId: e.defaultVariantId ?? null,
@@ -258,6 +275,8 @@ export class ProductMapper {
       p.isWeighted ?? false,
       p.warrantyMonths ?? null,
 
+      p.priorityOrder ?? 0,
+
       this.toDomainProductStatus(p.status),
 
       p.createdAt,
@@ -286,6 +305,7 @@ export class ProductMapper {
       reviewCount: e.reviewCount,
       isWeighted: e.isWeighted,
       warrantyMonths: e.warrantyMonths ?? null,
+      priorityOrder: e.priorityOrder ?? 0,
 
       status: this.toPrismaProductStatus(e.status),
 
@@ -311,6 +331,7 @@ export class ProductMapper {
       reviewCount: e.reviewCount,
       isWeighted: e.isWeighted,
       warrantyMonths: e.warrantyMonths ?? null,
+      priorityOrder: e.priorityOrder ?? 0,
       status: this.toPrismaProductStatus(e.status),
 
       updatedAt: e.updatedAt,

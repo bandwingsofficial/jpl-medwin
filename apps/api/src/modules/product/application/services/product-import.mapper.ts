@@ -38,6 +38,12 @@ export class ProductImportMapperService {
 
           brand: ExcelParserHelper.normalizeText(row['Brand']),
 
+          customerType: ExcelParserHelper.normalizeText(
+            row['Customer Type'] || row['CustomerType'] || row['Customer type'],
+          ),
+
+          hsnCode: ExcelParserHelper.normalizeText(row['HSN Code'] || row['HSN']),
+
           type: 'SIMPLE',
 
           shortDescription: ExcelParserHelper.normalizeText(row['Description']),
@@ -91,17 +97,11 @@ export class ProductImportMapperService {
       }
 
       // =======================
-      // SKU
-      // =======================
-
-      const sku = ExcelParserHelper.normalizeText(row['SKU']).split('\n').pop()?.trim() ?? '';
-
-      // =======================
       // VARIANT
       // =======================
 
       const variant: ParsedVariant = {
-        sku,
+        sku: '',
 
         name: ExcelParserHelper.normalizeText(row['Variant_name']),
 

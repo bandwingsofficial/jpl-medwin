@@ -58,6 +58,9 @@ import { Roles } from '@/modules/category/presentation/decorators/roles.decorato
 import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
 import { ExportProductsByUpdatedAtUseCase } from '../../application/use-cases/export-products-by-updated-at.use-case';
 import { ExportProductsByCreatedAtUseCase } from '../../application/use-cases/export-products-by-created-at.use-case';
+import { ProductSkuService } from '../../application/services/product-sku.service';
+import { PreviewSkuDto } from '../../application/dtos/preview-sku.dto';
+import { ProductType } from '../../domain/enums/product-type.enum';
 
 @Controller('admin/products')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -83,7 +86,42 @@ export class AdminProductController {
     private readonly getVariantsUseCase: GetVariantsUseCase,
     private readonly updateVariantStatusUseCase: UpdateVariantStatusUseCase,
     private readonly restoreVariantUseCase: RestoreVariantUseCase,
+
+    private readonly productSkuService: ProductSkuService,
   ) {}
+
+  // ================= SKU PREVIEW =================
+
+  @Post('sku/preview')
+  async previewSku(@Body() body: PreviewSkuDto) {
+    console.log('[SKU_TRACE] controller received body', JSON.stringify(body));
+
+    if (!body.brandId) {
+      throw new BadRequestException('brandId is required');
+    }
+
+    if (!body.productType) {
+      throw new BadRequestException('productType is required');
+    }
+
+    if (!body.customerType) {
+      throw new BadRequestException('customerType is required');
+    }
+
+    const result = await this.productSkuService.preview({
+      brandId: body.brandId,
+      customerType: body.customerType,
+      productType: body.productType as ProductType,
+      productName: body.productName,
+      productId: body.productId,
+      excludeVariantIds: body.excludeVariantIds,
+      variants: body.variants,
+    });
+
+    console.log('[SKU_TRACE] controller raw result (pre-interceptor)', JSON.stringify(result));
+
+    return result;
+  }
 
   // ================= CREATE PRODUCT =================
 
@@ -393,6 +431,8 @@ export class AdminProductController {
 
         type: parsedData.type,
 
+        customerType: parsedData.customerType,
+
         status: parsedData.status,
 
         categoryId: parsedData.categoryId,
@@ -402,6 +442,8 @@ export class AdminProductController {
         miniCategoryId: parsedData.miniCategoryId,
 
         brandId: parsedData.brandId,
+
+        hsnCode: parsedData.hsnCode?.trim() || undefined,
 
         shortDescription: parsedData.shortDescription?.trim(),
 
@@ -426,17 +468,20 @@ export class AdminProductController {
 
         // VARIANTS
         variants: parseJson(parsedData.variants, []).map((v: any) => ({
-          ...v,
-
+          id: v.id,
+          name: v.name,
           purchasePrice: toNumber(v.purchasePrice),
-
           sellingPrice: toNumber(v.sellingPrice),
-
           mrp: toNumber(v.mrp),
-
           quantity: toNumber(v.quantity),
-
           attributes: v.attributes || {},
+          averageRating: toNumber(v.averageRating),
+          reviewCount: toNumber(v.reviewCount),
+          isWeighted: toBoolean(v.isWeighted),
+          warrantyMonths: toNumber(v.warrantyMonths),
+          priorityOrder: toNumber(v.priorityOrder),
+          isDeleted: toBoolean(v.isDeleted),
+          images: v.images,
         })),
 
         // BOOLEAN
@@ -446,7 +491,11 @@ export class AdminProductController {
         warrantyMonths: toNumber(parsedData.warrantyMonths),
       };
 
-      console.log('🔥 FINAL DTO =>', dto);
+      console.log('🔥 FINAL DTO =>', {
+        ...dto,
+        customerType: dto.customerType,
+        variantCount: dto.variants?.length ?? 0,
+      });
 
       // =======================
       // 📤 UPLOAD HELPERS
@@ -552,7 +601,11 @@ export class AdminProductController {
 
       return ProductResponseMapper.map(product);
     } catch (err) {
-      await this.safeDeleteMany(uploadedUrls);
+      const reason = this.extractFailureReason(err);
+
+      console.error(`[ProductCreate] Rolling back ${uploadedUrls.length} uploaded file(s). Reason: ${reason}`);
+
+      await this.safeDeleteMany(uploadedUrls, reason);
 
       throw err;
     }
@@ -661,26 +714,19 @@ export class AdminProductController {
               : undefined;
 
           return {
-            ...v,
-
+            id: v.id,
+            name: v.name,
             purchasePrice: toNumber(v.purchasePrice),
-
             sellingPrice: toNumber(v.sellingPrice),
-
             mrp: toNumber(v.mrp),
-
             quantity: toNumber(v.quantity),
-
             averageRating: v.averageRating !== undefined ? toNumber(v.averageRating) : undefined,
-
             reviewCount: v.reviewCount !== undefined ? toNumber(v.reviewCount) : undefined,
-
             isWeighted: v.isWeighted !== undefined ? toBoolean(v.isWeighted) : undefined,
-
             warrantyMonths: v.warrantyMonths !== undefined ? toNumber(v.warrantyMonths) : undefined,
-
             attributes: parseJson(v.attributes, {}),
-
+            priorityOrder: toNumber(v.priorityOrder),
+            isDeleted: toBoolean(v.isDeleted),
             images: mappedImages,
           };
         }),
@@ -1207,15 +1253,50 @@ async exportByUpdatedAt(
 
   // ================= HELPERS =================
 
-  private async safeDelete(url: string) {
-    try {
-      await this.uploadUseCase.delete(url);
-    } catch {}
+  private extractFailureReason(err: any): string {
+    if (!err) {
+      return 'Unknown error';
+    }
+
+    if (typeof err.getResponse === 'function') {
+      const response = err.getResponse();
+
+      if (typeof response === 'object' && response?.message) {
+        if (Array.isArray(response.errors) && response.errors[0]?.message) {
+          return response.errors[0].message;
+        }
+
+        return String(response.message);
+      }
+
+      if (typeof response === 'string') {
+        return response;
+      }
+    }
+
+    if (err.code === 'P2002') {
+      return 'Duplicate SKU or unique constraint violation';
+    }
+
+    if (err.code === 'P2003') {
+      return 'Foreign key constraint violation';
+    }
+
+    return err.message || 'Product creation failed';
   }
 
-  private async safeDeleteMany(urls: string[]) {
+  private async safeDelete(url: string, reason?: string) {
+    try {
+      console.warn(`[ProductCreate] Deleting uploaded file: ${url}${reason ? ` (${reason})` : ''}`);
+      await this.uploadUseCase.delete(url);
+    } catch (deleteError) {
+      console.error(`[ProductCreate] Failed to delete uploaded file: ${url}`, deleteError);
+    }
+  }
+
+  private async safeDeleteMany(urls: string[], reason?: string) {
     for (const url of urls) {
-      await this.safeDelete(url);
+      await this.safeDelete(url, reason);
     }
   }
 }

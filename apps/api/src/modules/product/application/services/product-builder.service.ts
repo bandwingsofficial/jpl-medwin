@@ -7,6 +7,7 @@ import { ProductRepository } from '../../domain/repositories/product.repository'
 import { Product } from '../../domain/entities/product.entity';
 
 import { ProductType } from '../../domain/enums/product-type.enum';
+import { CustomerType } from '../../domain/enums/customer-type.enum';
 
 @Injectable()
 export class ProductBuilderService {
@@ -35,6 +36,10 @@ export class ProductBuilderService {
         shortDescription: input.shortDescription,
 
         longDescription: input.longDescription,
+
+        hsnCode: input.hsnCode ?? null,
+
+        customerType: input.customerType ?? CustomerType.DOCTOR,
 
         features: input.features ?? [],
 
@@ -73,11 +78,15 @@ export class ProductBuilderService {
 
       input.type ?? ProductType.VARIABLE,
 
+      input.customerType ?? CustomerType.DOCTOR,
+
+      input.hsnCode ?? null,
+
       input.categoryId,
 
       input.subCategoryId,
 
-      input.miniCategoryId,
+      input.miniCategoryId ?? null,
 
       input.brandId,
     );

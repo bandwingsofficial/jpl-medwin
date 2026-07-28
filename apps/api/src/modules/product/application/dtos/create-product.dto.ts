@@ -33,6 +33,10 @@ export class CreateProductDto {
 
   brandId?: string;
 
+  customerType?: string;
+
+  hsnCode?: string;
+
   shortDescription?: string;
 
   longDescription?: string;

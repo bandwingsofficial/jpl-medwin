@@ -54,6 +54,10 @@ export class ProductResponseMapper {
 
       type: product?.type ?? null,
 
+      customerType: product?.customerType ?? null,
+
+      hsnCode: product?.hsnCode ?? null,
+
       status: product?.status ?? null,
 
       currency: product?.currency ?? 'INR',
@@ -101,7 +105,7 @@ export class ProductResponseMapper {
       stock: {
         quantity: totalStock,
 
-        inStock: totalStock > 0,
+        inStock: product?.status === 'ACTIVE',
       },
 
       isWeighted: Boolean(product?.isWeighted),
@@ -188,8 +192,10 @@ export class ProductResponseMapper {
           stock: {
             quantity: Number(v?.quantity ?? 0),
 
-            inStock: Number(v?.quantity ?? 0) > 0,
+            inStock: v?.status === 'ACTIVE',
           },
+
+          priorityOrder: Number(v?.priorityOrder ?? 0),
 
           attributes: v?.attributes ?? {},
 

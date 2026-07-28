@@ -8,10 +8,14 @@ import { ProductRepository } from '../../domain/repositories/product.repository'
 import { ProductNotFoundException } from '../../domain/exceptions/product-not-found.exception';
 
 import { ProductSlugService } from '../services/product-slug.service';
-import { UpdateProductBuilderService } from '../services/update-product-builder.service';
+import {
+  UpdateProductBuilderService,
+  normalizeVariantsForProductType,
+} from '../services/update-product-builder.service';
 import { ProductGalleryService } from '../services/product-gallery.service';
 import { VariantSyncService } from '../services/variant-sync.service';
 import { ProductPriceService } from '../services/product-price.service';
+import { ProductValidationService } from '../services/product-validation.service';
 
 @Injectable()
 export class UpdateProductUseCase {
@@ -30,6 +34,8 @@ export class UpdateProductUseCase {
     private readonly variantSyncService: VariantSyncService,
 
     private readonly productPriceService: ProductPriceService,
+
+    private readonly validationService: ProductValidationService,
   ) {}
 
   async execute(input: any) {
@@ -42,10 +48,6 @@ export class UpdateProductUseCase {
     }
 
     return this.prisma.$transaction(async (tx) => {
-      // =======================
-      // 🔥 SLUG
-      // =======================
-
       let newSlug: string | undefined;
 
       if (input.slug) {
@@ -62,33 +64,43 @@ export class UpdateProductUseCase {
         );
       }
 
-      // =======================
-      // 🧱 APPLY UPDATE
-      // =======================
-
       const productChanged = this.updateProductBuilderService.update(product, input, newSlug);
 
       if (productChanged) {
+        await this.validationService.validate({
+          categoryId: product.categoryId,
+          subCategoryId: product.subCategoryId,
+          miniCategoryId: product.miniCategoryId,
+          brandId: product.brandId,
+        });
+
         await this.productRepo.update(product, tx);
       }
 
-      // =======================
-      // 🖼 PRODUCT IMAGES
-      // =======================
-
       await this.productGalleryService.sync(product, input, tx);
 
-      // =======================
-      // 🔄 VARIANTS
-      // =======================
+      const existingVariants = await this.variantSyncService.getActiveVariants(product.id, tx);
 
-      await this.variantSyncService.sync(product, input.variants, tx);
+      const normalizedVariants = normalizeVariantsForProductType({
+        product,
+        input,
+        existingVariants,
+      }).map((variant, index) => ({
+        ...variant,
+        priorityOrder: variant.priorityOrder ?? index,
+      }));
 
-      // =======================
-      // 💰 PRICE RANGE
-      // =======================
+      await this.variantSyncService.sync(product, normalizedVariants, tx);
 
       const activeVariants = await this.variantSyncService.getActiveVariants(product.id, tx);
+
+      if (activeVariants.length > 0) {
+        const defaultVariant =
+          activeVariants.find((variant) => variant.id === product.defaultVariantId) ||
+          activeVariants[0];
+
+        product.defaultVariantId = defaultVariant.id;
+      }
 
       this.productPriceService.calculatePriceRange(product, activeVariants);
 

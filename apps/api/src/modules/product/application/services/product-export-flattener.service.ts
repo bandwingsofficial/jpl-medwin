@@ -22,6 +22,8 @@ export class ProductExportFlattenerService {
 
           Brand: product.brand,
 
+          'HSN Code': product.hsnCode ?? '',
+
           Description: product.shortDescription ?? product.longDescription ?? '',
 
           Features: product.features?.filter(Boolean).join('\n') ?? '',

@@ -41,6 +41,10 @@ export type ParsedProduct = {
 
   brand: string;
 
+  customerType: string;
+
+  hsnCode?: string;
+
   type: 'SIMPLE' | 'VARIABLE';
 
   shortDescription: string;

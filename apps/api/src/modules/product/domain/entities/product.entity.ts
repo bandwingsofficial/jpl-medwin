@@ -1,5 +1,6 @@
 import { ProductStatus } from '../enums/product-status.enum';
 import { ProductType } from '../enums/product-type.enum';
+import { CustomerType } from '../enums/customer-type.enum';
 import { ProductInactiveException } from '../exceptions/product-inactive.exception';
 
 type Specification = { key: string; value: string };
@@ -13,11 +14,13 @@ export class Product {
     public name: string,
     public slug: string,
     public type: ProductType,
+    public customerType: CustomerType,
+    public hsnCode: string | null = null,
 
     // 🔗 Relations
     public categoryId: string,
     public subCategoryId: string,
-    public miniCategoryId: string,
+    public miniCategoryId: string | null,
     public brandId: string,
 
     // ⭐ Variant
@@ -105,10 +108,12 @@ export class Product {
     name?: string;
     slug?: string;
     type?: ProductType;
+    customerType?: CustomerType;
+    hsnCode?: string | null;
 
     categoryId?: string;
     subCategoryId?: string;
-    miniCategoryId?: string;
+    miniCategoryId?: string | null;
     brandId?: string;
 
     defaultVariantId?: string;
@@ -145,9 +150,17 @@ export class Product {
 
     if (params.type !== undefined) this.type = params.type;
 
+    if (params.customerType !== undefined) this.customerType = params.customerType;
+
+    if (params.hsnCode !== undefined) {
+      this.hsnCode = params.hsnCode?.trim() ? params.hsnCode.trim() : null;
+    }
+
     if (params.categoryId !== undefined) this.categoryId = params.categoryId;
     if (params.subCategoryId !== undefined) this.subCategoryId = params.subCategoryId;
-    if (params.miniCategoryId !== undefined) this.miniCategoryId = params.miniCategoryId;
+    if (params.miniCategoryId !== undefined) {
+      this.miniCategoryId = params.miniCategoryId;
+    }
     if (params.brandId !== undefined) this.brandId = params.brandId;
 
     if (params.defaultVariantId !== undefined) {

@@ -47,6 +47,13 @@ import { CreateBrandDto } from '../../application/dto/create-brand.dto';
 
 import { UpdateBrandDto } from '../../application/dto/update-brand.dto';
 
+import {
+  CheckBrandSkuPrefixQueryDto,
+  SuggestBrandSkuPrefixQueryDto,
+} from '../../application/dto/brand-sku-prefix-query.dto';
+
+import { BrandSkuPrefixService } from '../../domain/services/brand-sku-prefix.service';
+
 @Controller('admin/brands')
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(UserRole.ADMIN)
@@ -64,7 +71,35 @@ export class AdminBrandController {
 
     @Inject(TOKENS.BRAND_REPO)
     private readonly brandRepo: BrandRepository,
+
+    private readonly skuPrefixService: BrandSkuPrefixService,
   ) {}
+
+  // =======================
+  // 🔍 SKU PREFIX HELPERS
+  // =======================
+
+  @Get('check-sku-prefix')
+  async checkSkuPrefix(@Query() query: CheckBrandSkuPrefixQueryDto) {
+    const normalized = this.skuPrefixService.normalizePrefix(query.prefix);
+    const exists = await this.skuPrefixService.isTaken(normalized, query.excludeId);
+
+    return {
+      skuPrefix: normalized,
+      exists,
+      available: !exists,
+    };
+  }
+
+  @Get('suggest-sku-prefix')
+  async suggestSkuPrefix(@Query() query: SuggestBrandSkuPrefixQueryDto) {
+    const skuPrefix = await this.skuPrefixService.resolveUniquePrefix(
+      query.name,
+      query.excludeId,
+    );
+
+    return { skuPrefix };
+  }
 
   // =======================
   // ✨ CREATE

@@ -11,6 +11,8 @@ export interface BrandRepository {
 
   findByName(name: string): Promise<Brand | null>;
 
+  findBySkuPrefix(skuPrefix: string): Promise<Brand | null>;
+
   // 🔥 RESTORE SUPPORT
   findBySlugIncludingDeleted(slug: string): Promise<Brand | null>;
 
@@ -21,6 +23,8 @@ export interface BrandRepository {
   // =======================
 
   existsBySlug(slug: string): Promise<boolean>;
+
+  existsBySkuPrefix(skuPrefix: string, excludeId?: string): Promise<boolean>;
 
   // =======================
   // ✍️ WRITE

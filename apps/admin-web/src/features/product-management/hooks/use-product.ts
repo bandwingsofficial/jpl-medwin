@@ -10,6 +10,8 @@ import { AxiosError } from "axios";
 
 import { productApi } from "@/infrastructure/api/product.api";
 
+import { extractApiError } from "@/shared/lib/extract-api-error";
+
 import {
   CreateProductPayload,
   Product,
@@ -210,19 +212,10 @@ export const useProduct = (
         });
       },
 
-      onError: (
-        err: AxiosError<any>
-      ) => {
+      onError: (err: AxiosError<any>) => {
+        const parsed = extractApiError(err);
 
-        const message =
-          err.response?.data
-            ?.message ||
-          "Failed to create product";
-
-        console.error(
-          "❌ CREATE PRODUCT ERROR:",
-          message
-        );
+        console.error("❌ CREATE PRODUCT ERROR:", parsed.message, parsed.errors);
       },
     });
 
@@ -805,3 +798,24 @@ export const useProduct = (
     restoreProduct,
   };
 };
+
+export function useProductById(productId?: string) {
+  return useQuery<SingleProductResponse>({
+    queryKey: PRODUCT_KEYS.detail(productId || ""),
+
+    queryFn: async () => {
+      const res = await productApi.getById(productId || "");
+      return res.data;
+    },
+
+    enabled: !!productId,
+
+    staleTime: 1000 * 60 * 5,
+
+    gcTime: 1000 * 60 * 10,
+
+    retry: 2,
+
+    refetchOnWindowFocus: false,
+  });
+}

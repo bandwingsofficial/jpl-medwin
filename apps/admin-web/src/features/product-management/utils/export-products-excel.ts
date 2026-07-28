@@ -33,6 +33,10 @@ export const exportProductsToExcel = (
         product.brand?.name ||
         "-",
 
+      "HSN Code":
+        product.hsnCode ||
+        "-",
+
       Category:
         product.category?.name ||
         "-",

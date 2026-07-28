@@ -412,6 +412,7 @@ model Brand {
 
   name            String
   slug            String   @unique
+  skuPrefix       String   @unique
 
   imageUrl        String?   // ✅ added
 
@@ -434,6 +435,7 @@ model Brand {
   @@index([status])
   @@index([createdAt])
   @@index([deletedAt])
+  @@index([skuPrefix])
 }
 
 
@@ -442,6 +444,11 @@ model Brand {
 enum ProductType {
   SIMPLE
   VARIABLE
+}
+
+enum CustomerType {
+  DOCTOR
+  HOSPITAL
 }
 
 enum ImageOwnerType {
@@ -467,19 +474,21 @@ model Product {
   // 🔗 Relations
   categoryId       String
   subCategoryId    String
-  miniCategoryId   String
+  miniCategoryId   String?
   brandId          String
 
   category     Category     @relation("CategoryProducts", fields: [categoryId], references: [id])
   subCategory  SubCategory  @relation("SubCategoryProducts", fields: [subCategoryId], references: [id])
-  miniCategory MiniCategory @relation("MiniCategoryProducts", fields: [miniCategoryId], references: [id])
+  miniCategory MiniCategory? @relation("MiniCategoryProducts", fields: [miniCategoryId], references: [id])
   brand        Brand        @relation("BrandProducts", fields: [brandId], references: [id])
 
   // 🧾 Basic Info
   name             String
   slug             String
+  hsnCode          String?
 
   type             ProductType  @default(VARIABLE)
+  customerType     CustomerType @default(DOCTOR)
 
   // ⭐ Default Variant
   defaultVariantId String?
@@ -536,6 +545,7 @@ model Product {
   @@index([subCategoryId])
   @@index([miniCategoryId])
   @@index([brandId])
+  @@index([customerType])
   @@index([slug])
   @@index([status])
   @@index([deletedAt])
@@ -565,6 +575,9 @@ model Variant {
 
   // 📦 Inventory
   quantity        Int @default(0)
+
+  // 📋 Display order (does not affect SKU)
+  priorityOrder   Int @default(0)
 
   // ⚙️ Attributes
   attributes      Json?
@@ -598,6 +611,15 @@ warrantyMonths  Int?
 
   // 🔥 IMPORTANT PERFORMANCE INDEX
   @@index([productId, deletedAt])
+  @@index([productId, priorityOrder])
+}
+
+// ================= SKU SEQUENCE =================
+
+model SkuSequence {
+  customerType CustomerType @id
+  lastSequence Int          @default(0)
+  updatedAt    DateTime     @updatedAt
 }
 
 // ================= PRODUCT IMAGE =================

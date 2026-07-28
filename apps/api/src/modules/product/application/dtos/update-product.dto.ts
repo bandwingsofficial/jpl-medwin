@@ -141,6 +141,11 @@ export class UpdateProductDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(20)
+  hsnCode?: string;
+
+  @IsOptional()
+  @IsString()
   shortDescription?: string;
 
   @IsOptional()

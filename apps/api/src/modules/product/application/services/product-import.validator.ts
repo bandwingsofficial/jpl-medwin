@@ -6,6 +6,8 @@ import {
   ProductImportValidationError,
 } from '../types/product-import.types';
 
+import { parseCustomerType } from '../../domain/enums/customer-type.enum';
+
 @Injectable()
 export class ProductImportValidatorService {
   // =======================
@@ -16,8 +18,6 @@ export class ProductImportValidatorService {
     const errors: ProductImportValidationError[] = [];
 
     const productNames = new Set<string>();
-
-    const skus = new Set<string>();
 
     products.forEach((product, index) => {
       const row = index + 1;
@@ -49,6 +49,14 @@ export class ProductImportValidatorService {
 
       productNames.add(normalizedName);
 
+      if (!parseCustomerType(product.customerType)) {
+        errors.push({
+          row,
+          product: product.name,
+          reason: 'Customer Type must be Doctor or Hospital',
+        });
+      }
+
       // =======================
       // VARIANTS
       // =======================
@@ -68,7 +76,7 @@ export class ProductImportValidatorService {
       // =======================
 
       product.variants.forEach((variant: ParsedVariant, variantIndex) => {
-        this.validateVariant(variant, variantIndex, row, product.name, skus, errors);
+        this.validateVariant(variant, variantIndex, row, product.name, errors);
       });
     });
 
@@ -90,47 +98,8 @@ export class ProductImportValidatorService {
     variantIndex: number,
     row: number,
     productName: string,
-    skus: Set<string>,
     errors: ProductImportValidationError[],
   ) {
-    // SKU
-
-    if (!variant.sku) {
-      errors.push({
-        row,
-        product: productName,
-        reason: `Variant SKU missing at position ${variantIndex + 1}`,
-      });
-
-      return;
-    }
-
-    const normalizedSku = variant.sku.trim().toUpperCase();
-
-    // SKU FORMAT
-
-    if (!/^[A-Z0-9-]+$/.test(normalizedSku)) {
-      errors.push({
-        row,
-        product: productName,
-        sku: variant.sku,
-        reason: 'Invalid SKU format',
-      });
-    }
-
-    // DUPLICATE SKU
-
-    if (skus.has(normalizedSku)) {
-      errors.push({
-        row,
-        product: productName,
-        sku: variant.sku,
-        reason: 'Duplicate SKU found in Excel',
-      });
-    }
-
-    skus.add(normalizedSku);
-
     // VARIANT NAME
 
     if (!variant.name) {

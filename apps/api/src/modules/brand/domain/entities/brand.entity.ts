@@ -7,6 +7,7 @@ export class Brand {
 
     public name: string,
     public slug: string,
+    public skuPrefix: string,
     public imageUrl?: string,
 
     public description?: string,
@@ -58,11 +59,13 @@ export class Brand {
   updateDetails(params: {
     name?: string;
     slug?: string;
+    skuPrefix?: string;
     description?: string;
     metaDescription?: string;
   }) {
     if (params.name !== undefined) this.name = params.name;
     if (params.slug !== undefined) this.slug = params.slug;
+    if (params.skuPrefix !== undefined) this.skuPrefix = params.skuPrefix;
     if (params.description !== undefined) this.description = params.description;
     if (params.metaDescription !== undefined) this.metaDescription = params.metaDescription;
 

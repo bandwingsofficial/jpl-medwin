@@ -11,6 +11,8 @@ import { BrandRepository } from '@/modules/brand/domain/repositories/brand.repos
 
 import { ParsedProduct } from '../types/product-import.types';
 
+import { parseCustomerType } from '../../domain/enums/customer-type.enum';
+
 import {
   isPlaceholderImageUrl,
   mergeProductImageBundle,
@@ -57,21 +59,23 @@ export class ProductImportResolverService {
       throw new Error(`Sub category '${product.subCategory}' not found under '${category.name}'`);
     }
 
-    const miniCategory = await this.miniCategoryRepo.findByNameAndSubCategory(
-      product.miniCategory,
-      subCategory.id,
-    );
-
-    if (!miniCategory) {
-      throw new Error(
-        `Mini category '${product.miniCategory}' not found under '${subCategory.name}'`,
-      );
-    }
+    const miniCategory = product.miniCategory
+      ? await this.miniCategoryRepo.findByNameAndSubCategory(
+          product.miniCategory,
+          subCategory.id,
+        )
+      : null;
 
     const brand = await this.brandRepo.findByName(product.brand);
 
     if (!brand) {
       throw new Error(`Brand '${product.brand}' not found`);
+    }
+
+    const customerType = parseCustomerType(product.customerType);
+
+    if (!customerType) {
+      throw new Error(`Invalid customer type '${product.customerType}' for product '${product.name}'`);
     }
 
     const resolvedImages = await this.resolveImportImages(product);
@@ -81,13 +85,17 @@ export class ProductImportResolverService {
 
       type: product.type,
 
+      customerType,
+
       categoryId: category.id,
 
       subCategoryId: subCategory.id,
 
-      miniCategoryId: miniCategory.id,
+      miniCategoryId: miniCategory?.id ?? null,
 
       brandId: brand.id,
+
+      hsnCode: product.hsnCode || undefined,
 
       shortDescription: product.shortDescription,
 
@@ -117,8 +125,6 @@ export class ProductImportResolverService {
       })),
 
       variants: resolvedImages.variants.map((variant) => ({
-        sku: variant.sku,
-
         name: variant.name,
 
         purchasePrice: variant.purchasePrice,

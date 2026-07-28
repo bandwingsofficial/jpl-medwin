@@ -90,7 +90,10 @@ export default function BrandTable({
     const brandsList = data ?? [];
     
     return brandsList.filter((brand) => {
-      const matchesSearch = brand.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const query = searchQuery.toLowerCase();
+      const matchesSearch =
+        brand.name.toLowerCase().includes(query) ||
+        (brand.skuPrefix || "").toLowerCase().includes(query);
       const matchesStatus = statusFilter === "ALL" ? true : brand.status === statusFilter;
       
       return matchesSearch && matchesStatus;
@@ -154,7 +157,7 @@ export default function BrandTable({
         <div className="relative flex-1 min-w-[240px]">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search by brand name..."
+            placeholder="Search by brand name or SKU prefix..."
             className="pl-9 bg-gray-50/50 border-gray-200 text-sm h-9"
             value={searchQuery}
             onChange={(e) => handleFilterChange("search", e.target.value)}
@@ -197,6 +200,7 @@ export default function BrandTable({
             <TableHeader>
               <TableRow>
                 <TableHead>Brand</TableHead>
+                <TableHead>SKU Prefix</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Created</TableHead>
                 {/* 👉 FIX 1: Forced text alignment rules inside TableHead to clean layout boundaries */}
@@ -226,6 +230,12 @@ export default function BrandTable({
                           {brand.name}
                         </span>
                       </div>
+                    </TableCell>
+
+                    <TableCell>
+                      <span className="font-mono text-xs font-semibold text-gray-700">
+                        {brand.skuPrefix || "—"}
+                      </span>
                     </TableCell>
 
                     {/* STATUS BADGE */}

@@ -19,6 +19,10 @@ export class ProductExportMapperService {
 
         brand: product.brand?.name ?? '',
 
+        customerType: product.customerType ?? 'DOCTOR',
+
+        hsnCode: product.hsnCode ?? '',
+
         type: product.variants.length > 1 ? 'VARIABLE' : 'SIMPLE',
 
         shortDescription: product.shortDescription ?? '',

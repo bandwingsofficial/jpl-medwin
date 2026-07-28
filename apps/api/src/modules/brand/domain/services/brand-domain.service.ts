@@ -5,6 +5,7 @@ import { BrandRepository } from '../repositories/brand.repository';
 import { Brand } from '../entities/brand.entity';
 
 import { BrandSlugExistsException } from '../exceptions/brand-slug-exists.exception';
+import { BrandSkuPrefixExistsException } from '../exceptions/brand-sku-prefix-exists.exception';
 
 @Injectable()
 export class BrandDomainService {
@@ -78,6 +79,22 @@ export class BrandDomainService {
 
     if (existing && existing.id !== currentBrandId) {
       throw new BrandSlugExistsException({ slug });
+    }
+  }
+
+  async validateBrandSkuPrefixForUpdate(skuPrefix: string, currentBrandId: string): Promise<void> {
+    const exists = await this.brandRepo.existsBySkuPrefix(skuPrefix, currentBrandId);
+
+    if (exists) {
+      throw new BrandSkuPrefixExistsException({ skuPrefix });
+    }
+  }
+
+  async validateBrandSkuPrefix(skuPrefix: string): Promise<void> {
+    const exists = await this.brandRepo.existsBySkuPrefix(skuPrefix);
+
+    if (exists) {
+      throw new BrandSkuPrefixExistsException({ skuPrefix });
     }
   }
 }

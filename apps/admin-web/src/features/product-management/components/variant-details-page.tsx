@@ -423,12 +423,12 @@ export function VariantDetailsPage(
 
                 <Badge
                   variant={
-                    variant.stock?.inStock
+                    variant.status === "ACTIVE"
                       ? "success"
                       : "danger"
                   }
                 >
-                  {variant.stock?.quantity}
+                  {variant.stock?.quantity ?? 0}
                 </Badge>
 
               </div>
@@ -441,9 +441,9 @@ export function VariantDetailsPage(
 
                 <span className="font-medium text-gray-900">
 
-                  {variant.stock?.inStock
-                    ? "In Stock"
-                    : "Out of Stock"}
+                  {variant.status === "ACTIVE"
+                    ? "Available"
+                    : "Unavailable"}
 
                 </span>
 

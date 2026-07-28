@@ -1,5 +1,6 @@
 import { ProductStatus } from '../enums/product-status.enum';
 import { VariantOutOfStockException } from '../exceptions/variant-out-of-stock.exception';
+import { ProductPricingValidator } from '../../application/services/product-pricing.validator';
 
 export class Variant {
   constructor(
@@ -31,6 +32,9 @@ export class Variant {
     // ⚖️ Extra
     public isWeighted: boolean = false,
     public warrantyMonths: number | null = null,
+
+    // 📋 Display order
+    public priorityOrder: number = 0,
 
     // 📊 Status
     public status: ProductStatus = ProductStatus.ACTIVE,
@@ -66,7 +70,7 @@ export class Variant {
   }
 
   isInStock(): boolean {
-    return this.quantity > 0;
+    return this.isActive();
   }
 
   ensureActive() {
@@ -129,6 +133,8 @@ export class Variant {
     isWeighted?: boolean;
 
     warrantyMonths?: number | null;
+
+    priorityOrder?: number;
   }) {
     if (this.isDeleted()) {
       throw new Error('Cannot update deleted variant');
@@ -156,19 +162,21 @@ export class Variant {
 
     // ================= PRICING =================
 
-    if (data.purchasePrice !== undefined) {
-      this.purchasePrice = data.purchasePrice;
-    }
+    if (
+      data.purchasePrice !== undefined ||
+      data.sellingPrice !== undefined ||
+      data.mrp !== undefined
+    ) {
+      const pricing = ProductPricingValidator.validate({
+        purchasePrice: data.purchasePrice ?? this.purchasePrice,
+        sellingPrice: data.sellingPrice ?? this.sellingPrice,
+        mrp: data.mrp ?? this.mrp,
+      });
 
-    if (data.sellingPrice !== undefined) {
-      this.sellingPrice = data.sellingPrice;
+      this.purchasePrice = pricing.purchasePrice;
+      this.sellingPrice = pricing.sellingPrice;
+      this.mrp = pricing.mrp;
     }
-
-    if (data.mrp !== undefined) {
-      this.mrp = data.mrp;
-    }
-
-    this.validatePricing();
 
     // ================= QUANTITY =================
 
@@ -204,6 +212,10 @@ export class Variant {
 
     if (data.warrantyMonths !== undefined) {
       this.warrantyMonths = data.warrantyMonths;
+    }
+
+    if (data.priorityOrder !== undefined) {
+      this.priorityOrder = data.priorityOrder;
     }
 
     this.touch();
@@ -244,13 +256,11 @@ export class Variant {
   }
 
   private validatePricing() {
-    if (this.purchasePrice < 0 || this.sellingPrice < 0 || this.mrp < 0) {
-      throw new Error('Price cannot be negative');
-    }
-
-    if (this.sellingPrice > this.mrp) {
-      throw new Error('Selling price cannot exceed MRP');
-    }
+    ProductPricingValidator.validate({
+      purchasePrice: this.purchasePrice,
+      sellingPrice: this.sellingPrice,
+      mrp: this.mrp,
+    });
   }
 
   // ================= RATING =================

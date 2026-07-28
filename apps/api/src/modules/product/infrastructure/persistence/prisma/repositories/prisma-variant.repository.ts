@@ -78,7 +78,7 @@ export class PrismaVariantRepository implements VariantRepository {
         productId,
         ...(includeDeleted ? {} : { deletedAt: null }),
       },
-      orderBy: { createdAt: 'asc' }, // 🔥 consistent
+      orderBy: [{ priorityOrder: 'asc' }, { createdAt: 'asc' }],
     });
 
     return data.map((v) => ProductMapper.toDomainVariant(v));
