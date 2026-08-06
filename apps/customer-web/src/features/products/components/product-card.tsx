@@ -42,7 +42,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const stockQuantity =
     typeof variant?.stock === 'number' ? variant.stock : variant?.stock?.quantity || 0;
 
-  const isInStock = stockQuantity > 0;
+  const isInStock = true;
 
   const mrp = variant?.pricing?.mrp || product.price.max || 0;
 

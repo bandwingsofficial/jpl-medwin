@@ -120,10 +120,7 @@ const isWishlistLoading =
     selectedVariant?.stock
       ?.quantity || 0;
 
-  const isInStock =
-    selectedVariant?.stock
-      ?.inStock || false;
-
+ const isInStock = true;
   /*
    |--------------------------------------------------------------------------
    | FIND CART ITEM
