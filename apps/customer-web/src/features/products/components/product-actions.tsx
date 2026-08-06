@@ -15,7 +15,8 @@ import {
 } from "@/features/products/types/product.type";
 
 import { useAddToCart } from "@/features/cart/hooks/use-add-to-cart";
-import { useAuth } from "@/features/auth/hooks/use-auth";import { useAuthGuard } from "@/features/auth/hooks/use-auth-guard";
+import { useAuth } from "@/features/auth/hooks/use-auth";
+import { useAuthGuard } from "@/features/auth/hooks/use-auth-guard";
 
 import { useWishlist } from "@/features/wishlist/hooks/use-wishlist";
 
@@ -329,36 +330,23 @@ const isWishlistLoading =
    |--------------------------------------------------------------------------
    */
 
- const handleWishlist =
-  async (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    e.preventDefault();
+ const handleWishlist = async (
+  e: React.MouseEvent<HTMLButtonElement>
+) => {
+  e.preventDefault();
+  e.stopPropagation();
 
-    e.stopPropagation();
-
-    if (!requireAuth()) {
+  try {
+    if (isWishlisted) {
+      await removeFromWishlist(product.id);
       return;
     }
 
-    try {
-      if (
-        isWishlisted
-      ) {
-        await removeFromWishlist(
-          product.id
-        );
-
-        return;
-      }
-
-      await addToWishlist(
-        product
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    await addToWishlist(product);
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <div className="space-y-5">
