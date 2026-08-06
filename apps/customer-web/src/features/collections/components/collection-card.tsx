@@ -40,7 +40,7 @@ export function CollectionCard({
           <img
             src={
               collection.imageUrl ||
-              "/images/collection-placeholder.png"
+              "/Logo/jpl_logo.png"
             }
             alt={collection.name}
             className="

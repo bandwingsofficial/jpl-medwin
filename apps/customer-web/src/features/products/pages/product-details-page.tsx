@@ -13,6 +13,7 @@ import { ProductHeaderInfo } from "@/features/products/components/ProductHeaderI
 import { ProductCommercialDetails } from "@/features/products/components/ProductCommercialDetails";
 import { ProductSpecifications } from "@/features/products/components/product-specifications";
 import { ProductVariantSelector } from "@/features/products/components/product-variant-selector";
+import { ProductBuyBox } from "@/features/products/components/ProductBuyBox";
 
 import { useProductDetails } from "@/features/products/hooks/use-product-details";
 
@@ -23,28 +24,10 @@ interface ProductDetailsPageProps {
 export function ProductDetailsPage({
   productSlug,
 }: ProductDetailsPageProps) {
-  /*
-   |--------------------------------------------------------------------------
-   | API
-   |--------------------------------------------------------------------------
-   */
-
   const { data, isLoading, isError, error } = useProductDetails(productSlug);
   const product = data?.data;
 
-  /*
-   |--------------------------------------------------------------------------
-   | VARIANT STATE
-   |--------------------------------------------------------------------------
-   */
-
   const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
-
-  /*
-   |--------------------------------------------------------------------------
-   | SELECTED VARIANT
-   |--------------------------------------------------------------------------
-   */
 
   const selectedVariant = useMemo<ProductVariant | null>(() => {
     if (!product?.variants?.length) {
@@ -57,19 +40,8 @@ export function ProductDetailsPage({
     );
   }, [product?.variants, selectedVariantId]);
 
-  /*
-   |--------------------------------------------------------------------------
-   | PRICING CALCULATION FOR MOBILE STICKY BAR
-   |--------------------------------------------------------------------------
-   */
   const mrp = selectedVariant?.pricing?.mrp || product?.price?.max || 0;
   const sellingPrice = selectedVariant?.pricing?.sellingPrice || product?.price?.min || 0;
-
-  /*
-   |--------------------------------------------------------------------------
-   | LOADING / ERROR STATES
-   |--------------------------------------------------------------------------
-   */
 
   if (isLoading) {
     return <ProductDetailsSkeleton />;
@@ -102,10 +74,6 @@ export function ProductDetailsPage({
         lg:bg-transparent
       "
     >
-      {/* ====================================================== */}
-      {/* TOP SECTION */}
-      {/* ====================================================== */}
-
       <div
         className="
           grid
@@ -171,7 +139,7 @@ export function ProductDetailsPage({
             lg:gap-6
           "
         >
-          {/* 1. HEADER INFO (Brand, Title, Delivery, Ratings) */}
+          {/* 1. HEADER INFO */}
           <div className="order-1 lg:order-none">
             <ProductHeaderInfo
               product={product}
@@ -190,17 +158,25 @@ export function ProductDetailsPage({
             </div>
           )}
 
-          {/* 3. ACTIONS (ADD TO CART) - DESKTOP VIEW */}
+          {/* 3. BUY BOX (Price, Stock & Actions / Add to Cart + Wishlist) - DESKTOP VIEW */}
           <div className="order-3 lg:order-none hidden lg:block">
-            <ProductActions
+            <ProductBuyBox
               product={product}
               selectedVariant={selectedVariant}
             />
           </div>
 
-          {/* 4. COMMERCIAL DETAILS (Pricing, Stock, Specifications, Features) */}
+          {/* 4. COMMERCIAL DETAILS (Delivery, Short Description, Features) */}
           <div className="order-4 lg:order-none flex flex-col gap-5 lg:gap-0">
             <ProductCommercialDetails
+              product={product}
+              selectedVariant={selectedVariant}
+            />
+          </div>
+
+          {/* BUY BOX FOR MOBILE VIEW PLACED INSIDE RIGHT FLOW IF NEEDED OR HANDLED BY STICKY BAR */}
+          <div className="order-5 lg:hidden mt-2">
+            <ProductBuyBox
               product={product}
               selectedVariant={selectedVariant}
             />
@@ -208,10 +184,7 @@ export function ProductDetailsPage({
         </div>
       </div>
 
-      {/* ====================================================== */}
       {/* BOTTOM SECTION */}
-      {/* ====================================================== */}
-
       <div
         className="
           mt-6 
@@ -232,7 +205,6 @@ export function ProductDetailsPage({
           lg:bg-transparent
         "
       >
-        {/* DESCRIPTION */}
         <ProductDescription
           descriptions={product.descriptions}
           packing={product.packing || []}
@@ -241,19 +213,15 @@ export function ProductDetailsPage({
           faq={product.faq || []}
         />
 
-        {/* SPECIFICATIONS */}
         <ProductSpecifications specifications={product.specifications || []} />
 
-        {/* RELATED PRODUCTS */}
         <RelatedProducts
           currentProductId={product.id}
           categoryId={product.category?.id}
         />
       </div>
 
-      {/* ====================================================== */}
-      {/* PREMIUM STICKY MOBILE BOTTOM BAR (PRICE + HIGH-CONVERSION CTA) */}
-      {/* ====================================================== */}
+      {/* PREMIUM STICKY MOBILE BOTTOM BAR */}
       <div
         className="
           fixed
@@ -273,7 +241,6 @@ export function ProductDetailsPage({
         "
       >
         <div className="mx-auto flex max-w-md items-center justify-between gap-3">
-          {/* PRICE PREVIEW */}
           <div className="flex flex-col">
             <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
               Total Price
@@ -290,7 +257,6 @@ export function ProductDetailsPage({
             </div>
           </div>
 
-          {/* ACTION BUTTON WRAPPER */}
           <div className="flex-1 max-w-[220px]">
             <ProductActions
               product={product}

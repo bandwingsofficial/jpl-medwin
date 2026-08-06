@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-
+import { useState } from "react";
 import { Spinner } from "@/shared/components/ui/spinner";
 import { useCollection } from "@/features/collections/hooks/use-collection";
 
@@ -12,6 +12,31 @@ interface CollectionMegaMenuProps {
 }
 
 const PLACEHOLDER_IMAGE = "/images/product-placeholder.png";
+function ProductImage({
+  src,
+  alt,
+}: {
+  src: string;
+  alt: string;
+}) {
+  const [imageSrc, setImageSrc] = useState(src);
+
+  return (
+    <Image
+      src={imageSrc}
+      alt={alt}
+      fill
+      onError={() => setImageSrc("/Logo/jpl_logo.png")}
+      className="
+        object-contain
+        p-1
+        transition-transform
+        duration-500
+        group-hover:scale-105
+      "
+    />
+  );
+}
 
 export function CollectionMegaMenu({
   collectionId,
@@ -163,18 +188,10 @@ export function CollectionMegaMenu({
                         "
                       >
 
-                        <Image
-                          src={image}
-                          alt={product.name}
-                          fill
-                          className="
-                            object-contain
-                            p-1
-                            transition-transform
-                            duration-500
-                            group-hover:scale-105
-                          "
-                        />
+                        <ProductImage
+  src={image}
+  alt={product.name}
+/>
 
                       </div>
 

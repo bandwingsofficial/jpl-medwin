@@ -547,8 +547,8 @@ export function ContactUsPage() {
               </h2>
               <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#475569", lineHeight: 1.75, fontWeight: 300 }}>
                 <strong style={{ color: "#0F172A", fontWeight: 600, display: "block", marginBottom: 4 }}>JPL Markwin Private Limited</strong>
-                Chattarpur, New Delhi,<br />
-                India – 110074
+                117/115A, Kamal Tower, Bommasandra Industrial Area,<br />
+                Bangalore - 560099
               </div>
             </div>
 
@@ -577,7 +577,7 @@ export function ContactUsPage() {
             <div className="ct-map-overlay" />
             <div className="ct-map-pin">
               <div className="ct-pin-dot" />
-              <div className="ct-pin-label">Chattarpur, New Delhi</div>
+              <div className="ct-pin-label">Bommasandra , Bangalore</div>
             </div>
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-
+import { useState } from "react";
 import { Heart, Loader2, Minus, Plus, ShoppingCart, Star } from 'lucide-react';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -55,6 +55,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const productImage =
     variant?.images?.main?.trim() || product.images?.main?.trim() || PLACEHOLDER_IMAGE;
+    const [imageSrc, setImageSrc] = useState(productImage);
 
   const { mutateAsync: updateCartItem, isPending: isUpdatingCart } = useMutation({
     mutationFn: ({
@@ -277,22 +278,23 @@ export function ProductCard({ product }: ProductCardProps) {
             "
           >
             <Image
-              src={productImage}
-              alt={product.name}
-              fill
-              sizes="
-                (max-width: 768px) 50vw,
-                (max-width: 1200px) 25vw,
-                20vw
-              "
-              className="
-                object-contain
-                object-center
-                transition-transform
-                duration-300
-                group-hover:scale-105
-              "
-            />
+  src={imageSrc}
+  alt={product.name}
+  fill
+  sizes="
+    (max-width: 768px) 50vw,
+    (max-width: 1200px) 25vw,
+    20vw
+  "
+  onError={() => setImageSrc("/Logo/jpl_logo.png")}
+  className="
+    object-contain
+    object-center
+    transition-transform
+    duration-300
+    group-hover:scale-105
+  "
+/>
           </div>
         </div>
 
