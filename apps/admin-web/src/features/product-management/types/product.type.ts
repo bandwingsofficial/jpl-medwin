@@ -432,11 +432,19 @@ export interface Product {
 // =========================================
 
 export interface ProductFilters {
+  // Search
   search?: string;
+
+  // Filters
   categoryId?: string;
   subCategoryId?: string;
   miniCategoryId?: string;
   brandId?: string;
+
   status?: ProductStatus;
   type?: ProductType;
+
+  // Pagination
+  page?: number;
+  limit?: number;
 }
