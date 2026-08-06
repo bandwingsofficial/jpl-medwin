@@ -1,0 +1,21 @@
+{
+  "name": "jpl-medwin",
+  "private": true,
+  "packageManager": "pnpm@10.27.0",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "dev:admin": "pnpm --filter admin-web dev",
+    "dev:customer": "pnpm --filter customer-web dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean"
+  },
+  "devDependencies": {
+    "axios": "^1.15.0",
+    "eslint": "^9.39.4",
+    "prettier": "^3.8.3",
+    "tailwindcss": "^4.2.2",
+    "turbo": "^2.0.0",
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,0 +1,219 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 🎨 Design tokens */
+:root {
+  --background: 1 0 0;
+  --foreground: 0.145 0 0;
+
+  --card: 1 0 0;
+  --card-foreground: 0.145 0 0;
+
+  --popover: 1 0 0;
+  --popover-foreground: 0.145 0 0;
+
+  --primary: 0.205 0 0;
+  --primary-foreground: 0.985 0 0;
+
+  --secondary: 0.97 0 0;
+  --secondary-foreground: 0.205 0 0;
+
+  --muted: 0.97 0 0;
+  --muted-foreground: 0.556 0 0;
+
+  --accent: 0.97 0 0;
+  --accent-foreground: 0.205 0 0;
+
+  --destructive: 0.577 0.245 27.325;
+
+  --border: 0.922 0 0;
+  --input: 0.922 0 0;
+  --ring: 0.708 0 0;
+
+  --radius: 0.625rem;
+}
+
+/* 🌙 Dark mode */
+.dark {
+  --background: 0.145 0 0;
+  --foreground: 0.985 0 0;
+
+  --card: 0.205 0 0;
+  --card-foreground: 0.985 0 0;
+
+  --popover: 0.205 0 0;
+  --popover-foreground: 0.985 0 0;
+
+  --primary: 0.922 0 0;
+  --primary-foreground: 0.205 0 0;
+
+  --secondary: 0.269 0 0;
+  --secondary-foreground: 0.985 0 0;
+
+  --muted: 0.269 0 0;
+  --muted-foreground: 0.708 0 0;
+
+  --accent: 0.269 0 0;
+  --accent-foreground: 0.985 0 0;
+
+  --destructive: 0.704 0.191 22.216;
+
+  --border: 1 0 0 / 10%;
+  --input: 1 0 0 / 15%;
+  --ring: 0.556 0 0;
+}
+
+/* 🧱 Base styles */
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    @apply font-sans;
+  }
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink {
+  from, to { border-color: transparent }
+  50% { border-color: white; }
+}
+
+.animate-typing {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid;
+  animation: typing 2s steps(12, end) infinite alternate, blink 0.5s step-end infinite;
+}
+
+ @keyframes pulse-draw {
+          0% {
+            stroke-dashoffset: 1;
+          }
+          55% {
+            stroke-dashoffset: 0;
+          }
+          100% {
+            stroke-dashoffset: -1;
+          }
+        }
+
+
+
+@keyframes lineMove {
+  0% {
+    transform: translateX(-60px);
+  }
+  100% {
+    transform: translateX(180px);
+  }
+}
+
+.animate-line {
+  animation: lineMove 2.8s linear infinite;
+}
+
+/* ===========================
+   Premium Typewriter Effect
+=========================== */
+
+.typewriter-text {
+  position: relative;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgb(66, 73, 84);
+
+  opacity: 1;
+  filter: blur(0);
+
+  animation: placeholderFocus .18s ease;
+}
+
+/* Blur -> Clear */
+
+@keyframes placeholderFocus {
+  from {
+    opacity: .55;
+    filter: blur(4px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+/* Premium Shine */
+
+.typewriter-text::after {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    110deg,
+    transparent 0%,
+    rgba(255,255,255,.85) 48%,
+    transparent 100%
+  );
+
+  transform: translateX(-140%);
+  animation: placeholderShine 2.8s ease-in-out infinite;
+
+  pointer-events: none;
+}
+
+@keyframes placeholderShine {
+  0% {
+    transform: translateX(-140%);
+  }
+
+  45% {
+    transform: translateX(-140%);
+  }
+
+  100% {
+    transform: translateX(140%);
+  }
+}
+
+/* Cursor */
+
+.typewriter-cursor {
+  color: rgb(11, 47, 44);
+
+  animation: cursorBlink .9s ease-in-out infinite;
+}
+
+@keyframes cursorBlink {
+  0%,45% {
+    opacity: 1;
+  }
+
+  46%,100% {
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-250%);
+  }
+
+  100% {
+    transform: translateX(500%);
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 6s linear infinite;
+}

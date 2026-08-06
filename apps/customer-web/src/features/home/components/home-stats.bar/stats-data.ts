@@ -1,0 +1,55 @@
+import {
+  Microscope,
+  ShieldPlus,
+  Package2,
+  Stethoscope,
+  LayoutGrid,
+} from "lucide-react";
+
+export const STATS = [
+  {
+    id: 1,
+    title: "ENDODONTICS",
+    subtitle: "Precision & Performance",
+    icon: Microscope,
+    href: "/categories/endodontics",
+    color: "text-sky-600",
+    bg: "bg-sky-50",
+  },
+  {
+    id: 2,
+    title: "RESTORATIVE",
+    subtitle: "Excellence in Care",
+    icon: ShieldPlus,
+    href: "/categories/restorative",
+    color: "text-emerald-600",
+    bg: "bg-emerald-50",
+  },
+  {
+    id: 3,
+    title: "IMPLANTOLOGY",
+    subtitle: "Stronger Together",
+    icon: Package2,
+    href: "/categories/implantology",
+    color: "text-cyan-600",
+    bg: "bg-cyan-50",
+  },
+  {
+    id: 4,
+    title: "ORTHODONTICS",
+    subtitle: "Shape the Future",
+    icon: Stethoscope,
+    href: "/categories/orthodontics",
+    color: "text-violet-600",
+    bg: "bg-violet-50",
+  },
+  {
+    id: 5,
+    title: "& MUCH MORE",
+    subtitle: "Explore All Categories",
+    icon: LayoutGrid,
+    href: "/categories",
+    color: "text-orange-600",
+    bg: "bg-orange-50",
+  },
+] as const;

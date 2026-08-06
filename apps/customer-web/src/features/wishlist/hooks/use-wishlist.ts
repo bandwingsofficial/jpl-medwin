@@ -1,0 +1,163 @@
+"use client";
+
+import { useMemo } from "react";
+
+import { useQuery } from "@tanstack/react-query";
+
+import { wishlistApi } from "../api/wishlist.api";
+import { localWishlistService } from "../hooks/local-wishlist.service";
+
+import { useAuth } from "@/features/auth/hooks/use-auth";
+import { Product } from "@/features/products/types/product.type";
+
+const mapProductToWishlistProduct = (
+  product: Product & {
+    shortDescription?: string;
+    longDescription?: string;
+    category?: {
+      id?: string;
+      name?: string;
+      slug?: string;
+      main?: string;
+      sub?: string;
+      mini?: string;
+    };
+    subCategory?: {
+      id?: string;
+      name?: string;
+      slug?: string;
+    };
+    miniCategory?: {
+      id?: string;
+      name?: string;
+      slug?: string;
+    };
+  }
+) => ({
+  id: product.id,
+
+  name: product.name,
+
+  slug: product.slug,
+
+  shortDescription:
+    product.shortDescription ??
+    product.descriptions?.short ??
+    null,
+
+  brand: product.brand
+    ? {
+        id: product.brand.id,
+        name: product.brand.name ?? "",
+      }
+    : null,
+
+  category: {
+    main:
+      product.category?.name ??
+      product.category?.main ??
+      null,
+
+    sub:
+      product.subCategory?.name ??
+      product.category?.sub ??
+      null,
+
+    mini:
+      product.miniCategory?.name ??
+      product.category?.mini ??
+      null,
+  },
+
+  pricing: {
+    minPrice: product.price?.min ?? null,
+
+    maxPrice: product.price?.max ?? null,
+
+    currency:
+      (product as any).currency ??
+      "INR",
+  },
+
+  rating: {
+    averageRating:
+      product.ratings?.average ?? 0,
+
+    reviewCount:
+      product.ratings?.count ?? 0,
+  },
+
+  image: {
+    main:
+      product.images?.main ??
+      null,
+  },
+
+  status: product.status,
+});
+
+export const useWishlist = () => {
+  const { isAuthenticated } =
+    useAuth();
+
+  const query = useQuery({
+    queryKey: ["wishlist"],
+
+    queryFn: async () => {
+      if (isAuthenticated) {
+        return wishlistApi.getWishlist();
+      }
+
+      const products =
+        localWishlistService.getAll();
+
+      return {
+        success: true,
+
+        message: "Guest wishlist",
+
+        items: products.map(
+          (product) => ({
+            wishlistId:
+              product.id,
+
+            product:
+              mapProductToWishlistProduct(
+                product as any
+              ),
+
+            addedAt:
+              new Date().toISOString(),
+          })
+        ),
+
+        totalItems:
+          products.length,
+      };
+    },
+
+    staleTime:
+      1000 * 60 * 2,
+
+    retry: 1,
+
+    refetchOnWindowFocus:
+      false,
+  });
+
+  const wishlistIds =
+    useMemo(() => {
+      const ids =
+        query.data?.items?.map(
+          (item) =>
+            item.product.id
+        ) ?? [];
+
+      return new Set(ids);
+    }, [query.data]);
+
+  return {
+    ...query,
+    wishlistIds,
+  };
+};

@@ -1,0 +1,84 @@
+version: 2
+
+updates:
+
+  # Root Workspace
+  - package-ecosystem: "npm"
+
+    directory: "/"
+
+    schedule:
+      interval: "weekly"
+
+    open-pull-requests-limit: 10
+
+    labels:
+      - dependencies
+
+    commit-message:
+      prefix: chore
+
+  # Admin Web
+  - package-ecosystem: "npm"
+
+    directory: "/apps/admin-web"
+
+    schedule:
+      interval: "weekly"
+
+    open-pull-requests-limit: 5
+
+    labels:
+      - admin
+      - dependencies
+
+    commit-message:
+      prefix: chore
+
+  # Customer Web
+  - package-ecosystem: "npm"
+
+    directory: "/apps/customer-web"
+
+    schedule:
+      interval: "weekly"
+
+    open-pull-requests-limit: 5
+
+    labels:
+      - customer
+      - dependencies
+
+    commit-message:
+      prefix: chore
+
+  # Backend
+  - package-ecosystem: "npm"
+
+    directory: "/temp-akshay"
+
+    schedule:
+      interval: "weekly"
+
+    open-pull-requests-limit: 5
+
+    labels:
+      - backend
+      - dependencies
+
+    commit-message:
+      prefix: chore
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+
+    directory: "/"
+
+    schedule:
+      interval: "weekly"
+
+    labels:
+      - github-actions
+
+    commit-message:
+      prefix: ci

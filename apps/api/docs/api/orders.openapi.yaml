@@ -1,0 +1,243 @@
+openapi: 3.0.3
+info:
+  title: JPL Medwin Order API
+  version: 1.0.0
+  description: |
+    Order endpoints use SavedAddress FK references with immutable address snapshots.
+    Do not send embedded address objects when creating orders.
+
+paths:
+  /orders:
+    post:
+      summary: Create order from checkout session
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+            example:
+              checkoutSessionId: 4d68c2f4-eefe-43d1-aaa8-2527e90c805e
+              shippingAddressId: saved-address-id-1
+              billingAddressId: saved-address-id-2
+              isBillingSameAsShipping: false
+              customerNote: Handle carefully
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateOrderResponse'
+    get:
+      summary: List my orders
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Orders fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrderSummary'
+
+  /orders/{orderId}:
+    get:
+      summary: Get order by ID
+      tags: [Orders]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetail'
+
+  /admin/orders:
+    get:
+      summary: Admin list orders
+      tags: [Admin Orders]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Orders fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrderSummary'
+
+  /admin/orders/{orderId}:
+    get:
+      summary: Admin get order by ID
+      tags: [Admin Orders]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Order fetched
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrderDetail'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    CreateOrderRequest:
+      type: object
+      required:
+        - checkoutSessionId
+        - shippingAddressId
+      properties:
+        checkoutSessionId:
+          type: string
+          format: uuid
+        shippingAddressId:
+          type: string
+        billingAddressId:
+          type: string
+          description: Required when isBillingSameAsShipping is false
+        isBillingSameAsShipping:
+          type: boolean
+          default: true
+        customerNote:
+          type: string
+
+    OrderAddress:
+      type: object
+      nullable: true
+      properties:
+        id:
+          type: string
+        fullName:
+          type: string
+          nullable: true
+        phoneNumber:
+          type: string
+        type:
+          type: string
+          enum: [HOME, WORK, OTHER]
+        alias:
+          type: string
+          nullable: true
+        addressLine1:
+          type: string
+        addressLine2:
+          type: string
+          nullable: true
+        landmark:
+          type: string
+          nullable: true
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        postalCode:
+          type: string
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        isDefault:
+          type: boolean
+
+    OrderAddressFields:
+      type: object
+      properties:
+        shippingAddressId:
+          type: string
+          nullable: true
+        billingAddressId:
+          type: string
+          nullable: true
+        isBillingSameAsShipping:
+          type: boolean
+        shippingAddress:
+          $ref: '#/components/schemas/OrderAddress'
+        billingAddress:
+          $ref: '#/components/schemas/OrderAddress'
+
+    CreateOrderResponse:
+      allOf:
+        - $ref: '#/components/schemas/OrderAddressFields'
+        - type: object
+          properties:
+            orderId:
+              type: string
+            orderNumber:
+              type: string
+            status:
+              type: string
+            paymentStatus:
+              type: string
+            checkoutSessionId:
+              type: string
+            customerNote:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+
+    OrderSummary:
+      allOf:
+        - $ref: '#/components/schemas/OrderAddressFields'
+        - type: object
+          properties:
+            id:
+              type: string
+            orderNumber:
+              type: string
+            status:
+              type: string
+            paymentStatus:
+              type: string
+
+    OrderDetail:
+      allOf:
+        - $ref: '#/components/schemas/OrderSummary'
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                type: object
+            totals:
+              type: object
