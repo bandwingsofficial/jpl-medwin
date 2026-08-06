@@ -27,20 +27,7 @@ export class ProductS3ImageResolverService {
   // =======================
 
   async resolveProductImages(productName: string): Promise<ProductImageBundle> {
-
-  console.log("=================================");
-  console.log("Product Name :", productName);
-  console.log("JSON         :", JSON.stringify(productName));
-  console.log("Length       :", productName.length);
-  console.log(
-    "ASCII        :",
-    [...productName].map(c => `${c}:${c.charCodeAt(0)}`)
-  );
-  console.log("=================================");
-
   const prefix = `${PRODUCT_IMAGE_FOLDER}/${productName}`;
-
-  console.log("Prefix :", prefix);
 
   const mainImage = await this.resolveMainImageAtPrefix(prefix);
   const galleryImages = await this.resolveGalleryAtPrefix(prefix);
@@ -98,8 +85,7 @@ console.log("==================");
   for (const fileName of fileNames) {
     for (const extension of IMAGE_EXTENSIONS) {
       const key = `${prefix}/${fileName}.${extension}`;
-
-      console.log('Checking:', key);
+console.log("Checking Key:", key);
 
       const exists = await this.s3Service.objectExists(key);
 

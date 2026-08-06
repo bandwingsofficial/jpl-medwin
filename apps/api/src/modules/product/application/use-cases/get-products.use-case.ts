@@ -62,7 +62,7 @@ type GetProductsInput = {
 
 @Injectable()
 export class GetProductsUseCase {
- constructor(
+constructor(
   @Inject(TOKENS.PRODUCT_REPO)
   private readonly productRepo: ProductRepository,
 
@@ -213,36 +213,16 @@ export class GetProductsUseCase {
     // MAP
     // =======================
 
-    let data = await Promise.all(
+   let data = await Promise.all(
   products.map(async (product) => {
     const mapped = ProductResponseMapper.map(product);
 
     const s3Images =
-      await this.productS3ImageResolver.resolveProductImages(product.name);
-
-    mapped.images = {
-      main: s3Images.mainImage,
-      gallery: s3Images.galleryImages,
-    };
-
-    mapped.variants = await Promise.all(
-      mapped.variants.map(async (variant: any) => {
-        const variantImages =
-          await this.productS3ImageResolver.resolveVariantImages(
-            product.name,
-            variant.name,
-            s3Images,
-          );
-
-        return {
-          ...variant,
-          images: {
-            main: variantImages.mainImage,
-            gallery: variantImages.galleryImages,
-          },
-        };
-      }),
-    );
+      await this.productS3ImageResolver.resolveProductImages(
+        product.name,
+      );
+    mapped.images.main = s3Images.mainImage;
+    mapped.images.gallery = s3Images.galleryImages;
 
     if (input.includeVariants === false) {
       mapped.variants = [];
@@ -294,7 +274,8 @@ export class GetProductsUseCase {
     // =======================
     // RESPONSE
     // =======================
-
+console.log("FINAL RESPONSE");
+console.log(JSON.stringify(data[0].images, null, 2));
     return {
       data,
 

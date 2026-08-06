@@ -54,10 +54,6 @@ export class S3Service {
   // =======================
 
  async objectExists(key: string): Promise<boolean> {
-  console.log("=================================");
-  console.log("Bucket :", this.bucket);
-  console.log("Region :", this.region);
-  console.log("Key    :", key);
 
   try {
     await this.s3.send(
@@ -68,12 +64,9 @@ export class S3Service {
     );
 
     console.log("✅ FOUND");
-    console.log("=================================");
 
     return true;
   } catch (error: any) {
-    console.log("❌ ERROR");
-    console.log(error); // <-- print FULL AWS error
 
     return false; // <-- NEVER throw here
   }

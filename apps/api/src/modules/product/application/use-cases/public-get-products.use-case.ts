@@ -5,7 +5,7 @@ import { TOKENS } from '@/common/constants/tokens';
 import { ProductRepository } from '../../domain/repositories/product.repository';
 
 import { ProductStatus } from '../../domain/enums/product-status.enum';
-
+import { ProductS3ImageResolverService } from '../services/product-s3-image-resolver.service';
 import { ProductResponseMapper } from '../../infrastructure/persistence/prisma/mappers/product-response.mapper';
 
 // =======================
@@ -59,10 +59,12 @@ type PublicGetProductsInput = {
 
 @Injectable()
 export class PublicGetProductsUseCase {
-  constructor(
-    @Inject(TOKENS.PRODUCT_REPO)
-    private readonly productRepo: ProductRepository,
-  ) {}
+ constructor(
+  @Inject(TOKENS.PRODUCT_REPO)
+  private readonly productRepo: ProductRepository,
+
+  private readonly productS3ImageResolver: ProductS3ImageResolverService,
+) {}
 
   async execute(input: PublicGetProductsInput = {}): Promise<PaginatedProducts> {
     // =======================
@@ -193,29 +195,36 @@ export class PublicGetProductsUseCase {
     // MAP
     // =======================
 
-    let data = products.map((product) => {
-      const mapped = ProductResponseMapper.map(product);
+    let data = await Promise.all(
+  products.map(async (product) => {
+    const mapped = ProductResponseMapper.map(product);
 
-      // remove sensitive/internal fields
+    const s3Images =
+      await this.productS3ImageResolver.resolveProductImages(
+        product.name,
+      );
 
-      mapped.variants?.forEach((variant: any) => {
-        delete variant.createdAt;
-        delete variant.updatedAt;
-        delete variant.deletedAt;
+    mapped.images.main = s3Images.mainImage;
+    mapped.images.gallery = s3Images.galleryImages;
 
-        delete variant.pricing.purchasePrice;
-      });
-
-      delete mapped.createdAt;
-      delete mapped.updatedAt;
-      delete mapped.deletedAt;
-
-      if (input.includeVariants === false) {
-        mapped.variants = [];
-      }
-
-      return mapped;
+    mapped.variants?.forEach((variant: any) => {
+      delete variant.createdAt;
+      delete variant.updatedAt;
+      delete variant.deletedAt;
+      delete variant.pricing.purchasePrice;
     });
+
+    delete mapped.createdAt;
+    delete mapped.updatedAt;
+    delete mapped.deletedAt;
+
+    if (input.includeVariants === false) {
+      mapped.variants = [];
+    }
+
+    return mapped;
+  }),
+);
 
     // =======================
     // PRICE FILTER
