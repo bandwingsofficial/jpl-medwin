@@ -1,7 +1,4 @@
-// src/modules/product/application/services/product-export-flattener.service.ts
-
 import { Injectable } from '@nestjs/common';
-
 import { ParsedProduct } from '../types/product-import.types';
 
 @Injectable()
@@ -12,69 +9,68 @@ export class ProductExportFlattenerService {
     for (const product of products) {
       for (const variant of product.variants) {
         rows.push({
+          GST: "",
+
+          "Zoho HSN": product.hsnCode ?? "",
+
+          SKU: variant.sku,
+
           Group_name: product.name,
+
+          Variant_name: variant.name,
 
           Category: product.category,
 
           Sub_category: product.subCategory,
 
-          'Mini Catory': product.miniCategory,
+          "Mini Catory": product.miniCategory,
+
+          Product_type: product.type === "VARIABLE" ? "Variant" : "Non Variant",
+
+          "Purchase Price": variant.purchasePrice ?? "",
+
+          "Selling Price": variant.sellingPrice ?? "",
+
+          MRP: variant.mrp ?? "",
+
+          quantity: variant.quantity ?? "",
 
           Brand: product.brand,
 
-          'HSN Code': product.hsnCode ?? '',
+          "Display note": product.displayNotes?.filter(Boolean).join("\n") ?? "",
 
-          Description: product.shortDescription ?? product.longDescription ?? '',
+          image: variant.images.main ?? product.images.main ?? "",
 
-          Features: product.features?.filter(Boolean).join('\n') ?? '',
+          Description:
+            product.shortDescription ??
+            product.longDescription ??
+            "",
 
-          Tags: product.tags?.filter(Boolean).join(', ') ?? '',
+          Features:
+            product.features?.filter(Boolean).join("\n") ?? "",
 
-          'Display note': product.displayNotes?.filter(Boolean).join('\n') ?? '',
+          "Key Specification":
+            product.specifications
+              ?.map(spec => `${spec.key}: ${spec.value}`)
+              .join("\n") ?? "",
 
-          'Key Specification':
-            product.specifications?.map((spec) => `${spec.key}: ${spec.value}`).join('\n') ?? '',
+          Packing:
+            product.packing?.filter(Boolean).join("\n") ?? "",
 
-          Packing: product.packing?.filter(Boolean).join('\n') ?? '',
+          "Direction Of Use":
+            product.directionOfUse?.filter(Boolean).join("\n") ?? "",
 
-          'Direction Of Use': product.directionOfUse?.filter(Boolean).join('\n') ?? '',
+          "Additional Info":
+            product.additionalInfo?.filter(Boolean).join("\n") ?? "",
 
-          'Additional Info': product.additionalInfo?.filter(Boolean).join('\n') ?? '',
-
-          FAQ: product.faq?.map((faq) => `Q: ${faq.question}\nA: ${faq.answer}`).join('\n\n') ?? '',
-
-          Image: variant.images.main ?? product.images.main ?? '',
-
-          'Gallery Images': [...(variant.images.gallery ?? [])].join('\n'),
-
-          SKU: variant.sku,
-
-          Variant_name: variant.name,
-
-          'Purchase Price': variant.purchasePrice,
-
-          'Selling Price': variant.sellingPrice,
-
-          MRP: variant.mrp,
-
-          Quantity: variant.quantity,
-
-          Color: variant.attributes?.color ?? '',
-
-          Size: variant.attributes?.size ?? '',
-
-          Storage: variant.attributes?.storage ?? '',
-
-          'Average Rating': variant.averageRating,
-
-          'Review Count': variant.reviewCount,
-
-          'Weighted product': variant.isWeighted,
-
-          Warranty: variant.warrantyMonths,
+          FAQ:
+            product.faq
+              ?.map(faq => `${faq.question}:${faq.answer}`)
+              .join("\n") ?? "",
         });
       }
     }
+
     return rows;
   }
 }
