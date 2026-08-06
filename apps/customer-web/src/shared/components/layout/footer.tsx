@@ -506,7 +506,7 @@ transform:scale(1.15);
   }}
 >
     <Image
-      src="/Logo/Jpl_Logo.png"
+      src="/Logo/jpl_logo.png"
       alt="JPL Medwin"
       width={190}
       height={75}

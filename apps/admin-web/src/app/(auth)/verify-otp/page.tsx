@@ -111,7 +111,7 @@ export default function VerifyOtpPage() {
             <div className="flex flex-col items-center justify-center text-center space-y-2.5">
               <div className="inline-flex items-center justify-center p-2.5 bg-white rounded-xl shadow-xs border border-slate-100 w-fit">
                 <img
-                  src="/Logo/Jpl_Logo.png"
+                  src="/Logo/jpl_logo.png"
                   alt="JPL Markwin"
                   className="w-36 h-auto object-contain"
                 />

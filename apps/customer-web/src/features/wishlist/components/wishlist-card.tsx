@@ -39,7 +39,7 @@ export function WishlistCard({
 
  const image =
   product.image?.main?.trim() ||
-  "/Logo/Jpl_Logo.png";
+  "/Logo/jpl_logo.png";
   
   const price =
     product.pricing.minPrice ||

@@ -65,7 +65,7 @@ export function Sidebar() {
       <div className="flex-none border-b border-slate-800/60 bg-[#0B0F19] w-full">
         <div className="relative w-full h-20">
           <Image
-            src="/Logo/Jpl_Logo.png"
+            src="/Logo/jpl_logo.png"
             alt="JPL Medwin Logo"
             fill
             sizes="(max-width: 768px) 100vw, 250px"

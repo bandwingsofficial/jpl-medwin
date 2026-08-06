@@ -113,7 +113,7 @@ export function TopActionBarDesktop({
   className="flex h-full shrink-0 items-center"
 >
   <Image
-    src="/Logo/Jpl_Logo.png"
+    src="/Logo/jpl_logo.png"
     alt="JPL Medwin"
     width={160}
     height={80}

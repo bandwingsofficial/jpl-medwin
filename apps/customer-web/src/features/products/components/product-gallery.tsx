@@ -34,7 +34,7 @@ interface ProductGalleryProps {
   )[];
 }
 
-const PLACEHOLDER_IMAGE = '/Logo/Jpl_Logo.png';
+const PLACEHOLDER_IMAGE = '/Logo/jpl_logo.png';
 
 export function ProductGallery({
   product,
