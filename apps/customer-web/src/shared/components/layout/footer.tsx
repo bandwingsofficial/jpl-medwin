@@ -6,10 +6,15 @@ import { Mail, MapPin, Phone, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube, FaXTwitter } from 'react-icons/fa6';
 
 const socialLinks = [
-  { icon: FaFacebookF, href: '#', label: 'Facebook', bg: '#1877F2' },
+  {
+    icon: FaFacebookF,
+    href: 'https://www.facebook.com/61592459164569/posts/pfbid0kpUahcpVsDsmuDGfAStPZ2s4w3WJWMQQUxKFcDfYy8wy2DnkqJv1Rr6Mfc9V3hCRl/?d=w&mibextid=wwXIfr',
+    label: 'Facebook',
+    bg: '#1877F2',
+  },
   {
     icon: FaInstagram,
-    href: '#',
+    href: 'https://www.instagram.com/p/Dbiq2efyG4n/?igsh=MTNkNWtjb254cXJ6Mw==',
     label: 'Instagram',
     gradient:
       'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%)',
@@ -18,7 +23,6 @@ const socialLinks = [
   { icon: FaYoutube, href: '#', label: 'YouTube', bg: '#FF0000' },
   { icon: FaLinkedinIn, href: '#', label: 'LinkedIn', bg: '#0A66C2' },
 ];
-
 const companyLinks = [
   { label: 'About Us', href: '/about' },
   { label: 'Contact Us', href: '/contact-us' },

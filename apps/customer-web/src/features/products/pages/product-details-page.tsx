@@ -174,13 +174,19 @@ export function ProductDetailsPage({
             />
           </div>
 
-          {/* BUY BOX FOR MOBILE VIEW PLACED INSIDE RIGHT FLOW IF NEEDED OR HANDLED BY STICKY BAR */}
-          <div className="order-5 lg:hidden mt-2">
-            <ProductBuyBox
-              product={product}
-              selectedVariant={selectedVariant}
-            />
-          </div>
+          <div className="order-3 lg:hidden mt-2">
+  <ProductBuyBox
+    product={product}
+    selectedVariant={selectedVariant}
+  />
+</div>
+
+<div className="order-4 lg:order-none flex flex-col gap-5 lg:gap-0">
+  <ProductCommercialDetails
+    product={product}
+    selectedVariant={selectedVariant}
+  />
+</div>
         </div>
       </div>
 

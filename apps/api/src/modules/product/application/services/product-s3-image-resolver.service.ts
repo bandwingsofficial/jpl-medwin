@@ -156,9 +156,11 @@ console.log("Checking Key:", key);
   index: number,
 ): Promise<string | null> {
   const fileNames = [
-    `image${index}`,
-    `image ${index}`,
-  ];
+  `Image ${index}`,
+  `Image${index}`,
+  `image ${index}`,
+  `image${index}`,
+];
 
   for (const fileName of fileNames) {
     for (const extension of IMAGE_EXTENSIONS) {
