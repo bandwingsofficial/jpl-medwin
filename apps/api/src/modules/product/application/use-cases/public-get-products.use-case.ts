@@ -149,29 +149,56 @@ export class PublicGetProductsUseCase {
     // SORT
     // =======================
 
-    let orderBy: any = {
-      createdAt: 'desc',
+
+let orderBy: any = { createdAt: "desc" };
+
+switch (input.sortBy) {
+  case "newest":
+    orderBy = {
+      createdAt: "desc",
     };
+    break;
 
-    switch (input.sortBy) {
-      case 'oldest':
-        orderBy = {
-          createdAt: 'asc',
-        };
-        break;
+  case "oldest":
+    orderBy = {
+      createdAt: "asc",
+    };
+    break;
 
-      case 'nameAsc':
-        orderBy = {
-          name: 'asc',
-        };
-        break;
+  case "nameAsc":
+    orderBy = {
+      name: "asc",
+    };
+    break;
 
-      case 'nameDesc':
-        orderBy = {
-          name: 'desc',
-        };
-        break;
-    }
+  case "nameDesc":
+    orderBy = {
+      name: "desc",
+    };
+    break;
+
+  case "priceLowToHigh":
+    orderBy = [
+      {
+        minPrice: "asc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ];
+    break;
+
+  case "priceHighToLow":
+    orderBy = [
+      {
+        minPrice: "desc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ];
+    break;
+}
 
     // =======================
     // QUERY
