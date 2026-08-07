@@ -280,32 +280,30 @@ color:#374151;
 /* ------------------------- */
 
 .ft-social-row{
-padding:35px 40px;
-display:flex;
-flex-direction:column;
-align-items:center;
-gap:20px;
-border-bottom:1px solid #E5E7EB;
-background:#fff;
-text-align:center;
+  padding:16px 20px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  border-bottom:1px solid #E5E7EB;
+  background:#fff;
+  text-align:center;
 }
 
 @media(min-width:768px){
 
 .ft-social-row{
-
-flex-direction:row;
-
-justify-content:space-between;
-
-height:110px;
-
-text-align:left;
-
+  padding:24px 40px;
+  flex-direction:row;
+  justify-content:space-between;
+  gap:24px;
+  min-height:110px;
+  height:auto;
+  text-align:left;
 }
 
 }
-
 /* ------------------------- */
 
 .ft-grid{
@@ -501,67 +499,77 @@ transform:scale(1.15);
 
 {/* Top Bar */}
 <div className="ft-social-row" style={{ position: "relative", zIndex: 2 }}>
- <div
-  style={{
-    display: "flex",
-    alignItems: "center",
-    gap: 18,
-    flexWrap: "nowrap",
-  }}
->
-    <Image
-      src="/Logo/jpl_logo.png"
-      alt="JPL Medwin"
-      width={190}
-      height={75}
-      priority
-      style={{
-        objectFit: "contain",
-      }}
-    />
+<div
+  className="
+    flex
+    flex-col
+    items-center
+    gap-2
+    text-center
 
-    <div
-  style={{
-    display: "flex",
-    alignItems: "center",
-  }}
+    md:flex-row
+    md:items-center
+    md:gap-5
+    md:text-left
+  "
 >
-      <p
-  style={{
-    margin: 0,
-    color: "#6B7280",
-    fontSize: 14,
-    maxWidth: 450,
-    lineHeight: "24px",
-  }}
->
-        Trusted supplier of Dental, Hospital & Healthcare products across India.
-      </p>
-    </div>
-  </div>
+  <Image
+    src="/Logo/jpl_logo.png"
+    alt="JPL Medwin"
+    width={190}
+    height={75}
+    priority
+    className="
+  h-auto
+  w-[190px]
+  shrink-0
+
+  sm:w-[210px]
+  md:w-[230px]
+"
+  />
+
+  <p
+    className="
+      max-w-[280px]
+      text-sm
+      leading-6
+      text-gray-500
+
+      sm:max-w-[340px]
+      md:max-w-[450px]
+      md:text-[14px]
+      md:leading-6
+    "
+  >
+    Trusted supplier of Dental, Hospital & Healthcare
+    products across India.
+  </p>
+</div>
 
   <div
-    style={{
-      display: "flex",
-      alignItems: "center",
-      gap: 18,
-    }}
-  >
-    <p
-      style={{
-        margin: 0,
-        color: "#374151",
-        fontWeight: 600,
-      }}
-    >
-      Follow Us
-    </p>
+    className="
+  flex
+  flex-col
+  items-center
+  gap-4
 
+  sm:flex-row
+  sm:gap-5
+"
+  >
+    <p className="m-0 text-sm font-semibold text-gray-700 whitespace-nowrap">
+  Follow Us
+</p>
     <div
-      style={{
-        display: "flex",
-        gap: 10,
-      }}
+      className="
+  flex
+  flex-wrap
+  justify-center
+  gap-3
+
+  sm:justify-start
+"
     >
       {socialLinks.map(({ icon: Icon, href, label, bg, gradient }, i) => (
   <a
