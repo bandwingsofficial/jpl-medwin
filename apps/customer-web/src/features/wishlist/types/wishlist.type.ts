@@ -1,10 +1,10 @@
-// src/features/wishlist/types/wishlist.type.ts
-import {
-  Product,
-} from "@/features/products/types/product.type";
-
+import { ProductVariant } from "@/features/products/types/product.type";
 
 export interface WishlistProduct {
+  ratings: any;
+  tags: any;
+  features: any;
+  descriptions: any;
   id: string;
 
   name: string;
@@ -20,23 +20,18 @@ export interface WishlistProduct {
 
   category: {
     main: string | null;
-
     sub: string | null;
-
     mini: string | null;
   };
 
   pricing: {
     minPrice: number | null;
-
     maxPrice: number | null;
-
     currency: string;
   };
 
   rating: {
     averageRating: number;
-
     reviewCount: number;
   };
 
@@ -45,6 +40,14 @@ export interface WishlistProduct {
   };
 
   status: string;
+
+  // ==========================
+  // ADD THESE
+  // ==========================
+
+  defaultVariantId: string | null;
+
+  variants: ProductVariant[];
 }
 
 export interface WishlistItem {

@@ -81,6 +81,12 @@ export function TopActionBarMobile({
   const handleActionClick = (href: string) => {
   if (isLoading) return;
 
+  // Allow guest access
+  if (href === "/wishlist") {
+    router.push(href);
+    return;
+  }
+
   if (!isAuthenticated) {
     if (window.location.pathname === "/") {
       setLoginOpen(true);

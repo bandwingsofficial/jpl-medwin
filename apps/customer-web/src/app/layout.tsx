@@ -11,6 +11,7 @@ import { FloatingCartBar } from "@/features/cart/components/floating-cart-bar";
 import { Toast } from "@/shared/components/ui/toast";
 import { WhatsappButton } from "@/shared/components/ui/whatsapp-button";
 import { AuthModalProvider } from "@/shared/context/auth-modal-context";
+import Script from "next/script";
 
 export const metadata: Metadata = {
   title: "JPL Medwin",
@@ -31,6 +32,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+  <Script
+    src="https://www.googletagmanager.com/gtag/js?id=G-RVVTP2Y7SW"
+    strategy="afterInteractive"
+  />
+
+  <Script id="google-analytics" strategy="afterInteractive">
+    {`
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-RVVTP2Y7SW');
+    `}
+  </Script>
+</head>
       <body>
         <QueryProvider>
           <AuthModalProvider>
