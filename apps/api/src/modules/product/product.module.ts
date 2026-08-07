@@ -213,6 +213,6 @@ import { PrismaProductImageRepository } from './infrastructure/persistence/prism
     },
   ],
 
-  exports: [TOKENS.PRODUCT_REPO, TOKENS.VARIANT_REPO, TOKENS.PRODUCT_IMAGE_REPO],
+  exports: [TOKENS.PRODUCT_REPO, TOKENS.VARIANT_REPO, TOKENS.PRODUCT_IMAGE_REPO, ProductS3ImageResolverService,],
 })
 export class ProductModule {}

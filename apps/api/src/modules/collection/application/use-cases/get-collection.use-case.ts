@@ -1,7 +1,7 @@
 // src/modules/collection/application/use-cases/get-collection.use-case.ts
 
 import { Inject, Injectable } from '@nestjs/common';
-
+import { ProductS3ImageResolverService } from '@/modules/product/application/services/product-s3-image-resolver.service';
 import { TOKENS } from '@/common/constants/tokens';
 
 import { ProductRepository } from '@/modules/product/domain/repositories/product.repository';
@@ -24,9 +24,11 @@ export class GetCollectionUseCase {
     private readonly collectionProductRepo: CollectionProductRepository,
 
     @Inject(TOKENS.PRODUCT_REPO)
-    private readonly productRepo: ProductRepository,
+private readonly productRepo: ProductRepository,
 
-    private readonly domainService: CollectionDomainService,
+private readonly productS3ImageResolver: ProductS3ImageResolverService,
+
+private readonly domainService: CollectionDomainService,
   ) {}
 
   async execute(input: {
@@ -70,27 +72,46 @@ export class GetCollectionUseCase {
     // 📦 PRODUCTS
     // =======================
 
-    const products = await Promise.all(
-      paginated.map(async (item) => {
-        const product = await this.productRepo.findFullById(item.productId);
+   const products = await Promise.all(
+  paginated.map(async (item) => {
+    const product = await this.productRepo.findFullById(item.productId);
 
-        if (!product) {
-          return null;
-        }
+    if (!product) {
+      return null;
+    }
 
-        return {
-          ...ProductResponseMapper.map(product),
+    const mapped = ProductResponseMapper.map(product);
 
-          collectionProduct: {
-            id: item.id,
+    const s3Images =
+      await this.productS3ImageResolver.resolveProductImages(
+        product.name,
+      );
 
-            collectionId: item.collectionId,
+    mapped.images.main = s3Images.mainImage;
+    mapped.images.gallery = s3Images.galleryImages;
 
-            addedAt: item.createdAt,
-          },
-        };
-      }),
-    );
+    mapped.variants?.forEach((variant: any) => {
+      delete variant.createdAt;
+      delete variant.updatedAt;
+      delete variant.deletedAt;
+      delete variant.pricing.purchasePrice;
+    });
+
+    delete mapped.createdAt;
+    delete mapped.updatedAt;
+    delete mapped.deletedAt;
+
+    return {
+      ...mapped,
+
+      collectionProduct: {
+        id: item.id,
+        collectionId: item.collectionId,
+        addedAt: item.createdAt,
+      },
+    };
+  }),
+);
 
     // =======================
     // 🚀 RESPONSE
