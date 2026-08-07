@@ -10,7 +10,8 @@ export interface SearchResult {
   name: string;
   slug: string;
   type: SearchResultType;
-
+price?: number;
+mrp?: number;
   image?: string;
 }
 

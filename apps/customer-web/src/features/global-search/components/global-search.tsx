@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-import { cn } from "@/lib/utils"; // Update if your cn path is different
+import { cn } from "@/lib/utils";
 
 import { useGlobalSearch } from "../hooks/use-global-search";
 import { SearchResult } from "../types/global-search.types";
@@ -49,7 +49,7 @@ export function GlobalSearch() {
   };
 
   return (
-    <div className={cn("relative w-full")}>
+    <div className="relative w-full">
       <input
         value={query}
         onFocus={() => setFocused(true)}
@@ -71,13 +71,14 @@ export function GlobalSearch() {
 
       <AnimatedPlaceholder query={query} />
 
-
       {focused && query.trim().length >= 2 && (
-        <SearchDropdown
-          loading={loading}
-          results={results}
-          onSelect={handleSelect}
-        />
+        <div className="absolute left-0 right-0 top-full z-[9999] mt-2">
+          <SearchDropdown
+            loading={loading}
+            results={results}
+            onSelect={handleSelect}
+          />
+        </div>
       )}
     </div>
   );

@@ -17,28 +17,22 @@ export function SearchDropdown({
   return (
     <div
       className="
-      absolute
-      top-full
-      mt-2
-      left-0
-      right-0
-      bg-white
-      rounded-xl
-      border
-      border-slate-200
-      shadow-xl
-      z-50
-      overflow-hidden
-    "
+        rounded-2xl
+        bg-white
+        shadow-xl
+        max-h-[70vh]
+        overflow-y-auto
+        overflow-x-hidden
+      "
     >
       {loading && (
-        <div className="p-4 text-sm text-slate-500">
+        <div className="p-6 text-center text-sm text-slate-500">
           Searching...
         </div>
       )}
 
       {!loading && results.length === 0 && (
-        <div className="p-4 text-sm text-slate-500">
+        <div className="p-6 text-center text-sm text-slate-500">
           No Products found
         </div>
       )}
