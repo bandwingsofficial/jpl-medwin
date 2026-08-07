@@ -64,8 +64,18 @@ export function HomeCategories() {
           {categories.length > 6 && (
             <button
               onClick={() => setIsExpanded((v) => !v)}
-              className="group flex h-10 items-center gap-2 rounded-full bg-gradient-to-r from-[#0BACAE] via-[#089981] to-[#0F8A6B] px-5 text-sm font-semibold text-white shadow-[0_10px_30px_rgba(13,148,136,.28)] transition-all duration-300"
-            >
+              className="
+  flex h-10 items-center gap-2
+  rounded-lg
+  border border-[#0BACAE]
+  bg-white
+  px-4
+  text-sm font-medium
+  text-[#0BACAE]
+  transition-colors duration-200
+  hover:bg-[#0BACAE]
+  hover:text-white
+" >
               <LayoutGrid size={16} />
 
               {isExpanded ? "Show Less" : "Explore More"}
@@ -106,13 +116,15 @@ export function HomeCategories() {
               className={`group relative block ${isHiddenMobile ? 'hidden sm:block' : ''} ${!isExpanded && index >= 8 ? 'sm:hidden' : ''}`}
             >
               <div
-                className="
-                  flex aspect-square items-center justify-center
-                  rounded-2xl
-                  bg-white
-                  transition-all duration-300
-                  group-hover:-translate-y-1
-                "
+className="
+  flex aspect-square items-center justify-center
+  rounded-2xl
+  border border-transparent
+  bg-white
+  transition-all duration-200
+  group-hover:border-[#0BACAE]
+  group-hover:shadow-md
+"
               >
                 <div className="flex h-full w-full items-center justify-center p-3 sm:p-4">
                   <div className="relative h-full w-full">
@@ -138,10 +150,11 @@ export function HomeCategories() {
               <div className="mt-2 sm:mt-4 text-center">
                 <h3
                   className="
-                    line-clamp-2 text-[11px] sm:text-[12px] font-medium leading-snug text-[#374542]
-                    transition-colors duration-200 group-hover:text-[#0D6E63]
-                    md:text-[13px]
-                  "
+  line-clamp-2 text-[11px] sm:text-[12px] font-medium leading-snug text-[#374542]
+  transition-colors duration-200
+  group-hover:text-[#0BACAE]
+  md:text-[13px]
+"
                 >
                   {category.name}
                 </h3>
