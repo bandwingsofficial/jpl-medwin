@@ -8,6 +8,7 @@ import { CartItemCard } from "@/features/cart/components/cart-item-card";
 import { CartSummary } from "@/features/cart/components/cart-summary";
 import { EmptyCart } from "@/features/cart/components/empty-cart";
 import { useAuth } from "@/features/auth/hooks/use-auth";
+import { LoginModal } from "@/features/auth/components/login-modal";
 
 export function CartPage() {
   /*
@@ -16,6 +17,7 @@ export function CartPage() {
    |--------------------------------------------------------------------------
    */
   const [mounted, setMounted] = useState(false);
+   const [loginOpen, setLoginOpen] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -241,6 +243,11 @@ export function CartPage() {
           </div>
         </div>
       </div>
+      <LoginModal
+              open={loginOpen}
+              onClose={() => setLoginOpen(false)}
+            />
     </div>
+    
   );
 }
