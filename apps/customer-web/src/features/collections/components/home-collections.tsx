@@ -1,16 +1,8 @@
 "use client";
 
-import {
-  useCollections,
-} from "../hooks/use-collections";
-
-import {
-  CollectionSection,
-} from "./collection-section";
-
-import {
-  PromotionalBanner,
-} from "@/features/banners/components/promotional-baner";
+import { useCollections } from "../hooks/use-collections";
+import { CollectionSection } from "./collection-section";
+import { PromotionalBanner } from "@/features/banners/components/promotional-baner";
 
 export function HomeCollections() {
   const {
@@ -18,9 +10,10 @@ export function HomeCollections() {
     isLoading,
     error,
   } = useCollections();
+
   if (isLoading) {
     return (
-      <div className="py-10 text-center">
+      <div className="flex justify-center py-12">
         Loading Collections...
       </div>
     );
@@ -28,73 +21,41 @@ export function HomeCollections() {
 
   if (error) {
     return (
-      <div className="py-10 text-center text-red-500">
+      <div className="flex justify-center py-12">
         Failed to load collections
       </div>
     );
   }
 
-  if (!collections?.length) {
+  if (!collections.length) {
     return (
-      <div className="py-10 text-center">
-    Collection Coming Soon.....
+      <div className="flex justify-center py-12">
+        Collection Coming Soon.....
       </div>
     );
   }
 
   return (
-    <div
-      className="
-        space-y-14
-      "
-    >
-      {collections.map(
-        (
-          collection,
-          index
-        ) => (
-          <div
-            key={
-              collection.id
-            }
-            className="
-              space-y-14
-            "
-          >
+    <section className="w-full px-4 py-5 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
+      <div className="space-y-14">
+        {collections.map((collection, index) => (
+          <div key={collection.id} className="space-y-14">
             <CollectionSection
-              collectionId={
-                collection.id
-              }
-              collectionName={
-                collection.name
-              }
-              collectionSlug={
-                collection.slug
-              }
-              collectionImage={
-                collection.imageUrl
-              }
+              collectionId={collection.id}
+              collectionName={collection.name}
+              collectionSlug={collection.slug}
+              collectionImage={collection.imageUrl}
             />
 
-            {/* PROMOTIONAL BANNER AFTER EVERY 2 COLLECTIONS */}
-
-            {(index + 1) %
-              2 ===
-              0 &&
-              index !==
-                collections.length -
-                  1 && (
+            {(index + 1) % 2 === 0 &&
+              index !== collections.length - 1 && (
                 <PromotionalBanner
-                  bannerIndex={
-                    Math.floor(
-                      index / 2
-                    )
-                  }
+                  bannerIndex={Math.floor(index / 2)}
                 />
               )}
           </div>
-        )
-      )}
-    </div>
+        ))}
+      </div>
+    </section>
   );
 }
