@@ -15,8 +15,7 @@ export function LoginModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60 backdrop-blur-sm">
-      <div className="relative">
+   <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/20 backdrop-blur-[1px]">   <div className="relative">
        <LoginForm onClose={onClose} />
 
       </div>

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { QueryProvider } from "@/providers/query-provider";
-
+import { GlobalLoginModal } from "@/features/auth/components/global-login-modal";
 import { LocationProvider } from "@/features/location/context/LocationProvider";
 
 import { FloatingCartBar } from "@/features/cart/components/floating-cart-bar";
@@ -52,7 +52,7 @@ export default function RootLayout({
           <AuthModalProvider>
             <LocationProvider>
               {children}
-
+              <GlobalLoginModal />
               <FloatingCartBar />
 
               <Toast />

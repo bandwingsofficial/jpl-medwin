@@ -57,15 +57,10 @@ export function TopActionBarDesktop({
     if (isLoading) {
       return;
     }
-
-    if (!isAuthenticated) {
-      if (window.location.pathname === "/") {
-        setLoginOpen(true);
-      } else {
-        router.push("/login");
-      }
-      return;
-    }
+if (!isAuthenticated) {
+  setLoginOpen(true);
+  return;
+}
 
     setOpen((prev) => !prev);
   };
@@ -86,14 +81,10 @@ export function TopActionBarDesktop({
   }
 
   // Require login for protected pages
-  if (!isAuthenticated) {
-    if (window.location.pathname === "/") {
-      setLoginOpen(true);
-    } else {
-      router.push("/login");
-    }
-    return;
-  }
+ if (!isAuthenticated) {
+  setLoginOpen(true);
+  return;
+}
 
   router.push(href);
 };

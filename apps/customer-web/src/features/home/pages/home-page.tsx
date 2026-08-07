@@ -55,10 +55,6 @@ export default function HomePage() {
         </section>
       </main>
 
-      <LoginModal
-        open={loginOpen}
-        onClose={() => setLoginOpen(false)}
-      />
     </>
   );
 }
