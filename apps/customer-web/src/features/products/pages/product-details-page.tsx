@@ -81,7 +81,7 @@ export function ProductDetailsPage({
           items-start
           gap-6
 
-          lg:grid-cols-[560px_minmax(0,1fr)]
+          lg:grid-cols-[460px_minmax(0,1fr)]
           lg:gap-12
         "
       >
@@ -96,9 +96,9 @@ export function ProductDetailsPage({
             border
             border-gray-100
             shadow-sm
-
-            lg:sticky
-            lg:top-4
+lg:sticky
+lg:top-32
+lg:self-start
             lg:p-0
             lg:border-0
             lg:rounded-none

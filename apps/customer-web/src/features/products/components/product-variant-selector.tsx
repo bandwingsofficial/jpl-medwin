@@ -19,7 +19,7 @@ export function ProductVariantSelector({
 
   /*
    |--------------------------------------------------------------------------
-   | AUTO-CENTER SELECTED VARIANT ON CHANGE (ONLY IF SCROLLABLE)
+   | AUTO-CENTER / SCROLL SELECTED VARIANT ON CHANGE (VERTICAL)
    |--------------------------------------------------------------------------
    */
   useEffect(() => {
@@ -27,18 +27,17 @@ export function ProductVariantSelector({
     const container = scrollContainerRef.current;
 
     if (selectedElement && container) {
-      // Check if container is actually overflowing/scrollable
-      const isScrollable = container.scrollWidth > container.clientWidth;
+      const isScrollable = container.scrollHeight > container.clientHeight;
       if (!isScrollable) return;
 
-      const containerWidth = container.offsetWidth;
-      const elementLeft = selectedElement.offsetLeft;
-      const elementWidth = selectedElement.offsetWidth;
+      const containerHeight = container.offsetHeight;
+      const elementTop = selectedElement.offsetTop;
+      const elementHeight = selectedElement.offsetHeight;
 
-      const scrollTo = elementLeft - containerWidth / 2 + elementWidth / 2;
+      const scrollTo = elementTop - containerHeight / 2 + elementHeight / 2;
 
       container.scrollTo({
-        left: scrollTo,
+        top: scrollTo,
         behavior: "smooth",
       });
     }
@@ -54,7 +53,7 @@ export function ProductVariantSelector({
   }
 
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-2">
       {/* TITLE */}
       <div>
         <h3 className="text-xs font-semibold tracking-wide text-gray-500 uppercase">
@@ -62,15 +61,17 @@ export function ProductVariantSelector({
         </h3>
       </div>
 
-      {/* HORIZONTAL CONTAINER (Scrollable, Scrollbars Hidden) */}
+      {/* VERTICAL CONTAINER (Scrollable if too many variants, Scrollbars Hidden) */}
       <div
         ref={scrollContainerRef}
         className="
           flex 
-          gap-2.5 
-          overflow-x-auto 
-          px-1 
-          py-1.5
+          flex-col 
+          gap-2 
+          max-h-[320px]
+          overflow-y-auto 
+          pr-1 
+          py-1
           scroll-smooth
           [-ms-overflow-style:none] 
           [scrollbar-width:none] 
@@ -81,6 +82,14 @@ export function ProductVariantSelector({
           const isSelected = selectedVariantId === variant.id;
           const isInStock = variant.stock?.inStock;
           const attributes = Object.entries(variant.attributes || {});
+
+          // Calculate discount percentage if MRP and Selling Price exist
+          const mrp = variant.pricing?.mrp || 0;
+          const sellingPrice = variant.pricing?.sellingPrice || 0;
+          const discountPercentage =
+            mrp > sellingPrice
+              ? Math.round(((mrp - sellingPrice) / mrp) * 100)
+              : 0;
 
           return (
             <button
@@ -94,14 +103,12 @@ export function ProductVariantSelector({
               className={`
                 relative
                 flex
-                min-w-[145px]
-                max-w-[200px]
-                shrink-0
-                flex-col
+                w-full
+                items-center
                 justify-between
-                rounded-xl
+                rounded-lg
                 border
-                p-3
+                p-2.5
                 text-left
                 transition-all
                 duration-200
@@ -109,7 +116,7 @@ export function ProductVariantSelector({
 
                 ${
                   isSelected
-                    ? "border-teal-600 bg-teal-50/40 ring-2 ring-teal-600/20 shadow-sm"
+                    ? "border-teal-600 bg-teal-50/40 ring-1 ring-teal-600/20 shadow-sm"
                     : "border-gray-200 bg-white hover:border-gray-300 active:bg-gray-50"
                 }
 
@@ -120,41 +127,79 @@ export function ProductVariantSelector({
                 }
               `}
             >
-              {/* HEADER INFO */}
-              <div className="w-full">
-                <h4
-                  className={`text-xs font-semibold tracking-tight text-gray-900 line-clamp-2 ${
-                    !isInStock && "line-through text-gray-400"
-                  }`}
-                >
-                  {variant.name}
-                </h4>
-
-                {/* ATTRIBUTES */}
-                {!!attributes.length && (
-                  <div className="mt-1 space-y-0.5">
-                    {attributes.map(([key, value]) => (
-                      <p
-                        key={`${key}-${value}`}
-                        className="text-[11px] text-gray-500 leading-none truncate"
-                      >
-                        <span className="text-gray-400 capitalize">{key}:</span>{" "}
-                        <span className="font-medium text-gray-700">{value}</span>
-                      </p>
-                    ))}
-                  </div>
+              {/* LEFT SECTION: THUMBNAIL + DETAILS */}
+              <div className="flex items-center space-x-2.5 overflow-hidden">
+                {(variant.images?.main || variant.images?.gallery?.length) && (
+                  <img
+                    src={variant.images.main || variant.images.gallery[0]}
+                    alt={variant.name}
+                    className="h-10 w-10 shrink-0 rounded-md border border-gray-200 object-cover"
+                  />
                 )}
+
+                <div className="overflow-hidden space-y-0.5">
+                  <h4
+                    className={`text-xs font-semibold tracking-tight text-gray-900 truncate ${
+                      !isInStock && "line-through text-gray-400"
+                    }`}
+                  >
+                    {variant.name}
+                  </h4>
+
+                  {/* ATTRIBUTES */}
+                  {!!attributes.length && (
+                    <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+                      {attributes.map(([key, value]) => (
+                        <span
+                          key={`${key}-${value}`}
+                          className="text-[11px] text-gray-500 leading-none"
+                        >
+                          <span className="text-gray-400 capitalize">{key}:</span>{" "}
+                          <span className="font-medium text-gray-700">{value}</span>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* WARRANTY & RATINGS SUB-LINE */}
+                  <div className="flex items-center gap-2 pt-0.5">
+                    {variant.warrantyMonths ? (
+                      <span className="text-[10px] text-gray-500 font-medium">
+                        {variant.warrantyMonths} Months Warranty
+                      </span>
+                    ) : null}
+
+                    {variant.ratings?.average ? (
+                      <span className="text-[10px] text-gray-600 font-medium flex items-center gap-0.5">
+                        ⭐ {variant.ratings.average.toFixed(1)} ({variant.ratings.count || 0})
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
               </div>
 
-              {/* FOOTER INFO (PRICE & STOCK) */}
-              <div className="mt-3 flex items-baseline justify-between w-full gap-2">
-                <span className="text-xs font-bold text-gray-900">
-                  ₹{variant.pricing.sellingPrice.toLocaleString()}
-                </span>
+              {/* RIGHT SECTION: PRICE, MRP, DISCOUNT & STOCK STATUS */}
+              <div className="flex shrink-0 flex-col items-end pl-3">
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-xs font-bold text-gray-900">
+                    ₹{sellingPrice.toLocaleString()}
+                  </span>
+                  {mrp > sellingPrice && (
+                    <span className="text-[10px] text-gray-400 line-through">
+                      ₹{mrp.toLocaleString()}
+                    </span>
+                  )}
+                </div>
+
+                {discountPercentage > 0 && (
+                  <span className="text-[9px] font-bold text-emerald-600 mt-0.5">
+                    {discountPercentage}% OFF
+                  </span>
+                )}
 
                 {!isInStock && (
-                  <span className="text-[10px] font-medium tracking-wide text-red-500 uppercase">
-                    Out
+                  <span className="text-[10px] font-medium tracking-wide text-red-500 uppercase mt-0.5">
+                    Out of Stock
                   </span>
                 )}
               </div>

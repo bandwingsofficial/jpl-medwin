@@ -9,6 +9,7 @@ import { localWishlistService } from "../hooks/local-wishlist.service";
 
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { Product } from "@/features/products/types/product.type";
+import { WishlistProduct } from "../types/wishlist.type";
 
 const mapProductToWishlistProduct = (
   product: Product & {
@@ -33,7 +34,7 @@ const mapProductToWishlistProduct = (
       slug?: string;
     };
   }
-) => ({
+): WishlistProduct => ({
   id: product.id,
 
   name: product.name,
@@ -71,29 +72,41 @@ const mapProductToWishlistProduct = (
 
   pricing: {
     minPrice: product.price?.min ?? null,
-
     maxPrice: product.price?.max ?? null,
-
-    currency:
-      (product as any).currency ??
-      "INR",
+    currency: "INR",
   },
 
   rating: {
-    averageRating:
-      product.ratings?.average ?? 0,
-
-    reviewCount:
-      product.ratings?.count ?? 0,
+    averageRating: product.ratings?.average ?? 0,
+    reviewCount: product.ratings?.count ?? 0,
   },
 
   image: {
-    main:
-      product.images?.main ??
-      null,
+    main: product.images?.main ?? null,
   },
 
   status: product.status,
+
+  // REQUIRED FIELDS
+  ratings: product.ratings ?? {
+    average: 0,
+    count: 0,
+  },
+
+  tags: product.tags ?? [],
+
+  features: product.features ?? [],
+
+  descriptions:
+    product.descriptions ?? {
+      short: product.shortDescription ?? "",
+      long: product.longDescription ?? "",
+    },
+
+  defaultVariantId:
+    product.defaultVariantId ?? null,
+
+  variants: product.variants ?? [],
 });
 
 export const useWishlist = () => {

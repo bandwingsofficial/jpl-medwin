@@ -23,6 +23,10 @@ import { useAuthGuard } from "@/features/auth/hooks/use-auth-guard";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { WishlistItem } from "@/features/wishlist/types/wishlist.type";
 import { useRemoveFromWishlist } from "@/features/wishlist/hooks/use-remove-from-wishlist";
+import { useAuth } from "@/features/auth/hooks/use-auth";
+import { Product } from "@/features/products/types/product.type";
+import { productApi } from "@/features/products/api/product.api";
+import { localCartService } from "@/features/cart/hooks/local-cart.service";
 
 interface WishlistCardProps {
   item: WishlistItem;
@@ -107,44 +111,53 @@ export function WishlistCard({ item }: WishlistCardProps) {
 
   const isCartLoading = isAddingToCart || isUpdatingCart || isRemovingCart;
 
-  const handleAddToCart = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
 
-    if (!requireAuth()) {
-      return;
+const { isAuthenticated } = useAuth();
+
+const handleAddToCart = async () => {
+  try {
+    let fullProduct;
+
+    if (!isAuthenticated) {
+      const response = await productApi.getProductBySlug(product.slug);
+      fullProduct = response.data;
     }
 
-    if (!variant?.id) {
-      return;
-    }
+    await addToCart({
+      productId: product.id,
+      variantId:
+        product.defaultVariantId ?? product.variants[0]?.id ?? "",
+      quantity: 1,
+      product: fullProduct,
+    });
 
-    if (!isInStock) {
-      return;
-    }
-
-    try {
-      await addToCart({
-        productId: product.id,
-        variantId: variant.id,
-        quantity: 1,
-      });
-
-      await queryClient.invalidateQueries({
-        queryKey: ["cart"],
-      });
-    } catch (error) {
-      console.error("ADD TO CART ERROR", error);
-    }
-  };
-
+    await queryClient.invalidateQueries({
+      queryKey: ["cart"],
+    });
+  } catch (error) {
+    console.error("ADD TO CART", error);
+  }
+};
   const handleIncrease = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!requireAuth()) {
-      return;
-    }
+    if (!isAuthenticated) {
+  localCartService.updateQuantity(
+    product.id,
+    cartQuantity + 1
+  );
+
+  await queryClient.invalidateQueries({
+    queryKey: ["cart"],
+  });
+
+  return;
+}
+
+if (!requireAuth()) {
+  return;
+}
 
     if (!cartItem?.id) {
       return;
@@ -168,10 +181,26 @@ export function WishlistCard({ item }: WishlistCardProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    if (!requireAuth()) {
-      return;
-    }
+    if (!isAuthenticated) {
+  if (cartQuantity <= 1) {
+    localCartService.removeItem(product.id);
+  } else {
+    localCartService.updateQuantity(
+      product.id,
+      cartQuantity - 1
+    );
+  }
 
+  await queryClient.invalidateQueries({
+    queryKey: ["cart"],
+  });
+
+  return;
+}
+
+if (!requireAuth()) {
+  return;
+}
     if (!cartItem?.id) {
       return;
     }

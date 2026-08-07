@@ -88,7 +88,8 @@ export function ProductGallery({
    |----------------------------------------------------------------------
    */
 
- const [isCopied, setIsCopied] =
+ const [isCopied,
+    setIsCopied] =
   useState(false);
 
 const { requireAuth } =
@@ -246,7 +247,7 @@ const isWishlistLoading =
             w-full
             gap-3
             overflow-x-auto
-            md:h-[480px]
+            md:h-[360px]
             md:w-auto
             md:flex-col
             md:items-center
@@ -289,8 +290,8 @@ const isWishlistLoading =
               flex
               gap-3
               overflow-x-auto
-              md:h-[380px]
-              md:w-[92px]
+              md:h-[280px]
+              md:w-[80px]
               md:flex-1
               md:flex-col
               md:overflow-y-auto
@@ -314,22 +315,21 @@ const isWishlistLoading =
                     }
                     className={`
                       relative
-                      h-[72px]
-                      min-h-[72px]
-                      w-[72px]
-                      min-w-[72px]
+                      h-[64px]
+                      min-h-[64px]
+                      w-[64px]
+                      min-w-[64px]
                       shrink-0
-                      overflow-link
                       overflow-hidden
                       rounded-xl
                       border
                       bg-white
                       transition-all
                       duration-200
-                      md:h-[82px]
-                      md:min-h-[82px]
-                      md:w-[82px]
-                      md:min-w-[82px]
+                      md:h-[72px]
+                      md:min-h-[72px]
+                      md:w-[72px]
+                      md:min-w-[72px]
 
                       ${
                         isActive
@@ -347,13 +347,13 @@ const isWishlistLoading =
                         index + 1
                       }`}
                       fill
-                      sizes="82px"
+                      sizes="72px"
                       onError={
                         handleImageError
                       }
                       className="
                         object-contain
-                        p-2
+                        p-1.5
                       "
                     />
                   </button>
@@ -406,18 +406,18 @@ const isWishlistLoading =
           border
           border-gray-200
           bg-white
-          h-[360px]
-          sm:h-[420px]
-          ${allImages.length <= 1 ? "md:h-[480px] md:flex-1" : "md:h-[480px] md:w-[480px]"}
+          h-[320px]
+          sm:h-[360px]
+          ${allImages.length <= 1 ? "md:h-[360px] md:flex-1" : "md:h-[360px] md:w-[360px]"}
         `}
       >
         {/* INTERACTIVE FLOATING UTILITY COLUMN */}
         <div className="absolute right-4 top-4 z-20 flex flex-col gap-2.5">
           {/* WISHLIST TRIGGER ACTION */}
           <button
- type="button"
- onClick={handleWishlist}
- disabled={isWishlistLoading}
+           type="button"
+           onClick={handleWishlist}
+           disabled={isWishlistLoading}
             className="
               flex
               h-9
@@ -511,7 +511,7 @@ const isWishlistLoading =
             sizes="
               (max-width: 768px) 100vw,
               (max-width: 1200px) 50vw,
-              520px
+              360px
             "
             onError={
               handleImageError
