@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { LoginModal } from "@/features/auth/components/login-modal";
 import { useAuthModal } from "@/shared/context/auth-modal-context";
 import { useLocation } from "@/features/location/context/LocationProvider";
 import { useLocationModal } from "@/features/location/hooks/useLocationModal";
@@ -67,16 +66,12 @@ export function TopActionBarMobile({
       return;
     }
 
-    if (!isAuthenticated) {
-      if (window.location.pathname === "/") {
-        setLoginOpen(true);
-      } else {
-        router.push("/login");
-      }
-      return;
-    }
+   if (!isAuthenticated) {
+  setLoginOpen(true);
+  return;
+}
 
-    setOpen((prev) => !prev);
+setOpen((prev) => !prev);
   };
   const handleActionClick = (href: string) => {
   if (isLoading) {
@@ -84,7 +79,7 @@ export function TopActionBarMobile({
   }
 
   // Allow guest access
-  if (href === "/wishlist") {
+ if (href === "/wishlist") {
     router.push(href);
     return;
   }
@@ -96,14 +91,10 @@ export function TopActionBarMobile({
   }
 
   // Require login for protected pages
-  if (!isAuthenticated) {
-    if (window.location.pathname === "/") {
-      setLoginOpen(true);
-    } else {
-      router.push("/login");
-    }
-    return;
-  }
+if (!isAuthenticated) {
+  setLoginOpen(true);
+  return;
+}
 
   router.push(href);
 };

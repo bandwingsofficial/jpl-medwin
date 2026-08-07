@@ -8,8 +8,6 @@ import type { NextRequest } from "next/server";
 
 const PROTECTED_ROUTES = [
   "/account",
-  "/cart",
-  "/wishlist",
 ];
 
 // ========================================
