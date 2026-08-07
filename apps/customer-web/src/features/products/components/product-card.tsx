@@ -4,7 +4,11 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from "react";
 import { Heart, Loader2, Minus, Plus, ShoppingCart, Star } from 'lucide-react';
+import { useAuth } from "@/features/auth/hooks/use-auth";
 
+import { useUpdateCartItem } from "@/features/cart/hooks/use-update-cart-item";
+
+import { useRemoveCartItem } from "@/features/cart/hooks/use-remove-cart-item";
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { Product } from '@/features/products/types/product.type';
@@ -24,9 +28,9 @@ interface ProductCardProps {
 const PLACEHOLDER_IMAGE = '/Logo/jpl_logo.png';
 
 export function ProductCard({ product }: ProductCardProps) {
-  const queryClient = useQueryClient();
-
-  const { requireAuth } = useAuthGuard();
+  const {
+  isAuthenticated,
+} = useAuth();
 
   const variant =
     product?.variants?.find((item) => item.id === product.defaultVariantId) ||
@@ -57,35 +61,15 @@ export function ProductCard({ product }: ProductCardProps) {
     variant?.images?.main?.trim() || product.images?.main?.trim() || PLACEHOLDER_IMAGE;
     const [imageSrc, setImageSrc] = useState(productImage);
 
-  const { mutateAsync: updateCartItem, isPending: isUpdatingCart } = useMutation({
-    mutationFn: ({
-      cartItemId,
-      quantity,
-    }: {
-      cartItemId: string;
+  const {
+  mutateAsync: updateCartItem,
+  isPending: isUpdatingCart,
+} = useUpdateCartItem();
 
-      quantity: number;
-    }) =>
-      cartApi.updateItem(cartItemId, {
-        quantity,
-      }),
-
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ['cart'],
-      });
-    },
-  });
-
-  const { mutateAsync: removeCartItem, isPending: isRemovingCart } = useMutation({
-    mutationFn: (cartItemId: string) => cartApi.removeItem(cartItemId),
-
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ['cart'],
-      });
-    },
-  });
+  const {
+  mutateAsync: removeCartItem,
+  isPending: isRemovingCart,
+} = useRemoveCartItem();
 
   const isCartLoading = isAddingToCart || isUpdatingCart || isRemovingCart;
 
@@ -93,10 +77,6 @@ export function ProductCard({ product }: ProductCardProps) {
     e.preventDefault();
 
     e.stopPropagation();
-
-    if (!requireAuth()) {
-      return;
-    }
 
     if (!variant?.id) {
       return;
@@ -108,16 +88,15 @@ export function ProductCard({ product }: ProductCardProps) {
 
     try {
       await addToCart({
-        productId: product.id,
+  productId: product.id,
 
-        variantId: variant.id,
+  variantId: variant.id,
 
-        quantity: 1,
-      });
+  quantity: 1,
 
-      await queryClient.invalidateQueries({
-        queryKey: ['cart'],
-      });
+  product,
+});
+
     } catch (error) {
       console.error('ADD TO CART ERROR', error);
     }
@@ -128,22 +107,16 @@ export function ProductCard({ product }: ProductCardProps) {
 
     e.stopPropagation();
 
-    if (!requireAuth()) {
-      return;
-    }
-
     if (!cartItem?.id) {
       return;
     }
 
-    if (cartQuantity >= stockQuantity) {
-      return;
-    }
 
     try {
       await updateCartItem({
-        cartItemId: cartItem.id,
-
+        cartItemId: isAuthenticated
+  ? cartItem.id
+  : cartItem.productId,
         quantity: cartQuantity + 1,
       });
     } catch (error) {
@@ -156,9 +129,6 @@ export function ProductCard({ product }: ProductCardProps) {
 
     e.stopPropagation();
 
-    if (!requireAuth()) {
-      return;
-    }
 
     if (!cartItem?.id) {
       return;
@@ -166,13 +136,19 @@ export function ProductCard({ product }: ProductCardProps) {
 
     try {
       if (cartQuantity <= 1) {
-        await removeCartItem(cartItem.id);
+      await removeCartItem(
+  isAuthenticated
+    ? cartItem.id
+    : cartItem.productId
+);
 
         return;
       }
 
       await updateCartItem({
-        cartItemId: cartItem.id,
+      cartItemId: isAuthenticated
+  ? cartItem.id
+  : cartItem.productId,
 
         quantity: cartQuantity - 1,
       });
@@ -486,7 +462,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 <button
                   type="button"
                   onClick={handleIncrease}
-                  disabled={isCartLoading || cartQuantity >= stockQuantity}
+                  disabled={isCartLoading}
                   className="
                     flex
                     h-full

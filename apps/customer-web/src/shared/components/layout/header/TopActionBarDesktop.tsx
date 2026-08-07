@@ -79,6 +79,11 @@ export function TopActionBarDesktop({
     router.push(href);
     return;
   }
+  // Allow guest access
+  if (href === "/cart") {
+    router.push(href);
+    return;
+  }
 
   // Require login for protected pages
   if (!isAuthenticated) {

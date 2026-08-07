@@ -181,12 +181,6 @@ export function ProductDetailsPage({
   />
 </div>
 
-<div className="order-4 lg:order-none flex flex-col gap-5 lg:gap-0">
-  <ProductCommercialDetails
-    product={product}
-    selectedVariant={selectedVariant}
-  />
-</div>
         </div>
       </div>
 

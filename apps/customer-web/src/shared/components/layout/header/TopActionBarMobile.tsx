@@ -79,7 +79,9 @@ export function TopActionBarMobile({
     setOpen((prev) => !prev);
   };
   const handleActionClick = (href: string) => {
-  if (isLoading) return;
+  if (isLoading) {
+    return;
+  }
 
   // Allow guest access
   if (href === "/wishlist") {
@@ -87,6 +89,13 @@ export function TopActionBarMobile({
     return;
   }
 
+  // Allow guest access
+  if (href === "/cart") {
+    router.push(href);
+    return;
+  }
+
+  // Require login for protected pages
   if (!isAuthenticated) {
     if (window.location.pathname === "/") {
       setLoginOpen(true);

@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Trash2 } from "lucide-react";
-
+import { useAuth } from "@/features/auth/hooks/use-auth";
 import { CartItem } from "@/features/cart/types/cart.type";
 
 import { QuantitySelector } from "@/features/cart/components/quantity-selector";
@@ -16,26 +16,20 @@ interface CartItemCardProps {
   item: CartItem;
 }
 
-export function CartItemCard({
-  item,
-}: CartItemCardProps) {
+export function CartItemCard({ item }: CartItemCardProps) {
   /*
    |--------------------------------------------------------------------------
    | HOOKS
    |--------------------------------------------------------------------------
    */
 
-  const {
-    mutate: updateQuantity,
-    isPending:
-      isUpdatingQuantity,
-  } = useUpdateCartItem();
+  const { mutate: updateQuantity, isPending: isUpdatingQuantity } =
+    useUpdateCartItem();
 
-  const {
-    mutate: removeItem,
-    isPending:
-      isRemovingItem,
-  } = useRemoveCartItem();
+  const { mutate: removeItem, isPending: isRemovingItem } =
+    useRemoveCartItem();
+
+  const { isAuthenticated } = useAuth();
 
   /*
    |--------------------------------------------------------------------------
@@ -43,32 +37,31 @@ export function CartItemCard({
    |--------------------------------------------------------------------------
    */
 
-  const handleQuantityChange = (
-    quantity: number
-  ) => {
+  const handleQuantityChange = (quantity: number) => {
     updateQuantity({
-      cartItemId: item.id,
-
+      cartItemId: isAuthenticated ? item.id : item.productId,
       quantity,
     });
   };
 
   const handleRemoveItem = () => {
-    removeItem(item.id);
+    removeItem(isAuthenticated ? item.id : item.productId);
   };
 
   return (
     <div
       className="
-        rounded-2xl
+        rounded-xl
         border
         border-gray-200
         bg-white
-        p-4
+        p-3
         shadow-sm
+        sm:rounded-2xl
+        sm:p-4
       "
     >
-      <div className="flex gap-4">
+      <div className="flex gap-3 sm:gap-4">
         {/* ====================================================== */}
         {/* IMAGE */}
         {/* ====================================================== */}
@@ -77,25 +70,27 @@ export function CartItemCard({
           href={`/products/${item.productId}`}
           className="
             relative
-            h-28
-            w-28
+            h-20
+            w-20
             shrink-0
             overflow-hidden
-            rounded-xl
+            rounded-lg
             border
             border-gray-100
             bg-white
+            sm:h-28
+            sm:w-28
+            sm:rounded-xl
           "
         >
           <Image
             src={
-              item.variant.images
-                ?.main ||
+              item.variant.images?.main ||
               "/images/product-placeholder.png"
             }
             alt={item.productName}
             fill
-            className="object-contain p-2"
+            className="object-contain p-1.5 sm:p-2"
           />
         </Link>
 
@@ -103,37 +98,39 @@ export function CartItemCard({
         {/* CONTENT */}
         {/* ====================================================== */}
 
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-w-0 flex-1 flex-col justify-between">
           {/* TOP */}
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex items-start justify-between gap-2 sm:gap-4">
             <div className="min-w-0">
               {/* BRAND */}
               <p
                 className="
-                  mb-1
-                  text-xs
+                  mb-0.5
+                  text-[10px]
                   font-medium
                   uppercase
                   tracking-wide
                   text-gray-500
+                  sm:mb-1
+                  sm:text-xs
                 "
               >
                 {item.brandName}
               </p>
 
               {/* TITLE */}
-              <Link
-                href={`/products/${item.productId}`}
-              >
+              <Link href={`/products/${item.productId}`}>
                 <h3
                   className="
                     line-clamp-2
-                    text-sm
+                    text-xs
                     font-semibold
-                    leading-6
+                    leading-4
                     text-gray-900
                     transition
                     hover:text-black
+                    sm:text-sm
+                    sm:leading-6
                   "
                 >
                   {item.productName}-{item.variant.name}
@@ -144,100 +141,95 @@ export function CartItemCard({
             {/* REMOVE */}
             <button
               type="button"
-              onClick={
-                handleRemoveItem
-              }
-              disabled={
-                isRemovingItem
-              }
+              onClick={handleRemoveItem}
+              disabled={isRemovingItem}
               className="
                 flex
-                h-10
-                w-10
+                h-8
+                w-8
+                shrink-0
                 items-center
                 justify-center
-                rounded-xl
+                rounded-lg
                 border
                 border-gray-200
                 text-gray-500
                 transition
                 hover:bg-red-50
                 hover:text-red-500
+                sm:h-10
+                sm:w-10
+                sm:rounded-xl
               "
             >
-              <Trash2 size={18} />
+              <Trash2 className="h-4 w-4 sm:h-[18px] sm:w-[18px]" />
             </button>
           </div>
 
           {/* BOTTOM */}
           <div
             className="
-              mt-5
+              mt-3
               flex
               flex-wrap
-              items-center
+              items-end
               justify-between
-              gap-4
+              gap-2
+              sm:mt-5
+              sm:items-center
+              sm:gap-4
             "
           >
             {/* PRICE */}
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-baseline gap-1.5 sm:items-center sm:gap-2">
                 <span
                   className="
-                    text-xl
+                    text-base
                     font-bold
                     text-gray-900
+                    sm:text-xl
                   "
                 >
-                  ₹
-                  {item.variant.pricing.sellingPrice.toLocaleString()}
+                  ₹{item.variant.pricing.sellingPrice.toLocaleString()}
                 </span>
 
                 <span
                   className="
-                    text-sm
+                    text-xs
                     text-gray-400
                     line-through
+                    sm:text-sm
                   "
                 >
-                  ₹
-                  {item.variant.pricing.mrp.toLocaleString()}
+                  ₹{item.variant.pricing.mrp.toLocaleString()}
                 </span>
               </div>
 
               <p
                 className="
-                  mt-1
-                  text-xs
+                  mt-0.5
+                  text-[10px]
+                  font-medium
                   text-green-600
+                  sm:mt-1
+                  sm:text-xs
                 "
               >
                 You save ₹
                 {(
-                  item.variant.pricing
-                    .mrp -
-                  item.variant.pricing
-                    .sellingPrice
+                  item.variant.pricing.mrp -
+                  item.variant.pricing.sellingPrice
                 ).toLocaleString()}
               </p>
             </div>
 
             {/* QUANTITY */}
             <QuantitySelector
-              value={
-                item.variant.quantity
-              }
-              max={
-                item.variant.stock
-                  .available
-              }
-              disabled={
-                isUpdatingQuantity
-              }
-              onChange={
-                handleQuantityChange
-              }
+              value={item.variant.quantity}
+              max={999999}
+              disabled={isUpdatingQuantity}
+              onChange={handleQuantityChange}
             />
           </div>
         </div>

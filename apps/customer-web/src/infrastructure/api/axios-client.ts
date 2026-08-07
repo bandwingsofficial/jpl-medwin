@@ -27,7 +27,6 @@ const processQueue = (error: any) => {
 const PROTECTED_ROUTES = [
   "/account",
   "/checkout",
-  "/cart",
 ];
 
 const isProtectedRoute = (pathname: string) => {

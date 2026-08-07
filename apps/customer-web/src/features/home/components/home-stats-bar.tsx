@@ -13,7 +13,7 @@ type Stat = {
 };
 
 const STATS: Stat[] = [
-  { icon: Package, label: "Active products", value: 10000, suffix: "+", theme: "teal" },
+  { icon: Package, label: "Active products", value: 2000, suffix: "+", theme: "teal" },
   { icon: Award, label: "Trusted brands", value: 100, suffix: "+", theme: "purple" },
   { icon: BadgeCheck, label: "Genuine quality", value: 100, suffix: "%", theme: "blue" },
   { icon: ShieldCheck, label: "Best price", value: null, suffix: "", word: "Guaranteed", theme: "amber" },

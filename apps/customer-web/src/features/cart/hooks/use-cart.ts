@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 
 import { cartApi } from "@/features/cart/api/cart.api";
+import { localCartService } from "@/features/cart/hooks/local-cart.service";
 
 import { useAuth } from "@/features/auth/hooks/use-auth";
 
@@ -13,10 +14,13 @@ export const useCart = () => {
   return useQuery({
     queryKey: ["cart"],
 
-    queryFn: () =>
-      cartApi.getCart(),
+    queryFn: async () => {
+      if (isAuthenticated) {
+        return cartApi.getCart();
+      }
 
-    enabled: isAuthenticated,
+      return localCartService.getCart();
+    },
 
     staleTime: 1000 * 60 * 2,
 

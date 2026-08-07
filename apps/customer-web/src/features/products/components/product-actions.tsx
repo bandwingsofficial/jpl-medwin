@@ -26,6 +26,8 @@ import { useRemoveFromWishlist } from "@/features/wishlist/hooks/use-remove-from
 import { useCart } from "@/features/cart/hooks/use-cart";
 
 import { cartApi } from "@/features/cart/api/cart.api";
+import { useUpdateCartItem } from "@/features/cart/hooks/use-update-cart-item";
+import { useRemoveCartItem } from "@/features/cart/hooks/use-remove-cart-item";
 
 import {
   useMutation,
@@ -55,9 +57,6 @@ export function ProductActions({
    | QUERY CLIENT
    |--------------------------------------------------------------------------
    */
-
-  const queryClient =
-    useQueryClient();
 
   /*
    |--------------------------------------------------------------------------
@@ -155,33 +154,10 @@ const isWishlistLoading =
    |--------------------------------------------------------------------------
    */
 
-  const {
-    mutate: updateCart,
-    isPending:
-      isUpdatingCart,
-  } = useMutation({
-    mutationFn: ({
-      cartItemId,
-      quantity,
-    }: {
-      cartItemId: string;
-
-      quantity: number;
-    }) =>
-      cartApi.updateItem(
-        cartItemId,
-        {
-          quantity,
-        }
-      ),
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["cart"],
-      });
-    },
-  });
-
+ const {
+  mutate: updateCart,
+  isPending: isUpdatingCart,
+} = useUpdateCartItem();
   /*
    |--------------------------------------------------------------------------
    | REMOVE CART ITEM
@@ -189,24 +165,9 @@ const isWishlistLoading =
    */
 
   const {
-    mutate: removeCartItem,
-    isPending:
-      isRemovingCartItem,
-  } = useMutation({
-    mutationFn: (
-      cartItemId: string
-    ) =>
-      cartApi.removeItem(
-        cartItemId
-      ),
-
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["cart"],
-      });
-    },
-  });
-
+  mutate: removeCartItem,
+  isPending: isRemovingCartItem,
+} = useRemoveCartItem();
   /*
    |--------------------------------------------------------------------------
    | LOADING STATE
@@ -225,15 +186,6 @@ const isWishlistLoading =
    */
 
  const handleAddToCart = () => {
-  /*
-   |--------------------------------------------------------------------------
-   | AUTH CHECK
-   |--------------------------------------------------------------------------
-   */
-
-  if (!requireAuth()) {
-    return;
-  }
 
   /*
    |--------------------------------------------------------------------------
@@ -251,13 +203,15 @@ const isWishlistLoading =
    |--------------------------------------------------------------------------
    */
 
-  addToCart({
-    productId: product.id,
+ addToCart({
+  productId: product.id,
 
-    variantId: selectedVariant.id,
+  variantId: selectedVariant.id,
 
-    quantity: 1,
-  });
+  quantity: 1,
+
+  product,
+});
 };
   /*
    |--------------------------------------------------------------------------
@@ -271,13 +225,13 @@ const isWishlistLoading =
         return;
       }
 
-      updateCart({
-        cartItemId:
-          cartItem.id,
+     updateCart({
+  cartItemId: isAuthenticated
+    ? cartItem.id
+    : cartItem.productId,
 
-        quantity:
-          quantity + 1,
-      });
+  quantity: quantity + 1,
+});
     };
 
   /*
@@ -300,8 +254,10 @@ const isWishlistLoading =
 
       if (quantity <= 1) {
         removeCartItem(
-          cartItem.id
-        );
+  isAuthenticated
+    ? cartItem.id
+    : cartItem.productId
+);
 
         return;
       }
@@ -313,12 +269,12 @@ const isWishlistLoading =
        */
 
       updateCart({
-        cartItemId:
-          cartItem.id,
+  cartItemId: isAuthenticated
+    ? cartItem.id
+    : cartItem.productId,
 
-        quantity:
-          quantity - 1,
-      });
+  quantity: quantity - 1,
+});
     };
 
   /*
@@ -400,14 +356,16 @@ const isWishlistLoading =
 
             <div
               className="
-                flex
-                flex-1
-                items-center
-                justify-center
-                text-sm
-                font-semibold
-                text-gray-900
-              "
+  flex
+  flex-1 sm:flex-none
+  sm:w-14
+  items-center
+  justify-center
+  text-sm sm:text-base
+  font-semibold
+  tabular-nums
+  text-gray-900
+"
             >
               {isCartActionLoading ? (
                 <Loader2

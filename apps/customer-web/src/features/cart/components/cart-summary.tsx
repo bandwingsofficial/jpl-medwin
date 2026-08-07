@@ -1,15 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-
 import { Cart } from "@/features/cart/types/cart.type";
-
 import { useAuth } from "@/features/auth/hooks/use-auth";
-
 import CartCoupon from "./cart-coupon";
-
 import { showError } from "@/shared/store/toast.store";
-
 import { useRemoveCoupon } from "@/features/cart/hooks/use-remove-coupon";
 import { X, Trash2 } from "lucide-react";
 
@@ -17,15 +12,12 @@ interface CartSummaryProps {
   cart: Cart;
 }
 
-export function CartSummary({
-  cart,
-}: CartSummaryProps) {
+export function CartSummary({ cart }: CartSummaryProps) {
   /*
    |--------------------------------------------------------------------------
    | ROUTER
    |--------------------------------------------------------------------------
    */
-
   const router = useRouter();
 
   /*
@@ -33,66 +25,50 @@ export function CartSummary({
    | AUTH
    |--------------------------------------------------------------------------
    */
-
-  const { isAuthenticated } =
-    useAuth();
+  const { isAuthenticated } = useAuth();
 
   /*
    |--------------------------------------------------------------------------
    | REMOVE COUPON
    |--------------------------------------------------------------------------
    */
-
-  const { removeCoupon, isPending } =
-    useRemoveCoupon();
+  const { removeCoupon, isPending } = useRemoveCoupon();
 
   /*
    |--------------------------------------------------------------------------
    | SUMMARY
    |--------------------------------------------------------------------------
    */
-
-  const summary =
-    cart.summary;
+  const summary = cart.summary;
 
   /*
    |--------------------------------------------------------------------------
    | COUPON
    |--------------------------------------------------------------------------
    */
-
-  const appliedCoupon =
-    cart.appliedCoupon;
+  const appliedCoupon = cart.appliedCoupon;
 
   /*
    |--------------------------------------------------------------------------
    | CALCULATIONS
    |--------------------------------------------------------------------------
    */
-
-  const couponDiscount =
-    summary.couponDiscount || 0;
+  const couponDiscount = summary.couponDiscount || 0;
 
   /*
    |--------------------------------------------------------------------------
    | HANDLERS
    |--------------------------------------------------------------------------
    */
-
   const handleCheckout = () => {
     /*
      |--------------------------------------------------------------------------
      | LOGIN CHECK
      |--------------------------------------------------------------------------
      */
-
     if (!isAuthenticated) {
-      showError(
-        "Please login first to continue checkout."
-      );
-
+      showError("Please login first to continue checkout.");
       router.push("/login");
-
       return;
     }
 
@@ -101,14 +77,8 @@ export function CartSummary({
      | EMPTY CART CHECK
      |--------------------------------------------------------------------------
      */
-
-    if (
-      !cart.cartItems?.length
-    ) {
-      showError(
-        "Your cart is empty."
-      );
-
+    if (!cart.cartItems?.length) {
+      showError("Your cart is empty.");
       return;
     }
 
@@ -117,7 +87,6 @@ export function CartSummary({
      | NAVIGATE
      |--------------------------------------------------------------------------
      */
-
     router.push("/checkout");
   };
 
@@ -126,23 +95,17 @@ export function CartSummary({
    | REMOVE COUPON HANDLER
    |--------------------------------------------------------------------------
    */
-
-  const handleRemoveCoupon =
-    async () => {
-      await removeCoupon();
-    };
+  const handleRemoveCoupon = async () => {
+    await removeCoupon();
+  };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 md:space-y-5">
       {/* ====================================================== */}
       {/* COUPON */}
       {/* ====================================================== */}
 
-      <CartCoupon
-        appliedCoupon={
-          appliedCoupon
-        }
-      />
+      <CartCoupon appliedCoupon={appliedCoupon} />
 
       {/* ====================================================== */}
       {/* ORDER SUMMARY */}
@@ -156,7 +119,8 @@ export function CartSummary({
           border
           border-gray-200
           bg-white
-          p-6
+          p-4
+          md:p-6
           shadow-sm
         "
       >
@@ -166,8 +130,10 @@ export function CartSummary({
 
         <h2
           className="
-            mb-6
-            text-2xl
+            mb-4
+            md:mb-6
+            text-xl
+            md:text-2xl
             font-bold
             text-gray-900
           "
@@ -179,122 +145,75 @@ export function CartSummary({
         {/* SUMMARY DETAILS */}
         {/* ====================================================== */}
 
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4">
           {/* SUBTOTAL */}
-
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">
-              Subtotal
-            </span>
-
+            <span className="text-xs md:text-sm text-gray-600">Subtotal</span>
             <span className="text-sm font-medium">
-              ₹
-              {summary.subtotal.toLocaleString()}
+              ₹{summary.subtotal.toLocaleString()}
             </span>
           </div>
 
           {/* PRODUCT DISCOUNT */}
-
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">
+            <span className="text-xs md:text-sm text-gray-600">
               Product Discount
             </span>
-
-            <span
-              className="
-                text-sm
-                font-medium
-                text-green-600
-              "
-            >
-              - ₹
-              {summary.productDiscount.toLocaleString()}
+            <span className="text-sm font-medium text-green-600">
+              - ₹{summary.productDiscount.toLocaleString()}
             </span>
           </div>
 
-         {/* COUPON DISCOUNT */}
+          {/* COUPON DISCOUNT */}
+          {couponDiscount > 0 && (
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-xs md:text-sm text-gray-600">
+                  Coupon Discount
+                </span>
+                <div className="mt-1 md:mt-2 flex items-center gap-2">
+                  <p className="text-[10px] md:text-xs font-medium text-purple-600">
+                    Coupon Applied
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoupon}
+                    disabled={isPending}
+                    aria-label="Remove coupon"
+                    className="
+                      flex h-5 w-5 md:h-6 md:w-6
+                      items-center justify-center
+                      rounded-full
+                      text-red-500
+                      transition-colors duration-200
+                      hover:bg-red-50 hover:text-red-600
+                      disabled:cursor-not-allowed disabled:opacity-50
+                    "
+                  >
+                    <Trash2 className="h-3 w-3 md:h-4 md:w-4" />
+                  </button>
+                </div>
+              </div>
 
-{couponDiscount > 0 && (
-  <div className="flex items-center justify-between">
-    <div>
-      <span className="text-sm text-gray-600">
-        Coupon Discount
-      </span>
-
-      <div className="mt-2 flex items-center gap-2">
-        <p
-          className="
-            text-xs
-            font-medium
-            text-purple-600
-          "
-        >
-          Coupon Applied
-        </p>
-
-        <button
-  type="button"
-  onClick={handleRemoveCoupon}
-  disabled={isPending}
-  aria-label="Remove coupon"
-  className="
-    flex
-    h-6
-    w-6
-    items-center
-    justify-center
-    rounded-full
-    text-red-500
-    transition-colors
-    duration-200
-    hover:bg-red-50
-    hover:text-red-600
-    disabled:cursor-not-allowed
-    disabled:opacity-50
-  "
->
-  <Trash2  className="h-4 w-4" />
-</button>
-      </div>
-    </div>
-
-    <span
-      className="
-        text-sm
-        font-semibold
-        text-emerald-600
-      "
-    >
-      - ₹
-      {couponDiscount.toLocaleString()}
-    </span>
-  </div>
-)}
+              <span className="text-sm font-semibold text-emerald-600">
+                - ₹{couponDiscount.toLocaleString()}
+              </span>
+            </div>
+          )}
 
           {/* SHIPPING */}
-
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">
-              Shipping
-            </span>
-
+            <span className="text-xs md:text-sm text-gray-600">Shipping</span>
             <span className="text-sm font-medium">
-              {summary.shipping === 0
-                ? "Free"
-                : `₹${summary.shipping}`}
+              {summary.shipping === 0 ? "Free" : `₹${summary.shipping}`}
             </span>
           </div>
 
           {/* TAX */}
-
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-600">
-              Tax
-            </span>
-
+            <span className="text-xs md:text-sm text-gray-600">Tax</span>
             <span className="text-sm font-medium">
-              ₹
-              {summary.tax.toLocaleString()}
+              ₹{summary.tax.toLocaleString()}
             </span>
           </div>
 
@@ -302,27 +221,13 @@ export function CartSummary({
           {/* TOTAL */}
           {/* ====================================================== */}
 
-          <div className="border-t border-dashed pt-5">
+          <div className="border-t border-dashed pt-4 md:pt-5">
             <div className="flex items-center justify-between">
-              <span
-                className="
-                  text-lg
-                  font-bold
-                  text-gray-900
-                "
-              >
+              <span className="text-base md:text-lg font-bold text-gray-900">
                 Total
               </span>
-
-              <span
-                className="
-                  text-3xl
-                  font-bold
-                  text-gray-900
-                "
-              >
-                ₹
-                {summary.grandTotal.toLocaleString()}
+              <span className="text-2xl md:text-3xl font-bold text-gray-900">
+                ₹{summary.grandTotal.toLocaleString()}
               </span>
             </div>
           </div>
@@ -331,71 +236,81 @@ export function CartSummary({
           {/* SAVINGS */}
           {/* ====================================================== */}
 
-          <div
-            className="
-              rounded-xl
-              border
-              border-green-100
-              bg-green-50
-              p-4
-            "
-          >
-            <p
-              className="
-                text-sm
-                font-semibold
-                text-green-700
-              "
-            >
-              You saved ₹
-              {summary.savings.toLocaleString()}
+          <div className="rounded-xl border border-green-100 bg-green-50 p-3 md:p-4">
+            <p className="text-xs md:text-sm font-semibold text-green-700">
+              You saved ₹{summary.savings.toLocaleString()}
             </p>
-
             {couponDiscount > 0 && (
-              <p
-                className="
-                  mt-1
-                  text-xs
-                  text-green-600
-                "
-              >
+              <p className="mt-1 text-[10px] md:text-xs text-green-600">
                 Includes coupon savings
               </p>
             )}
           </div>
 
           {/* ====================================================== */}
-          {/* CHECKOUT BUTTON */}
+          {/* DESKTOP CHECKOUT BUTTON */}
           {/* ====================================================== */}
 
           <button
             type="button"
             onClick={handleCheckout}
-            disabled={
-              !cart.cartItems?.length
-            }
+            disabled={!cart.cartItems?.length}
             className="
-              mt-5
-              flex
-              h-14
-              w-full
-              items-center
-              justify-center
+              hidden md:flex
+              mt-5 h-14 w-full
+              items-center justify-center
               rounded-2xl
               bg-teal-600
-              text-sm
-              font-semibold
-              text-white
-              transition-all
-              duration-200
+              text-sm font-semibold text-white
+              transition-all duration-200
               hover:bg-teal-700
-              disabled:cursor-not-allowed
-              disabled:opacity-50
+              disabled:cursor-not-allowed disabled:opacity-50
             "
           >
             Proceed To Checkout
           </button>
         </div>
+      </div>
+
+      {/* ====================================================== */}
+      {/* MOBILE STICKY BOTTOM CHECKOUT BAR (Hidden on md+) */}
+      {/* ====================================================== */}
+      <div
+        className="
+          fixed bottom-[65px] left-0 right-0 z-50 
+          flex md:hidden 
+          items-center justify-between 
+          border-t border-gray-200 
+          bg-white px-4 py-3 
+          shadow-[0_-4px_10px_rgba(0,0,0,0.05)]
+        "
+      >
+        <div className="flex flex-col">
+          <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wider">
+            Total Amount
+          </span>
+          <span className="text-lg font-bold text-gray-900">
+            ₹{summary.grandTotal.toLocaleString()}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleCheckout}
+          disabled={!cart.cartItems?.length}
+          className="
+            flex h-11 px-5
+            items-center justify-center
+            rounded-xl
+            bg-teal-600
+            text-sm font-semibold text-white
+            transition-all duration-200
+            active:bg-teal-700
+            disabled:cursor-not-allowed disabled:opacity-50
+          "
+        >
+          Proceed To Checkout
+        </button>
       </div>
     </div>
   );

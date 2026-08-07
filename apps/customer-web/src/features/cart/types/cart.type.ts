@@ -101,6 +101,8 @@ export interface Cart {
 
   totalItems: number;
 
+  totalAmount?: number;
+
   totalQuantity: number;
 
   cartItems: CartItem[];

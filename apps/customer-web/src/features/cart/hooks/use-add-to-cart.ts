@@ -8,6 +8,10 @@ import {
 import { AxiosError } from "axios";
 
 import { cartApi } from "@/features/cart/api/cart.api";
+import { localCartService } from "@/features/cart/hooks/local-cart.service";
+
+import { useAuth } from "@/features/auth/hooks/use-auth";
+import { Product } from "@/features/products/types/product.type";
 
 interface AddToCartPayload {
   productId: string;
@@ -15,6 +19,8 @@ interface AddToCartPayload {
   variantId: string;
 
   quantity: number;
+
+  product?: Product;
 }
 
 export const useAddToCart = () => {
@@ -26,26 +32,54 @@ export const useAddToCart = () => {
   const queryClient =
     useQueryClient();
 
+  const {
+    isAuthenticated,
+  } = useAuth();
+
   return useMutation({
     /*
      |--------------------------------------------------------------------------
      | MUTATION
      |--------------------------------------------------------------------------
      */
-    mutationFn: (
+    mutationFn: async (
       payload: AddToCartPayload
-    ) =>
-      cartApi.addItem(payload),
+    ) => {
+      if (
+        isAuthenticated
+      ) {
+        return cartApi.addItem({
+          productId:
+            payload.productId,
+
+          variantId:
+            payload.variantId,
+
+          quantity:
+            payload.quantity,
+        });
+      }
+
+      if (!payload.product) {
+        throw new Error(
+          "Product is required for guest cart."
+        );
+      }
+
+      localCartService.addItem(
+        payload.product,
+        payload.quantity
+      );
+
+      return true;
+    },
 
     /*
      |--------------------------------------------------------------------------
      | SUCCESS
      |--------------------------------------------------------------------------
      */
-    onSuccess: async (
-      data
-    ) => {
-     
+    onSuccess: async () => {
       /*
        |--------------------------------------------------------------------------
        | INVALIDATE CART
@@ -59,18 +93,12 @@ export const useAddToCart = () => {
        |--------------------------------------------------------------------------
        | INVALIDATE CHECKOUT SESSION
        |--------------------------------------------------------------------------
-       |
-       | IMPORTANT:
-       | Add-to-cart may expire checkout session
-       | during locked cart recovery.
-       |--------------------------------------------------------------------------
        */
       await queryClient.invalidateQueries({
         queryKey: [
           "checkout-session",
         ],
       });
-
     },
 
     /*
@@ -83,7 +111,7 @@ export const useAddToCart = () => {
     ) => {
       console.error(
         "ADD TO CART ERROR",
-        error?.response?.data ||
+        error?.response?.data ??
           error.message
       );
     },

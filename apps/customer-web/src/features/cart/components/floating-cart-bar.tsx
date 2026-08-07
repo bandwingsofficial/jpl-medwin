@@ -66,7 +66,7 @@ export function FloatingCartBar() {
 
   const items = cart?.cartItems || [];
   const totalQuantity = cart?.totalQuantity || 0;
-  const totalAmount = cart?.summary?.grandTotal || 0;
+  const totalAmount = cart?.summary?.grandTotal || cart?.totalAmount || 0;
 
   /*
    |--------------------------------------------------------------------------
