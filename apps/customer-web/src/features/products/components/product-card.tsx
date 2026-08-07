@@ -314,18 +314,22 @@ export function ProductCard({ product }: ProductCardProps) {
             {!!product.brand?.name ? (
               <p
                 className="
-                  text-[11px]
-                  font-bold
-                  uppercase
-                  tracking-wide
-                  text-slate-700
-                  group-hover:bg-gradient-to-r
-              group-hover:from-blue-600
-              group-hover:via-teal-600
-              group-hover:to-emerald-500
-              group-hover:bg-clip-text
-              group-hover:text-transparent
-                "
+  text-[11px]
+  font-bold
+  uppercase
+  tracking-wide
+  bg-gradient-to-r
+  from-blue-600
+  via-teal-600
+  to-emerald-500
+  bg-clip-text
+  text-transparent
+  transition-all
+  duration-300
+  group-hover:from-emerald-500
+  group-hover:via-teal-600
+  group-hover:to-blue-600
+"
               >
                 {product.brand.name}
               </p>

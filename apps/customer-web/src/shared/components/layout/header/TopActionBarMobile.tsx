@@ -106,20 +106,20 @@ export function TopActionBarMobile({
   };
 
   return (
-    <div className="block py-3 sm:hidden">
+    <div className="block sm:hidden">
       {/* TOP ROW */}
       <div className="flex items-center justify-between gap-3">
         {/* LOGO */}
         <Link href="/" className="shrink-0">
-          <Image
-            src="/Images/jpl_logo2.png"
-            alt="JPL Medwin Logo"
-            width={160}
-            height={60}
-            priority
-            className="h-[60px] w-[110px] object-contain"
-          />
-        </Link>
+  <Image
+    src="/Images/jpl_logo2.png"
+    alt="JPL Medwin Logo"
+    width={240}
+    height={100}
+    priority
+    className="h-[80px] w-[150px] object-contain"
+  />
+</Link>
 
         {/* RIGHT CONTROLS */}
         <div className="flex items-center gap-2">
@@ -185,7 +185,7 @@ export function TopActionBarMobile({
       </div>
 
       {/* SEARCH BAR ONLY */}
-      <div className="mt-3">
+      <div >
         <GlobalSearch />
       </div>
 

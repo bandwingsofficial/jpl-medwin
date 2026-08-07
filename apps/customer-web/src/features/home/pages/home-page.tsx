@@ -19,40 +19,38 @@ export default function HomePage() {
 
   return (
     <>
-      <main className="mx-auto max-w-7xl px-2 pt-1 pb-6">
+      <main className="w-full overflow-x-hidden">
         {/* Hero + Stats */}
-        <section className="space-y-8">
-          <HomeHero />
-          <HomeStatsBar />
-        </section>
+        <HomeHero />
+        <HomeStatsBar />
 
         {/* Brands */}
-        <section className="pt-2">
+        <section className="w-full pt-2">
           <HomeBrands />
         </section>
 
         {/* Categories Promo */}
-        <section className="pt-2">
+        <section className="w-full pt-2">
           <HomeCategoriespromo />
         </section>
 
         {/* Categories */}
-        <section className="pt-2">
+        <section className="w-full pt-2">
           <HomeCategories />
         </section>
 
-        {/* Collection-wise Products */}
-        <section className="pt-6">
+        {/* Collections */}
+        <section className="w-full pt-6">
           <HomeCollections />
         </section>
 
         {/* Products */}
-        <section className="pt-2">
+        <section className="w-full pt-2">
           <HomeProducts />
         </section>
 
         {/* CTA */}
-        <section className="pt-6 pb-10">
+        <section className="w-full pt-6 pb-10">
           <HomeCta />
         </section>
       </main>
