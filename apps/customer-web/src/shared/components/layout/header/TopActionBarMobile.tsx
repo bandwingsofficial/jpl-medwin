@@ -185,7 +185,7 @@ export function TopActionBarMobile({
       </div>
 
       {/* SEARCH BAR ONLY */}
-      <div >
+      <div className="mb-1">
         <GlobalSearch />
       </div>
 
