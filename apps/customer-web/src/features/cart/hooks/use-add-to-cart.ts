@@ -68,6 +68,7 @@ export const useAddToCart = () => {
 
       localCartService.addItem(
         payload.product,
+        payload.variantId,
         payload.quantity
       );
 

@@ -7,6 +7,7 @@ const STORAGE_KEY = "guest-cart";
 
 interface GuestCartItem {
   product: Product;
+  variantId: string;
   quantity: number;
 }
 
@@ -43,11 +44,10 @@ class LocalCartService {
       const product = item.product;
 
       const variant =
-        product.variants?.find(
-          (v) =>
-            v.id === product.defaultVariantId
-        ) ??
-        product.variants?.[0];
+  product.variants.find(
+    (v) => v.id === item.variantId
+  ) ??
+  product.variants[0];
 
       const sellingPrice =
         variant?.pricing?.sellingPrice ??
@@ -236,21 +236,21 @@ class LocalCartService {
 };
   }
   addItem(
-    product: Product,
-    quantity = 1
-  ) {
+product: Product, variantId: string, quantity = 1  ) {
     const items = this.getItems();
 
-    const index = items.findIndex(
-      (item) =>
-        item.product.id === product.id
-    );
+   const index = items.findIndex(
+  (item) =>
+    item.product.id === product.id &&
+    item.variantId === variantId
+);
 
     if (index >= 0) {
       items[index].quantity += quantity;
     } else {
       items.push({
         product,
+         variantId,
         quantity,
       });
     }
@@ -278,15 +278,20 @@ class LocalCartService {
     this.saveItems(items);
   }
 
-  removeItem(productId: string) {
-    const items =
-      this.getItems().filter(
-        (item) =>
-          item.product.id !== productId
-      );
+  removeItem(
+  productId: string,
+  variantId: string
+) {
+  const items = this.getItems().filter(
+    (item) =>
+      !(
+        item.product.id === productId &&
+        item.variantId === variantId
+      )
+  );
 
-    this.saveItems(items);
-  }
+  this.saveItems(items);
+}
 
   clear() {
     localStorage.removeItem(

@@ -187,6 +187,19 @@ const isWishlistLoading =
 
  const handleAddToCart = () => {
 
+  console.log("Selected Variant:", selectedVariant?.id);
+console.log("Variant Name:", selectedVariant?.name);
+console.log(cartData?.cartItems);
+console.log("Selected Variant:", selectedVariant?.id);
+
+console.log(
+  cartData?.cartItems?.map((item) => ({
+    productId: item.productId,
+    variantId: item.variantId,
+    quantity: item.variant.quantity,
+  }))
+);
+
   /*
    |--------------------------------------------------------------------------
    | VALIDATION

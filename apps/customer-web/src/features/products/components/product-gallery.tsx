@@ -82,6 +82,20 @@ export function ProductGallery({
       allImages[0]
     );
 
+    const [animateImage, setAnimateImage] = useState(false);
+
+const changeImage = (image: string) => {
+  setAnimateImage(false);
+
+  requestAnimationFrame(() => {
+    setSelectedImage(image);
+
+    requestAnimationFrame(() => {
+      setAnimateImage(true);
+    });
+  });
+};
+
   /*
    |----------------------------------------------------------------------
    | WISHLIST & SHARE STATES
@@ -166,6 +180,10 @@ const isWishlistLoading =
   useEffect(() => {
     setSelectedImage(allImages[0]);
   }, [allImages]);
+
+  useEffect(() => {
+  changeImage(allImages[0]);
+}, [allImages]);
 
   /*
    |----------------------------------------------------------------------
@@ -308,11 +326,7 @@ const isWishlistLoading =
                   <button
                     key={`${image}-${index}`}
                     type="button"
-                    onClick={() =>
-                      setSelectedImage(
-                        image
-                      )
-                    }
+                    onClick={() => changeImage(image)}
                     className={`
                       relative
                       h-[64px]
@@ -501,30 +515,32 @@ const isWishlistLoading =
           "
         >
           <Image
-            src={
-              selectedImage ||
-              PLACEHOLDER_IMAGE
-            }
-            alt="Product Image"
-            fill
-            priority
-            sizes="
-              (max-width: 768px) 100vw,
-              (max-width: 1200px) 50vw,
-              360px
-            "
-            onError={
-              handleImageError
-            }
-            className="
-              object-contain
-              p-4
-              transition-transform
-              duration-300
-              hover:scale-[1.02]
-              sm:p-6
-            "
-          />
+  key={selectedImage}
+  src={selectedImage || PLACEHOLDER_IMAGE}
+  alt="Product Image"
+  fill
+  priority
+  sizes="
+    (max-width: 768px) 100vw,
+    (max-width: 1200px) 50vw,
+    360px
+  "
+  onError={handleImageError}
+  className={`
+    object-contain
+    p-4
+    sm:p-6
+    transition-all
+    duration-300
+    ease-out
+    hover:scale-[1.02]
+    ${
+      animateImage
+        ? "scale-100 opacity-100"
+        : "scale-75 opacity-0"
+    }
+  `}
+/>
         </div>
       </div>
     </div>
