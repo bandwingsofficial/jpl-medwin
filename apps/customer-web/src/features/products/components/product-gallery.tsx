@@ -14,11 +14,13 @@ import {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import { Product } from "@/features/products/types/product.type";
 import {
   ChevronDown,
   ChevronUp,
   Heart,
+   X,
   Share2,
 } from "lucide-react";
 
@@ -83,7 +85,7 @@ export function ProductGallery({
     );
 
     const [animateImage, setAnimateImage] = useState(false);
-
+    const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
 const changeImage = (image: string) => {
   setAnimateImage(false);
 
@@ -504,17 +506,19 @@ const isWishlistLoading =
         </div>
 
         <div
-          className="
-            relative
-            mx-auto
-            flex
-            h-full
-            w-full
-            items-center
-            justify-center
-          "
-        >
-          <Image
+  className="
+    relative
+    mx-auto
+    flex
+    h-full
+    w-full
+    cursor-zoom-in
+    items-center
+    justify-center
+  "
+  onClick={() => setIsImagePopupOpen(true)}
+>
+  <Image
   key={selectedImage}
   src={selectedImage || PLACEHOLDER_IMAGE}
   alt="Product Image"
@@ -542,6 +546,83 @@ const isWishlistLoading =
   `}
 />
         </div>
+       {isImagePopupOpen &&
+  typeof document !== "undefined" &&
+  createPortal(
+    <div
+      className="
+        fixed
+        inset-0
+        z-[999999]
+        flex
+        h-screen
+        w-screen
+        items-center
+        justify-center
+        bg-black/80
+        p-4
+        sm:p-6
+      "
+      onClick={() => setIsImagePopupOpen(false)}
+    >
+      {/* CLOSE BUTTON */}
+      <button
+        type="button"
+        aria-label="Close image"
+        onClick={() => setIsImagePopupOpen(false)}
+        className="
+          absolute
+          right-4
+          top-4
+          z-20
+          flex
+          h-10
+          w-10
+          items-center
+          justify-center
+          rounded-full
+          bg-white
+          text-gray-700
+          shadow-lg
+          transition-all
+          duration-200
+          hover:scale-105
+          hover:bg-gray-100
+          active:scale-95
+          sm:right-6
+          sm:top-6
+        "
+      >
+        <X size={22} />
+      </button>
+
+      {/* FULLSCREEN IMAGE AREA */}
+      <div
+        className="
+          relative
+          h-[90vh]
+          w-[90vw]
+          max-w-[1400px]
+        "
+        onClick={(event) => event.stopPropagation()}
+      >
+        <Image
+          src={
+            selectedImage ||
+            PLACEHOLDER_IMAGE
+          }
+          alt="Product Image Fullscreen"
+          fill
+          priority
+          sizes="90vw"
+          className="
+            object-contain
+          "
+        />
+      </div>
+    </div>,
+    document.body
+  )}
       </div>
     </div>
   );

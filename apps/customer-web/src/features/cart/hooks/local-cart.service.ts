@@ -69,6 +69,7 @@ class LocalCartService {
   variantId: variant?.id ?? "",
 
   productName: product.name,
+  productSlug: product.slug,
 
   brandName:
     product.brand?.name ?? "",

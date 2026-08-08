@@ -65,7 +65,7 @@ export interface CartItem {
   variantId: string;
 
   productName: string;
-
+  productSlug: string;
   brandName: string;
 
   category: {

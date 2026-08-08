@@ -106,7 +106,7 @@ export class GetCartUseCase {
           variantId: cartItem.variantId,
 
           productName: cartItem.productName,
-
+          productSlug: product.slug,
           brandName: product.brand?.name ?? null,
 
           category: {

@@ -70,7 +70,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
         {/* ====================================================== */}
 
         <Link
-          href={`/products/${item.productId}`}
+          href={`/products/${item.productSlug}`}
           className="
             relative
             h-20
@@ -122,7 +122,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
               </p>
 
               {/* TITLE */}
-              <Link href={`/products/${item.productId}`}>
+              <Link href={`/products/${item.productSlug}`}>
                 <h3
                   className="
                     line-clamp-2
