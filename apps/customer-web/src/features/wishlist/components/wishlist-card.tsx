@@ -172,6 +172,7 @@ const handleAddToCart = async () => {
     console.error("UPDATE/REMOVE CART ERROR", error);
   }
 };
+
   const truncateTagText = (str: string) => {
     if (!str) return "";
     return str.length > 12 ? `${str.substring(0, 11)}...` : str;
