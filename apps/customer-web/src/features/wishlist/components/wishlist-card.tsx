@@ -5,7 +5,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-
+import { useUpdateCartItem } from "@/features/cart/hooks/use-update-cart-item";
+import { useRemoveCartItem } from "@/features/cart/hooks/use-remove-cart-item";
 import {
   Star,
   Trash2,
@@ -80,37 +81,20 @@ export function WishlistCard({ item }: WishlistCardProps) {
 
   const [imageSrc, setImageSrc] = useState(productImage);
 
-  const { mutateAsync: updateCartItem, isPending: isUpdatingCart } = useMutation({
-    mutationFn: ({
-      cartItemId,
-      quantity,
-    }: {
-      cartItemId: string;
-      quantity: number;
-    }) =>
-      cartApi.updateItem(cartItemId, {
-        quantity,
-      }),
+  const {
+  mutateAsync: updateCartItem,
+  isPending: isUpdatingCart,
+} = useUpdateCartItem();
 
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["cart"],
-      });
-    },
-  });
+const {
+  mutateAsync: removeCartItem,
+  isPending: isRemovingCart,
+} = useRemoveCartItem();
 
-  const { mutateAsync: removeCartItem, isPending: isRemovingCart } = useMutation({
-    mutationFn: (cartItemId: string) => cartApi.removeItem(cartItemId),
-
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ["cart"],
-      });
-    },
-  });
-
-  const isCartLoading = isAddingToCart || isUpdatingCart || isRemovingCart;
-
+const isCartLoading =
+  isAddingToCart ||
+  isUpdatingCart ||
+  isRemovingCart;
 
 const { isAuthenticated } = useAuth();
 
@@ -138,88 +122,56 @@ const handleAddToCart = async () => {
     console.error("ADD TO CART", error);
   }
 };
-  const handleIncrease = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+ const handleIncrease = async (
+  e: React.MouseEvent<HTMLButtonElement>
+) => {
+  e.preventDefault();
+  e.stopPropagation();
 
-    if (!isAuthenticated) {
-  localCartService.updateQuantity(
-    product.id,
-    cartQuantity + 1
-  );
-
-  await queryClient.invalidateQueries({
-    queryKey: ["cart"],
-  });
-
-  return;
-}
-
-if (!requireAuth()) {
-  return;
-}
-
-    if (!cartItem?.id) {
-      return;
-    }
-
-    if (cartQuantity >= stockQuantity) {
-      return;
-    }
-
-    try {
-      await updateCartItem({
-        cartItemId: cartItem.id,
-        quantity: cartQuantity + 1,
-      });
-    } catch (error) {
-      console.error("UPDATE CART ERROR", error);
-    }
-  };
-
-  const handleDecrease = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!isAuthenticated) {
-  if (cartQuantity <= 1) {
-    localCartService.removeItem(product.id);
-  } else {
-    localCartService.updateQuantity(
-      product.id,
-      cartQuantity - 1
-    );
+  if (!cartItem || !variant?.id) {
+    return;
   }
 
-  await queryClient.invalidateQueries({
-    queryKey: ["cart"],
-  });
+  try {
+    await updateCartItem({
+      productId: cartItem.productId,
+      variantId: variant.id,
+      quantity: cartQuantity + 1,
+    });
+  } catch (error) {
+    console.error("UPDATE CART ERROR", error);
+  }
+};
 
-  return;
-}
+ const handleDecrease = async (
+  e: React.MouseEvent<HTMLButtonElement>
+) => {
+  e.preventDefault();
+  e.stopPropagation();
 
-if (!requireAuth()) {
-  return;
-}
-    if (!cartItem?.id) {
+  if (!cartItem || !variant?.id) {
+    return;
+  }
+
+  try {
+    if (cartQuantity <= 1) {
+      await removeCartItem({
+        productId: cartItem.productId,
+        variantId: variant.id,
+      });
+
       return;
     }
 
-    try {
-      if (cartQuantity <= 1) {
-        await removeCartItem(cartItem.id);
-        return;
-      }
-
-      await updateCartItem({
-        cartItemId: cartItem.id,
-        quantity: cartQuantity - 1,
-      });
-    } catch (error) {
-      console.error("REMOVE CART ERROR", error);
-    }
-  };
-
+    await updateCartItem({
+      productId: cartItem.productId,
+      variantId: variant.id,
+      quantity: cartQuantity - 1,
+    });
+  } catch (error) {
+    console.error("UPDATE/REMOVE CART ERROR", error);
+  }
+};
   const truncateTagText = (str: string) => {
     if (!str) return "";
     return str.length > 12 ? `${str.substring(0, 11)}...` : str;
