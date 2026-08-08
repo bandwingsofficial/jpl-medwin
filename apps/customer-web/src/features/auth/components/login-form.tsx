@@ -196,18 +196,6 @@ export function LoginForm({
             className="h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0A2420]/90 via-[#0A2420]/30 to-transparent" />
-
-          <div className="absolute inset-x-0 bottom-0 space-y-4 p-8">
-            <h2
-              className="max-w-xs text-[26px] font-semibold leading-[1.2] text-white"
-              style={{ fontFamily: DISPLAY_FONT }}
-            >
-              Empowering Healthcare. Delivering Excellence.
-            </h2>
-            <p className="max-w-xs text-[13px] leading-relaxed text-white/75">
-              Driven by innovation, quality, and trust, JPL Medwin is committed to providing world-class dental and medical products while building long-term partnerships with healthcare professionals across India.
-            </p>          
-          </div>
         </div>
 
       </div>

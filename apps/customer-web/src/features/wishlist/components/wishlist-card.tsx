@@ -63,7 +63,7 @@ export function WishlistCard({ item }: WishlistCardProps) {
       ? variant.stock
       : variant?.stock?.quantity || 0;
 
-  const isInStock = true;
+  const isInStock = stockQuantity > 0;
 
   const mrp = variant?.pricing?.mrp || product.pricing?.minPrice || 0;
   const sellingPrice = variant?.pricing?.sellingPrice || product.pricing?.maxPrice || 0;
@@ -471,7 +471,7 @@ const handleAddToCart = async () => {
                   overflow-hidden
                   rounded-lg
                   border
-                  border-gray-200
+                  border-teal-300
                 "
               >
                 <button
@@ -535,25 +535,25 @@ const handleAddToCart = async () => {
                 type="button"
                 onClick={handleAddToCart}
                 disabled={!isInStock || isAddingToCart}
-                className="
-                  flex
-                  h-10
-                  w-full
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-lg
-                  bg-teal-600
-                  px-3
-                  text-[12px]
-                  font-semibold
-                  text-white
-                  transition-all
-                  duration-200
-                  hover:bg-teal-800
-                  disabled:cursor-not-allowed
-                  disabled:bg-teal-300
-                "
+                className={`
+  flex
+  h-10
+  w-full
+  items-center
+  justify-center
+  gap-2
+  rounded-lg
+  px-3
+  text-[12px]
+  font-semibold
+  transition-all
+  duration-200
+  ${
+    isInStock
+      ? "bg-teal-600 hover:bg-teal-600 text-white"
+        : "cursor-not-allowed border border-orange-200 bg-orange-50 text-orange-600"
+  }
+`}
               >
                 {isAddingToCart ? (
                   <>

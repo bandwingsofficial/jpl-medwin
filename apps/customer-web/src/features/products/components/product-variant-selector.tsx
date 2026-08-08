@@ -144,14 +144,17 @@ export function ProductVariantSelector({
   }
 
   const handleVariantSelect = (
-  variant: ProductVariant
-) => {
-  if (!variant.stock?.inStock) {
-    return;
-  }
+    variant: ProductVariant
+  ) => {
+    const stockQuantity =
+      variant.stock?.quantity ?? 0;
 
-  onChange(variant.id);
-};
+    if (stockQuantity <= 0) {
+      return;
+    }
+
+    onChange(variant.id);
+  };
 
   /*
    * ================================================================
@@ -162,8 +165,11 @@ export function ProductVariantSelector({
   const handleAddToCart = (
     variant: ProductVariant
   ) => {
+    const stockQuantity =
+      variant.stock?.quantity ?? 0;
+
     const isInStock =
-      variant.stock?.inStock ?? false;
+      stockQuantity > 0;
 
     if (!isInStock) {
       return;
@@ -199,7 +205,15 @@ export function ProductVariantSelector({
     }
 
     const currentQuantity =
-      cartItem.variant?.quantity || 0;
+      cartItem.variant?.quantity ?? 0;
+
+    const stockQuantity =
+      variant.stock?.quantity ?? 0;
+
+    // Do not allow quantity above available stock
+    if (currentQuantity >= stockQuantity) {
+      return;
+    }
 
     updateCart({
       productId: cartItem.productId,
@@ -310,8 +324,11 @@ export function ProductVariantSelector({
           const isSelected =
             selectedVariantId === variant.id;
 
+          const stockQuantity =
+            variant.stock?.quantity ?? 0;
+
           const isInStock =
-            variant.stock?.inStock ?? false;
+            stockQuantity > 0;
 
           /*
            * --------------------------------------------------------
@@ -383,31 +400,31 @@ export function ProductVariantSelector({
                   variant.id
                 ] = element;
               }}
-             className={`
-  w-full
-  rounded-xl
-  border
-  p-2.5
-  transition-all
-  duration-200
+              className={`
+                w-full
+                rounded-xl
+                border
+                p-2.5
+                transition-all
+                duration-200
 
-  sm:flex
-sm:items-center
-  sm:gap-4
-  sm:p-3
+                sm:flex
+                sm:items-center
+                sm:gap-4
+                sm:p-3
 
-  ${
-    isSelected
-      ? "border-teal-600 bg-teal-50/40 ring-1 ring-teal-600/20 shadow-sm"
-      : "border-gray-200 bg-white"
-  }
+                ${
+                  isSelected
+                    ? "border-teal-600 bg-teal-50/40 ring-1 ring-teal-600/20 shadow-sm"
+                    : "border-gray-200 bg-white"
+                }
 
-  ${
-    !isInStock
-      ? "border-gray-100 bg-gray-50/50 opacity-50"
-      : "hover:border-gray-300"
-  }
-`}
+                ${
+                  !isInStock
+                    ? "border-gray-200 bg-white"
+                    : "hover:border-gray-300"
+                }
+              `}
             >
               {/* ================================================= */}
               {/* PRODUCT CONTENT */}
@@ -430,8 +447,8 @@ sm:items-center
                 <button
                   type="button"
                   onClick={() =>
-  handleVariantSelect(variant)
-}
+                    handleVariantSelect(variant)
+                  }
                   disabled={!isInStock}
                   className="
                     flex
@@ -451,9 +468,11 @@ sm:items-center
                   "
                   aria-label={`Select ${variant.name}`}
                 >
-                  {(variant.images?.main ||
+                  {(
+                    variant.images?.main ||
                     variant.images?.gallery
-                      ?.length) ? (
+                      ?.length
+                  ) ? (
                     <img
                       src={
                         variant.images.main ||
@@ -478,12 +497,12 @@ sm:items-center
                 {/* DETAILS */}
                 {/* ================================================= */}
 
-               <button
-  type="button"
-  onClick={() =>
-    handleVariantSelect(variant)
-  }
-  disabled={!isInStock}
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleVariantSelect(variant)
+                  }
+                  disabled={!isInStock}
                   className="
                     min-w-0
                     text-left
@@ -494,28 +513,22 @@ sm:items-center
                   {/* PRODUCT NAME */}
 
                   <h4
-  className={`
-    line-clamp-2
-    text-sm
-    font-semibold
-    leading-5
-    tracking-tight
-    text-gray-900
+                    className="
+                      line-clamp-2
+                      text-sm
+                      font-semibold
+                      leading-5
+                      tracking-tight
+                      text-gray-900
 
-    sm:line-clamp-none
-    sm:whitespace-nowrap
-    sm:text-base
-    sm:leading-5
-
-    ${
-      !isInStock
-        ? "text-gray-400 line-through"
-        : ""
-    }
-  `}
->
-  {variant.name}
-</h4>
+                      sm:line-clamp-none
+                      sm:whitespace-nowrap
+                      sm:text-base
+                      sm:leading-5
+                    "
+                  >
+                    {variant.name}
+                  </h4>
 
                   {/* ATTRIBUTES */}
 
@@ -637,19 +650,19 @@ sm:items-center
 
                   <div
                     className="
-  ml-auto
-  flex
-  h-10
-  w-[150px]
-  overflow-hidden
-  rounded-lg
-  border
-  border-gray-300
-  bg-white
+                      ml-auto
+                      flex
+                      h-10
+                      w-[150px]
+                      overflow-hidden
+                      rounded-lg
+                      border
+                      border-gray-300
+                      bg-white
 
-  sm:ml-0
-  sm:w-auto
-"
+                      sm:ml-0
+                      sm:w-auto
+                    "
                   >
                     {/* MINUS */}
 
@@ -732,7 +745,10 @@ sm:items-center
                         )
                       }
                       disabled={
-                        isCartActionLoading
+                        isCartActionLoading ||
+                        quantity >=
+                          (variant.stock?.quantity ??
+                            0)
                       }
                       aria-label={`Increase ${variant.name} quantity`}
                       className="
@@ -759,7 +775,7 @@ sm:items-center
                   </div>
                 ) : (
                   /* =================================================
-                   * ADD TO CART
+                   * ADD TO CART / OUT OF STOCK
                    * ================================================= */
 
                   <button
@@ -773,31 +789,44 @@ sm:items-center
                       !isInStock ||
                       isCartActionLoading
                     }
-                    className="
-  ml-auto
-  flex
-  h-10
-  w-[150px]
-  items-center
-  justify-center
-  gap-1.5
-  rounded-lg
-  bg-teal-600
-  px-3
-  text-xs
-  font-semibold
-  text-white
-  transition-all
-  duration-200
-  hover:bg-teal-700
-  active:scale-[0.98]
-  disabled:cursor-not-allowed
-  disabled:opacity-50
+                    className={`
+                      ml-auto
+                      flex
+                      h-10
+                      w-[150px]
+                      items-center
+                      justify-center
+                      gap-1.5
+                      rounded-lg
+                      border
+                      bg-white
+                      px-3
+                      text-xs
+                      font-semibold
+                      transition-all
+                      duration-200
+                      active:scale-[0.98]
 
-  sm:ml-0
-  sm:w-auto
-  sm:min-w-[145px]
-"
+                      sm:ml-0
+                      sm:w-auto
+                      sm:min-w-[145px]
+
+                      ${
+                        isInStock
+                          ? `
+                            border-teal-500
+                            text-teal-600
+                            hover:bg-teal-600
+                            hover:text-white
+                            hover:shadow-sm
+                          `
+                          : `
+                            cursor-not-allowed
+                            border-orange-300
+                            text-orange-600
+                          `
+                      }
+                    `}
                   >
                     {isCartActionLoading ? (
                       <>
@@ -805,6 +834,7 @@ sm:items-center
                           size={16}
                           className="animate-spin"
                         />
+
                         Adding...
                       </>
                     ) : (

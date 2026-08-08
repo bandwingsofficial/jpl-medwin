@@ -233,39 +233,77 @@ export function HomeStatsBar() {
           color: #b45309;
         }
 
+        /* Tablet: keep 4 columns too, just tighten spacing */
         @media (max-width: 1024px) {
           .stats-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 12px;
-          }
-        }
-
-        @media (max-width: 480px) {
-          .stats-strip {
-            padding: 10px 12px;
-          }
-          .stats-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 10px;
           }
           .stat-card {
-            padding: 14px 12px;
-            border-radius: 12px;
-            gap: 10px;
+            padding: 14px 10px;
+            gap: 8px;
+          }
+        }
+
+        /* Mobile: force single line, 4 columns, stacked icon/text to save width */
+        @media (max-width: 640px) {
+          .stats-strip {
+            padding: 10px 8px;
+          }
+          .stats-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 6px;
+          }
+          .stat-card {
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px 4px;
+            border-radius: 10px;
+            gap: 4px;
           }
           .stat-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
           }
           .stat-icon svg {
-            width: 17px;
-            height: 17px;
+            width: 14px;
+            height: 14px;
+          }
+          .stat-text {
+            align-items: center;
+            gap: 0;
+            width: 100%;
           }
           .stat-number {
-            font-size: 1.05rem;
+            font-size: 0.78rem;
+            white-space: nowrap;
           }
           .stat-label {
+            font-size: 0.58rem;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .stat-number {
             font-size: 0.7rem;
+          }
+          .stat-label {
+            font-size: 0.52rem;
+          }
+          .stat-icon {
+            width: 22px;
+            height: 22px;
+          }
+          .stat-icon svg {
+            width: 12px;
+            height: 12px;
           }
         }
       `}</style>

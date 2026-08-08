@@ -19,6 +19,8 @@ import { Product } from "@/features/products/types/product.type";
 import {
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   Heart,
    X,
   Share2,
@@ -86,6 +88,7 @@ export function ProductGallery({
 
     const [animateImage, setAnimateImage] = useState(false);
     const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
+    
 const changeImage = (image: string) => {
   setAnimateImage(false);
 
@@ -98,6 +101,28 @@ const changeImage = (image: string) => {
   });
 };
 
+const currentImageIndex = Math.max(
+  allImages.indexOf(selectedImage),
+  0
+);
+
+const showPreviousImage = () => {
+  const previousIndex =
+    currentImageIndex === 0
+      ? allImages.length - 1
+      : currentImageIndex - 1;
+
+  changeImage(allImages[previousIndex]);
+};
+
+const showNextImage = () => {
+  const nextIndex =
+    currentImageIndex === allImages.length - 1
+      ? 0
+      : currentImageIndex + 1;
+
+  changeImage(allImages[nextIndex]);
+};
   /*
    |----------------------------------------------------------------------
    | WISHLIST & SHARE STATES
@@ -546,7 +571,7 @@ const isWishlistLoading =
   `}
 />
         </div>
-       {isImagePopupOpen &&
+      {isImagePopupOpen &&
   typeof document !== "undefined" &&
   createPortal(
     <div
@@ -555,70 +580,233 @@ const isWishlistLoading =
         inset-0
         z-[999999]
         flex
-        h-screen
-        w-screen
         items-center
         justify-center
-        bg-black/80
+        bg-black/70
         p-4
-        sm:p-6
       "
       onClick={() => setIsImagePopupOpen(false)}
     >
-      {/* CLOSE BUTTON */}
-      <button
-        type="button"
-        aria-label="Close image"
-        onClick={() => setIsImagePopupOpen(false)}
-        className="
-          absolute
-          right-4
-          top-4
-          z-20
-          flex
-          h-10
-          w-10
-          items-center
-          justify-center
-          rounded-full
-          bg-white
-          text-gray-700
-          shadow-lg
-          transition-all
-          duration-200
-          hover:scale-105
-          hover:bg-gray-100
-          active:scale-95
-          sm:right-6
-          sm:top-6
-        "
-      >
-        <X size={22} />
-      </button>
-
-      {/* FULLSCREEN IMAGE AREA */}
+      {/* WHITE SQUARE POPUP */}
       <div
         className="
           relative
-          h-[90vh]
-          w-[90vw]
-          max-w-[1400px]
+          flex
+          h-[600px]
+          w-[600px]
+          max-h-[90vh]
+          max-w-[90vw]
+          flex-col
+          overflow-hidden
+          rounded-2xl
+          bg-white
+          shadow-2xl
         "
-        onClick={(event) => event.stopPropagation()}
+        onClick={(event) =>
+          event.stopPropagation()
+        }
       >
-        <Image
-          src={
-            selectedImage ||
-            PLACEHOLDER_IMAGE
+        {/* CLOSE BUTTON */}
+        <button
+          type="button"
+          aria-label="Close image"
+          onClick={() =>
+            setIsImagePopupOpen(false)
           }
-          alt="Product Image Fullscreen"
-          fill
-          priority
-          sizes="90vw"
           className="
-            object-contain
+            absolute
+            right-3
+            top-3
+            z-50
+            flex
+            h-9
+            w-9
+            items-center
+            justify-center
+            rounded-full
+            bg-white
+            text-gray-700
+            shadow-md
+            transition-all
+            duration-200
+            hover:scale-105
+            hover:bg-gray-100
+            active:scale-95
           "
-        />
+        >
+          <X size={20} />
+        </button>
+
+        {/* MAIN IMAGE AREA */}
+        <div
+          className="
+            relative
+            flex
+            min-h-0
+            flex-1
+            items-center
+            justify-center
+            px-12
+            py-6
+          "
+        >
+          {/* LEFT ARROW */}
+          {allImages.length > 1 && (
+            <button
+              type="button"
+              aria-label="Previous image"
+              onClick={showPreviousImage}
+              className="
+                absolute
+                left-3
+                top-1/2
+                z-30
+                flex
+                h-10
+                w-10
+                -translate-y-1/2
+                items-center
+                justify-center
+                rounded-full
+                bg-white
+                text-gray-700
+                shadow-md
+                transition-all
+                duration-200
+                hover:scale-105
+                hover:bg-gray-100
+                active:scale-95
+              "
+            >
+              <ChevronLeft size={22} />
+            </button>
+          )}
+
+          {/* MAIN IMAGE */}
+          <div className="relative h-full w-full">
+            <Image
+              key={selectedImage}
+              src={
+                selectedImage ||
+                PLACEHOLDER_IMAGE
+              }
+              alt="Product Image Fullscreen"
+              fill
+              priority
+              sizes="600px"
+              className="
+                object-contain
+                p-4
+              "
+            />
+          </div>
+
+          {/* RIGHT ARROW */}
+          {allImages.length > 1 && (
+            <button
+              type="button"
+              aria-label="Next image"
+              onClick={showNextImage}
+              className="
+                absolute
+                right-3
+                top-1/2
+                z-30
+                flex
+                h-10
+                w-10
+                -translate-y-1/2
+                items-center
+                justify-center
+                rounded-full
+                bg-white
+                text-gray-700
+                shadow-md
+                transition-all
+                duration-200
+                hover:scale-105
+                hover:bg-gray-100
+                active:scale-95
+              "
+            >
+              <ChevronRight size={22} />
+            </button>
+          )}
+        </div>
+
+        {/* BOTTOM IMAGE THUMBNAILS */}
+        {allImages.length > 1 && (
+          <div
+            className="
+              flex
+              h-[100px]
+              shrink-0
+              items-center
+              justify-center
+              gap-3
+              overflow-x-auto
+              border-t
+              border-gray-100
+              bg-white
+              px-4
+              py-3
+              scrollbar-hide
+            "
+          >
+            {allImages.map(
+              (image, index) => {
+                const isActive =
+                  selectedImage === image;
+
+                return (
+                  <button
+                    key={`popup-${image}-${index}`}
+                    type="button"
+                    aria-label={`View image ${
+                      index + 1
+                    }`}
+                    onClick={() =>
+                      changeImage(image)
+                    }
+                    className={`
+                      relative
+                      h-[68px]
+                      w-[68px]
+                      shrink-0
+                      overflow-hidden
+                      rounded-lg
+                      border-2
+                      bg-white
+                      transition-all
+                      duration-200
+                      ${
+                        isActive
+                          ? "border-[#0F172A] ring-2 ring-[#0F172A]/10"
+                          : "border-gray-200 hover:border-gray-400"
+                      }
+                    `}
+                  >
+                    <Image
+                      src={
+                        image ||
+                        PLACEHOLDER_IMAGE
+                      }
+                      alt={`Product image ${
+                        index + 1
+                      }`}
+                      fill
+                      sizes="68px"
+                      className="
+                        object-contain
+                        p-1
+                      "
+                    />
+                  </button>
+                );
+              }
+            )}
+          </div>
+        )}
       </div>
     </div>,
     document.body

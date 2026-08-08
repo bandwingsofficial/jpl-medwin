@@ -112,11 +112,14 @@ export function FloatingCartBar() {
    */
 
   const previewImages = useMemo(() => {
-    return items
-      .slice(0, 3)
-      .map((item) => item.variant?.images?.main)
-      .filter(Boolean);
-  }, [items]);
+  return items
+    .slice(0, 3)
+    .map(
+      (item) =>
+        item.variant?.images?.main ||
+        "/Images/jpl_logo2.png"
+    );
+}, [items]);
 
   /*
    |--------------------------------------------------------------------------
@@ -199,18 +202,18 @@ export function FloatingCartBar() {
       {/* ====================================================== */}
 
       <div
-        className="
-          fixed
-          bottom-4
-          left-1/2
-          z-[999]
-          w-[88%]
-          max-w-[400px]
-          -translate-x-1/2
-          sm:bottom-5
-          sm:w-[460px]
-          sm:max-w-[460px]
-        "
+  className="
+    fixed
+    bottom-[84px]
+    left-1/2
+    z-[999]
+    w-[88%]
+    max-w-[400px]
+    -translate-x-1/2
+    sm:bottom-5
+    sm:w-[460px]
+    sm:max-w-[460px]
+  "
         style={{
           transform: `translateX(-50%) translateY(${isVisible ? "0" : "110%"})`,
           opacity: isVisible ? 1 : 0,
@@ -371,41 +374,60 @@ export function FloatingCartBar() {
             {/* CTA BUTTON */}
             {/* ====================================================== */}
 
-            <Link
-              href="/cart"
-              className="
-                group
-                relative
-                shrink-0
-                overflow-hidden
-                rounded-[14px]
-                text-xs
-                font-semibold
-                text-white
-                transition-all
-                duration-200
-                active:scale-95
-              "
-              style={{
-                padding: "9px 14px",
-                background: "linear-gradient(135deg, #059669 0%, #10b981 100%)",
-                boxShadow: "0 4px 14px rgba(5,150,105,0.4), 0 1px 3px rgba(5,150,105,0.3)",
-              }}
-            >
-              {/* shimmer sweep on hover */}
-              <span
-                className="pointer-events-none absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700"
-                style={{
-                  background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
-                }}
-              />
-              <span className="relative flex items-center gap-1">
-                <span className="hidden sm:inline">View Cart</span>
-                <span className="sm:hidden">View</span>
-                <ArrowRight size={13} className="transition-transform duration-200 group-hover:translate-x-0.5" />
-              </span>
-            </Link>
+           <Link
+  href="/cart"
+  className="
+    group
+    relative
+    shrink-0
+    overflow-hidden
+    rounded-[14px]
+    text-xs
+    font-semibold
+    text-white
+    transition-all
+    duration-200
+    active:scale-95
+  "
+  style={{
+  padding: "9px 14px",
+  background:
+    "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
+  boxShadow:
+    "0 4px 12px rgba(249, 115, 22, 0.28)",
+}}
+>
+  <span
+    className="
+      pointer-events-none
+      absolute
+      inset-0
+      -translate-x-full
+      transition-transform
+      duration-700
+      group-hover:translate-x-full
+    "
+    style={{
+      background:
+        "linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent)",
+    }}
+  />
 
+  <span className="relative flex items-center gap-1">
+    <span className="hidden sm:inline">
+      View Cart
+    </span>
+
+    <span className="sm:hidden">
+      View
+    </span>
+
+    <ArrowRight
+      size={13}
+      className="transition-transform duration-200 group-hover:translate-x-0.5"
+    />
+  </span>
+</Link>
             {/* ====================================================== */}
             {/* CLOSE BUTTON */}
             {/* ====================================================== */}

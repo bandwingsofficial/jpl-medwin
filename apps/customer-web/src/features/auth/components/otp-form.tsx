@@ -323,18 +323,6 @@ export function OtpForm() {
             className="h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0A2420]/90 via-[#0A2420]/30 to-transparent" />
-
-          <div className="absolute inset-x-0 bottom-0 space-y-4 p-8">
-            <h2
-              className="max-w-xs text-[26px] font-semibold leading-[1.2] text-white"
-              style={{ fontFamily: DISPLAY_FONT }}
-            >
-              Shaping the Future of Healthcare Supply
-            </h2>
-            <p className="max-w-xs text-[13px] leading-relaxed text-white/75">
-              Our vision is to become India's most trusted healthcare and dental distribution partner by delivering quality products, innovative solutions, and exceptional service that empower healthcare professionals to provide better patient care.
-            </p>
-          </div>
         </div>
 
       </div>

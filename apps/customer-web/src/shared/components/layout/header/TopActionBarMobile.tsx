@@ -195,71 +195,192 @@ if (!isAuthenticated) {
         <GlobalSearch />
       </div>
 
-      {/* FIXED BOTTOM NAVIGATION BAR FOR MOBILE */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-slate-200 bg-white py-2 shadow-lg sm:hidden">
-        {/* HOME BUTTON */}
-        <Link
-          href="/"
-          className="flex flex-col items-center text-[10px] font-medium text-slate-600 transition hover:text-teal-600"
-        >
-          <svg
-            className="h-5 w-5"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          <span className="mt-1">Home</span>
-        </Link>
-
-        {/* DYNAMIC ACTION ITEMS (COINS, WISHLIST, CART) */}
-        {actionItems.map(
-          ({
-            icon: Icon,
-            imageSrc,
-            label,
-            href,
-            badge,
-            iconClassName,
-          }) => (
-            <button
-  key={label}
-  type="button"
-  onClick={() => handleActionClick(href)}
-  className="relative flex flex-col items-center text-[10px] font-medium text-slate-600 transition hover:text-teal-600"
+      {/* ====================================================== */}
+{/* FLOATING BOTTOM NAVIGATION - MOBILE */}
+{/* ====================================================== */}
+<div
+  className="
+    fixed
+    bottom-3
+    left-2
+    right-2
+    z-50
+    sm:hidden
+    overflow-hidden
+    rounded-2xl
+    border
+    border-white/20
+    bg-gradient-to-r
+    from-teal-600
+    via-teal-500
+    to-emerald-600
+    shadow-[0_8px_30px_rgba(0,0,0,0.18)]
+    backdrop-blur-xl
+  "
 >
-              {!!badge && badge > 0 && (
-                <span className="absolute -right-2 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-rose-500 px-1 text-[9px] font-bold text-white">
-                  {badge}
-                </span>
-              )}
+  <div
+    className="
+      flex
+      h-[64px]
+      items-center
+      justify-around
+      px-2
+      pb-[env(safe-area-inset-bottom)]
+    "
+  >
+    {/* HOME */}
+    <Link
+      href="/"
+      className="
+        flex
+        min-w-[52px]
+        flex-col
+        items-center
+        justify-center
+        rounded-xl
+        px-2
+        py-1.5
+        text-[10px]
+        font-medium
+        text-white
+        transition-all
+        duration-200
+        hover:bg-white/10
+        active:scale-95
+      "
+    >
+      <svg
+        className="h-5 w-5 text-white"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+        />
+      </svg>
 
-              <div className="flex h-5 w-5 items-center justify-center">
-                {imageSrc ? (
-                  <Image
-                    src={imageSrc}
-                    alt={label}
-                    width={20}
-                    height={20}
-                    className="h-full w-full object-contain"
-                  />
-                ) : (
-                  <Icon
-                    className={`h-5 w-5 ${
-                      iconClassName || "text-slate-600"
-                    }`}
-                  />
-                )}
-              </div>
+      <span className="mt-1 leading-none text-white">
+        Home
+      </span>
+    </Link>
 
-              <span className="mt-1">{label}</span>
-            </button>
-          )
-        )}
-      </div>
+    {/* DYNAMIC ACTION ITEMS */}
+    {actionItems.map(
+      ({
+        icon: Icon,
+        imageSrc,
+        label,
+        href,
+        badge,
+        iconClassName,
+      }) => (
+        <button
+          key={label}
+          type="button"
+          onClick={() => handleActionClick(href)}
+          className="
+            relative
+            flex
+            min-w-[52px]
+            flex-col
+            items-center
+            justify-center
+            rounded-xl
+            px-2
+            py-1.5
+            text-[10px]
+            font-medium
+            text-white
+            transition-all
+            duration-200
+            hover:bg-white/10
+            active:scale-95
+          "
+        >
+          {/* BADGE */}
+          {!!badge && badge > 0 && (
+            <span
+              className="
+                absolute
+                right-0
+                top-0
+                z-10
+                flex
+                h-[17px]
+                min-w-[17px]
+                items-center
+                justify-center
+                rounded-full
+                border-2
+                border-teal-600
+                bg-red-500
+                px-1
+                text-[9px]
+                font-bold
+                leading-none
+                text-white
+                shadow-sm
+              "
+            >
+              {badge}
+            </span>
+          )}
 
+          {/* ICON / PNG */}
+          <div className="flex h-6 w-6 items-center justify-center">
+            {imageSrc ? (
+              /*
+               * PNG IMAGES:
+               * Keep their original colors.
+               * Do NOT apply text-white.
+               */
+              <Image
+                src={imageSrc}
+                alt={label}
+                width={24}
+                height={24}
+                className="
+                  h-6
+                  w-6
+                  object-contain
+                  drop-shadow-sm
+                "
+              />
+            ) : (
+              /*
+               * LUCIDE ICONS:
+               * All icons use the same white color.
+               */
+              <Icon
+                className="
+                  h-5
+                  w-5
+                  text-white
+                  stroke-[2]
+                "
+              />
+            )}
+          </div>
+
+          {/* LABEL */}
+          <span
+            className="
+              mt-1
+              leading-none
+              text-white
+            "
+          >
+            {label}
+          </span>
+        </button>
+      )
+    )}
+  </div>
+</div>
       {/* LOCATION MODAL */}
       <LocationModal
         open={isLocationModalOpen}

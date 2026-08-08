@@ -109,9 +109,9 @@ export function ProductActions({
    */
 
   const stockQuantity =
-    selectedVariant?.stock?.quantity || 0;
+  selectedVariant?.stock?.quantity ?? 0;
 
-  const isInStock = true;
+const isInStock = stockQuantity > 0;
 
   /*
    |--------------------------------------------------------------------------
@@ -287,6 +287,11 @@ export function ProductActions({
     if (!cartItem || !selectedVariant) {
       return;
     }
+     // Do not allow quantity above actual stock
+  if (quantity >= stockQuantity) {
+    return;
+  }
+
 
     updateCart({
       productId: cartItem.productId,
@@ -383,6 +388,7 @@ export function ProductActions({
             !isInStock ||
             !selectedVariant ||
             isCartActionLoading ||
+  quantity >= stockQuantity ||
             isAuthLoading
           }
           className="
