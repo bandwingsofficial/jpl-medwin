@@ -246,16 +246,6 @@ const selectedVariant = useMemo<ProductVariant | null>(() => {
           {/* 3. DESKTOP BUY BOX */}
           {/* ====================================================== */}
 
-          {/* ====================================================== */}
-{/* 3. PRODUCT ACTIONS */}
-{/* ====================================================== */}
-
-<div className="order-3 hidden lg:block lg:order-none">
-  <ProductActions
-    product={product}
-    selectedVariant={selectedVariant}
-  />
-</div>
 
           {/* ====================================================== */}
           {/* 4. COMMERCIAL DETAILS */}

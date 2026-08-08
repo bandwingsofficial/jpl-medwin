@@ -2,12 +2,14 @@ import {
   BadgeCheck,
   CheckCircle2,
   Star,
+  ChevronDown,
 } from "lucide-react";
 
 import {
   Product,
   ProductVariant,
 } from "@/features/products/types/product.type";
+import { useState } from "react";
 
 interface ProductInfoProps {
   product: Product;
@@ -19,6 +21,9 @@ export function ProductInfo({
   product,
   selectedVariant,
 }: ProductInfoProps) {
+
+
+  const [showKeyFeatures, setShowKeyFeatures] = useState(false);
   /*
    |--------------------------------------------------------------------------
    | PRICING
@@ -428,63 +433,107 @@ export function ProductInfo({
       )}
 
       {/* FEATURES */}
-      {!!product.features
-        ?.length && (
-        <div className="space-y-3">
-          <h3
-            className="
-              text-sm
-              font-semibold
-              text-gray-900
-            "
-          >
-            Key Features
-          </h3>
+{!!product.features?.length && (
+  <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+    {/* KEY FEATURES HEADER */}
+    <button
+      type="button"
+      onClick={() =>
+        setShowKeyFeatures((previous) => !previous)
+      }
+      className="
+        flex
+        w-full
+        items-center
+        justify-between
+        px-4
+        py-3.5
+        text-left
+        transition-colors
+        duration-200
+        hover:bg-gray-50
+      "
+    >
+      <span
+        className="
+          text-sm
+          font-semibold
+          text-gray-900
+        "
+      >
+        Key Features
+      </span>
 
-          <div
-            className="
-              grid
-              gap-x-6
-              gap-y-2
+      <ChevronDown
+        size={18}
+        className={`
+          text-gray-500
+          transition-transform
+          duration-200
+          ${
+            showKeyFeatures
+              ? "rotate-180"
+              : "rotate-0"
+          }
+        `}
+      />
+    </button>
 
-              sm:grid-cols-2
-            "
-          >
-            {product.features.map(
-              (feature) => (
-                <div
-                  key={feature}
+    {/* KEY FEATURES CONTENT */}
+    {showKeyFeatures && (
+      <div
+        className="
+          border-t
+          border-gray-100
+          px-4
+          py-3
+        "
+      >
+        <div
+          className="
+            grid
+            gap-x-6
+            gap-y-2
+            sm:grid-cols-2
+          "
+        >
+          {product.features.map(
+            (feature) => (
+              <div
+                key={feature}
+                className="
+                  flex
+                  items-start
+                  gap-2
+                "
+              >
+                <CheckCircle2
                   className="
-                    flex
-                    items-start
-                    gap-2
+                    mt-0.5
+                    h-4
+                    w-4
+                    shrink-0
+                    text-green-600
+                  "
+                />
+
+                <p
+                  className="
+                    text-sm
+                    leading-6
+                    text-gray-700
                   "
                 >
-                  <CheckCircle2
-                    className="
-                      mt-0.5
-                      h-4
-                      w-4
-                      shrink-0
-                      text-green-600
-                    "
-                  />
-
-                  <p
-                    className="
-                      text-sm
-                      leading-6
-                      text-gray-700
-                    "
-                  >
-                    {feature}
-                  </p>
-                </div>
-              )
-            )}
-          </div>
+                  {feature}
+                </p>
+              </div>
+            )
+          )}
         </div>
-      )}
+      </div>
+    )}
+  </div>
+)}
     </div>
   );
 }

@@ -210,6 +210,23 @@ export function ProductCard({ product }: ProductCardProps) {
                   overflow: hidden;
                   animation: typing 2.5s steps(12, end) infinite alternate;
                 }
+                  @keyframes price-shine {
+  0% {
+    left: -120%;
+  }
+
+  40% {
+    left: 120%;
+  }
+
+  100% {
+    left: 120%;
+  }
+}
+
+.animate-price-shine {
+  animation: price-shine 2s linear infinite;
+}
               `}</style>
               <span className="absolute top-[16px] left-[-26px] block w-[100px] -rotate-45 bg-purple-200 py-0.5 text-center text-[8.5px] font-extrabold uppercase tracking-widest text-purple-900 shadow-md">
                 <span className="animate-tag-type mx-auto max-w-full">
@@ -361,17 +378,38 @@ export function ProductCard({ product }: ProductCardProps) {
           <div>
             <div className="flex items-end gap-1">
               <span
-                className="
-                  text-[20px]
-                  font-bold
-                  leading-none
-                  tracking-tight
-                  text-gray-900
-                "
-              >
-                ₹{sellingPrice.toLocaleString()}
-              </span>
+  className="
+    relative
+    inline-block
+    overflow-hidden
+    text-[20px]
+    font-bold
+    leading-none
+    tracking-tight
+    text-gray-900
+  "
+>
+  <span className="relative z-10">
+    ₹{sellingPrice.toLocaleString()}
+  </span>
 
+  <span
+    className="
+      pointer-events-none
+      absolute
+      inset-y-0
+      -left-[120%]
+      z-20
+      w-[45%]
+      rotate-[18deg]
+      bg-gradient-to-r
+      from-transparent
+      via-white/90
+      to-transparent
+      animate-price-shine
+    "
+  />
+</span>
               {mrp > sellingPrice && (
                 <span
                   className="

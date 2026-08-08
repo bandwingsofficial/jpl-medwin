@@ -303,18 +303,19 @@ if (heroImages.length === 0) {
 
   return (
     <section
-      className="
-        relative
-        w-full
-        overflow-hidden
-        rounded-[16px]
-        bg-white
-        py-3
+  className="
+    relative
+    w-full
+    overflow-hidden
+    rounded-[16px]
+    bg-white
+    py-2
 
-        md:rounded-[24px]
-        md:py-0
-      "
-    >
+    md:px-4
+    md:py-4
+    md:rounded-[24px]
+  "
+>
       <div className="relative w-full">
         {hasProductId ? (
           <button
@@ -377,26 +378,26 @@ if (heroImages.length === 0) {
             aria-label="
               Previous banner
             "
-            className="
-              absolute
-              left-4
-              top-1/2
-              z-10
-              hidden
-              h-14
-              w-14
-              -translate-y-1/2
-              items-center
-              justify-center
-              rounded-full
-              bg-white
-              shadow-md
-              transition-all
-              duration-200
-              hover:scale-105
+           className="
+  absolute
+  left-2
+  top-1/2
+  z-10
+  hidden
+  h-10
+  w-10
+  -translate-y-1/2
+  items-center
+  justify-center
+  rounded-full
+  bg-white
+  shadow-md
+  transition-all
+  duration-200
+  hover:scale-105
 
-              md:flex
-            "
+  md:flex
+"
           >
             <svg
               xmlns="
@@ -448,8 +449,8 @@ if (heroImages.length === 0) {
               top-1/2
               z-10
               hidden
-              h-14
-              w-14
+              h-10
+              w-10
               -translate-y-1/2
               items-center
               justify-center
