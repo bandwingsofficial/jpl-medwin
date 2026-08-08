@@ -38,16 +38,19 @@ export function CartItemCard({ item }: CartItemCardProps) {
    */
 
   const handleQuantityChange = (quantity: number) => {
-    updateQuantity({
-      cartItemId: isAuthenticated ? item.id : item.productId,
-      quantity,
-    });
-  };
+  updateQuantity({
+    productId: item.productId,
+    variantId: item.variantId,
+    quantity,
+  });
+};
 
   const handleRemoveItem = () => {
-    removeItem(isAuthenticated ? item.id : item.productId);
-  };
-
+  removeItem({
+    productId: item.productId,
+    variantId: item.variantId,
+  });
+};
   return (
     <div
       className="

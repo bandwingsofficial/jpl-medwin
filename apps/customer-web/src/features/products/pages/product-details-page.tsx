@@ -24,36 +24,95 @@ interface ProductDetailsPageProps {
 export function ProductDetailsPage({
   productSlug,
 }: ProductDetailsPageProps) {
-  const { data, isLoading, isError, error } = useProductDetails(productSlug);
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+  } = useProductDetails(productSlug);
+
   const product = data?.data;
 
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(null);
+  const [
+    selectedVariantId,
+    setSelectedVariantId,
+  ] = useState<string | null>(null);
 
-  const selectedVariant = useMemo<ProductVariant | null>(() => {
-    if (!product?.variants?.length) {
-      return null;
-    }
+  const handleVariantChange = (variantId: string) => {
+  setSelectedVariantId(variantId);
+};
 
-    return (
-      product.variants.find((variant) => variant.id === selectedVariantId) ||
-      product.variants[0]
-    );
-  }, [product?.variants, selectedVariantId]);
+  /*
+ * ================================================================
+ * SELECTED VARIANT
+ * ================================================================
+ */
 
-  const mrp = selectedVariant?.pricing?.mrp || product?.price?.max || 0;
-  const sellingPrice = selectedVariant?.pricing?.sellingPrice || product?.price?.min || 0;
+const selectedVariant = useMemo<ProductVariant | null>(() => {
+  if (!product?.variants?.length) {
+    return null;
+  }
+
+  return (
+    product.variants.find(
+      (variant) =>
+        variant.id === selectedVariantId
+    ) || product.variants[0]
+  );
+}, [
+  product?.variants,
+  selectedVariantId,
+]);
+
+
+  /*
+   * ================================================================
+   * PRICE
+   * ================================================================
+   */
+
+  const mrp =
+    selectedVariant?.pricing?.mrp ||
+    product?.price?.max ||
+    0;
+
+  const sellingPrice =
+    selectedVariant?.pricing?.sellingPrice ||
+    product?.price?.min ||
+    0;
+
+  /*
+   * ================================================================
+   * LOADING
+   * ================================================================
+   */
 
   if (isLoading) {
     return <ProductDetailsSkeleton />;
   }
 
+  /*
+   * ================================================================
+   * ERROR
+   * ================================================================
+   */
+
   if (isError || !product) {
     return (
       <ProductDetailsError
-        message={error?.message || "Failed to load product."}
+        message={
+          error?.message ||
+          "Failed to load product."
+        }
       />
     );
   }
+
+  /*
+   * ================================================================
+   * PAGE
+   * ================================================================
+   */
 
   return (
     <div
@@ -74,6 +133,10 @@ export function ProductDetailsPage({
         lg:bg-transparent
       "
     >
+      {/* ========================================================== */}
+      {/* MAIN PRODUCT SECTION */}
+      {/* ========================================================== */}
+
       <div
         className="
           grid
@@ -85,30 +148,37 @@ export function ProductDetailsPage({
           lg:gap-12
         "
       >
-        {/* LEFT SIDE (GALLERY) */}
+        {/* ======================================================== */}
+        {/* LEFT SIDE - GALLERY */}
+        {/* ======================================================== */}
+
         <div
           className="
             relative
             w-full
-            bg-white
             rounded-2xl
-            p-2
             border
             border-gray-100
+            bg-white
+            p-2
             shadow-sm
-lg:sticky
-lg:top-32
-lg:self-start
-            lg:p-0
-            lg:border-0
+
+            lg:sticky
+            lg:top-32
+            lg:self-start
             lg:rounded-none
-            lg:shadow-none
+            lg:border-0
             lg:bg-transparent
+            lg:p-0
+            lg:shadow-none
           "
         >
           <ProductGallery
             product={product}
-            mainImage={selectedVariant?.images?.main || product.images?.main}
+            mainImage={
+              selectedVariant?.images?.main ||
+              product.images?.main
+            }
             images={
               selectedVariant?.images?.gallery?.length
                 ? selectedVariant.images.gallery
@@ -117,29 +187,35 @@ lg:self-start
           />
         </div>
 
-        {/* RIGHT SIDE (INFO & ACTIONS) */}
+        {/* ======================================================== */}
+        {/* RIGHT SIDE - INFO / VARIANTS / ACTIONS */}
+        {/* ======================================================== */}
+
         <div
           className="
             flex
             min-w-0
             flex-col
             gap-5
-            bg-white
             rounded-2xl
-            p-4
             border
             border-gray-100
+            bg-white
+            p-4
             shadow-sm
 
-            lg:p-0
-            lg:border-0
-            lg:rounded-none
-            lg:shadow-none
-            lg:bg-transparent
             lg:gap-6
+            lg:rounded-none
+            lg:border-0
+            lg:bg-transparent
+            lg:p-0
+            lg:shadow-none
           "
         >
+          {/* ====================================================== */}
           {/* 1. HEADER INFO */}
+          {/* ====================================================== */}
+
           <div className="order-1 lg:order-none">
             <ProductHeaderInfo
               product={product}
@@ -147,73 +223,110 @@ lg:self-start
             />
           </div>
 
+          {/* ====================================================== */}
           {/* 2. VARIANT SELECTOR */}
+          {/* ====================================================== */}
+
           {!!product.variants?.length && (
             <div className="order-2 lg:order-none">
               <ProductVariantSelector
+                product={product}
                 variants={product.variants}
-                selectedVariantId={selectedVariant?.id || ""}
-                onChange={setSelectedVariantId}
+                selectedVariantId={
+                  selectedVariantId ??
+                  product.variants[0]?.id ??
+                  ""
+                }
+                onChange={handleVariantChange}
               />
             </div>
           )}
 
-          {/* 3. BUY BOX (Price, Stock & Actions / Add to Cart + Wishlist) - DESKTOP VIEW */}
-          <div className="order-3 lg:order-none hidden lg:block">
-            <ProductBuyBox
-              product={product}
-              selectedVariant={selectedVariant}
-            />
-          </div>
+          {/* ====================================================== */}
+          {/* 3. DESKTOP BUY BOX */}
+          {/* ====================================================== */}
 
-          {/* 4. COMMERCIAL DETAILS (Delivery, Short Description, Features) */}
-          <div className="order-4 lg:order-none flex flex-col gap-5 lg:gap-0">
-            <ProductCommercialDetails
-              product={product}
-              selectedVariant={selectedVariant}
-            />
-          </div>
+          {/* ====================================================== */}
+{/* 3. PRODUCT ACTIONS */}
+{/* ====================================================== */}
 
-          <div className="order-3 lg:hidden mt-2">
-  <ProductBuyBox
+<div className="order-3 hidden lg:block lg:order-none">
+  <ProductActions
     product={product}
     selectedVariant={selectedVariant}
   />
 </div>
 
+          {/* ====================================================== */}
+          {/* 4. COMMERCIAL DETAILS */}
+          {/* ====================================================== */}
+
+          <div
+            className="
+              order-4
+              flex
+              flex-col
+              gap-5
+
+              lg:order-none
+              lg:gap-0
+            "
+          >
+            <ProductCommercialDetails
+              product={product}
+              selectedVariant={selectedVariant}
+            />
+          </div>
         </div>
       </div>
 
+      {/* ========================================================== */}
       {/* BOTTOM SECTION */}
+      {/* ========================================================== */}
+
       <div
         className="
-          mt-6 
+          mt-6
           space-y-6
-          bg-white
           rounded-2xl
-          p-4
           border
           border-gray-100
+          bg-white
+          p-4
           shadow-sm
 
-          lg:mt-14 
+          lg:mt-14
           lg:space-y-10
-          lg:p-0
-          lg:border-0
           lg:rounded-none
-          lg:shadow-none
+          lg:border-0
           lg:bg-transparent
+          lg:p-0
+          lg:shadow-none
         "
       >
+        {/* DESCRIPTION */}
+
         <ProductDescription
           descriptions={product.descriptions}
           packing={product.packing || []}
-          directionOfUse={product.directionOfUse || []}
-          additionalInfo={product.additionalInfo || []}
+          directionOfUse={
+            product.directionOfUse || []
+          }
+          additionalInfo={
+            product.additionalInfo || []
+          }
           faq={product.faq || []}
         />
 
-        <ProductSpecifications specifications={product.specifications || []} />
+        {/* SPECIFICATIONS */}
+
+        <ProductSpecifications
+          specifications={
+            product.specifications || []
+          }
+        />
+
+        {/* RELATED PRODUCTS */}
 
         <RelatedProducts
           currentProductId={product.id}
@@ -221,7 +334,10 @@ lg:self-start
         />
       </div>
 
-      {/* PREMIUM STICKY MOBILE BOTTOM BAR */}
+      {/* ========================================================== */}
+      {/* MOBILE STICKY BOTTOM BAR */}
+      {/* ========================================================== */}
+
       <div
         className="
           fixed
@@ -229,35 +345,88 @@ lg:self-start
           left-0
           right-0
           z-30
-          bg-white/95
-          backdrop-blur-xl
+          block
           border-t
           border-gray-100
+          bg-white/95
           px-4
           py-3
           shadow-[0_-8px_30px_rgba(0,0,0,0.12)]
-          block
+          backdrop-blur-xl
+
           lg:hidden
         "
       >
-        <div className="mx-auto flex max-w-md items-center justify-between gap-3">
+        <div
+          className="
+            mx-auto
+            flex
+            max-w-md
+            items-center
+            justify-between
+            gap-3
+          "
+        >
+          {/* ====================================================== */}
+          {/* MOBILE PRICE */}
+          {/* ====================================================== */}
+
           <div className="flex flex-col">
-            <span className="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+            <span
+              className="
+                text-[10px]
+                font-medium
+                uppercase
+                tracking-wider
+                text-gray-400
+              "
+            >
               Total Price
             </span>
-            <div className="flex items-center gap-1.5 leading-none">
-              <span className="text-lg font-bold text-gray-900">
-                ₹ {sellingPrice.toLocaleString()}
+
+            <div
+              className="
+                flex
+                items-center
+                gap-1.5
+                leading-none
+              "
+            >
+              <span
+                className="
+                  text-lg
+                  font-bold
+                  text-gray-900
+                "
+              >
+                ₹{" "}
+                {sellingPrice.toLocaleString(
+                  "en-IN"
+                )}
               </span>
+
               {mrp > sellingPrice && (
-                <span className="text-xs text-gray-400 line-through">
-                  ₹ {mrp.toLocaleString()}
+                <span
+                  className="
+                    text-xs
+                    text-gray-400
+                    line-through
+                  "
+                >
+                  ₹{" "}
+                  {mrp.toLocaleString(
+                    "en-IN"
+                  )}
                 </span>
               )}
             </div>
           </div>
 
-          <div className="flex-1 max-w-[220px]">
+          {/* ====================================================== */}
+          {/* MOBILE PRODUCT ACTIONS */}
+          {/* ====================================================== */}
+
+          <div className="max-w-[220px] flex-1">
             <ProductActions
               product={product}
               selectedVariant={selectedVariant}

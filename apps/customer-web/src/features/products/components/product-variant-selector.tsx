@@ -1,209 +1,827 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
-import { ProductVariant } from "@/features/products/types/product.type";
+import React, { useEffect, useRef } from "react";
+import {
+  Loader2,
+  Minus,
+  Plus,
+  ShoppingCart,
+} from "lucide-react";
+
+import {
+  Product,
+  ProductVariant,
+} from "@/features/products/types/product.type";
+
+import { useAddToCart } from "@/features/cart/hooks/use-add-to-cart";
+import { useCart } from "@/features/cart/hooks/use-cart";
+import { useUpdateCartItem } from "@/features/cart/hooks/use-update-cart-item";
+import { useRemoveCartItem } from "@/features/cart/hooks/use-remove-cart-item";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 
 interface ProductVariantSelectorProps {
+  product: Product;
   variants: ProductVariant[];
   selectedVariantId: string;
   onChange: (variantId: string) => void;
 }
 
 export function ProductVariantSelector({
+  product,
   variants,
   selectedVariantId,
   onChange,
 }: ProductVariantSelectorProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const variantRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+  const scrollContainerRef =
+    useRef<HTMLDivElement | null>(null);
+
+  const variantRefs = useRef<
+    Record<string, HTMLDivElement | null>
+  >({});
 
   /*
-   |--------------------------------------------------------------------------
-   | AUTO-CENTER / SCROLL SELECTED VARIANT ON CHANGE (VERTICAL)
-   |--------------------------------------------------------------------------
+   * ================================================================
+   * AUTH
+   * ================================================================
    */
+
+  const { isAuthenticated } = useAuth();
+
+  /*
+   * ================================================================
+   * CART
+   * ================================================================
+   */
+
+  const { data: cartData } = useCart();
+
+  /*
+   * ================================================================
+   * ADD TO CART
+   * ================================================================
+   */
+
+  const {
+    mutate: addToCart,
+    isPending: isAddingToCart,
+  } = useAddToCart();
+
+  /*
+   * ================================================================
+   * UPDATE CART
+   * ================================================================
+   */
+
+  const {
+    mutate: updateCart,
+    isPending: isUpdatingCart,
+  } = useUpdateCartItem();
+
+  /*
+   * ================================================================
+   * REMOVE CART ITEM
+   * ================================================================
+   */
+
+  const {
+    mutate: removeCartItem,
+    isPending: isRemovingCartItem,
+  } = useRemoveCartItem();
+
+  /*
+   * ================================================================
+   * AUTO CENTER SELECTED VARIANT
+   * ================================================================
+   */
+
   useEffect(() => {
-    const selectedElement = variantRefs.current[selectedVariantId];
-    const container = scrollContainerRef.current;
+    const selectedElement =
+      variantRefs.current[selectedVariantId];
 
-    if (selectedElement && container) {
-      const isScrollable = container.scrollHeight > container.clientHeight;
-      if (!isScrollable) return;
+    const container =
+      scrollContainerRef.current;
 
-      const containerHeight = container.offsetHeight;
-      const elementTop = selectedElement.offsetTop;
-      const elementHeight = selectedElement.offsetHeight;
-
-      const scrollTo = elementTop - containerHeight / 2 + elementHeight / 2;
-
-      container.scrollTo({
-        top: scrollTo,
-        behavior: "smooth",
-      });
+    if (!selectedElement || !container) {
+      return;
     }
+
+    const isScrollable =
+      container.scrollHeight >
+      container.clientHeight;
+
+    if (!isScrollable) {
+      return;
+    }
+
+    const containerHeight =
+      container.offsetHeight;
+
+    const elementTop =
+      selectedElement.offsetTop;
+
+    const elementHeight =
+      selectedElement.offsetHeight;
+
+    const scrollTo =
+      elementTop -
+      containerHeight / 2 +
+      elementHeight / 2;
+
+    container.scrollTo({
+      top: scrollTo,
+      behavior: "smooth",
+    });
   }, [selectedVariantId]);
 
   /*
-   |--------------------------------------------------------------------------
-   | EMPTY STATE
-   |--------------------------------------------------------------------------
+   * ================================================================
+   * EMPTY STATE
+   * ================================================================
    */
+
   if (!variants?.length) {
     return null;
   }
 
+  const handleVariantSelect = (
+  variant: ProductVariant
+) => {
+  if (!variant.stock?.inStock) {
+    return;
+  }
+
+  onChange(variant.id);
+};
+
+  /*
+   * ================================================================
+   * ADD VARIANT
+   * ================================================================
+   */
+
+  const handleAddToCart = (
+    variant: ProductVariant
+  ) => {
+    const isInStock =
+      variant.stock?.inStock ?? false;
+
+    if (!isInStock) {
+      return;
+    }
+
+    addToCart({
+      productId: product.id,
+      variantId: variant.id,
+      quantity: 1,
+      product,
+    });
+
+    onChange(variant.id);
+  };
+
+  /*
+   * ================================================================
+   * INCREMENT
+   * ================================================================
+   */
+
+  const handleIncrement = (
+    variant: ProductVariant
+  ) => {
+    const cartItem =
+      cartData?.cartItems?.find(
+        (item) =>
+          item.variantId === variant.id
+      );
+
+    if (!cartItem) {
+      return;
+    }
+
+    const currentQuantity =
+      cartItem.variant?.quantity || 0;
+
+    updateCart({
+      productId: cartItem.productId,
+      variantId: variant.id,
+      quantity: currentQuantity + 1,
+    });
+  };
+
+  /*
+   * ================================================================
+   * DECREMENT
+   * ================================================================
+   */
+
+  const handleDecrement = (
+    variant: ProductVariant
+  ) => {
+    const cartItem =
+      cartData?.cartItems?.find(
+        (item) =>
+          item.variantId === variant.id
+      );
+
+    if (!cartItem) {
+      return;
+    }
+
+    const currentQuantity =
+      cartItem.variant?.quantity || 0;
+
+    /*
+     * Quantity 1 → Remove from cart
+     */
+
+    if (currentQuantity <= 1) {
+      removeCartItem({
+        productId: cartItem.productId,
+        variantId: variant.id,
+        cartItemId: isAuthenticated
+          ? cartItem.id
+          : undefined,
+      });
+
+      return;
+    }
+
+    /*
+     * Quantity > 1 → Decrease
+     */
+
+    updateCart({
+      productId: cartItem.productId,
+      variantId: variant.id,
+      quantity: currentQuantity - 1,
+    });
+  };
+
+  /*
+   * ================================================================
+   * RENDER
+   * ================================================================
+   */
+
   return (
-    <div className="space-y-2">
+    <div className="w-full space-y-3">
+      {/* ========================================================== */}
       {/* TITLE */}
-      <div>
-        <h3 className="text-xs font-semibold tracking-wide text-gray-500 uppercase">
-          Select Variants :
-        </h3>
+      {/* ========================================================== */}
+
+      <div
+        className="
+          text-sm
+          font-medium
+          uppercase
+          tracking-wide
+          text-gray-600
+          sm:text-base
+        "
+      >
+        Select Variants :
       </div>
 
-      {/* VERTICAL CONTAINER (Scrollable if too many variants, Scrollbars Hidden) */}
+      {/* ========================================================== */}
+      {/* VARIANT LIST */}
+      {/* ========================================================== */}
+
       <div
         ref={scrollContainerRef}
         className="
-          flex 
-          flex-col 
-          gap-2 
-          max-h-[320px]
-          overflow-y-auto 
-          pr-1 
+          flex
+          max-h-[360px]
+          flex-col
+          gap-2
+          overflow-y-auto
           py-1
+          pr-0.5
           scroll-smooth
-          [-ms-overflow-style:none] 
-          [scrollbar-width:none] 
+
+          [-ms-overflow-style:none]
+          [scrollbar-width:none]
           [&::-webkit-scrollbar]:hidden
+
+          sm:max-h-[320px]
+          sm:gap-2.5
         "
       >
         {variants.map((variant) => {
-          const isSelected = selectedVariantId === variant.id;
-          const isInStock = variant.stock?.inStock;
-          const attributes = Object.entries(variant.attributes || {});
+          const isSelected =
+            selectedVariantId === variant.id;
 
-          // Calculate discount percentage if MRP and Selling Price exist
-          const mrp = variant.pricing?.mrp || 0;
-          const sellingPrice = variant.pricing?.sellingPrice || 0;
+          const isInStock =
+            variant.stock?.inStock ?? false;
+
+          /*
+           * --------------------------------------------------------
+           * CART ITEM FOR THIS EXACT VARIANT
+           * --------------------------------------------------------
+           */
+
+          const cartItem =
+            cartData?.cartItems?.find(
+              (item) =>
+                item.variantId ===
+                variant.id
+            );
+
+          const quantity =
+            cartItem?.variant?.quantity || 0;
+
+          const isInCart =
+            quantity > 0;
+
+          /*
+           * --------------------------------------------------------
+           * PRICE
+           * --------------------------------------------------------
+           */
+
+          const mrp =
+            variant.pricing?.mrp || 0;
+
+          const sellingPrice =
+            variant.pricing?.sellingPrice || 0;
+
           const discountPercentage =
             mrp > sellingPrice
-              ? Math.round(((mrp - sellingPrice) / mrp) * 100)
+              ? Math.round(
+                  ((mrp - sellingPrice) /
+                    mrp) *
+                    100
+                )
               : 0;
 
+          /*
+           * --------------------------------------------------------
+           * ATTRIBUTES
+           * --------------------------------------------------------
+           */
+
+          const attributes =
+            Object.entries(
+              variant.attributes || {}
+            );
+
+          /*
+           * --------------------------------------------------------
+           * LOADING
+           * --------------------------------------------------------
+           */
+
+          const isCartActionLoading =
+            isAddingToCart ||
+            isUpdatingCart ||
+            isRemovingCartItem;
+
           return (
-            <button
+            <div
               key={variant.id}
-              ref={(el) => {
-                variantRefs.current[variant.id] = el;
+              ref={(element) => {
+                variantRefs.current[
+                  variant.id
+                ] = element;
               }}
-              type="button"
-              onClick={() => onChange(variant.id)}
-              disabled={!isInStock}
-              className={`
-                relative
-                flex
-                w-full
-                items-center
-                justify-between
-                rounded-lg
-                border
-                p-2.5
-                text-left
-                transition-all
-                duration-200
-                focus:outline-none
+             className={`
+  w-full
+  rounded-xl
+  border
+  p-2.5
+  transition-all
+  duration-200
 
-                ${
-                  isSelected
-                    ? "border-teal-600 bg-teal-50/40 ring-1 ring-teal-600/20 shadow-sm"
-                    : "border-gray-200 bg-white hover:border-gray-300 active:bg-gray-50"
-                }
+  sm:flex
+sm:items-center
+  sm:gap-4
+  sm:p-3
 
-                ${
-                  !isInStock
-                    ? "cursor-not-allowed border-gray-100 bg-gray-50/50 opacity-40"
-                    : ""
-                }
-              `}
+  ${
+    isSelected
+      ? "border-teal-600 bg-teal-50/40 ring-1 ring-teal-600/20 shadow-sm"
+      : "border-gray-200 bg-white"
+  }
+
+  ${
+    !isInStock
+      ? "border-gray-100 bg-gray-50/50 opacity-50"
+      : "hover:border-gray-300"
+  }
+`}
             >
-              {/* LEFT SECTION: THUMBNAIL + DETAILS */}
-              <div className="flex items-center space-x-2.5 overflow-hidden">
-                {(variant.images?.main || variant.images?.gallery?.length) && (
-                  <img
-                    src={variant.images.main || variant.images.gallery[0]}
-                    alt={variant.name}
-                    className="h-10 w-10 shrink-0 rounded-md border border-gray-200 object-cover"
-                  />
-                )}
+              {/* ================================================= */}
+              {/* PRODUCT CONTENT */}
+              {/* ================================================= */}
 
-                <div className="overflow-hidden space-y-0.5">
+              <div
+                className="
+                  grid
+                  grid-cols-[52px_minmax(0,1fr)]
+                  gap-2.5
+
+                  sm:grid-cols-[64px_minmax(0,1fr)]
+                  sm:gap-3
+                "
+              >
+                {/* ================================================= */}
+                {/* IMAGE */}
+                {/* ================================================= */}
+
+                <button
+                  type="button"
+                  onClick={() =>
+  handleVariantSelect(variant)
+}
+                  disabled={!isInStock}
+                  className="
+                    flex
+                    h-[52px]
+                    w-[52px]
+                    items-center
+                    justify-center
+                    overflow-hidden
+                    rounded-lg
+                    border
+                    border-gray-200
+                    bg-white
+                    focus:outline-none
+                    sm:h-16
+                    sm:w-16
+                    disabled:cursor-not-allowed
+                  "
+                  aria-label={`Select ${variant.name}`}
+                >
+                  {(variant.images?.main ||
+                    variant.images?.gallery
+                      ?.length) ? (
+                    <img
+                      src={
+                        variant.images.main ||
+                        variant.images
+                          .gallery[0]
+                      }
+                      alt={variant.name}
+                      className="
+                        h-full
+                        w-full
+                        object-contain
+                      "
+                    />
+                  ) : (
+                    <span className="text-[10px] text-gray-400">
+                      No image
+                    </span>
+                  )}
+                </button>
+
+                {/* ================================================= */}
+                {/* DETAILS */}
+                {/* ================================================= */}
+
+               <button
+  type="button"
+  onClick={() =>
+    handleVariantSelect(variant)
+  }
+  disabled={!isInStock}
+                  className="
+                    min-w-0
+                    text-left
+                    focus:outline-none
+                    disabled:cursor-not-allowed
+                  "
+                >
+                  {/* PRODUCT NAME */}
+
                   <h4
-                    className={`text-xs font-semibold tracking-tight text-gray-900 truncate ${
-                      !isInStock && "line-through text-gray-400"
-                    }`}
-                  >
-                    {variant.name}
-                  </h4>
+  className={`
+    line-clamp-2
+    text-sm
+    font-semibold
+    leading-5
+    tracking-tight
+    text-gray-900
+
+    sm:line-clamp-none
+    sm:whitespace-nowrap
+    sm:text-base
+    sm:leading-5
+
+    ${
+      !isInStock
+        ? "text-gray-400 line-through"
+        : ""
+    }
+  `}
+>
+  {variant.name}
+</h4>
 
                   {/* ATTRIBUTES */}
+
                   {!!attributes.length && (
-                    <div className="flex flex-wrap gap-x-2 gap-y-0.5">
-                      {attributes.map(([key, value]) => (
-                        <span
-                          key={`${key}-${value}`}
-                          className="text-[11px] text-gray-500 leading-none"
-                        >
-                          <span className="text-gray-400 capitalize">{key}:</span>{" "}
-                          <span className="font-medium text-gray-700">{value}</span>
-                        </span>
-                      ))}
+                    <div
+                      className="
+                        mt-1
+                        flex
+                        flex-wrap
+                        gap-x-2
+                        gap-y-1
+                      "
+                    >
+                      {attributes.map(
+                        ([key, value]) => (
+                          <span
+                            key={`${key}-${value}`}
+                            className="
+                              text-[10px]
+                              text-gray-500
+                              sm:text-[11px]
+                            "
+                          >
+                            <span className="capitalize text-gray-400">
+                              {key}:
+                            </span>{" "}
+                            <span className="font-medium text-gray-700">
+                              {String(value)}
+                            </span>
+                          </span>
+                        )
+                      )}
                     </div>
                   )}
 
-                  {/* WARRANTY & RATINGS SUB-LINE */}
-                  <div className="flex items-center gap-2 pt-0.5">
-                    {variant.warrantyMonths ? (
-                      <span className="text-[10px] text-gray-500 font-medium">
-                        {variant.warrantyMonths} Months Warranty
-                      </span>
-                    ) : null}
+                  {/* PRICE */}
 
-                    {variant.ratings?.average ? (
-                      <span className="text-[10px] text-gray-600 font-medium flex items-center gap-0.5">
-                        ⭐ {variant.ratings.average.toFixed(1)} ({variant.ratings.count || 0})
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
-              </div>
+                  <div
+                    className="
+                      mt-1.5
+                      flex
+                      flex-wrap
+                      items-center
+                      gap-x-2
+                      gap-y-0.5
+                    "
+                  >
+                    {/* SELLING PRICE */}
 
-              {/* RIGHT SECTION: PRICE, MRP, DISCOUNT & STOCK STATUS */}
-              <div className="flex shrink-0 flex-col items-end pl-3">
-                <div className="flex items-baseline gap-1.5">
-                  <span className="text-xs font-bold text-gray-900">
-                    ₹{sellingPrice.toLocaleString()}
-                  </span>
-                  {mrp > sellingPrice && (
-                    <span className="text-[10px] text-gray-400 line-through">
-                      ₹{mrp.toLocaleString()}
+                    <span
+                      className="
+                        text-base
+                        font-bold
+                        leading-5
+                        text-gray-900
+                        sm:text-lg
+                      "
+                    >
+                      ₹
+                      {sellingPrice.toLocaleString(
+                        "en-IN"
+                      )}
                     </span>
-                  )}
-                </div>
 
-                {discountPercentage > 0 && (
-                  <span className="text-[9px] font-bold text-emerald-600 mt-0.5">
-                    {discountPercentage}% OFF
-                  </span>
-                )}
+                    {/* MRP */}
 
-                {!isInStock && (
-                  <span className="text-[10px] font-medium tracking-wide text-red-500 uppercase mt-0.5">
-                    Out of Stock
-                  </span>
+                    {mrp > sellingPrice && (
+                      <span
+                        className="
+                          text-[11px]
+                          text-gray-400
+                          line-through
+                          sm:text-xs
+                        "
+                      >
+                        ₹
+                        {mrp.toLocaleString(
+                          "en-IN"
+                        )}
+                      </span>
+                    )}
+
+                    {/* DISCOUNT */}
+
+                    {discountPercentage > 0 && (
+                      <span
+                        className="
+                          text-[10px]
+                          font-bold
+                          text-emerald-600
+                          sm:text-[11px]
+                        "
+                      >
+                        {discountPercentage}% OFF
+                      </span>
+                    )}
+                  </div>
+                </button>
+              </div>
+
+              {/* ================================================= */}
+              {/* CART ACTION */}
+              {/* ================================================= */}
+
+              <div
+                className="
+                  mt-2.5
+                  w-full
+
+                  sm:mt-0
+                  sm:flex
+                  sm:justify-end
+                "
+              >
+                {isInCart ? (
+                  /* =================================================
+                   * QUANTITY CONTROLS
+                   * ================================================= */
+
+                  <div
+                    className="
+  ml-auto
+  flex
+  h-10
+  w-[150px]
+  overflow-hidden
+  rounded-lg
+  border
+  border-gray-300
+  bg-white
+
+  sm:ml-0
+  sm:w-auto
+"
+                  >
+                    {/* MINUS */}
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleDecrement(
+                          variant
+                        )
+                      }
+                      disabled={
+                        isCartActionLoading
+                      }
+                      aria-label={`Decrease ${variant.name} quantity`}
+                      className="
+                        flex
+                        h-full
+                        flex-1
+                        items-center
+                        justify-center
+                        border-r
+                        border-gray-200
+                        text-gray-700
+                        transition-colors
+                        hover:bg-gray-50
+                        active:bg-gray-100
+                        disabled:cursor-not-allowed
+                        disabled:opacity-50
+
+                        sm:w-11
+                        sm:flex-none
+                      "
+                    >
+                      {isCartActionLoading ? (
+                        <Loader2
+                          size={16}
+                          className="animate-spin"
+                        />
+                      ) : (
+                        <Minus size={17} />
+                      )}
+                    </button>
+
+                    {/* QUANTITY */}
+
+                    <div
+                      className="
+                        flex
+                        h-full
+                        min-w-14
+                        flex-1
+                        items-center
+                        justify-center
+                        px-3
+                        text-sm
+                        font-semibold
+                        tabular-nums
+                        text-gray-900
+
+                        sm:flex-none
+                      "
+                    >
+                      {isCartActionLoading ? (
+                        <Loader2
+                          size={16}
+                          className="animate-spin"
+                        />
+                      ) : (
+                        quantity
+                      )}
+                    </div>
+
+                    {/* PLUS */}
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleIncrement(
+                          variant
+                        )
+                      }
+                      disabled={
+                        isCartActionLoading
+                      }
+                      aria-label={`Increase ${variant.name} quantity`}
+                      className="
+                        flex
+                        h-full
+                        flex-1
+                        items-center
+                        justify-center
+                        border-l
+                        border-gray-200
+                        text-gray-700
+                        transition-colors
+                        hover:bg-gray-50
+                        active:bg-gray-100
+                        disabled:cursor-not-allowed
+                        disabled:opacity-50
+
+                        sm:w-11
+                        sm:flex-none
+                      "
+                    >
+                      <Plus size={17} />
+                    </button>
+                  </div>
+                ) : (
+                  /* =================================================
+                   * ADD TO CART
+                   * ================================================= */
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleAddToCart(
+                        variant
+                      )
+                    }
+                    disabled={
+                      !isInStock ||
+                      isCartActionLoading
+                    }
+                    className="
+  ml-auto
+  flex
+  h-10
+  w-[150px]
+  items-center
+  justify-center
+  gap-1.5
+  rounded-lg
+  bg-teal-600
+  px-3
+  text-xs
+  font-semibold
+  text-white
+  transition-all
+  duration-200
+  hover:bg-teal-700
+  active:scale-[0.98]
+  disabled:cursor-not-allowed
+  disabled:opacity-50
+
+  sm:ml-0
+  sm:w-auto
+  sm:min-w-[145px]
+"
+                  >
+                    {isCartActionLoading ? (
+                      <>
+                        <Loader2
+                          size={16}
+                          className="animate-spin"
+                        />
+                        Adding...
+                      </>
+                    ) : (
+                      <>
+                        <ShoppingCart
+                          size={16}
+                        />
+
+                        {isInStock
+                          ? "Add To Cart"
+                          : "Out Of Stock"}
+                      </>
+                    )}
+                  </button>
                 )}
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
