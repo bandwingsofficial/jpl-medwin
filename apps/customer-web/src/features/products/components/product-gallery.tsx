@@ -589,19 +589,25 @@ const isWishlistLoading =
     >
       {/* WHITE SQUARE POPUP */}
       <div
-        className="
-          relative
-          flex
-          h-[600px]
-          w-[600px]
-          max-h-[90vh]
-          max-w-[90vw]
-          flex-col
-          overflow-hidden
-          rounded-2xl
-          bg-white
-          shadow-2xl
-        "
+  className="
+    relative
+    flex
+    h-[460px]
+    w-[460px]
+    max-h-[90vh]
+    max-w-[90vw]
+    flex-col
+    overflow-hidden
+    rounded-2xl
+    bg-white
+    shadow-2xl
+
+    sm:h-[500px]
+    sm:w-[500px]
+
+    md:h-[600px]
+    md:w-[600px]
+  "
         onClick={(event) =>
           event.stopPropagation()
         }
