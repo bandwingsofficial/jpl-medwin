@@ -102,61 +102,58 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   };
 
-  const handleIncrease = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
+  const handleIncrease = async (
+  e: React.MouseEvent<HTMLButtonElement>
+) => {
+  e.preventDefault();
+  e.stopPropagation();
 
-    e.stopPropagation();
+  if (!cartItem || !variant?.id) {
+    return;
+  }
 
-    if (!cartItem?.id) {
-      return;
-    }
+  try {
+    await updateCartItem({
+      productId: cartItem.productId,
+      variantId: variant.id,
+      quantity: cartQuantity + 1,
+    });
+  } catch (error) {
+    console.error("UPDATE CART ERROR", error);
+  }
+};
+ const handleDecrease = async (
+  e: React.MouseEvent<HTMLButtonElement>
+) => {
+  e.preventDefault();
+  e.stopPropagation();
 
+  if (!cartItem || !variant?.id) {
+    return;
+  }
 
-    try {
-      await updateCartItem({
+  try {
+    if (cartQuantity <= 1) {
+      await removeCartItem({
+        productId: cartItem.productId,
+        variantId: variant.id,
         cartItemId: isAuthenticated
-  ? cartItem.id
-  : cartItem.productId,
-        quantity: cartQuantity + 1,
+          ? cartItem.id
+          : undefined,
       });
-    } catch (error) {
-      console.error('UPDATE CART ERROR', error);
-    }
-  };
 
-  const handleDecrease = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-
-    e.stopPropagation();
-
-
-    if (!cartItem?.id) {
       return;
     }
 
-    try {
-      if (cartQuantity <= 1) {
-      await removeCartItem(
-  isAuthenticated
-    ? cartItem.id
-    : cartItem.productId
-);
-
-        return;
-      }
-
-      await updateCartItem({
-      cartItemId: isAuthenticated
-  ? cartItem.id
-  : cartItem.productId,
-
-        quantity: cartQuantity - 1,
-      });
-    } catch (error) {
-      console.error('REMOVE CART ERROR', error);
-    }
-  };
-
+    await updateCartItem({
+      productId: cartItem.productId,
+      variantId: variant.id,
+      quantity: cartQuantity - 1,
+    });
+  } catch (error) {
+    console.error("UPDATE/REMOVE CART ERROR", error);
+  }
+};
   /* Helper function to cap tag rendering length precisely around 10-12 characters max */
   const truncateTagText = (str: string) => {
     if (!str) return '';

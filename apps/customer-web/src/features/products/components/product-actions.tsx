@@ -232,20 +232,17 @@ console.log(
    |--------------------------------------------------------------------------
    */
 
-  const handleIncrement =
-    () => {
-      if (!cartItem) {
-        return;
-      }
+  const handleIncrement = () => {
+  if (!cartItem || !selectedVariant) {
+    return;
+  }
 
-     updateCart({
-  cartItemId: isAuthenticated
-    ? cartItem.id
-    : cartItem.productId,
-
-  quantity: quantity + 1,
-});
-    };
+  updateCart({
+    productId: cartItem.productId,
+    variantId: selectedVariant.id,
+    quantity: quantity + 1,
+  });
+};
 
   /*
    |--------------------------------------------------------------------------
@@ -253,42 +250,29 @@ console.log(
    |--------------------------------------------------------------------------
    */
 
-  const handleDecrement =
-    () => {
-      if (!cartItem) {
-        return;
-      }
+  const handleDecrement = () => {
+  if (!cartItem || !selectedVariant) {
+    return;
+  }
 
-      /*
-       |--------------------------------------------------------------------------
-       | REMOVE IF ZERO
-       |--------------------------------------------------------------------------
-       */
+  if (quantity <= 1) {
+    removeCartItem({
+      productId: cartItem.productId,
+      variantId: selectedVariant.id,
+      cartItemId: isAuthenticated
+        ? cartItem.id
+        : undefined,
+    });
 
-      if (quantity <= 1) {
-        removeCartItem(
-  isAuthenticated
-    ? cartItem.id
-    : cartItem.productId
-);
+    return;
+  }
 
-        return;
-      }
-
-      /*
-       |--------------------------------------------------------------------------
-       | UPDATE
-       |--------------------------------------------------------------------------
-       */
-
-      updateCart({
-  cartItemId: isAuthenticated
-    ? cartItem.id
-    : cartItem.productId,
-
-  quantity: quantity - 1,
-});
-    };
+  updateCart({
+    productId: cartItem.productId,
+    variantId: selectedVariant.id,
+    quantity: quantity - 1,
+  });
+};
 
   /*
    |--------------------------------------------------------------------------

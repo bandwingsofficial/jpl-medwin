@@ -10,47 +10,45 @@ import { localCartService } from "@/features/cart/hooks/local-cart.service";
 
 import { useAuth } from "@/features/auth/hooks/use-auth";
 
-export const useUpdateCartItem =
-  () => {
-    const queryClient =
-      useQueryClient();
+interface UpdateCartItemPayload {
+  productId: string;
+  variantId: string;
+  quantity: number;
+}
 
-    const {
-      isAuthenticated,
-    } = useAuth();
+export const useUpdateCartItem = () => {
+  const queryClient = useQueryClient();
 
-    return useMutation({
-      mutationFn: async ({
-        cartItemId,
-        quantity,
-      }: {
-        cartItemId: string;
+  const { isAuthenticated } = useAuth();
 
-        quantity: number;
-      }) => {
-        if (
-          isAuthenticated
-        ) {
-          return cartApi.updateItem(
-            cartItemId,
-            {
-              quantity,
-            }
-          );
-        }
-
-        localCartService.updateQuantity(
-          cartItemId,
-          quantity
+  return useMutation({
+    mutationFn: async ({
+      productId,
+      variantId,
+      quantity,
+    }: UpdateCartItemPayload) => {
+      if (isAuthenticated) {
+        return cartApi.updateItem(
+          `${productId}-${variantId}`,
+          {
+            quantity,
+          }
         );
+      }
 
-        return true;
-      },
+      localCartService.updateQuantity(
+        productId,
+        variantId,
+        quantity
+      );
 
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["cart"],
-        });
-      },
-    });
-  };
+      return true;
+    },
+
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
+    },
+  });
+};

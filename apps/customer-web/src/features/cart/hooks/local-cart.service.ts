@@ -259,25 +259,31 @@ product: Product, variantId: string, quantity = 1  ) {
   }
 
   updateQuantity(
-    productId: string,
-    quantity: number
-  ) {
-    const items = this.getItems();
+  productId: string,
+  variantId: string,
+  quantity: number
+) {
+  const items = this.getItems();
 
-    const item = items.find(
-      (i) =>
-        i.product.id === productId
-    );
+  const item = items.find(
+    (item) =>
+      item.product.id === productId &&
+      item.variantId === variantId
+  );
 
-    if (!item) {
-      return;
-    }
-
-    item.quantity = quantity;
-
-    this.saveItems(items);
+  if (!item) {
+    return;
   }
 
+  if (quantity <= 0) {
+    this.removeItem(productId, variantId);
+    return;
+  }
+
+  item.quantity = quantity;
+
+  this.saveItems(items);
+}
   removeItem(
   productId: string,
   variantId: string

@@ -10,38 +10,43 @@ import { localCartService } from "@/features/cart/hooks/local-cart.service";
 
 import { useAuth } from "@/features/auth/hooks/use-auth";
 
-export const useRemoveCartItem =
-  () => {
-    const queryClient =
-      useQueryClient();
+interface RemoveCartItemPayload {
+  productId: string;
+  variantId: string;
+  cartItemId?: string;
+}
 
-    const {
-      isAuthenticated,
-    } = useAuth();
+export const useRemoveCartItem = () => {
+  const queryClient = useQueryClient();
 
-    return useMutation({
-      mutationFn: async (
-        cartItemId: string
-      ) => {
-        if (
-          isAuthenticated
-        ) {
-          return cartApi.removeItem(
-            cartItemId
-          );
+  const { isAuthenticated } = useAuth();
+
+  return useMutation({
+    mutationFn: async ({
+      productId,
+      variantId,
+      cartItemId,
+    }: RemoveCartItemPayload) => {
+      if (isAuthenticated) {
+        if (!cartItemId) {
+          throw new Error("Cart item ID is required.");
         }
 
-        localCartService.removeItem(
-          cartItemId
-        );
+        return cartApi.removeItem(cartItemId);
+      }
 
-        return true;
-      },
+      localCartService.removeItem(
+        productId,
+        variantId
+      );
 
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["cart"],
-        });
-      },
-    });
-  };
+      return true;
+    },
+
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ["cart"],
+      });
+    },
+  });
+};
