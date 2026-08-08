@@ -790,43 +790,43 @@ export function ProductVariantSelector({
                       isCartActionLoading
                     }
                     className={`
-                      ml-auto
-                      flex
-                      h-10
-                      w-[150px]
-                      items-center
-                      justify-center
-                      gap-1.5
-                      rounded-lg
-                      border
-                      bg-white
-                      px-3
-                      text-xs
-                      font-semibold
-                      transition-all
-                      duration-200
-                      active:scale-[0.98]
+  ml-auto
+  flex
+  h-10
+  w-[150px]
+  items-center
+  justify-center
+  gap-1.5
+  rounded-lg
+  border
+  px-3
+  text-xs
+  font-semibold
+  transition-all
+  duration-200
+  active:scale-[0.98]
 
-                      sm:ml-0
-                      sm:w-auto
-                      sm:min-w-[145px]
+  sm:ml-0
+  sm:w-auto
+  sm:min-w-[145px]
 
-                      ${
-                        isInStock
-                          ? `
-                            border-teal-500
-                            text-teal-600
-                            hover:bg-teal-600
-                            hover:text-white
-                            hover:shadow-sm
-                          `
-                          : `
-                            cursor-not-allowed
-                            border-orange-300
-                            text-orange-600
-                          `
-                      }
-                    `}
+  ${
+    isInStock
+      ? `
+          border-teal-600
+          bg-teal-600
+          text-white
+          hover:bg-teal-700
+          hover:border-teal-700
+        `
+      : `
+          cursor-not-allowed
+          border-orange-300
+          bg-orange-50
+          text-orange-600
+        `
+  }
+`}
                   >
                     {isCartActionLoading ? (
                       <>
