@@ -412,32 +412,34 @@ const topSafeArea = isMobile ? 75 : 140;
   ref={(element) => {
     variantRefs.current[variant.id] = element;
   }}
+  onClick={() => handleVariantSelect(variant)}
   className={`
-                w-full
-                rounded-xl
-                border
-                p-2.5
-                transition-all
-                duration-200
+    w-full
+    cursor-pointer
+    rounded-xl
+    border
+    p-2.5
+    transition-all
+    duration-200
 
-                sm:flex
-                sm:items-center
-                sm:gap-4
-                sm:p-3
+    sm:flex
+    sm:items-center
+    sm:gap-4
+    sm:p-3
 
-                ${
-                  isSelected
-                    ? "border-teal-600 bg-teal-50/40 ring-1 ring-teal-600/20 shadow-sm"
-                    : "border-gray-200 bg-white"
-                }
+    ${
+      isSelected
+        ? "border-teal-600 bg-teal-50/40 ring-1 ring-teal-600/20 shadow-sm"
+        : "border-gray-200 bg-white"
+    }
 
-                ${
-                  !isInStock
-                    ? "border-gray-200 bg-white"
-                    : "hover:border-gray-300"
-                }
-              `}
-            >
+    ${
+      !isInStock
+        ? "border-gray-200 bg-white"
+        : "hover:border-gray-300"
+    }
+  `}
+>
               {/* ================================================= */}
               {/* PRODUCT CONTENT */}
               {/* ================================================= */}
@@ -641,13 +643,13 @@ const topSafeArea = isMobile ? 75 : 140;
 <div className="mt-1 whitespace-nowrap text-[9px] font-medium sm:text-[11px]">
   <span className="hidden sm:inline">
     <span className="text-amber-400">●</span>{" "}
-    <span className="text-sky-600">10 days return available</span>
+    <span className="text-teal-600">10 days return available</span>
     <span className="text-amber-400"> ●</span>{" "}
-    <span className="text-sky-600">Including all taxes</span>
+    <span className="text-teal-600">Including all taxes</span>
     <span className="text-amber-400"> ●</span>{" "}
-    <span className="text-sky-600">
+    <span className="text-teal-600">
       Delivery within{" "}
-      <span className="font-semibold text-sky-600">
+      <span className="font-semibold text-teal-600">
         1-3 Days
       </span>
     </span>
@@ -681,15 +683,15 @@ const topSafeArea = isMobile ? 75 : 140;
     <div className="flex min-w-0 items-center gap-1 whitespace-nowrap">
       <span className="text-amber-400">●</span>
 
-      <span className="text-sky-600">
+      <span className="text-teal-600">
         10 days return
       </span>
 
       <span className="text-amber-400">●</span>
 
-      <span className="text-sky-600">
+      <span className="text-teal-600">
         Delivered within{" "}
-        <span className="font-semibold text-sky-600">
+        <span className="font-semibold text-teal-600">
           1-3 Days
         </span>
       </span>
@@ -721,13 +723,12 @@ const topSafeArea = isMobile ? 75 : 140;
                   >
                     {/* MINUS */}
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleDecrement(
-                          variant
-                        )
-                      }
+                   <button
+  type="button"
+  onClick={(event) => {
+    event.stopPropagation();
+    handleDecrement(variant);
+  }}
                       disabled={
                         isCartActionLoading
                       }
@@ -793,12 +794,11 @@ const topSafeArea = isMobile ? 75 : 140;
                     {/* PLUS */}
 
                     <button
-                      type="button"
-                      onClick={() =>
-                        handleIncrement(
-                          variant
-                        )
-                      }
+  type="button"
+  onClick={(event) => {
+    event.stopPropagation();
+    handleIncrement(variant);
+  }}
                       disabled={
                         isCartActionLoading ||
                         quantity >=
@@ -835,11 +835,10 @@ const topSafeArea = isMobile ? 75 : 140;
 
                   <button
                     type="button"
-                    onClick={() =>
-                      handleAddToCart(
-                        variant
-                      )
-                    }
+                    onClick={(event) => {
+  event.stopPropagation();
+  handleAddToCart(variant);
+}}
                     disabled={
                       !isInStock ||
                       isCartActionLoading

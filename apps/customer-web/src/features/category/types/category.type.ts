@@ -26,3 +26,16 @@ export interface SubCategory {
   categoryId: string;
   categoryName: string;
 }
+export interface MiniCategory {
+  id: string;
+  name: string;
+  slug: string;
+  imageUrl: string | null;
+  description: string | null;
+  metaDescription: string | null;
+  status: "ACTIVE" | "INACTIVE";
+  categoryId: string;
+  subCategoryId: string;
+  categoryName: string;
+  subCategoryName: string;
+}

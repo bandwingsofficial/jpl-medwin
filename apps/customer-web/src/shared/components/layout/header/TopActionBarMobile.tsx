@@ -200,35 +200,34 @@ if (!isAuthenticated) {
 {/* ====================================================== */}
 <div
   className="
-  fixed
-  bottom-0
-  left-0
-  right-0
-  z-50
-  pb-2
-  sm:hidden
+    fixed
+    inset-x-0
+    bottom-0
+    z-[9999]
+    sm:hidden
     overflow-hidden
-    rounded-2xl
+    rounded-t-[22px]
     border
     border-white/20
     bg-gradient-to-r
     from-teal-600
     via-teal-500
     to-emerald-600
-    shadow-[0_8px_30px_rgba(0,0,0,0.18)]
+    shadow-[0_-8px_30px_rgba(0,0,0,0.18)]
     backdrop-blur-xl
+    pb-[env(safe-area-inset-bottom)]
   "
 >
   <div
-    className="
-      flex
-      h-[64px]
-      items-center
-      justify-around
-      px-2
-      pb-[env(safe-area-inset-bottom)]
-    "
-  >
+  className="
+    flex
+    h-[64px]
+    min-h-[64px]
+    items-center
+    justify-around
+    px-2
+  "
+>
     {/* HOME */}
     <Link
       href="/"

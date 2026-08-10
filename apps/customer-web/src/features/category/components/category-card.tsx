@@ -14,7 +14,7 @@ export default function CategoryCard({ category }: Props) {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push(`/products?categoryId=${category.id}`);
+    router.push(`/categories/${category.slug}`);
   };
 
   return (

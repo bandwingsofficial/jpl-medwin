@@ -17,78 +17,57 @@ export default function MiniCategorySidebar({
   onSelect,
 }: Props) {
   return (
-    <div
-      className="
-        sticky
-        top-32
-        w-full
-        bg-white
-        border
-        border-gray-200
-        rounded-xl
-        p-4
-        shadow-sm
-      "
-    >
-      <h3 
-        className="
-          text-sm 
-          font-bold 
-          mb-4
-          bg-gradient-to-r 
-          from-teal-600 
-          via-teal-400 
-          to-teal-700 
-          bg-clip-text 
-          text-transparent 
-          animate-pulse
-          tracking-wide
-          uppercase
-        "
-      >
+    <div className="sticky top-24 self-start">
+      {/* Header */}
+      <h2 className="mb-5 text-[20px] font-semibold uppercase tracking-wide text-[#0BACAE]">
         Mini Categories
-      </h3>
+      </h2>
 
       <div className="space-y-1">
+        {/* View All */}
         <button
           onClick={() => onSelect(null)}
           className={`
+            block
             w-full
+            rounded-xl
+            px-2
+            py-1.5
             text-left
-            px-3
-            py-2
-            rounded-lg
-            text-sm
-
+            text-[12px]
+            font-medium
+            text-gray-800
+            transition-colors
             ${
               selectedMiniCategory === null
-                ? "bg-teal-50 text-teal-700 font-medium"
-                : "hover:bg-gray-50"
+                ? "bg-teal-50 text-teal-700"
+                : "hover:bg-teal-50 hover:text-teal-700"
             }
           `}
         >
           View All
         </button>
 
+        {/* Mini Categories */}
         {miniCategories.map((item) => (
           <button
             key={item.id}
-            onClick={() =>
-              onSelect(item.id)
-            }
+            onClick={() => onSelect(item.id)}
             className={`
+              block
               w-full
+              rounded-xl
+              px-2
+              py-1.5
               text-left
-              px-3
-              py-2
-              rounded-lg
-              text-sm
-
+              text-[12px]
+              font-medium
+              text-gray-800
+              transition-colors
               ${
-                selectedMiniCategory ===
-                item.id
-                  ? "bg-teal-50 text-teal-700 font-medium"
-                  : "hover:bg-gray-50"
+                selectedMiniCategory === item.id
+                  ? "bg-teal-50 text-teal-700"
+                  : "hover:bg-teal-50 hover:text-teal-700"
               }
             `}
           >

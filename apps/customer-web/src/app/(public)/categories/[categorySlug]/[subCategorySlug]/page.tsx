@@ -8,23 +8,25 @@ export const metadata: Metadata = {
     "Explore dental, medical, surgical and healthcare products from JPL Medwin. Browse products by category and sub-category.",
 };
 
+interface SubCategoryRoutePageProps {
+  params: Promise<{
+    categorySlug: string;
+    subCategorySlug: string;
+  }>;
+}
+
 export default async function Page({
   params,
-}: {
-  params: Promise<{
-    categoryId: string;
-    subCategoryId: string;
-  }>;
-}) {
+}: SubCategoryRoutePageProps) {
   const {
-    categoryId,
-    subCategoryId,
+    categorySlug,
+    subCategorySlug,
   } = await params;
 
   return (
     <SubCategoryProductsPage
-      categoryId={categoryId}
-      subCategoryId={subCategoryId}
+      categorySlug={categorySlug}
+      subCategorySlug={subCategorySlug}
     />
   );
 }

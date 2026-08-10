@@ -1,15 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
+
 import { categoryApi } from "../api/category.api";
 
-export const useSubCategories = (categoryId: string) => {
+export const useSubCategories = (categorySlug: string) => {
   return useQuery({
-    queryKey: ["sub-categories", categoryId],
+    queryKey: ["sub-categories", categorySlug],
 
     queryFn: async () => {
-      return categoryApi.getSubCategories(categoryId);
+      return categoryApi.getSubCategories(categorySlug);
     },
 
-    enabled: !!categoryId, // prevents undefined calls
+    enabled: !!categorySlug,
 
     staleTime: 1000 * 60 * 5,
     retry: 1,

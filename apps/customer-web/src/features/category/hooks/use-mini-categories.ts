@@ -1,18 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
+
 import { categoryApi } from "../api/category.api";
 
-export const useMiniCategories = (subCategoryId?: string) => {
+export const useMiniCategories = (
+  categorySlug?: string,
+  subCategorySlug?: string,
+) => {
   return useQuery({
-    queryKey: ["mini-categories", subCategoryId],
+    queryKey: [
+      "mini-categories",
+      categorySlug,
+      subCategorySlug,
+    ],
 
     queryFn: async () => {
-      if (!subCategoryId) return [];
+      if (!categorySlug || !subCategorySlug) {
+        return [];
+      }
 
-      const data = await categoryApi.getMiniCategories(subCategoryId);
+      const data = await categoryApi.getMiniCategories(
+        categorySlug,
+        subCategorySlug,
+      );
 
-      return data || []; // ✅ force fallback
+      return data || [];
     },
 
-    enabled: !!subCategoryId,
+    enabled: !!categorySlug && !!subCategorySlug,
   });
 };

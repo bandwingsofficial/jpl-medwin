@@ -112,7 +112,7 @@ export function HomeCategories() {
           return (
             <Link
               key={category.id}
-              href={`/categories/${category.id}`}
+              href={`/categories/${category.slug}`}
               className={`group relative block ${isHiddenMobile ? 'hidden sm:block' : ''} ${!isExpanded && index >= 8 ? 'sm:hidden' : ''}`}
             >
               <div

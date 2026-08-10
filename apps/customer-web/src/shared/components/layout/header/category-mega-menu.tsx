@@ -24,21 +24,21 @@ export function CategoryMegaMenu({ onClose }: CategoryMegaMenuProps) {
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const [activeCategoryId, setActiveCategoryId] = useState<string | null>(null);
+  const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null);
 
-  const [activeSubCategoryId, setActiveSubCategoryId] = useState<string | null>(null);
-
+  const [activeSubCategorySlug, setActiveSubCategorySlug] = useState<string | null>(null);
+ 
   useEffect(() => {
-    if (categories && categories.length > 0 && !activeCategoryId) {
-      setActiveCategoryId(categories[0].id);
+    if (categories && categories.length > 0 && !activeCategorySlug) {
+      setActiveCategorySlug(categories[0].slug);
     }
-  }, [categories, activeCategoryId]);
+  }, [categories, activeCategorySlug]);
 
   const filteredCategories = categories?.filter((category) =>
     category.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const activeCategoryName = categories?.find((c) => c.id === activeCategoryId)?.name || 'Items';
+  const activeCategoryName = categories?.find((c) => c.slug === activeCategorySlug)?.name || 'Items';
 
   return (
     <div
@@ -132,16 +132,15 @@ export function CategoryMegaMenu({ onClose }: CategoryMegaMenuProps) {
               <Spinner />
             ) : (
               filteredCategories?.map((category) => {
-                const active = activeCategoryId === category.id;
+                const active = activeCategorySlug === category.slug;
 
                 return (
                   <div
                     key={category.id}
-                    onMouseEnter={() => {
-                      setActiveCategoryId(category.id);
-
-                      setActiveSubCategoryId(null);
-                    }}
+                   onMouseEnter={() => {
+  setActiveCategorySlug(category.slug);
+  setActiveSubCategorySlug(null);
+}}
                     className={`
                       flex
                       items-center
@@ -188,14 +187,14 @@ export function CategoryMegaMenu({ onClose }: CategoryMegaMenuProps) {
             overflow-y-auto
           "
           >
-            {activeCategoryId && (
+            {activeCategorySlug && (
               <SubCategoryPanel
-                categoryId={activeCategoryId}
-                categoryName={activeCategoryName}
-                activeSubCategoryId={activeSubCategoryId}
-                setActiveSubCategoryId={setActiveSubCategoryId}
-                onClose={onClose}
-              />
+  categorySlug={activeCategorySlug}
+  categoryName={activeCategoryName}
+  activeSubCategorySlug={activeSubCategorySlug}
+  setActiveSubCategorySlug={setActiveSubCategorySlug}
+  onClose={onClose}
+/>
             )}
           </div>
 
@@ -208,8 +207,12 @@ export function CategoryMegaMenu({ onClose }: CategoryMegaMenuProps) {
             overflow-y-auto
           "
           >
-            <MiniCategoryPanel subCategoryId={activeSubCategoryId} onClose={onClose} />
-          </div>
+           <MiniCategoryPanel
+  categorySlug={activeCategorySlug}
+  subCategorySlug={activeSubCategorySlug}
+  onClose={onClose}
+/>
+</div>
         </div>
 
         {/* FOOTER */}
@@ -240,27 +243,24 @@ export function CategoryMegaMenu({ onClose }: CategoryMegaMenuProps) {
 }
 
 interface SubCategoryPanelProps {
-  categoryId: string;
-
+  categorySlug: string;
   categoryName: string;
+  activeSubCategorySlug: string | null;
 
-  activeSubCategoryId: string | null;
-
-  setActiveSubCategoryId: (id: string | null) => void;
+  setActiveSubCategorySlug: (
+    slug: string | null
+  ) => void;
 
   onClose?: () => void;
 }
 
 function SubCategoryPanel({
-  categoryId,
-
+  categorySlug,
   categoryName,
-
-  setActiveSubCategoryId,
-
+  setActiveSubCategorySlug,
   onClose,
 }: SubCategoryPanelProps) {
-  const { data: subCategories, isLoading } = useSubCategories(categoryId);
+  const { data: subCategories, isLoading } = useSubCategories(categorySlug);
 
   if (isLoading) {
     return <Spinner />;
@@ -286,8 +286,10 @@ function SubCategoryPanel({
         {subCategories?.map((sub) => (
           <Link
             key={sub.id}
-            href={`/categories/${categoryId}/${sub.id}`}
-            onMouseEnter={() => setActiveSubCategoryId(sub.id)}
+           href={`/categories/${categorySlug}/${sub.slug}`}
+           onMouseEnter={() => {
+  setActiveSubCategorySlug(sub.slug);
+}}
             onClick={onClose}
             className="
               block
@@ -305,30 +307,27 @@ function SubCategoryPanel({
 }
 
 function MiniCategoryPanel({
-  subCategoryId,
-
+  categorySlug,
+  subCategorySlug,
   onClose,
 }: {
-  subCategoryId: string | null;
-
+  categorySlug: string | null;
+  subCategorySlug: string | null;
   onClose?: () => void;
 }) {
   const {
     data: miniCategories = [],
-
     isLoading,
-  } = useMiniCategories(subCategoryId ?? undefined);
+  } = useMiniCategories(
+    categorySlug ?? undefined,
+    subCategorySlug ?? undefined,
+  );
 
-  if (!subCategoryId) {
+  if (!categorySlug || !subCategorySlug) {
     return (
-      <p
-        className="
-        text-sm
-        text-gray-400
-      "
-      >
+      <div>
         Hover sub category
-      </p>
+      </div>
     );
   }
 
@@ -356,7 +355,7 @@ function MiniCategoryPanel({
         {miniCategories.map((mini: MiniCategory) => (
           <Link
             key={mini.id}
-            href={`/categories/${subCategoryId}/${mini.id}`}
+            href={`/categories/${subCategorySlug}/${mini.id}`}
             onClick={onClose}
             className="
               block

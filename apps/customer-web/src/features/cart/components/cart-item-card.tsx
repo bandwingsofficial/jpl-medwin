@@ -87,14 +87,17 @@ export function CartItemCard({ item }: CartItemCardProps) {
           "
         >
           <Image
-            src={
-              item.variant.images?.main ||
-              "/images/product-placeholder.png"
-            }
-            alt={item.productName}
-            fill
-            className="object-contain p-1.5 sm:p-2"
-          />
+  src={
+    item.variant.images?.main ||
+    "/Logo/jpl_logo.png"
+  }
+  alt={item.productName}
+  fill
+  className="object-contain p-1.5 sm:p-2"
+  onError={(event) => {
+    event.currentTarget.src = "/Logo/jpl_logo.png";
+  }}
+/>
         </Link>
 
         {/* ====================================================== */}

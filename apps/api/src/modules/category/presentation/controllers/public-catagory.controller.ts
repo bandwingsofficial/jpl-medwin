@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param } from '@nestjs/common';
 
 import { GetCategoryTreeUseCase } from '../../../category/application/usecases/get-category-tree.usecase';
 import { GetCategoriesUseCase } from '../../application/usecases/category/get-categories.usecase';
@@ -16,7 +16,7 @@ export class PublicCategoryController {
 
   @Get('tree')
   getCategoryTree() {
-    return this.getTree.execute(true); // only ACTIVE
+    return this.getTree.execute(true);
   }
 
   @Get()
@@ -24,13 +24,25 @@ export class PublicCategoryController {
     return this.getCategories.execute(true);
   }
 
-  @Get('sub')
-  getSubsAll(@Query('categoryId') categoryId?: string) {
-    return this.getSubs.execute({ categoryId });
+  @Get(':categorySlug/sub')
+  getSubsAll(
+    @Param('categorySlug') categorySlug: string,
+  ) {
+    return this.getSubs.execute({
+      categorySlug,
+      onlyActive: true,
+    });
   }
 
-  @Get('mini')
-  getMinisAll(@Query('subCategoryId') subCategoryId?: string) {
-    return this.getMinis.execute({ subCategoryId });
+  @Get(':categorySlug/sub/:subCategorySlug/mini')
+  getMinisAll(
+    @Param('categorySlug') categorySlug: string,
+    @Param('subCategorySlug') subCategorySlug: string,
+  ) {
+    return this.getMinis.execute({
+      categorySlug,
+      subCategorySlug,
+      onlyActive: true,
+    });
   }
 }
