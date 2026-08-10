@@ -63,7 +63,8 @@ export function GlobalSearch() {
         className={cn(
           "h-12 w-full rounded-2xl border border-slate-400 bg-white",
           "pl-10 pr-4",
-          "text-sm text-slate-900 placeholder-transparent",
+          "text-[16px] text-slate-900 placeholder-transparent",
+          "sm:text-sm",
           "outline-none transition-all duration-200",
           "focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10"
         )}
