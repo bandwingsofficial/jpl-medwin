@@ -200,12 +200,13 @@ if (!isAuthenticated) {
 {/* ====================================================== */}
 <div
   className="
-    fixed
-    bottom-3
-    left-2
-    right-2
-    z-50
-    sm:hidden
+  fixed
+  bottom-0
+  left-0
+  right-0
+  z-50
+  pb-2
+  sm:hidden
     overflow-hidden
     rounded-2xl
     border

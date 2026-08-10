@@ -253,25 +253,26 @@ export function ProductDescription({
                   setActiveTab(tab.id)
                 }
                 className={`
-                  relative
-                  whitespace-nowrap
-                  border-b-2
-                  px-4
-                  py-3.5
-                  sm:px-6
-                  sm:py-5
-                  text-xs
-                  sm:text-sm
-                  font-semibold
-                  transition-all
-                  duration-200
+  relative
+  whitespace-nowrap
+  border-b-2
+  px-5
+  py-4
+  sm:px-7
+  sm:py-5
+  text-sm
+  sm:text-base
+  font-bold
+  tracking-[-0.01em]
+  transition-all
+  duration-200
 
-                  ${
-                    isActive
-                      ? "border-violet-600 text-violet-700"
-                      : "border-transparent text-gray-500 hover:text-gray-900"
-                  }
-                `}
+  ${
+    isActive
+      ? "border-violet-600 text-violet-700"
+      : "border-transparent text-slate-600 hover:text-slate-900"
+  }
+`}
               >
                 {tab.label}
               </button>

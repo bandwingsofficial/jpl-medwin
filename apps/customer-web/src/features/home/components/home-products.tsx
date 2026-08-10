@@ -73,32 +73,17 @@ export const HomeProducts = () => {
     </span>
   </h2>
 </div>
-
-        {/* RIGHT */}
-
-        <div className="flex flex-wrap items-center gap-3 lg:justify-start">
-          {TABS.map(({ id, label, icon: Icon }) => {
-            const active = activeTab === id;
-
-            return (
-              <button
-                key={id}
-                onClick={() => setActiveTab(id)}
-                className={`group flex h-10 items-center gap-2 rounded-full px-5 text-sm font-semibold transition-all duration-300
-
-                  ${
-                    active
-                      ? "bg-gradient-to-r from-[#0BACAE] via-[#089981] to-[#0F8A6B] text-white shadow-[0_10px_30px_rgba(13,148,136,.28)]"
-                      : "border border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-[#0D9488]/40 hover:text-[#0D9488] hover:shadow-md"
-                  }
-                `}
-              >
-                <Icon size={16} />
-                {label}
-              </button>
-            );
-          })}
-        </div>
+<div className="flex items-center lg:justify-end lg:pr-10">
+  <a
+    href="/products"
+    className="group inline-flex items-center gap-2 text-base font-semibold text-[#0D7F73]"
+  >
+    Explore More
+    <span className="text-2xl font-normal leading-none transition-transform duration-200 group-hover:translate-x-1">
+      ›
+    </span>
+  </a>
+</div>
       </div>
 
       {/* ================= PRODUCTS ================= */}

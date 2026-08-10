@@ -8,7 +8,7 @@ import { useBrands } from '@/features/brands/hooks/use-brands';
 export function HomeBrands() {
   const { data: brands, isLoading, isError } = useBrands();
 
-  if (isLoading) return <div className="h-32 animate-pulse rounded-3xl bg-slate-100" />;
+ <div className="h-32 animate-pulse rounded-3xl bg-slate-100" />;
   if (isError) return null;
 
   return (

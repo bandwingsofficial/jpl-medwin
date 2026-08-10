@@ -35,7 +35,7 @@ export function FloatingCartBar() {
    |--------------------------------------------------------------------------
    */
 
-  const hiddenRoutes = ["/checkout"];
+  const hiddenRoutes = ["/cart", "/checkout"];
 
   /*
    |--------------------------------------------------------------------------

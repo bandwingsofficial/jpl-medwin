@@ -38,6 +38,16 @@ export function ProductVariantSelector({
   const variantRefs = useRef<
     Record<string, HTMLDivElement | null>
   >({});
+  const expectedDeliveryDate = new Date();
+expectedDeliveryDate.setDate(expectedDeliveryDate.getDate() + 3);
+
+const deliveryDate = expectedDeliveryDate.toLocaleDateString(
+  "en-GB",
+  {
+    day: "2-digit",
+    month: "short",
+  }
+);
 
   /*
    * ================================================================
@@ -88,50 +98,7 @@ export function ProductVariantSelector({
     isPending: isRemovingCartItem,
   } = useRemoveCartItem();
 
-  /*
-   * ================================================================
-   * AUTO CENTER SELECTED VARIANT
-   * ================================================================
-   */
-
-  useEffect(() => {
-    const selectedElement =
-      variantRefs.current[selectedVariantId];
-
-    const container =
-      scrollContainerRef.current;
-
-    if (!selectedElement || !container) {
-      return;
-    }
-
-    const isScrollable =
-      container.scrollHeight >
-      container.clientHeight;
-
-    if (!isScrollable) {
-      return;
-    }
-
-    const containerHeight =
-      container.offsetHeight;
-
-    const elementTop =
-      selectedElement.offsetTop;
-
-    const elementHeight =
-      selectedElement.offsetHeight;
-
-    const scrollTo =
-      elementTop -
-      containerHeight / 2 +
-      elementHeight / 2;
-
-    container.scrollTo({
-      top: scrollTo,
-      behavior: "smooth",
-    });
-  }, [selectedVariantId]);
+  
 
   /*
    * ================================================================
@@ -142,19 +109,75 @@ export function ProductVariantSelector({
   if (!variants?.length) {
     return null;
   }
+const handleVariantSelect = (
+  variant: ProductVariant
+) => {
+  onChange(variant.id);
 
-  const handleVariantSelect = (
-    variant: ProductVariant
-  ) => {
-    const stockQuantity =
-      variant.stock?.quantity ?? 0;
+  requestAnimationFrame(() => {
+    const selectedElement =
+      variantRefs.current[variant.id];
 
-    if (stockQuantity <= 0) {
+    if (!selectedElement) {
       return;
     }
 
-    onChange(variant.id);
-  };
+    const rect =
+      selectedElement.getBoundingClientRect();
+
+    const viewportHeight =
+      window.innerHeight;
+
+    /*
+     * Keep a safe area at the top for the sticky header.
+     * Responsive so mobile and desktop both behave correctly.
+     */
+    const isMobile = window.innerWidth < 768;
+const topSafeArea = isMobile ? 75 : 140;
+    const bottomSafeArea = 24;
+
+    /*
+     * Already completely visible:
+     * do nothing.
+     */
+    if (
+      rect.top >= topSafeArea &&
+      rect.bottom <=
+        viewportHeight - bottomSafeArea
+    ) {
+      return;
+    }
+
+    /*
+     * Variant is hidden/covered above.
+     * Move only enough to bring it below the header.
+     */
+    if (rect.top < topSafeArea) {
+      window.scrollBy({
+        top: rect.top - topSafeArea,
+        behavior: "smooth",
+      });
+
+      return;
+    }
+
+    /*
+     * Variant is partially/fully below the viewport.
+     * Move only enough to show the complete variant.
+     */
+    if (
+      rect.bottom >
+      viewportHeight - bottomSafeArea
+    ) {
+      window.scrollBy({
+        top:
+          rect.bottom -
+          (viewportHeight - bottomSafeArea),
+        behavior: "smooth",
+      });
+    }
+  });
+};
 
   /*
    * ================================================================
@@ -301,25 +324,16 @@ export function ProductVariantSelector({
       {/* ========================================================== */}
 
       <div
-        ref={scrollContainerRef}
-        className="
-          flex
-          max-h-[360px]
-          flex-col
-          gap-2
-          overflow-y-auto
-          py-1
-          pr-0.5
-          scroll-smooth
+  className="
+    flex
+    flex-col
+    gap-2
+    py-1
+    pr-0.5
 
-          [-ms-overflow-style:none]
-          [scrollbar-width:none]
-          [&::-webkit-scrollbar]:hidden
-
-          sm:max-h-[320px]
-          sm:gap-2.5
-        "
-      >
+    sm:gap-2.5
+  "
+>
         {variants.map((variant) => {
           const isSelected =
             selectedVariantId === variant.id;
@@ -393,14 +407,12 @@ export function ProductVariantSelector({
             isRemovingCartItem;
 
           return (
-            <div
-              key={variant.id}
-              ref={(element) => {
-                variantRefs.current[
-                  variant.id
-                ] = element;
-              }}
-              className={`
+          <div
+  key={variant.id}
+  ref={(element) => {
+    variantRefs.current[variant.id] = element;
+  }}
+  className={`
                 w-full
                 rounded-xl
                 border
@@ -445,12 +457,11 @@ export function ProductVariantSelector({
                 {/* ================================================= */}
 
                 <button
-                  type="button"
-                  onClick={() =>
-                    handleVariantSelect(variant)
-                  }
-                  disabled={!isInStock}
-                  className="
+  type="button"
+  onClick={() =>
+    handleVariantSelect(variant)
+  }
+  className="
                     flex
                     h-[52px]
                     w-[52px]
@@ -498,12 +509,11 @@ export function ProductVariantSelector({
                 {/* ================================================= */}
 
                 <button
-                  type="button"
-                  onClick={() =>
-                    handleVariantSelect(variant)
-                  }
-                  disabled={!isInStock}
-                  className="
+  type="button"
+  onClick={() =>
+    handleVariantSelect(variant)
+  }
+  className="
                     min-w-0
                     text-left
                     focus:outline-none
@@ -626,6 +636,23 @@ export function ProductVariantSelector({
                       </span>
                     )}
                   </div>
+                  {/* DELIVERY / RETURN INFO */}
+
+<div className="mt-1 whitespace-nowrap text-[9px] font-medium sm:text-[11px]">
+  <span className="hidden sm:inline">
+    <span className="text-amber-400">●</span>{" "}
+    <span className="text-sky-600">10 days return available</span>
+    <span className="text-amber-400"> ●</span>{" "}
+    <span className="text-sky-600">Including all taxes</span>
+    <span className="text-amber-400"> ●</span>{" "}
+    <span className="text-sky-600">
+      Delivery within{" "}
+      <span className="font-semibold text-sky-600">
+        {deliveryDate}
+      </span>
+    </span>
+  </span>
+</div>
                 </button>
               </div>
 
@@ -636,13 +663,45 @@ export function ProductVariantSelector({
               <div
                 className="
                   mt-2.5
+                  flex
                   w-full
+                  items-center
+                  justify-between
+                  gap-2
 
                   sm:mt-0
                   sm:flex
                   sm:justify-end
                 "
               >
+                {/* MOBILE DELIVERY / RETURN INFO */}
+<div className="min-w-0 flex-1 sm:hidden">
+  <div className="flex flex-col text-[7px] font-medium leading-3">
+    {/* FIRST LINE */}
+    <div className="flex min-w-0 items-center gap-1 whitespace-nowrap">
+      <span className="text-amber-400">●</span>
+
+      <span className="text-sky-600">
+        10 days return
+      </span>
+
+      <span className="text-amber-400">●</span>
+
+      <span className="text-sky-600">
+        Delivered within{" "}
+        <span className="font-semibold text-sky-600">
+          {deliveryDate}
+        </span>
+      </span>
+    </div>
+{/* SECOND LINE */}
+<div className="mt-0.5 whitespace-nowrap text-sky-600">
+  <span className="text-amber-400">●</span>{" "}
+  Including all taxes
+</div>
+  </div>
+</div>
+
                 {isInCart ? (
                   /* =================================================
                    * QUANTITY CONTROLS
@@ -793,7 +852,8 @@ export function ProductVariantSelector({
   ml-auto
   flex
   h-10
-  w-[150px]
+  w-[120px]
+  shrink-0
   items-center
   justify-center
   gap-1.5
@@ -809,6 +869,7 @@ export function ProductVariantSelector({
   sm:ml-0
   sm:w-auto
   sm:min-w-[145px]
+  sm:w-[150px]
 
   ${
     isInStock

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 const stats = [
   { value: "15+", label: "Years of Excellence" },
   { value: "100+", label: "Trusted Brands" },
-  { value: "10,000+", label: "Products Available" },
+  { value: "2,000+", label: "Products Available" },
   { value: "25+", label: "States Served Across India" },
 ];
 
@@ -627,7 +627,7 @@ export function AboutUsPage() {
         style={{
           position: "relative",
           padding: "80px 24px 100px 24px",
-          backgroundImage: "linear-gradient(to right, rgba(11, 94, 105, 0.92) 25%, rgba(11, 94, 105, 0.8) 55%, rgba(11, 94, 105, 0.55) 100%), url('/Logo/About-bg1.jfif')",
+          backgroundImage: "linear-gradient(to right, rgba(11, 94, 105, 0.92) 25%, rgba(11, 94, 105, 0.8) 55%, rgba(11, 94, 105, 0.55) 100%), url('/Logo/about-bg1.jfif')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -720,10 +720,6 @@ export function AboutUsPage() {
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: "#475569", lineHeight: 1.75, fontWeight: 300 }}>
             Our customer-first approach drives us to understand the evolving needs of healthcare providers and deliver solutions that enhance efficiency, reliability, and patient outcomes. Backed by a strong supplier network and industry expertise, we ensure consistent quality, timely delivery, and responsive support.
           </p>
-          <div style={{ marginTop: 28, display: "flex", alignItems: "center", gap: 12 }}>
-            <div style={{ width: 36, height: 2, background: "linear-gradient(90deg, #0D9488, #2DD4BF)" }} />
-            <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "#0D9488", fontWeight: 500, letterSpacing: "0.06em" }}>Est. 2009, Mumbai</span>
-          </div>
         </div>
 
         <div style={{ position: "relative" }}>
