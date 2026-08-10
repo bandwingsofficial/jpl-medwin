@@ -676,7 +676,7 @@ const topSafeArea = isMobile ? 75 : 140;
               >
                 {/* MOBILE DELIVERY / RETURN INFO */}
 <div className="min-w-0 flex-1 sm:hidden">
-  <div className="flex flex-col text-[7px] font-medium leading-3">
+<div className="flex flex-col text-[8px] font-medium leading-3">
     {/* FIRST LINE */}
     <div className="flex min-w-0 items-center gap-1 whitespace-nowrap">
       <span className="text-amber-400">●</span>
@@ -708,7 +708,7 @@ const topSafeArea = isMobile ? 75 : 140;
                       ml-auto
                       flex
                       h-10
-                      w-[150px]
+                      w-[120px]
                       overflow-hidden
                       rounded-lg
                       border
