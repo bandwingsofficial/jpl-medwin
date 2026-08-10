@@ -294,11 +294,11 @@ color:#374151;
 @media(min-width:768px){
 
 .ft-social-row{
-  padding:24px 40px;
+  padding:0 40px;
   flex-direction:row;
   justify-content:space-between;
   gap:24px;
-  min-height:110px;
+  min-height:0;
   height:auto;
   text-align:left;
 }
