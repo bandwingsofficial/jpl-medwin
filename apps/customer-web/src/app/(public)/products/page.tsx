@@ -1,21 +1,29 @@
-"use client";
-
-import { useSearchParams } from "next/navigation";
+import type { Metadata } from "next";
 
 import { ProductsPage } from "@/features/products/pages/products-page";
 
-export default function Page() {
-  const searchParams = useSearchParams();
+export const metadata: Metadata = {
+  title: "Products",
+  description:
+    "Explore our wide range of dental, medical, surgical and healthcare products available at JPL Medwin.",
+};
 
-  const categoryId =
-    searchParams.get("categoryId") || undefined;
+interface ProductsPageProps {
+  searchParams: Promise<{
+    categoryId?: string;
+    subCategoryId?: string;
+    miniCategoryId?: string;
+  }>;
+}
 
-  const subCategoryId =
-    searchParams.get("subCategoryId") || undefined;
-
-  const miniCategoryId =
-    searchParams.get("miniCategoryId") || undefined;
-
+export default async function Page({
+  searchParams,
+}: ProductsPageProps) {
+  const {
+    categoryId,
+    subCategoryId,
+    miniCategoryId,
+  } = await searchParams;
 
   return (
     <main

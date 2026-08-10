@@ -148,48 +148,63 @@ export function AboutUsPage() {
   const certRef = useScrollReveal();
 
   // ─────────────────────────────────────────────
-  // FIX: Force the page to open at the very top.
-  // Browsers (and Next.js client-side navigation)
-  // restore the previous scroll position by default,
-  // which is why the page was opening "in the middle".
-  // We disable automatic scroll restoration and force
-  // scrollTo(0,0) as soon as this page mounts, before
-  // paint, so the user always lands at the top.
+  // FIX: Keep About Us scroll position predictable
+  // without changing scroll behavior of the rest of
+  // the application/header/footer.
   // ─────────────────────────────────────────────
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    const previousScrollRestoration =
+      "scrollRestoration" in window.history
+        ? window.history.scrollRestoration
+        : "auto";
 
     if ("scrollRestoration" in window.history) {
       window.history.scrollRestoration = "manual";
     }
 
-    // Reset scroll on both window and the document element,
-    // covers cases where a parent layout scrolls internally.
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
 
     setMounted(true);
+
+    return () => {
+      if ("scrollRestoration" in window.history) {
+        window.history.scrollRestoration = previousScrollRestoration;
+      }
+    };
   }, []);
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", color: "#0F172A", background: "#FFFFFF", width: "100%", overflowX: "hidden" }}>
+    <div className="about-us-page" style={{ fontFamily: "'DM Sans', sans-serif", color: "#0F172A", background: "#FFFFFF", width: "100%", overflowX: "hidden" }}>
       <style dangerouslySetInnerHTML={{
         __html: `
       @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&display=swap');
 
-        /* ── Reset ── */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        /* ── Reset: scoped to About Us only ── */
+        .about-us-page,
+        .about-us-page *,
+        .about-us-page *::before,
+        .about-us-page *::after { box-sizing: border-box; }
+
+        .about-us-page { margin: 0; padding: 0; }
 
         /* ── Scroll Reveal ── */
-        .reveal-section {
-          opacity: 0;
-          transform: translateY(36px);
-          transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
-          will-change: opacity, transform;
-        }
-        .reveal-active { opacity: 1 !important; transform: translateY(0) !important; }
+       .reveal-section {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
 
+.reveal-active {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
         /* Hero entry */
         .fade-up {
           opacity: 0;
@@ -614,7 +629,7 @@ export function AboutUsPage() {
         }
 
         @media (prefers-reduced-motion: reduce) {
-          html { scroll-behavior: auto; }
+          .about-us-page { scroll-behavior: auto; }
           .reveal-section, .stat-item, .value-card, .team-card, .wwa-image-wrap img { transition: none !important; }
           .cert-ticker-track { animation: none; }
         }
@@ -823,7 +838,7 @@ export function AboutUsPage() {
       <section
         ref={teamRef}
         className="reveal-section"
-        style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 20px" }}
+    style={{ maxWidth: 1100, margin: "0 auto", padding: "56px 20px 16px" }}
       >
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div className="eyebrow" style={{ justifyContent: "center" }}>The People Behind JPL Markwin</div>
@@ -864,6 +879,179 @@ export function AboutUsPage() {
 
         </div>
       </section>
+
+     {/* JPL COMPANY ADDRESS + CONTACT */}
+<div
+  style={{
+    maxWidth: 1100,
+    margin: "0 auto",
+    padding: "0 20px 32px",
+  }}
+>
+  <div
+    style={{
+  border: "1px solid #D9E5E7",
+  borderRadius: 10,
+  background: "#F0FDFA",
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  overflow: "hidden",
+}}
+  >
+    {/* LEFT — COMPANY ADDRESS */}
+    <div
+     style={{
+  padding: "28px",
+  borderRight: "1px solid #D9E5E7",
+  background: "#FFFFFF",
+}}
+    >
+      <div className="eyebrow">Company Address</div>
+
+      <h3
+        style={{
+          fontFamily: "'Playfair Display', serif",
+          fontSize: "clamp(20px, 4vw, 28px)",
+          fontWeight: 700,
+          color: "#0F172A",
+          marginBottom: 10,
+        }}
+      >
+        JPL Markwin Private Limited
+      </h3>
+
+      <p
+        style={{
+          fontFamily: "'DM Sans', sans-serif",
+          fontSize: 14,
+          color: "#475569",
+          lineHeight: 1.7,
+          margin: 0,
+        }}
+      >
+        <strong style={{ color: "#0F172A" }}>Bangalore Office</strong>
+        <br />
+        117/115A, Kamal Tower, Bommasandra Industrial Area,
+        <br />
+        Bangalore - 560099
+      </p>
+    </div>
+
+    {/* RIGHT — CONTACT */}
+    <div
+      style={{
+  padding: "28px",
+  background: "#ECFDF5",
+}}
+    >
+      <div className="eyebrow">Contact Us</div>
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 18,
+          marginTop: 14,
+        }}
+      >
+        {/* PHONE */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              minWidth: 36,
+              borderRadius: 10,
+              background: "#E6FFFA",
+              color: "#0D9488",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 16,
+            }}
+          >
+            ☎
+          </div>
+
+          <div>
+            <div
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 11,
+                color: "#94A3B8",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                marginBottom: 3,
+              }}
+            >
+              Phone
+            </div>
+
+            <div
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 14,
+                color: "#334155",
+                fontWeight: 600,
+                lineHeight: 1.6,
+              }}
+            >
+              +91 91879 69350
+              <br />
+              +91 91874 05646
+            </div>
+          </div>
+        </div>
+
+        {/* EMAIL */}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+          <div
+            style={{
+              width: 36,
+              height: 36,
+              minWidth: 36,
+              borderRadius: 10,
+              background: "#E6FFFA",
+              color: "#0D9488",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 16,
+            }}
+          >
+            ✉
+          </div>
+
+          <div>
+            <div
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 11,
+                color: "#94A3B8",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                marginBottom: 3,
+              }}
+            >
+              Email
+            </div>
+
+            <div
+              style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 14,
+                color: "#334155",
+                fontWeight: 600,
+              }}
+            >
+              connect@jplmedwin.com
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
       {/* ══════════════════════════════════════
           CERTIFICATIONS TICKER

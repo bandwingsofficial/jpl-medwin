@@ -648,7 +648,7 @@ const topSafeArea = isMobile ? 75 : 140;
     <span className="text-sky-600">
       Delivery within{" "}
       <span className="font-semibold text-sky-600">
-        {deliveryDate}
+        1-3 Days
       </span>
     </span>
   </span>
@@ -690,15 +690,11 @@ const topSafeArea = isMobile ? 75 : 140;
       <span className="text-sky-600">
         Delivered within{" "}
         <span className="font-semibold text-sky-600">
-          {deliveryDate}
+          1-3 Days
         </span>
       </span>
     </div>
-{/* SECOND LINE */}
-<div className="mt-0.5 whitespace-nowrap text-sky-600">
-  <span className="text-amber-400">●</span>{" "}
-  Including all taxes
-</div>
+
   </div>
 </div>
 

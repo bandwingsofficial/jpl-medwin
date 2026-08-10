@@ -1,11 +1,17 @@
+import type { Metadata } from "next";
+
 import { ProductsPage } from "@/features/products/pages/products-page";
+
+export const metadata: Metadata = {
+  title: "Mini Category Products",
+  description:
+    "Explore dental, medical, surgical and healthcare products available in this mini category from JPL Medwin.",
+};
 
 interface ProductsRoutePageProps {
   params: Promise<{
     categoryId: string;
-
     subCategoryId: string;
-
     miniCategoryId: string;
   }>;
 }
@@ -20,12 +26,10 @@ export default async function Page({
   } = await params;
 
   return (
-    <div className="container mx-auto px-4 py-10">
-      <ProductsPage
-        categoryId={categoryId}
-        subCategoryId={subCategoryId}
-        miniCategoryId={miniCategoryId}
-      />
-    </div>
+    <ProductsPage
+      categoryId={categoryId}
+      subCategoryId={subCategoryId}
+      miniCategoryId={miniCategoryId}
+    />
   );
 }
