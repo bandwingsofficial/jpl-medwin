@@ -276,42 +276,72 @@ export function CartSummary({ cart }: CartSummaryProps) {
       {/* MOBILE STICKY BOTTOM CHECKOUT BAR (Hidden on md+) */}
       {/* ====================================================== */}
       <div
-        className="
-  fixed bottom-[72px] left-0 right-0 z-50
-  flex md:hidden
-  items-center justify-between
-  border-t border-gray-200
-  bg-white px-4 py-3
-  shadow-[0_-4px_10px_rgba(0,0,0,0.05)]
-"
-      >
-        <div className="flex flex-col">
-          <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wider">
-            Total Amount
-          </span>
-          <span className="text-lg font-bold text-gray-900">
-            ₹{summary.grandTotal.toLocaleString()}
-          </span>
-        </div>
+  className="
+    fixed
+    bottom-[72px]
+    left-1/2
+    z-[999]
+    flex
+    w-[94%]
+    max-w-[500px]
+    -translate-x-1/2
+    items-center
+    justify-between
+    gap-3
+    rounded-[20px]
+    border
+    border-white/80
+    bg-white/95
+    px-3
+    py-2.5
+    shadow-[0_12px_35px_rgba(0,0,0,0.16),0_3px_12px_rgba(0,0,0,0.08)]
+    backdrop-blur-xl
+    md:hidden
+  "
+>
+  {/* TOTAL */}
+  <div className="min-w-0 flex-1 pl-1">
+    <span className="block text-[10px] font-semibold uppercase tracking-[0.08em] text-gray-400">
+      Total Amount
+    </span>
 
-        <button
-          type="button"
-          onClick={handleCheckout}
-          disabled={!cart.cartItems?.length}
-          className="
-            flex h-11 px-5
-            items-center justify-center
-            rounded-xl
-            bg-teal-600
-            text-sm font-semibold text-white
-            transition-all duration-200
-            active:bg-teal-700
-            disabled:cursor-not-allowed disabled:opacity-50
-          "
-        >
-          Proceed To Checkout
-        </button>
-      </div>
+    <span className="block text-lg font-bold leading-tight text-gray-900">
+      ₹{summary.grandTotal.toLocaleString()}
+    </span>
+  </div>
+
+  {/* CHECKOUT */}
+  <button
+    type="button"
+    onClick={handleCheckout}
+    disabled={!cart.cartItems?.length}
+    className="
+      flex
+      h-11
+      shrink-0
+      items-center
+      justify-center
+      rounded-[14px]
+      bg-gradient-to-r
+      from-teal-600
+      via-teal-500
+      to-emerald-600
+      px-5
+      text-[13px]
+      font-bold
+      text-white
+      shadow-[0_5px_16px_rgba(13,148,136,0.28)]
+      transition-all
+      duration-200
+      active:scale-[0.97]
+      active:shadow-[0_3px_10px_rgba(13,148,136,0.22)]
+      disabled:cursor-not-allowed
+      disabled:opacity-50
+    "
+  >
+    Proceed To Checkout
+  </button>
+</div>
     </div>
   );
 }
