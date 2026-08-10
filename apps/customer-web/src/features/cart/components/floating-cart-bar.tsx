@@ -282,12 +282,19 @@ export function FloatingCartBar() {
                         }}
                       >
                         <Image
-                          src={image}
-                          alt="Cart item"
-                          fill
-                          sizes="44px"
-                          className="object-cover"
-                        />
+  src={image}
+  alt="Cart item"
+  fill
+  sizes="44px"
+  className="object-contain"
+  onError={(event) => {
+    const img = event.currentTarget;
+
+    if (!img.src.endsWith("/Images/jpl_logo2.png")) {
+      img.src = "/Images/jpl_logo2.png";
+    }
+  }}
+/>
                       </div>
                     ))}
                     {/* spacer to push content right */}

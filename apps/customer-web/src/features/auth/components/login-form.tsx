@@ -144,11 +144,21 @@ export function LoginForm({
                   Email or phone number
                 </Label>
                 <Input
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                  placeholder="you@example.com"
-                  className="h-11 rounded-xl border-[#DCE6E2] bg-[#FBFDFC] text-[14px] placeholder:text-[#9AAFA9] focus-visible:border-[#0E6B5C] focus-visible:ring-[#0E6B5C]/20"
-                />
+  value={value}
+  onChange={(e) => setValue(e.target.value)}
+  placeholder="you@example.com"
+  className="
+    h-11
+    rounded-xl
+    border-[#DCE6E2]
+    bg-[#FBFDFC]
+    text-[16px]
+    placeholder:text-[#9AAFA9]
+    focus-visible:border-[#0E6B5C]
+    focus-visible:ring-[#0E6B5C]/20
+    md:text-[14px]
+  "
+/>
               </div>
 
               {error && (

@@ -264,8 +264,27 @@ export function OtpForm() {
                       onKeyDown={(e) => handleKeyDown(index, e)}
                       inputMode="numeric"
                       maxLength={OTP_LENGTH}
-                      className="h-12 w-10 rounded-xl border border-[#DCE6E2] bg-[#FBFDFC] text-center text-[18px] font-semibold text-[#12231F] outline-none transition-colors focus:border-[#0E6B5C] focus:ring-4 focus:ring-[#0E6B5C]/15 sm:w-12 sm:h-13"
-                      style={{ fontFamily: MONO_FONT }}
+                     className="
+  h-12
+  w-10
+  rounded-xl
+  border
+  border-[#DCE6E2]
+  bg-[#FBFDFC]
+  text-center
+  text-[16px]
+  font-semibold
+  text-[#12231F]
+  outline-none
+  transition-colors
+  focus:border-[#0E6B5C]
+  focus:ring-4
+  focus:ring-[#0E6B5C]/15
+  sm:h-13
+  sm:w-12
+  sm:text-[18px]
+"
+style={{ fontFamily: MONO_FONT }}
                     />
                   ))}
                 </div>

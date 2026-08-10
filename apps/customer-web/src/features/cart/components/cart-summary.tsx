@@ -277,13 +277,13 @@ export function CartSummary({ cart }: CartSummaryProps) {
       {/* ====================================================== */}
       <div
         className="
-          fixed bottom-[65px] left-0 right-0 z-50 
-          flex md:hidden 
-          items-center justify-between 
-          border-t border-gray-200 
-          bg-white px-4 py-3 
-          shadow-[0_-4px_10px_rgba(0,0,0,0.05)]
-        "
+  fixed bottom-[72px] left-0 right-0 z-50
+  flex md:hidden
+  items-center justify-between
+  border-t border-gray-200
+  bg-white px-4 py-3
+  shadow-[0_-4px_10px_rgba(0,0,0,0.05)]
+"
       >
         <div className="flex flex-col">
           <span className="text-[11px] font-medium text-gray-500 uppercase tracking-wider">
