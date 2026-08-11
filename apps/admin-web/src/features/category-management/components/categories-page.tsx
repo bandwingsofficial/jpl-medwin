@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { CategoriesPageSkeleton } from "../components/categories-page-skeleton";
 import { Button } from "@/shared/components/ui/button";
 
 import { CategoryTable } from "../components/category-table";
@@ -385,7 +385,7 @@ export function CategoriesPage() {
         <CategoryTable
           data={data || []}
           isLoading={
-            isLoading
+            false
           }
           onEdit={
             handleEdit

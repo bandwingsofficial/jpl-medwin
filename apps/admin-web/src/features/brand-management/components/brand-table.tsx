@@ -219,7 +219,7 @@ export default function BrandTable({
                     <TableCell>
                       <div className="flex items-center gap-3 min-w-0">
                         <img
-                          src={brand.imageUrl || "/placeholder.png"}
+                          src={brand.imageUrl || "/Logo/jpl_logo.png"}
                           alt={brand.name}
                           onError={(e) => {
                             (e.target as HTMLImageElement).src = "/placeholder.png";

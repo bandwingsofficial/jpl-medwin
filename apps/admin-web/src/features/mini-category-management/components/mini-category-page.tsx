@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { Button } from "@/shared/components/ui/button";
-
+import { MiniCategoryPageSkeleton } from "./mini-category-page-skeleton";
 import { MiniCategoryTable } from "./mini-category-table";
 
 import { CreateMiniCategoryModal } from "./create-mini-category-model";
@@ -392,29 +392,17 @@ export function MiniCategoryPage() {
       {/* TABLE */}
 
       {isFetching ? (
-
-        <div
-          className="
-            text-sm
-            text-gray-500
-          "
-        >
-          Loading...
-        </div>
-
-      ) : (
-
-        <MiniCategoryTable
-          data={data}
-          categories={categories}
-          subCategories={subCategories}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onToggleStatus={handleToggleStatus}
-        />
-
-      )}
-
+  <MiniCategoryPageSkeleton />
+) : (
+  <MiniCategoryTable
+    data={data}
+    categories={categories}
+    subCategories={subCategories}
+    onEdit={handleEdit}
+    onDelete={handleDelete}
+    onToggleStatus={handleToggleStatus}
+  />
+)}
       {/* MODAL */}
 
       <CreateMiniCategoryModal

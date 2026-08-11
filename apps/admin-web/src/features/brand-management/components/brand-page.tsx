@@ -5,7 +5,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Brand } from "../types/brand.type";
 import BrandTable from "./brand-table";
 import CreateBrandModal from "./create-brand-modal";
-
+import { BrandPageSkeleton } from "./brand-page-skeleton";
 // Imported hook to fetch data metrics for the dynamic counter badge
 import { useBrands } from "../hooks/use-brand"; 
 
@@ -24,6 +24,9 @@ export default function BrandPage() {
     setSelected(brand);
     setOpen(true);
   };
+  if (isLoading) {
+  return <BrandPageSkeleton />;
+}
 
   return (
     <div className="p-6 space-y-6">
