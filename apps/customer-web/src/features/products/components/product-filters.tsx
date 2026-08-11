@@ -1,9 +1,19 @@
 "use client";
 
+import {
+  BriefcaseBusiness,
+  FolderTree,
+  IndianRupee,
+  Layers3,
+  ListFilter,
+  PackageCheck,
+  SlidersHorizontal,
+  Tags,
+} from "lucide-react";
+
 import { useCategories } from "@/features/category/hooks/use-category";
 import { useSubCategories } from "@/features/category/hooks/use-sub-categories";
 import { useMiniCategories } from "@/features/category/hooks/use-mini-categories";
-
 import { useBrands } from "@/features/brands/hooks/use-brands";
 
 interface ProductFiltersProps {
@@ -37,90 +47,151 @@ export function ProductFilters({
     <aside
       className="
         w-full
-        lg:w-[240px]
         shrink-0
-
+        lg:w-[240px]
         sticky
         top-[120px]
-
         self-start
-
-        border
-        border-slate-100
-        rounded-xl
-        bg-white
-
-        p-4
-        space-y-4
-
         h-[calc(100vh-140px)]
         overflow-y-auto
-        
+        rounded-2xl
+        border
+        border-slate-200
+        bg-white
+        p-4
+        shadow-[0_4px_20px_rgba(15,23,42,0.05)]
+        space-y-5
         [&::-webkit-scrollbar]:hidden
         [-ms-overflow-style:none]
         [scrollbar-width:none]
       "
     >
-      <div className="border-b border-slate-100 pb-2">
-        <h2
+      {/* =========================================
+          FILTER HEADER
+      ========================================= */}
+
+      <div
+        className="
+          relative
+          overflow-hidden
+          rounded-xl
+          border
+          border-teal-100
+          bg-gradient-to-br
+          from-teal-50
+          via-white
+          to-cyan-50
+          px-3.5
+          py-3
+        "
+      >
+        <div
           className="
-            text-base
-            font-bold
-            tracking-tight
-            text-slate-900
+            absolute
+            -right-6
+            -top-6
+            h-16
+            w-16
+            rounded-full
+            bg-teal-100/50
           "
-        >
-          Filters
-        </h2>
+        />
+
+        <div className="relative flex items-center gap-2.5">
+          <div
+            className="
+              flex
+              h-8
+              w-8
+              shrink-0
+              items-center
+              justify-center
+              rounded-lg
+              bg-teal-600
+              text-white
+              shadow-sm
+            "
+          >
+            <SlidersHorizontal
+              className="h-4 w-4"
+              strokeWidth={2.2}
+            />
+          </div>
+
+          <div>
+            <h2
+              className="
+                text-base
+                font-bold
+                tracking-tight
+                text-slate-900
+              "
+            >
+              Filters
+            </h2>
+
+            <p className="mt-0.5 text-[10px] font-medium text-teal-600">
+              Refine your products
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* CATEGORY */}
+      {/* =========================================
+          CATEGORY
+      ========================================= */}
 
       <div>
         <label
           className="
+            mb-1.5
+            flex
+            items-center
+            gap-1.5
             text-xs
             font-semibold
-            text-slate-600
-            block
-            mb-1.5
+            text-slate-700
           "
         >
+          <FolderTree
+            className="h-3.5 w-3.5 text-teal-600"
+            strokeWidth={2}
+          />
+
           Category
         </label>
 
         <select
           className="
+            h-11
             w-full
+            cursor-pointer
+            rounded-xl
             border
-            border-slate-200/80
-            rounded-lg
-            p-2
-            text-xs
-            bg-slate-50/50
+            border-slate-200
+            bg-slate-50/70
+            px-3
+            text-sm
             font-medium
             text-slate-800
-            focus:outline-none
-            focus:ring-1
-            focus:ring-black
-            focus:border-black
+            outline-none
             transition-all
-            cursor-pointer
+            hover:border-teal-200
+            hover:bg-teal-50/30
+            focus:border-teal-500
+            focus:bg-white
+            focus:ring-2
+            focus:ring-teal-500/15
           "
-          value={
-            filters.categoryId || ""
-          }
+          value={filters.categoryId || ""}
           onChange={(e) =>
             onChange({
               ...filters,
-
               categoryId:
                 e.target.value ||
                 undefined,
-
               subCategoryId:
                 undefined,
-
               miniCategoryId:
                 undefined,
             })
@@ -143,60 +214,69 @@ export function ProductFilters({
         </select>
       </div>
 
-      {/* SUB CATEGORY */}
+      {/* =========================================
+          SUB CATEGORY
+      ========================================= */}
 
       <div>
         <label
           className="
+            mb-1.5
+            flex
+            items-center
+            gap-1.5
             text-xs
             font-semibold
-            text-slate-600
-            block
-            mb-1.5
+            text-slate-700
           "
         >
+          <Layers3
+            className="h-3.5 w-3.5 text-cyan-600"
+            strokeWidth={2}
+          />
+
           Sub Category
         </label>
 
         <select
           className="
+            h-11
             w-full
+            cursor-pointer
+            rounded-xl
             border
-            border-slate-200/80
-            rounded-lg
-            p-2
-            text-xs
-            bg-slate-50/50
+            border-slate-200
+            bg-slate-50/70
+            px-3
+            text-sm
             font-medium
             text-slate-800
-            focus:outline-none
-            focus:ring-1
-            focus:ring-black
-            focus:border-black
+            outline-none
             transition-all
-            cursor-pointer
-            disabled:opacity-50
+            hover:border-cyan-200
+            hover:bg-cyan-50/30
+            focus:border-cyan-500
+            focus:bg-white
+            focus:ring-2
+            focus:ring-cyan-500/15
             disabled:cursor-not-allowed
+            disabled:bg-slate-100
+            disabled:text-slate-400
+            disabled:hover:border-slate-200
+            disabled:hover:bg-slate-100
           "
-          value={
-            filters.subCategoryId ||
-            ""
-          }
+          value={filters.subCategoryId || ""}
           onChange={(e) =>
             onChange({
               ...filters,
-
               subCategoryId:
                 e.target.value ||
                 undefined,
-
               miniCategoryId:
                 undefined,
             })
           }
-          disabled={
-            !filters.categoryId
-          }
+          disabled={!filters.categoryId}
         >
           <option value="">
             All Sub Categories
@@ -215,57 +295,69 @@ export function ProductFilters({
         </select>
       </div>
 
-      {/* MINI CATEGORY */}
+      {/* =========================================
+          MINI CATEGORY
+      ========================================= */}
 
       <div>
         <label
           className="
+            mb-1.5
+            flex
+            items-center
+            gap-1.5
             text-xs
             font-semibold
-            text-slate-600
-            block
-            mb-1.5
+            text-slate-700
           "
         >
+          <Layers3
+            className="h-3.5 w-3.5 text-violet-600"
+            strokeWidth={2}
+          />
+
           Mini Category
         </label>
 
         <select
           className="
+            h-11
             w-full
+            cursor-pointer
+            rounded-xl
             border
-            border-slate-200/80
-            rounded-lg
-            p-2
-            text-xs
-            bg-slate-50/50
+            border-slate-200
+            bg-slate-50/70
+            px-3
+            text-sm
             font-medium
             text-slate-800
-            focus:outline-none
-            focus:ring-1
-            focus:ring-black
-            focus:border-black
+            outline-none
             transition-all
-            cursor-pointer
-            disabled:opacity-50
+            hover:border-violet-200
+            hover:bg-violet-50/30
+            focus:border-violet-500
+            focus:bg-white
+            focus:ring-2
+            focus:ring-violet-500/15
             disabled:cursor-not-allowed
+            disabled:bg-slate-100
+            disabled:text-slate-400
+            disabled:hover:border-slate-200
+            disabled:hover:bg-slate-100
           "
           value={
-            filters.miniCategoryId ||
-            ""
+            filters.miniCategoryId || ""
           }
           onChange={(e) =>
             onChange({
               ...filters,
-
               miniCategoryId:
                 e.target.value ||
                 undefined,
             })
           }
-          disabled={
-            !filters.subCategoryId
-          }
+          disabled={!filters.subCategoryId}
         >
           <option value="">
             All Mini Categories
@@ -284,46 +376,56 @@ export function ProductFilters({
         </select>
       </div>
 
-      {/* BRAND */}
+      {/* =========================================
+          BRAND
+      ========================================= */}
 
       <div>
         <label
           className="
+            mb-1.5
+            flex
+            items-center
+            gap-1.5
             text-xs
             font-semibold
-            text-slate-600
-            block
-            mb-1.5
+            text-slate-700
           "
         >
+          <Tags
+            className="h-3.5 w-3.5 text-emerald-600"
+            strokeWidth={2}
+          />
+
           Brand
         </label>
 
         <select
           className="
+            h-11
             w-full
+            cursor-pointer
+            rounded-xl
             border
-            border-slate-200/80
-            rounded-lg
-            p-2
-            text-xs
-            bg-slate-50/50
+            border-slate-200
+            bg-slate-50/70
+            px-3
+            text-sm
             font-medium
             text-slate-800
-            focus:outline-none
-            focus:ring-1
-            focus:ring-black
-            focus:border-black
+            outline-none
             transition-all
-            cursor-pointer
+            hover:border-emerald-200
+            hover:bg-emerald-50/30
+            focus:border-emerald-500
+            focus:bg-white
+            focus:ring-2
+            focus:ring-emerald-500/15
           "
-          value={
-            filters.brandId || ""
-          }
+          value={filters.brandId || ""}
           onChange={(e) =>
             onChange({
               ...filters,
-
               brandId:
                 e.target.value ||
                 undefined,
@@ -347,115 +449,150 @@ export function ProductFilters({
         </select>
       </div>
 
-      {/* PRICE */}
+      {/* =========================================
+          PRICE RANGE
+      ========================================= */}
 
       <div>
         <label
           className="
-            text-xs
-            font-semibold
-            text-slate-600
-            block
             mb-1.5
-          "
-        >
-          Price Range
-        </label>
-
-        <div className="space-y-1.5">
-          <input
-            type="number"
-            placeholder="Min Price"
-            className="
-              w-full
-              border
-              border-slate-200/80
-              rounded-lg
-              p-2
-              text-xs
-              bg-slate-50/50
-              font-medium
-              text-slate-800
-              focus:outline-none
-              focus:ring-1
-              focus:ring-black
-              focus:border-black
-              transition-all
-            "
-            value={
-              filters.minPrice || ""
-            }
-            onChange={(e) =>
-              onChange({
-                ...filters,
-
-                minPrice:
-                  Number(
-                    e.target.value
-                  ) || undefined,
-              })
-            }
-          />
-
-          <input
-            type="number"
-            placeholder="Max Price"
-            className="
-              w-full
-              border
-              border-slate-200/80
-              rounded-lg
-              p-2
-              text-xs
-              bg-slate-50/50
-              font-medium
-              text-slate-800
-              focus:outline-none
-              focus:ring-1
-              focus:ring-black
-              focus:border-black
-              transition-all
-            "
-            value={
-              filters.maxPrice || ""
-            }
-            onChange={(e) =>
-              onChange({
-                ...filters,
-
-                maxPrice:
-                  Number(
-                    e.target.value
-                  ) || undefined,
-              })
-            }
-          />
-        </div>
-      </div>
-
-      {/* STOCK */}
-
-      <div className="pt-1">
-        <label
-          className="
             flex
             items-center
-            gap-2
+            gap-1.5
             text-xs
             font-semibold
             text-slate-700
+          "
+        >
+          <IndianRupee
+            className="h-3.5 w-3.5 text-amber-600"
+            strokeWidth={2}
+          />
+
+          Price Range
+        </label>
+
+        <div
+          className="
+            rounded-xl
+            border
+            border-amber-100
+            bg-amber-50/30
+            p-2
+          "
+        >
+          <div className="space-y-2">
+            <input
+              type="number"
+              placeholder="Min Price"
+              className="
+                h-10
+                w-full
+                rounded-lg
+                border
+                border-slate-200
+                bg-white
+                px-3
+                text-sm
+                font-medium
+                text-slate-800
+                outline-none
+                placeholder:text-slate-400
+                transition-all
+                hover:border-amber-200
+                focus:border-amber-500
+                focus:ring-2
+                focus:ring-amber-500/15
+              "
+              value={
+                filters.minPrice || ""
+              }
+              onChange={(e) =>
+                onChange({
+                  ...filters,
+                  minPrice:
+                    Number(
+                      e.target.value
+                    ) || undefined,
+                })
+              }
+            />
+
+            <input
+              type="number"
+              placeholder="Max Price"
+              className="
+                h-10
+                w-full
+                rounded-lg
+                border
+                border-slate-200
+                bg-white
+                px-3
+                text-sm
+                font-medium
+                text-slate-800
+                outline-none
+                placeholder:text-slate-400
+                transition-all
+                hover:border-amber-200
+                focus:border-amber-500
+                focus:ring-2
+                focus:ring-amber-500/15
+              "
+              value={
+                filters.maxPrice || ""
+              }
+              onChange={(e) =>
+                onChange({
+                  ...filters,
+                  maxPrice:
+                    Number(
+                      e.target.value
+                    ) || undefined,
+                })
+              }
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* =========================================
+          STOCK
+      ========================================= */}
+
+      <div
+        className="
+          rounded-xl
+          border
+          border-emerald-100
+          bg-emerald-50/50
+          px-3
+          py-2.5
+        "
+      >
+        <label
+          className="
+            flex
             cursor-pointer
             select-none
+            items-center
+            gap-2.5
+            text-xs
+            font-semibold
+            text-slate-700
           "
         >
           <input
             type="checkbox"
             className="
-              w-3.5
-              h-3.5
-              accent-black
-              rounded
+              h-4
+              w-4
               cursor-pointer
+              rounded
+              border-slate-300
+              accent-emerald-600
             "
             checked={
               filters.inStock ||
@@ -464,57 +601,71 @@ export function ProductFilters({
             onChange={(e) =>
               onChange({
                 ...filters,
-
                 inStock:
                   e.target.checked,
               })
             }
           />
 
+          <PackageCheck
+            className="h-4 w-4 text-emerald-600"
+            strokeWidth={2}
+          />
+
           In Stock Only
         </label>
       </div>
 
-      {/* TYPE */}
+      {/* =========================================
+          PRODUCT TYPE
+      ========================================= */}
 
       <div>
         <label
           className="
+            mb-1.5
+            flex
+            items-center
+            gap-1.5
             text-xs
             font-semibold
-            text-slate-600
-            block
-            mb-1.5
+            text-slate-700
           "
         >
+          <BriefcaseBusiness
+            className="h-3.5 w-3.5 text-blue-600"
+            strokeWidth={2}
+          />
+
           Product Type
         </label>
 
         <select
           className="
+            h-11
             w-full
+            cursor-pointer
+            rounded-xl
             border
-            border-slate-200/80
-            rounded-lg
-            p-2
-            text-xs
-            bg-slate-50/50
+            border-slate-200
+            bg-slate-50/70
+            px-3
+            text-sm
             font-medium
             text-slate-800
-            focus:outline-none
-            focus:ring-1
-            focus:ring-black
-            focus:border-black
+            outline-none
             transition-all
-            cursor-pointer
+            hover:border-blue-200
+            hover:bg-blue-50/30
+            focus:border-blue-500
+            focus:bg-white
+            focus:ring-2
+            focus:ring-blue-500/15
           "
-          value={
-            filters.type || ""
-          }
+          value={filters.type || ""}
           onChange={(e) =>
             onChange({
               ...filters,
-
               type:
                 e.target.value ||
                 undefined,
@@ -535,38 +686,51 @@ export function ProductFilters({
         </select>
       </div>
 
-      {/* SORT */}
+      {/* =========================================
+          SORT
+      ========================================= */}
 
       <div>
         <label
           className="
+            mb-1.5
+            flex
+            items-center
+            gap-1.5
             text-xs
             font-semibold
-            text-slate-600
-            block
-            mb-1.5
+            text-slate-700
           "
         >
+          <ListFilter
+            className="h-3.5 w-3.5 text-indigo-600"
+            strokeWidth={2}
+          />
+
           Sort By
         </label>
 
         <select
           className="
+            h-11
             w-full
+            cursor-pointer
+            rounded-xl
             border
-            border-slate-200/80
-            rounded-lg
-            p-2
-            text-xs
-            bg-slate-50/50
+            border-slate-200
+            bg-slate-50/70
+            px-3
+            text-sm
             font-medium
             text-slate-800
-            focus:outline-none
-            focus:ring-1
-            focus:ring-black
-            focus:border-black
+            outline-none
             transition-all
-            cursor-pointer
+            hover:border-indigo-200
+            hover:bg-indigo-50/30
+            focus:border-indigo-500
+            focus:bg-white
+            focus:ring-2
+            focus:ring-indigo-500/15
           "
           value={
             filters.sortBy || ""
@@ -574,7 +738,6 @@ export function ProductFilters({
           onChange={(e) =>
             onChange({
               ...filters,
-
               sortBy:
                 e.target.value ||
                 undefined,
@@ -595,24 +758,34 @@ export function ProductFilters({
         </select>
       </div>
 
-      {/* CLEAR */}
+      {/* =========================================
+          CLEAR FILTERS
+      ========================================= */}
 
-      <div className="pt-2">
+      <div className="pt-1">
         <button
           onClick={() =>
             onChange({})
           }
           className="
+            flex
+            h-10
             w-full
+            items-center
+            justify-center
+            rounded-xl
+            border
+            border-teal-600
             bg-teal-600
-            hover:bg-teal-800
-            text-white
-            py-2
-            rounded-lg
             text-xs
-            font-semibold
+            font-bold
+            text-white
             shadow-sm
-            transition-colors
+            shadow-teal-600/20
+            transition-all
+            hover:bg-teal-700
+            hover:shadow-md
+            hover:shadow-teal-600/20
             active:scale-[0.98]
           "
         >
