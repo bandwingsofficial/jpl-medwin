@@ -1,5 +1,9 @@
 "use client";
-
+import Link from "next/link";
+import {
+  ChevronRight,
+  Home,
+} from "lucide-react";
 import { useState } from "react";
 import { CategoriesPageSkeleton } from "../components/categories-page-skeleton";
 import { Button } from "@/shared/components/ui/button";
@@ -301,16 +305,41 @@ export function CategoriesPage() {
   // =========================================
 
   return (
+  <div
+    className="
+      min-h-screen
+      bg-gray-50
+      p-4
+    "
+  >
 
-    <div
-      className="
-        min-h-screen
-        bg-gray-50
-        p-6
-      "
-    >
+    {/* BREADCRUMBS */}
 
-      {/* HEADER */}
+    <div className="mb-5 flex items-center gap-2 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight className="h-4 w-4 text-slate-300" />
+
+      <span className="font-semibold text-teal-600">
+        Categories
+      </span>
+    </div>
+
+    {/* HEADER */}
 
       <div
         className="

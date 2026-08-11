@@ -1,5 +1,9 @@
 "use client";
-
+import Link from "next/link";
+import {
+  ChevronRight,
+  Home,
+} from "lucide-react";
 import { Loader } from "@/shared/components/ui/loader";
 import { EmptyState } from "@/shared/components/ui/empty-state";
 import { useCustomer } from "@/features/customer-management/hooks/use-customer";
@@ -15,10 +19,51 @@ export function CustomerDetailPage({ customerId }: Props) {
   if (error || !customer) return <EmptyState title="Customer not found" />;
 
   return (
-    <div className="space-y-5 max-w-7xl mx-auto p-1">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-100">
-        <div>
+  <div className="space-y-5 max-w-7xl mx-auto p-1">
+
+    {/* BREADCRUMBS */}
+
+    <div className="flex items-center gap-2 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight className="h-4 w-4 text-slate-300" />
+
+      <Link
+        href="/customers"
+        className="
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        Customers
+      </Link>
+
+      <ChevronRight className="h-4 w-4 text-slate-300" />
+
+      <span className="font-semibold text-teal-600">
+        Customer Details
+      </span>
+    </div>
+
+    {/* Header */}
+
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-2 border-b border-slate-100">    <div>
           <h1 className="
               animate-text-shine
               bg-gradient-to-r 

@@ -8,7 +8,9 @@ import {
   Megaphone, 
   Wallet, 
   History, 
-  ArrowRight 
+  ArrowRight,
+  ChevronRight,
+  Home,
 } from "lucide-react";
 
 const sections = [
@@ -52,9 +54,35 @@ const sections = [
 
 export default function CoinsPage() {
   return (
-    <div className="w-full space-y-5 select-none">
-      
-      {/* 🪙 COMPACT SECTION HEADER */}
+  <div className="w-full space-y-5 select-none">
+
+    {/* BREADCRUMBS */}
+
+    <div className="flex items-center gap-2 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight className="h-4 w-4 text-slate-300" />
+
+      <span className="font-semibold text-teal-600">
+        Coins Management
+      </span>
+    </div>
+
+    {/* 🪙 COMPACT SECTION HEADER */}
       <div className="pb-1 border-b border-gray-100">
         <h1 className="
             animate-text-shine

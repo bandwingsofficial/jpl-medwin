@@ -7,7 +7,7 @@ import { Button } from "@/shared/components/ui/button";
 import { SubCategoryTable } from "../components/sub-category-table";
 
 import { CreateSubCategoryModal } from "../components/create-sub-category-modal";
-
+import Link from "next/link";
 import {
   useSubCategories,
   useCreateSubCategory,
@@ -26,6 +26,10 @@ import {
   showConfirmToast,
   showSuccess,
 } from "@/shared/store/toast.store";
+import {
+  Home,
+  ChevronRight,
+} from "lucide-react";
 
 export default function SubCategoriesPage() {
 
@@ -266,6 +270,36 @@ export default function SubCategoriesPage() {
         p-6
       "
     >
+          {/* BREADCRUMBS */}
+
+    <div className="mb-5 flex items-center gap-2 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight
+        className="h-4 w-4 text-slate-300"
+        strokeWidth={2}
+      />
+
+      <span className="font-semibold text-teal-600">
+        Sub Categories
+      </span>
+    </div>
+
+    {/* HEADER */}
 
       {/* HEADER */}
 

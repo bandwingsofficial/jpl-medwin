@@ -2,16 +2,63 @@
 
 import { useRouter } from "next/navigation";
 import { AnalyticsCards } from "@/features/coin-management/components/analytics-cards";
-import { BarChart3, ArrowLeft } from "lucide-react";
+import {
+  BarChart3,
+  ArrowLeft,
+  ChevronRight,
+  Home,
+} from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
 export default function CoinAnalyticsPage() {
   const router = useRouter();
 
   return (
-    <div className="w-full space-y-5 select-none">
-      
-      {/* 📊 PLATFORM ANALYTICS SECTION HEADER */}
+  <div className="w-full space-y-5 select-none">
+
+    {/* BREADCRUMBS */}
+
+    <div className="flex items-center gap-2 text-sm">
+      <button
+        type="button"
+        onClick={() => router.push("/")}
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </button>
+
+      <ChevronRight className="h-4 w-4 text-slate-300" />
+
+      <button
+        type="button"
+        onClick={() => router.push("/coins")}
+        className="
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        Coins Management
+      </button>
+
+      <ChevronRight className="h-4 w-4 text-slate-300" />
+
+      <span className="font-semibold text-teal-600">
+        Analytics Overview
+      </span>
+    </div>
+
+    {/* 📊 PLATFORM ANALYTICS SECTION HEADER */}
       <div className="pb-3 border-b border-gray-100 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <div className="p-1.5 bg-teal-50 rounded-lg text-teal-600 border border-teal-100/30">

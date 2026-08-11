@@ -1,5 +1,11 @@
 "use client";
 
+import Link from "next/link";
+import {
+  ChevronRight,
+  Home,
+} from "lucide-react";
+
 import { TierForm } from "@/features/coin-management/components/tier-form";
 
 import { TierTable } from "@/features/coin-management/components/tier-table";
@@ -14,7 +20,48 @@ export default function CoinTiersPage() {
         p-5
       "
     >
+      {/* BREADCRUMBS */}
+
+      <div className="flex items-center gap-2 text-sm">
+        <Link
+          href="/"
+          className="
+            inline-flex
+            items-center
+            gap-1.5
+            font-medium
+            text-slate-500
+            transition-colors
+            hover:text-teal-600
+          "
+        >
+          <Home className="h-4 w-4" />
+          Home
+        </Link>
+
+        <ChevronRight className="h-4 w-4 text-slate-300" />
+
+        <Link
+          href="/coins"
+          className="
+            font-medium
+            text-slate-500
+            transition-colors
+            hover:text-teal-600
+          "
+        >
+          Coins Management
+        </Link>
+
+        <ChevronRight className="h-4 w-4 text-slate-300" />
+
+        <span className="font-semibold text-teal-600">
+          Reward Tiers
+        </span>
+      </div>
+
       {/* TOP SECTION */}
+
       <div
         className="
           flex
@@ -24,6 +71,7 @@ export default function CoinTiersPage() {
         "
       >
         {/* LEFT */}
+
         <div>
           <h1
             className="
@@ -48,10 +96,12 @@ export default function CoinTiersPage() {
         </div>
 
         {/* RIGHT */}
+
         <TierForm />
       </div>
 
       {/* TABLE */}
+
       <TierTable />
     </div>
   );

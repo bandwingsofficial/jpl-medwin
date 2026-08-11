@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-
+import Link from "next/link";
+import { ChevronRight, Home } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { Loader } from "@/shared/components/ui/loader";
 import { EmptyState } from "@/shared/components/ui/empty-state";
@@ -101,8 +102,49 @@ export function CollectionDetailsPage({
   }
 
   return (
-    <div className="space-y-6">
-      {/* HEADER */}
+  <div className="space-y-6">
+
+    {/* BREADCRUMBS */}
+
+    <div className="flex items-center gap-2 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight className="h-4 w-4 text-slate-300" />
+
+      <Link
+        href="/collections"
+        className="
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        Collections
+      </Link>
+
+      <ChevronRight className="h-4 w-4 text-slate-300" />
+
+      <span className="font-semibold text-teal-600">
+        Collection Details
+      </span>
+    </div>
+
+    {/* HEADER */}
 
       <div
         className="

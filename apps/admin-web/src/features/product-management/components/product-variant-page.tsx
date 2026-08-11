@@ -15,8 +15,10 @@ import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 
 import {
-  ChevronLeft,
+   ChevronLeft,
+  ChevronRight,
   Package,
+  Home,
 } from "lucide-react";
 
 // =========================================
@@ -106,22 +108,49 @@ response?.data?.pagination;
           {/* LEFT */}
           <div className="space-y-2">
 
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm">
+  <Link
+    href="/"
+    className="
+      inline-flex
+      items-center
+      gap-1.5
+      font-medium
+      text-slate-500
+      transition-colors
+      hover:text-teal-600
+    "
+  >
+    <Home className="h-4 w-4" />
+    Home
+  </Link>
 
-              <Link
-                href="/products"
-                className="hover:text-gray-900 transition-colors"
-              >
-                Products
-              </Link>
+  <ChevronRight
+    className="h-4 w-4 text-slate-300"
+    strokeWidth={2}
+  />
 
-              <span>/</span>
+  <Link
+    href="/products"
+    className="
+      font-medium
+      text-slate-500
+      transition-colors
+      hover:text-teal-600
+    "
+  >
+    Products
+  </Link>
 
-              <span>
-                Variants
-                </span>
+  <ChevronRight
+    className="h-4 w-4 text-slate-300"
+    strokeWidth={2}
+  />
 
-            </div>
+  <span className="font-semibold text-teal-600">
+    Variants
+  </span>
+</div>
 
             <h1 className="text-2xl font-bold text-gray-900">
               Product Variants

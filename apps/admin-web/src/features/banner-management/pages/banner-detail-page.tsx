@@ -4,7 +4,11 @@ import {
   Banner,
   BannerImage,
 } from "@/features/banner-management/types/banner.types";
-
+import Link from "next/link";
+import {
+  ChevronRight,
+  Home,
+} from "lucide-react";
 import {
   BannerStatusBadge,
 } from "@/features/banner-management/components/banner-status-badge";
@@ -41,9 +45,50 @@ export function BannerDetailPage({
   onEditImage,
   onDeleteImage,
 }: Props) {
-  return (
-    <div className="max-w-7xl mx-auto p-6 space-y-8 bg-gray-50/50 min-h-screen">
-      {/* HEADER SECTION */}
+ return (
+  <div className="max-w-7xl mx-auto p-6 space-y-8 bg-gray-50/50 min-h-screen">
+
+    {/* BREADCRUMBS */}
+
+    <div className="flex items-center gap-2 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight className="h-4 w-4 text-slate-300" />
+
+      <Link
+        href="/banners"
+        className="
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        Banners
+      </Link>
+
+      <ChevronRight className="h-4 w-4 text-slate-300" />
+
+      <span className="font-semibold text-teal-600">
+        {banner.name}
+      </span>
+    </div>
+
+    {/* HEADER SECTION */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-gray-200">
         <div className="space-y-1.5">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">
