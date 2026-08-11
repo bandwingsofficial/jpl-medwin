@@ -3,16 +3,10 @@ import { useQuery } from "@tanstack/react-query";
 import { authService } from "../services/auth.service";
 
 export const useMe = () => {
-  const hasToken =
-    typeof window !== "undefined" &&
-    !!localStorage.getItem("accessToken");
-
   return useQuery({
     queryKey: ["me"],
 
     queryFn: authService.getMe,
-
-    enabled: hasToken,
 
     retry: false,
 
@@ -20,7 +14,7 @@ export const useMe = () => {
 
     gcTime: 1000 * 60 * 10,
 
-    refetchOnMount: false,
+    refetchOnMount: true,
 
     refetchOnWindowFocus: false,
 

@@ -45,7 +45,7 @@ import { PrismaUserRepository } from '@/infrastructure/persistence/prisma/reposi
 import { PrismaSessionRepository } from '@/infrastructure/persistence/prisma/repositories/session.repository';
 import { PrismaAuthIdentityRepository } from '@/infrastructure/persistence/prisma/repositories/auth-identity.repository';
 import { RedisRateLimitStore } from '@/infrastructure/redis/redis-rate-limit.store';
-import { ConsoleNotificationAdapter } from '@/infrastructure/notification/notification.adapter';
+import { BrevoNotificationAdapter } from '@/infrastructure/notification/brevo-notification.adapter';
 
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 import { RedisModule } from '@modules/auth/infrastructure/redis/redis.module';
@@ -131,9 +131,9 @@ import { CoinsModule } from '../coins/coins.module';
       useClass: JwtTokenAdapter,
     },
     {
-      provide: TOKENS.NOTIFICATION_PORT,
-      useClass: ConsoleNotificationAdapter,
-    },
+  provide: TOKENS.NOTIFICATION_PORT,
+  useClass: BrevoNotificationAdapter,
+},
   ],
 
   exports: [JwtAuthGuard, RolesGuard, SessionDomainService, TOKENS.TOKEN_PORT, TOKENS.SESSION_REPO],

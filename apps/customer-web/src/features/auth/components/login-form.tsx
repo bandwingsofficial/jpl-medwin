@@ -94,10 +94,14 @@ export function LoginForm({
         ? { email: value }
         : { phone: value };
 
-      await mutateAsync(payload);
+     await mutateAsync(payload);
 
-      sessionStorage.setItem("login_identifier", value);
-      router.push("/verify-otp");
+sessionStorage.setItem("login_identifier", value);
+
+// Close the login modal before opening OTP verification
+onClose?.();
+
+router.push("/verify-otp");
     } catch (err: any) {
       setError(err?.response?.data?.message || "We couldn't sign you in. Try again.");
     }
