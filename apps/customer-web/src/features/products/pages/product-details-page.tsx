@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-
+import Link from "next/link";
+import { ChevronRight, Home } from "lucide-react";
 import { ProductVariant } from "@/features/products/types/product.type";
 import { RelatedProducts } from "@/features/products/components/related-products";
 import { ProductActions } from "@/features/products/components/product-actions";
@@ -132,7 +133,62 @@ const selectedVariant = useMemo<ProductVariant | null>(() => {
         lg:pb-8
         lg:bg-transparent
       "
-    >
+    >    {/* BREADCRUMBS */}
+
+    <div className="mb-5 flex items-center gap-2 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight
+        className="h-4 w-4 text-slate-300"
+        strokeWidth={2}
+      />
+
+      <Link
+        href="/products"
+        className="
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        Products
+      </Link>
+
+      <ChevronRight
+        className="h-4 w-4 text-slate-300"
+        strokeWidth={2}
+      />
+
+      <span
+        className="
+          max-w-[180px]
+          truncate
+          font-semibold
+          text-teal-600
+          sm:max-w-[300px]
+        "
+      >
+        {product.name}
+      </span>
+    </div>
+
+    {/* ========================================================== */}
+    {/* MAIN PRODUCT SECTION */}
       {/* ========================================================== */}
       {/* MAIN PRODUCT SECTION */}
       {/* ========================================================== */}

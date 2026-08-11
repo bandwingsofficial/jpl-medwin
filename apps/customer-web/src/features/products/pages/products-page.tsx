@@ -1,7 +1,8 @@
 "use client";
 import { MobileProductFilters } from "@/features/products/components/mobile-product-filters";
 import { useEffect, useRef, useState } from "react";
-
+import Link from "next/link";
+import { ChevronRight, Home } from "lucide-react";
 import { ProductEmpty } from "@/features/products/components/product-empty";
 import { ProductError } from "@/features/products/components/product-error";
 import { ProductGrid } from "@/features/products/components/product-grid";
@@ -196,15 +197,43 @@ export function ProductsPage({
   }
 
   return (
-    <div
-      className="
-        w-full
-        py-3
-        space-y-6
-      "
-    >
-      <ProductBanner />
+  <div
+    className="
+      w-full
+      py-3
+      space-y-6
+    "
+  ><ProductBanner />
+    {/* BREADCRUMBS */}
 
+    <div className="flex items-center gap-2 px-1 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight
+        className="h-4 w-4 text-slate-300"
+        strokeWidth={2}
+      />
+
+      <span className="font-semibold text-teal-600">
+        Products
+      </span>
+    </div>
+
+    
 <MobileProductFilters
   filters={filters}
   onChange={setFilters}

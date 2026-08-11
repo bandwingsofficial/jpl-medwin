@@ -2,7 +2,15 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Mail, Pencil, Phone, User2 } from "lucide-react";
+import {
+  Mail,
+  Pencil,
+  Phone,
+  User2,
+  Home,
+  ChevronRight,
+} from "lucide-react";
+import Link from "next/link";
 
 import { Button } from "@/shared/components/ui/button";
 import { Card } from "@/shared/components/ui/card";
@@ -25,8 +33,37 @@ export function AccountPage() {
   const isProfileExists = !!profile;
 
   return (
-    <>
-      {/* PROFILE CARD */}
+  <>
+    {/* BREADCRUMBS */}
+
+    <div className="mb-5 flex items-center gap-2 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight
+        className="h-4 w-4 text-slate-300"
+        strokeWidth={2}
+      />
+
+      <span className="font-semibold text-teal-600">
+        My Account
+      </span>
+    </div>
+
+    {/* PROFILE CARD */}
       <Card className="overflow-hidden rounded-3xl border bg-white shadow-sm">
         {/* TOP SECTION */}
         <div className="relative border-b bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-8">

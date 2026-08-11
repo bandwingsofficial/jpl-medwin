@@ -6,7 +6,14 @@ import { WalletCard } from "@/features/coins/components/wallet-card";
 import { TransactionList } from "@/features/coins/components/transaction-list";
 import { useWallet } from "@/features/coins/hooks/use-wallet";
 import { useTransactions } from "@/features/coins/hooks/use-transactions";
-import { History, Wallet } from "lucide-react";
+import {
+  History,
+  Wallet,
+  Home,
+  ChevronRight,
+} from "lucide-react";
+
+import Link from "next/link";
 
 export function CoinsPage() {
   const { data: walletData, isLoading: walletLoading } = useWallet();
@@ -45,6 +52,34 @@ export function CoinsPage() {
   return (
     <div className="space-y-5 select-none max-w-4xl mx-auto">
       
+       {/* BREADCRUMBS */}
+
+    <div className="flex items-center gap-2 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight
+        className="h-4 w-4 text-slate-300"
+        strokeWidth={2}
+      />
+
+      <span className="font-semibold text-teal-600">
+        My Rewards
+      </span>
+    </div>
       {/* TOP LEVEL SECTION HEADER */}
       <div className="flex items-center gap-2 pb-1">
         <div className="bg-amber-50 h-7 w-7 rounded-full overflow-hidden flex items-center justify-center shrink-0">

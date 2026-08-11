@@ -50,25 +50,33 @@ export function BrandCard({ brand }: Props) {
           />
         ) : (
           <div
-            className="
-              flex
-              h-14
-              w-14
-              items-center
-              justify-center
-              rounded-full
-              bg-slate-100
-              text-lg
-              font-semibold
-              text-slate-500
-              transition-all
-              duration-300
-              group-hover:bg-[#00828a]/10
-              group-hover:text-[#00828a]
-            "
-          >
-            {brand.name.charAt(0).toUpperCase()}
-          </div>
+  className="
+    flex
+    h-full
+    w-full
+    items-center
+    justify-center
+    rounded-lg
+    bg-white
+    from-teal-50
+    via-white
+    to-cyan-50
+    px-1
+    text-center
+    text-base
+    font-semibold
+    leading-tight
+    text-slate-700
+    transition-all
+    duration-300
+    group-hover:bg-white
+    group-hover:text-[#00828a]
+  "
+>
+  <span className="line-clamp-2">
+    {brand.name}
+  </span>
+</div>
         )}
       </div>
     </Card>

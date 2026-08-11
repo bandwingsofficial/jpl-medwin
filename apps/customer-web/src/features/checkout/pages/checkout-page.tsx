@@ -1,6 +1,6 @@
 "use client";
 
-
+import Link from "next/link";
 import {
   useEffect,
   useMemo,
@@ -8,13 +8,12 @@ import {
   useState,
 } from "react";
 
-
 import { useRouter } from "next/navigation";
-
-
-import { Loader2 } from "lucide-react";
-
-
+import {
+  Loader2,
+  Home,
+  ChevronRight,
+} from "lucide-react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 
 
@@ -532,11 +531,58 @@ const [
    |--------------------------------------------------------------------------
    */
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
-      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-6">
-        <CheckoutHeader
-          checkout={checkout}
+  <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="mx-auto max-w-7xl px-4 py-8 lg:px-6">
+
+      {/* BREADCRUMBS */}
+
+      <div className="mb-5 flex items-center gap-2 text-sm">
+        <Link
+          href="/"
+          className="
+            inline-flex
+            items-center
+            gap-1.5
+            font-medium
+            text-slate-500
+            transition-colors
+            hover:text-teal-600
+          "
+        >
+          <Home className="h-4 w-4" />
+          Home
+        </Link>
+
+        <ChevronRight
+          className="h-4 w-4 text-slate-300"
+          strokeWidth={2}
         />
+
+        <Link
+          href="/cart"
+          className="
+            font-medium
+            text-slate-500
+            transition-colors
+            hover:text-teal-600
+          "
+        >
+          Cart
+        </Link>
+
+        <ChevronRight
+          className="h-4 w-4 text-slate-300"
+          strokeWidth={2}
+        />
+
+        <span className="font-semibold text-teal-600">
+          Checkout
+        </span>
+      </div>
+
+      <CheckoutHeader
+        checkout={checkout}
+      />
 
 
         <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_420px]">

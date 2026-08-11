@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-
+import Link from "next/link";
+import { ChevronRight, Home } from "lucide-react";
 import {
   ChevronLeft,
   Loader2,
@@ -184,6 +185,56 @@ const [returnOpen, setReturnOpen] =
   return (
     <>
       <div className="mx-auto max-w-7xl px-4 py-8 lg:px-6">
+
+  {/* ========================= */}
+  {/* BREADCRUMBS */}
+  {/* ========================= */}
+
+  <div className="mb-4 flex items-center gap-2 text-sm">
+    <Link
+      href="/"
+      className="
+        inline-flex
+        items-center
+        gap-1.5
+        font-medium
+        text-slate-500
+        transition-colors
+        hover:text-teal-600
+      "
+    >
+      <Home className="h-4 w-4" />
+      Home
+    </Link>
+
+    <ChevronRight
+      className="h-4 w-4 text-slate-300"
+      strokeWidth={2}
+    />
+
+    <Link
+      href="/account/orders"
+      className="
+        font-medium
+        text-slate-500
+        transition-colors
+        hover:text-teal-600
+      "
+    >
+      My Orders
+    </Link>
+
+    <ChevronRight
+      className="h-4 w-4 text-slate-300"
+      strokeWidth={2}
+    />
+
+    <span className="font-semibold text-teal-600">
+      Order Details
+    </span>
+  </div>
+
+  
         {/* ========================= */}
         {/* TOP NAVIGATION */}
         {/* ========================= */}

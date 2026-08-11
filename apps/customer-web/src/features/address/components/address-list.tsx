@@ -1,7 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, MapPin } from "lucide-react";
+import {
+  Plus,
+  MapPin,
+  Home,
+  ChevronRight,
+  Link,
+} from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
 import {
@@ -55,7 +61,34 @@ export function AddressList() {
   return (
     /* 👉 UI FIX: Wrapped everything in a premium container box to structure the layout perfectly like your screenshot */
     <div className="w-full max-w-6xl mx-auto bg-white rounded-2xl border border-gray-100 p-6 shadow-sm select-none">
-      
+            {/* BREADCRUMBS */}
+
+      <div className="mb-5 flex items-center gap-2 text-sm">
+        <Link
+  href="/"
+  className="
+    inline-flex
+    items-center
+    gap-1.5
+    font-medium
+    text-slate-500
+    transition-colors
+    hover:text-teal-600
+  "
+>
+  <Home className="h-4 w-4" />
+  Home
+</Link>
+
+        <ChevronRight
+          className="h-4 w-4 text-slate-300"
+          strokeWidth={2}
+        />
+
+        <span className="font-semibold text-teal-600">
+          Saved Addresses
+        </span>
+      </div>
       {/* 📍 PREMIUM HEAD HEADER CONTAINER SECTION */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-5 border-b border-gray-100/80">
         <div className="flex items-center gap-3">

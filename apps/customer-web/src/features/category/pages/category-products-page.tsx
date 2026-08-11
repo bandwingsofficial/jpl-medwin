@@ -9,6 +9,8 @@ import {
   ChevronDown,
   Search,
   X,
+  Home,
+  ChevronRight,
 } from "lucide-react";
 
 import { useCategories } from "../hooks/use-category";
@@ -211,8 +213,55 @@ export default function CategoryProductsPage({
   }
 
   return (
-    <div className="relative mx-auto max-w-[1600px] px-4 py-4 lg:px-6 lg:py-6">
-      {/* Header */}
+  <div className="relative mx-auto max-w-[1600px] px-4 py-4 lg:px-6 lg:py-6">
+
+  {/* BREADCRUMBS */}
+
+  <div className="mb-4 flex items-center gap-2 text-sm">
+    <Link
+      href="/"
+      className="
+        inline-flex
+        items-center
+        gap-1.5
+        font-medium
+        text-slate-500
+        transition-colors
+        hover:text-teal-600
+      "
+    >
+      <Home className="h-4 w-4" />
+      Home
+    </Link>
+
+    <ChevronRight
+      className="h-4 w-4 text-slate-300"
+      strokeWidth={2}
+    />
+
+    <Link
+      href="/categories"
+      className="
+        font-medium
+        text-slate-500
+        transition-colors
+        hover:text-teal-600
+      "
+    >
+      Categories
+    </Link>
+
+    <ChevronRight
+      className="h-4 w-4 text-slate-300"
+      strokeWidth={2}
+    />
+
+    <span className="font-semibold text-teal-600">
+      {category?.name || "Category Products"}
+    </span>
+  </div>
+
+  {/* Header */}
       <div className="mb-4 lg:mb-6">
         <Link
           href="/categories"

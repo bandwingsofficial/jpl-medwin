@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck, ShoppingCart, Truck } from "lucide-react";
+import {
+  ArrowLeft,
+  ShieldCheck,
+  ShoppingCart,
+  Truck,
+  Home,
+  ChevronRight,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { useCart } from "@/features/cart/hooks/use-cart";
 import { CartItemCard } from "@/features/cart/components/cart-item-card";
@@ -118,23 +125,39 @@ export function CartPage() {
     <div className="bg-[#F8FAFC]">
       {/* pb-28 added for mobile to ensure content isn't hidden behind sticky bottom bar */}
       <div className="mx-auto max-w-7xl px-3 py-4 pb-28 md:px-4 md:py-8 lg:px-6 lg:py-5 lg:pb-8">
-        {/* ====================================================== */}
-        {/* TOP BAR */}
-        {/* ====================================================== */}
 
-        <div className="mb-3">
-          <Link
-            href="/products"
-            className="
-              inline-flex items-center gap-1.5 md:gap-2
-              text-xs md:text-sm font-medium
-              text-teal-600 transition hover:text-black
-            "
-          >
-            <ArrowLeft size={14} className="md:w-4 md:h-4" />
-            Continue Shopping
-          </Link>
-        </div>
+  {/* ====================================================== */}
+  {/* BREADCRUMBS */}
+  {/* ====================================================== */}
+
+  <div className="mb-4 flex items-center gap-2 text-sm">
+    <Link
+      href="/"
+      className="
+        inline-flex
+        items-center
+        gap-1.5
+        font-medium
+        text-slate-500
+        transition-colors
+        hover:text-teal-600
+      "
+    >
+      <Home className="h-4 w-4" />
+      Home
+    </Link>
+
+    <ChevronRight
+      className="h-4 w-4 text-slate-300"
+      strokeWidth={2}
+    />
+
+    <span className="font-semibold text-teal-600">
+      Cart
+    </span>
+  </div>
+
+
 
         {/* ====================================================== */}
         {/* HEADER */}
