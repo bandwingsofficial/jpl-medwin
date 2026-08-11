@@ -826,7 +826,7 @@ export function AboutUsPage() {
               Premium Medical Supplies.<br />One Trusted Platform.
             </h2>
             <p style={{ fontFamily: "'DM Sans', sans-serif", color: "rgba(255,255,255,0.65)", fontSize: 14, maxWidth: 400, lineHeight: 1.6 }}>
-              Fully stocked and ready to ship to hospitals, labs, and clinics pan-India.
+              Fully stocked and ready to ship to hospitals and clinics pan-India.
             </p>
           </div>
         </div>
@@ -880,7 +880,7 @@ export function AboutUsPage() {
         </div>
       </section>
 
-     {/* JPL COMPANY ADDRESS + CONTACT */}
+    {/* JPL COMPANY ADDRESS + CONTACT */}
 <div
   style={{
     maxWidth: 1100,
@@ -889,22 +889,24 @@ export function AboutUsPage() {
   }}
 >
   <div
+    className="company-contact-grid"
     style={{
-  border: "1px solid #D9E5E7",
-  borderRadius: 10,
-  background: "#F0FDFA",
-  display: "grid",
-  gridTemplateColumns: "1fr 1fr",
-  overflow: "hidden",
-}}
+      border: "1px solid #D9E5E7",
+      borderRadius: 10,
+      background: "#F0FDFA",
+      display: "grid",
+      gridTemplateColumns: "1fr 1fr",
+      overflow: "hidden",
+    }}
   >
     {/* LEFT — COMPANY ADDRESS */}
     <div
-     style={{
-  padding: "28px",
-  borderRight: "1px solid #D9E5E7",
-  background: "#FFFFFF",
-}}
+      className="company-address"
+      style={{
+        padding: "28px",
+        borderRight: "1px solid #D9E5E7",
+        background: "#FFFFFF",
+      }}
     >
       <div className="eyebrow">Company Address</div>
 
@@ -939,10 +941,11 @@ export function AboutUsPage() {
 
     {/* RIGHT — CONTACT */}
     <div
+      className="company-contact"
       style={{
-  padding: "28px",
-  background: "#ECFDF5",
-}}
+        padding: "28px",
+        background: "#ECFDF5",
+      }}
     >
       <div className="eyebrow">Contact Us</div>
 
@@ -955,7 +958,13 @@ export function AboutUsPage() {
         }}
       >
         {/* PHONE */}
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 12,
+          }}
+        >
           <div
             style={{
               width: 36,
@@ -973,7 +982,11 @@ export function AboutUsPage() {
             ☎
           </div>
 
-          <div>
+          <div
+            style={{
+              minWidth: 0,
+            }}
+          >
             <div
               style={{
                 fontFamily: "'DM Sans', sans-serif",
@@ -994,6 +1007,7 @@ export function AboutUsPage() {
                 color: "#334155",
                 fontWeight: 600,
                 lineHeight: 1.6,
+                overflowWrap: "anywhere",
               }}
             >
               +91 91879 69350
@@ -1004,7 +1018,13 @@ export function AboutUsPage() {
         </div>
 
         {/* EMAIL */}
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 12,
+          }}
+        >
           <div
             style={{
               width: 36,
@@ -1022,7 +1042,12 @@ export function AboutUsPage() {
             ✉
           </div>
 
-          <div>
+          <div
+            style={{
+              minWidth: 0,
+              maxWidth: "100%",
+            }}
+          >
             <div
               style={{
                 fontFamily: "'DM Sans', sans-serif",
@@ -1042,6 +1067,8 @@ export function AboutUsPage() {
                 fontSize: 14,
                 color: "#334155",
                 fontWeight: 600,
+                overflowWrap: "anywhere",
+                wordBreak: "break-word",
               }}
             >
               connect@jplmedwin.com
@@ -1051,6 +1078,25 @@ export function AboutUsPage() {
       </div>
     </div>
   </div>
+
+  {/* MOBILE RESPONSIVE STYLES */}
+  <style>{`
+    @media (max-width: 639px) {
+      .company-contact-grid {
+        grid-template-columns: 1fr !important;
+      }
+
+      .company-address {
+        padding: 22px 20px !important;
+        border-right: none !important;
+        border-bottom: 1px solid #D9E5E7 !important;
+      }
+
+      .company-contact {
+        padding: 22px 20px !important;
+      }
+    }
+  `}</style>
 </div>
 
       {/* ══════════════════════════════════════

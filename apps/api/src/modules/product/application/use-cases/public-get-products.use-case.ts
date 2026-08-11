@@ -122,37 +122,44 @@ export class PublicGetProductsUseCase {
     }
 
     if (input.search?.trim()) {
-      where.OR = [
+  const searchTokens = input.search
+    .trim()
+    .toLowerCase()
+    .split(/[\s,./\\|_+-]+/)
+    .map((token) => token.trim())
+    .filter((token) => token.length > 0);
+
+  if (searchTokens.length > 0) {
+    where.AND = searchTokens.map((token) => ({
+      OR: [
         {
           name: {
-            contains: input.search,
+            contains: token,
             mode: 'insensitive',
           },
         },
-
         {
           slug: {
-            contains: input.search,
+            contains: token,
             mode: 'insensitive',
           },
         },
-
         {
           shortDescription: {
-            contains: input.search,
+            contains: token,
             mode: 'insensitive',
           },
         },
-
         {
           longDescription: {
-            contains: input.search,
+            contains: token,
             mode: 'insensitive',
           },
         },
-      ];
-    }
-
+      ],
+    }));
+  }
+}
     // =======================
     // SORT
     // =======================

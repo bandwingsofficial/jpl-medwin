@@ -39,15 +39,23 @@ const CURATED_JOBS: Job[] = [
   {
     id: "job-1",
     title: "Area Sales Manager",
-    department: "Engineering & Tech",
+    department: "Sales & Management",
     location: "Bangalore Bommasandra industrial Estate",
     type: "Full-Time",
     Experience: "0-2 Years"
   },
   {
     id: "job-2",
+    title: "Procurement Manager",
+    department: "Procurement & Logistics Department",
+    location: "Bangalore Bommasandra industrial Estate",
+    type: "Full-Time",
+    Experience: "0-2 Years"
+  },
+  {
+    id: "job-3",
     title: "Inside Sales Executive",
-    department: "Product Strategy",
+    department: "Sales & Management",
     location: "Bangalore Bommasandra industrial Estate",
     type: "Full-Time",
     Experience: "0-2 Years"
@@ -490,7 +498,7 @@ export default function CareersPage() {
                         required
                         value={formData.fullName}
                         onChange={handleInputChange}
-                        placeholder="John Doe"
+                        placeholder="Your Name"
                         className="bk-input"
                       />
                       <User size={15} className="bk-input-icon" />

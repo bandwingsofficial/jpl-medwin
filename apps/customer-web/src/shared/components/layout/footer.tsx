@@ -542,7 +542,7 @@ transform:scale(1.15);
       md:leading-6
     "
   >
-    Trusted supplier of Dental, Hospital & Healthcare
+    Trusted supplier of Dental & Healthcare
     products across India.
   </p>
 </div>

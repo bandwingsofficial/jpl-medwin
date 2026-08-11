@@ -153,18 +153,18 @@ export function CategoryNavBar() {
         </span>
 
         <div
-          ref={navbarRef}
-          className="
-          relative
-          mx-auto
-          flex
-          h-14
-          max-w-[1280px]
-          items-center
-          px-2
-          sm:px-6
-        "
-        >
+  ref={navbarRef}
+  className="
+    relative
+    mx-auto
+    flex
+    h-[50px]
+    max-w-[1280px]
+    items-center
+    px-2
+    sm:px-6
+  "
+>
           <nav
             className="
             scrollbar-hide
@@ -252,7 +252,65 @@ export function CategoryNavBar() {
                   {collection.name}
                 </Link>
               ))}
+              {/* ABOUT US */}
+<Link
+  href="/about"
+  className="
+    flex-shrink-0
+    flex
+    h-9
+    items-center
+    justify-center
+    rounded-lg
+    bg-white/15
+    px-3
+    text-[13px]
+    font-semibold
+    tracking-wide
+    text-white
+    whitespace-nowrap
+    backdrop-blur-md
+    transition-all
+    duration-200
+    hover:bg-white/25
+    active:scale-95
+  "
+>
+  About Us
+</Link>
+
+{/* MOBILE PHONE */}
+<a
+  href="tel:+919187969350"
+  className="
+    flex-shrink-0
+    flex
+    h-9
+    items-center
+    justify-center
+    gap-2
+    rounded-lg
+    bg-white/15
+    px-3
+    text-[13px]
+    font-semibold
+    tracking-wide
+    text-white
+    whitespace-nowrap
+    backdrop-blur-md
+    transition-all
+    duration-200
+    hover:bg-white/25
+    active:scale-95
+  "
+>
+  <Phone size={14} className="flex-shrink-0" />
+  <span className="whitespace-nowrap">
+    +91 91879 69350
+  </span>
+</a>
             </div>
+            
 
             {/* ===================================================== */}
             {/* DESKTOP CENTERED NAV WITH CONTROLLER SCROLLBAR HIDE */}
@@ -480,6 +538,23 @@ export function CategoryNavBar() {
     )}
   </div>
 ))}
+{/* ABOUT US */}
+<span
+  className="
+    mx-2
+    text-white/70
+    text-[11px]
+    animate-pulse
+    select-none
+  "
+>
+  ✦
+</span>
+
+<ShinyNavLink href="/about">
+  About Us
+</ShinyNavLink>
+
 
 
 {/* PHONE */}

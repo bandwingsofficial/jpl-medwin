@@ -73,7 +73,7 @@ export function DisclaimerPage() {
                 </h2>
               </div>
               <p className="text-xs md:text-sm text-slate-600 leading-relaxed">
-                Doctors, clinics, hospitals, and institutions are strongly advised to verify product compatibility, technical specifications, intended use, and regulatory suitability before purchase or deployment.
+                Doctors, clinics and institutions are strongly advised to verify product compatibility, technical specifications, intended use, and regulatory suitability before purchase or deployment.
               </p>
             </div>
 

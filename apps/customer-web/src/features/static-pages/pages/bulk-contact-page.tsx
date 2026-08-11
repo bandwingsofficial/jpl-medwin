@@ -40,7 +40,6 @@ const categories = [
   "Surgical kits & instrument trays",
   "Diagnostic devices & monitors",
   "Dental consumables & clinical tools",
-  "Hospital furniture & OT equipment",
   "X-ray, RVG, imaging devices",
   "Lab and sterilization equipment",
 ];
@@ -296,10 +295,10 @@ export function BulkContactPage() {
           <div style={{ position: "relative", zIndex: 1 }}>
             <div className="bk-eyebrow" style={{ color: "#2DD4BF", marginBottom: 14 }}>Enterprise Procurement</div>
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(26px, 4vw, 42px)", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.15, letterSpacing: "-0.01em", marginBottom: 14, maxWidth: 680 }}>
-              Bulk Procurement of Medical,<br />Dental & Hospital Instruments
+              Bulk Procurement of Medical,<br />Dental  Instruments
             </h1>
             <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: 580, fontWeight: 300, marginBottom: 28 }}>
-              <span style={{ color: "#2DD4BF", fontWeight: 500 }}>JPL Medwin</span> provides enterprise-grade bulk procurement for dental clinics, hospitals, labs, and institutional buyers with equipment-safe logistics and dedicated pricing tiers.
+              <span style={{ color: "#2DD4BF", fontWeight: 500 }}>JPL Medwin</span> provides enterprise-grade bulk procurement for dental clinics, hospitals and institutional buyers with equipment-safe logistics and dedicated pricing tiers.
             </p>
             <button
   className="bk-quote-btn"
@@ -351,10 +350,6 @@ export function BulkContactPage() {
               alt="Bulk medical equipment"
             />
             <div className="bk-img-overlay" />
-            <div className="bk-img-label">
-              <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "#2DD4BF", fontWeight: 600 }}>Catalogue</span>
-              <span style={{ fontFamily: "'Playfair Display', serif", fontSize: 20, fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2 }}>10,000+<br />Products</span>
-            </div>
           </div>
 
           {/* Categories list */}

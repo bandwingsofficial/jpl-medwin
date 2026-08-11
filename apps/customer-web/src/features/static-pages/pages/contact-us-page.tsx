@@ -504,7 +504,7 @@ export function ContactUsPage() {
             <div className="ct-icon-wrap"><Clock size={20} /></div>
             <div className="ct-eyebrow" style={{ color: "#0D9488", marginBottom: 12 }}>Our Hours</div>
             <div style={{ fontFamily: "'outfit', serif", fontSize: 22, fontWeight: 700, color: "#0F172A", marginBottom: 4 }}>
-              9:00 AM – 6:00 PM
+              10:00 AM – 7:00 PM
             </div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#64748B", fontWeight: 300, lineHeight: 1.6 }}>
               Monday through Saturday. Our specialists are available during all business hours.
@@ -560,10 +560,6 @@ export function ContactUsPage() {
               <div className="ct-badge-item">
                 <Truck size={15} color="#0D9488" style={{ flexShrink: 0 }} />
                 <span>Pan-India Network</span>
-              </div>
-              <div className="ct-badge-item">
-                <Stethoscope size={15} color="#0D9488" style={{ flexShrink: 0 }} />
-                <span>Equipment Demo Center</span>
               </div>
             </div>
           </div>

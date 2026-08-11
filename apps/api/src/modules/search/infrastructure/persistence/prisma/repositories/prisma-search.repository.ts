@@ -12,38 +12,70 @@ import { SearchResponseMapper } from '../mappers/search-response.mapper';
 export class PrismaSearchRepository implements SearchRepository {
   constructor(private readonly prisma: PrismaService) {}
 
+  /**
+   * Converts a user search query into independent searchable tokens.
+   *
+   * Examples:
+   * "mani bur"            -> ["mani", "bur"]
+   * "k-files"             -> ["k", "files"]
+   * "k files"             -> ["k", "files"]
+   * "mani/k-files/bur"    -> ["mani", "k", "files", "bur"]
+   */
+  private tokenizeQuery(query: string): string[] {
+    return query
+      .trim()
+      .toLowerCase()
+      .split(/[\s,./\\|_+-]+/)
+      .map((token) => token.trim())
+      .filter((token) => token.length > 0);
+  }
+
   async search(query: string, limit = 5): Promise<SearchResult[]> {
-    const [products, brands, categories, subCategories, miniCategories] = await Promise.all([
+    const tokens = this.tokenizeQuery(query);
+
+    if (tokens.length === 0) {
+      return [];
+    }
+
+    const [
+      products,
+      brands,
+      categories,
+      subCategories,
+      miniCategories,
+    ] = await Promise.all([
       this.prisma.product.findMany({
         where: {
           deletedAt: null,
 
-          OR: [
-            {
-              name: {
-                contains: query,
-                mode: 'insensitive',
+          AND: tokens.map((token) => ({
+            OR: [
+              {
+                name: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-            {
-              slug: {
-                contains: query,
-                mode: 'insensitive',
+              {
+                slug: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-            {
-              shortDescription: {
-                contains: query,
-                mode: 'insensitive',
+              {
+                shortDescription: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-            {
-              longDescription: {
-                contains: query,
-                mode: 'insensitive',
+              {
+                longDescription: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-          ],
+            ],
+          })),
         },
 
         select: {
@@ -59,20 +91,22 @@ export class PrismaSearchRepository implements SearchRepository {
         where: {
           deletedAt: null,
 
-          OR: [
-            {
-              name: {
-                contains: query,
-                mode: 'insensitive',
+          AND: tokens.map((token) => ({
+            OR: [
+              {
+                name: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-            {
-              slug: {
-                contains: query,
-                mode: 'insensitive',
+              {
+                slug: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-          ],
+            ],
+          })),
         },
 
         select: {
@@ -88,20 +122,22 @@ export class PrismaSearchRepository implements SearchRepository {
         where: {
           deletedAt: null,
 
-          OR: [
-            {
-              name: {
-                contains: query,
-                mode: 'insensitive',
+          AND: tokens.map((token) => ({
+            OR: [
+              {
+                name: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-            {
-              slug: {
-                contains: query,
-                mode: 'insensitive',
+              {
+                slug: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-          ],
+            ],
+          })),
         },
 
         select: {
@@ -117,20 +153,22 @@ export class PrismaSearchRepository implements SearchRepository {
         where: {
           deletedAt: null,
 
-          OR: [
-            {
-              name: {
-                contains: query,
-                mode: 'insensitive',
+          AND: tokens.map((token) => ({
+            OR: [
+              {
+                name: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-            {
-              slug: {
-                contains: query,
-                mode: 'insensitive',
+              {
+                slug: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-          ],
+            ],
+          })),
         },
 
         select: {
@@ -146,20 +184,22 @@ export class PrismaSearchRepository implements SearchRepository {
         where: {
           deletedAt: null,
 
-          OR: [
-            {
-              name: {
-                contains: query,
-                mode: 'insensitive',
+          AND: tokens.map((token) => ({
+            OR: [
+              {
+                name: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-            {
-              slug: {
-                contains: query,
-                mode: 'insensitive',
+              {
+                slug: {
+                  contains: token,
+                  mode: 'insensitive',
+                },
               },
-            },
-          ],
+            ],
+          })),
         },
 
         select: {
@@ -180,7 +220,11 @@ export class PrismaSearchRepository implements SearchRepository {
       ...miniCategories.map(SearchResponseMapper.fromMiniCategory),
     ];
   }
-  async autocomplete(query: string, limit = 10): Promise<SearchResult[]> {
+
+  async autocomplete(
+    query: string,
+    limit = 10,
+  ): Promise<SearchResult[]> {
     return this.search(query, limit);
   }
 }
