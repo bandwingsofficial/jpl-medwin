@@ -162,15 +162,18 @@ export function CartPage() {
 
             <div>
               <h1
-                className="
-                  animate-text-shine
-                  bg-gradient-to-r from-[#001f3f] via-[#0d9488] to-[#001f3f] 
-                  bg-clip-text
-                  text-xl md:text-[28px] font-bold text-transparent
-                "
-              >
-                Shopping Cart
-              </h1>
+  className="
+    animate-text-shine
+    bg-gradient-to-r from-[#001f3f] via-[#0d9488] to-[#001f3f]
+    bg-clip-text
+    text-xl md:text-[28px]
+    font-bold
+    leading-[1.25]
+    text-transparent
+  "
+>
+  Shopping Cart
+</h1>
 
               <p className="mt-0.5 md:mt-1 text-xs md:text-sm text-gray-500">
                 {cart.totalQuantity} items added to your cart
