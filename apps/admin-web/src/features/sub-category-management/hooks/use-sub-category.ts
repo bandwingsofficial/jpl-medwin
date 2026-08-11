@@ -106,23 +106,61 @@ export function useToggleSubCategoryStatus() {
     }: {
       id: string;
       status: CategoryStatus;
-    }) => {
-     return subCategoryApi.updateSubCategoryStatus(id, status);
+    }) => subCategoryApi.updateSubCategoryStatus(id, status),
+
+    onSuccess: (_response, variables) => {
+      // Immediately update UI
+      qc.setQueryData<SubCategory[]>(
+        KEY,
+        (currentData) => {
+          if (!currentData) {
+            return currentData;
+          }
+
+          return currentData.map((item) =>
+            item.id === variables.id
+              ? {
+                  ...item,
+                  status: variables.status,
+                }
+              : item
+          );
+        }
+      );
+
+      // Sync with backend
+      void qc.invalidateQueries({
+        queryKey: KEY,
+      });
     },
 
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: KEY });
-    },
-
-    onError: (error: any) => {
+    onError: (error) => {
       console.error("❌ Status Toggle Error:", error);
 
-      // 🔥 USER FRIENDLY ERROR
-      if (error?.response?.data?.message) {
-        showError(error.response.data.message);
-      } else {
-        showError("Failed to update status");
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error
+      ) {
+        const response = (
+          error as {
+            response?: {
+              data?: {
+                message?: string;
+              };
+            };
+          }
+        ).response;
+
+        const message = response?.data?.message;
+
+        if (message) {
+          showError(message);
+          return;
+        }
       }
+
+      showError("Failed to update status");
     },
   });
 }

@@ -101,7 +101,7 @@ export const useDeleteBrand = () => {
 };
 
 /**
- * 🔹 UPDATE STATUS
+ * 🔹 UPDATE BRAND STATUS
  */
 export const useUpdateBrandStatus = () => {
   const qc = useQueryClient();
@@ -122,8 +122,30 @@ export const useUpdateBrandStatus = () => {
       }
     },
 
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["brands"] });
+    onSuccess: (_response, variables) => {
+      // ✅ Immediately update the React Query cache
+      qc.setQueryData<Brand[]>(
+        ["brands"],
+        (currentBrands) => {
+          if (!currentBrands) {
+            return currentBrands;
+          }
+
+          return currentBrands.map((brand) =>
+            brand.id === variables.id
+              ? {
+                  ...brand,
+                  status: variables.status,
+                }
+              : brand
+          );
+        }
+      );
+
+      // ✅ Then synchronize with backend
+      void qc.invalidateQueries({
+        queryKey: ["brands"],
+      });
     },
   });
 };

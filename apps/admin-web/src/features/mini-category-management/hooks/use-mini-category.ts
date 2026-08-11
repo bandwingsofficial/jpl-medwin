@@ -7,7 +7,7 @@ import {
 } from "@tanstack/react-query";
 
 import { miniCategoryApi } from "@/infrastructure/api/mini-category.api";
-import { CategoryStatus } from "../types/mini-category.type";
+import { CategoryStatus, MiniCategory } from "../types/mini-category.type";
 import { showError } from "@/shared/store/toast.store";
 
 const KEY = ["mini-categories"];
@@ -89,8 +89,8 @@ export function useDeleteMiniCategory() {
   });
 }
 
-// =========================
-// 🔥 STATUS TOGGLE (FINAL FIX)
+/// =========================
+// STATUS TOGGLE
 // =========================
 export function useToggleMiniCategoryStatus() {
   const qc = useQueryClient();
@@ -102,22 +102,53 @@ export function useToggleMiniCategoryStatus() {
     }: {
       id: string;
       status: CategoryStatus;
-    }) => {
-      return miniCategoryApi.updateMiniCategoryStatus(id, status);
+    }) => miniCategoryApi.updateMiniCategoryStatus(id, status),
+
+    onSuccess: (_response, variables) => {
+      // Immediately update React Query cache
+      qc.setQueryData<MiniCategory[]>(
+        KEY,
+        (currentData) => {
+          if (!currentData) {
+            return currentData;
+          }
+
+          return currentData.map((item) =>
+            item.id === variables.id
+              ? {
+                  ...item,
+                  status: variables.status,
+                }
+              : item
+          );
+        }
+      );
+
+      // Revalidate with backend
+      void qc.invalidateQueries({
+        queryKey: KEY,
+      });
     },
 
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: KEY });
-    },
-
-    onError: (error: any) => {
+    onError: (error) => {
       console.error("❌ MINI STATUS ERROR:", error);
 
-      const msg =
-        error?.response?.data?.message ||
-        "Failed to update status";
+      const message =
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error
+          ? (
+              error as {
+                response?: {
+                  data?: {
+                    message?: string;
+                  };
+                };
+              }
+            ).response?.data?.message
+          : undefined;
 
-      showError(msg);
+      showError(message ?? "Failed to update status");
     },
   });
 }

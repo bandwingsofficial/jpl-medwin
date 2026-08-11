@@ -2,24 +2,6 @@ export function MiniCategoryPageSkeleton() {
   return (
     <div className="space-y-6 p-6">
       {/* =========================================
-          HEADER SKELETON
-      ========================================= */}
-
-      <div className="flex items-start justify-between gap-4">
-        {/* TITLE */}
-
-        <div className="space-y-2">
-          <div className="h-9 w-64 animate-pulse rounded-md bg-gray-200" />
-
-          <div className="h-5 w-72 animate-pulse rounded-md bg-gray-200" />
-        </div>
-
-        {/* ADD BUTTON */}
-
-        <div className="h-11 w-48 animate-pulse rounded-xl bg-gray-200" />
-      </div>
-
-      {/* =========================================
           FILTER SKELETON
       ========================================= */}
 

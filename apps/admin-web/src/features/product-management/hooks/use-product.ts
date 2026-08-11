@@ -573,63 +573,107 @@ export const useProduct = (
       },
     });
 
-  // =========================================
+    // =========================================
   // TOGGLE PRODUCT STATUS
   // =========================================
 
-  const toggleProductStatus =
-    useMutation({
-      mutationFn:
-        async ({
-          productId,
-          status,
-          force,
-          }: {
-          productId: string;
-          status:
-            | "ACTIVE"
-            | "INACTIVE";
-          force?: boolean;
-        }) => {
+  const toggleProductStatus = useMutation({
+    mutationFn: async ({
+      productId,
+      status,
+      force,
+    }: {
+      productId: string;
+      status: "ACTIVE" | "INACTIVE";
+      force?: boolean;
+    }) => {
+      const res = await productApi.toggleProductStatus(
+        productId,
+        status,
+        force
+      );
 
-          const res =
-            await productApi.toggleProductStatus(
-              productId,
-              status,
-              force
-            );
+      return res.data;
+    },
 
-          return res.data;
+    onSuccess: async (_response, variables) => {
+      // =========================================
+      // 1. IMMEDIATELY UPDATE ALL PRODUCT LIST CACHE
+      // =========================================
+      qc.setQueriesData<ProductListResponse>(
+        {
+          queryKey: PRODUCT_KEYS.all,
         },
+        (currentData) => {
+          if (!currentData?.data) {
+            return currentData;
+          }
 
-      onSuccess: async (
-        _,
-        variables
-      ) => {
+          return {
+            ...currentData,
 
-        await qc.invalidateQueries({
-          queryKey:
-            PRODUCT_KEYS.all,
-        });
-
-        await qc.invalidateQueries({
-          queryKey:
-            PRODUCT_KEYS.detail(
-              variables.productId
+            data: currentData.data.map((product) =>
+              product.id === variables.productId
+                ? {
+                    ...product,
+                    status: variables.status,
+                  }
+                : product
             ),
-        });
-      },
+          };
+        }
+      );
 
-      onError: (
-        err: AxiosError<any>
-      ) => {
+      // =========================================
+      // 2. UPDATE SINGLE PRODUCT CACHE
+      // =========================================
+      qc.setQueryData<SingleProductResponse>(
+        PRODUCT_KEYS.detail(variables.productId),
+        (currentData) => {
+          if (!currentData?.data) {
+            return currentData;
+          }
 
-        console.error(
-          "❌ TOGGLE PRODUCT STATUS ERROR:",
-          err.response?.data
-        );
-      },
-    });
+          return {
+            ...currentData,
+            data: {
+              ...currentData.data,
+              status: variables.status,
+            },
+          };
+        }
+      );
+
+      // =========================================
+      // 3. SYNC WITH BACKEND
+      // =========================================
+      await qc.invalidateQueries({
+        queryKey: PRODUCT_KEYS.all,
+      });
+
+      await qc.invalidateQueries({
+        queryKey: PRODUCT_KEYS.detail(
+          variables.productId
+        ),
+      });
+    },
+
+    onError: (err: AxiosError<unknown>) => {
+      const message =
+        err.response &&
+        typeof err.response.data === "object" &&
+        err.response.data !== null &&
+        "message" in err.response.data &&
+        typeof err.response.data.message === "string"
+          ? err.response.data.message
+          : "Failed to update product status";
+
+      console.error(
+        "❌ TOGGLE PRODUCT STATUS ERROR:",
+        message
+      );
+    },
+  });
 
   // =========================================
   // DELETE PRODUCT

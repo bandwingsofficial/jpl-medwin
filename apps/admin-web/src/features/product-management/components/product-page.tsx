@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Download } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
-
+import { ProductPageSkeleton } from "./product-page-skeleton";
 import { ProductTable } from "./product-table";
 
 import { CreateProductModal } from "./create-product-modal";
@@ -43,6 +43,10 @@ export function ProductPage() {
       ?.total ??
     responseBody?.data?.length ??
     0;
+
+    if (isLoading) {
+  return <ProductPageSkeleton />;
+}
 
   return (
     <div className="space-y-6">

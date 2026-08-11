@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { categoryApi } from "@/infrastructure/api/category.api";
 import {
+  Category,
   CreateCategoryPayload,
   UpdateCategoryPayload,
 } from "../types/category.type";
@@ -65,7 +66,7 @@ export function useUpdateCategory() {
 }
 
 // =========================
-// 🔥 STATUS TOGGLE (NEW)
+// STATUS TOGGLE
 // =========================
 export function useToggleCategoryStatus() {
   const queryClient = useQueryClient();
@@ -79,16 +80,35 @@ export function useToggleCategoryStatus() {
       status: "ACTIVE" | "INACTIVE";
     }) => categoryApi.updateCategoryStatus(id, status),
 
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: CATEGORY_KEY });
+    onSuccess: (_response, variables) => {
+      queryClient.setQueryData<Category[]>(
+        CATEGORY_KEY,
+        (currentData) => {
+          if (!currentData) {
+            return currentData;
+          }
+
+          return currentData.map((category) =>
+            category.id === variables.id
+              ? {
+                  ...category,
+                  status: variables.status,
+                }
+              : category
+          );
+        }
+      );
+
+      void queryClient.invalidateQueries({
+        queryKey: CATEGORY_KEY,
+      });
     },
 
-    onError: (error: any) => {
+    onError: (error) => {
       console.error("Toggle Status Error:", error);
     },
   });
 }
-
 // =========================
 // DELETE
 // =========================
