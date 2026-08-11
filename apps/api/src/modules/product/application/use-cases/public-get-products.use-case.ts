@@ -106,7 +106,15 @@ export class PublicGetProductsUseCase {
     if (input.type) {
       where.type = input.type;
     }
-
+    if (input.inStock === true) {
+  where.variants = {
+    some: {
+      quantity: {
+        gt: 0,
+      },
+    },
+  };
+}
     if (input.tag) {
       where.tags = {
         has: input.tag,
@@ -277,9 +285,6 @@ switch (input.sortBy) {
     // STOCK FILTER
     // =======================
 
-    if (input.inStock === true) {
-      data = data.filter((p) => p.stock.inStock);
-    }
 
     return {
       data,

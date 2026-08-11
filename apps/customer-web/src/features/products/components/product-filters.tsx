@@ -10,7 +10,7 @@ import {
   SlidersHorizontal,
   Tags,
 } from "lucide-react";
-
+import { useState } from "react";
 import { useCategories } from "@/features/category/hooks/use-category";
 import { useSubCategories } from "@/features/category/hooks/use-sub-categories";
 import { useMiniCategories } from "@/features/category/hooks/use-mini-categories";
@@ -25,6 +25,16 @@ export function ProductFilters({
   filters,
   onChange,
 }: ProductFiltersProps) {
+
+    const [minPriceInput, setMinPriceInput] =
+    useState(
+      filters.minPrice?.toString() || ""
+    );
+
+  const [maxPriceInput, setMaxPriceInput] =
+    useState(
+      filters.maxPrice?.toString() || ""
+    );
   const { data: categories = [] } =
     useCategories();
 
@@ -42,6 +52,19 @@ export function ProductFilters({
   } = useMiniCategories(
     filters.subCategoryId
   );
+    const applyPriceFilter = () => {
+    onChange({
+      ...filters,
+      minPrice:
+        minPriceInput.trim() !== ""
+          ? Number(minPriceInput)
+          : undefined,
+      maxPrice:
+        maxPriceInput.trim() !== ""
+          ? Number(maxPriceInput)
+          : undefined,
+    });
+  };
 
   return (
     <aside
@@ -450,113 +473,140 @@ export function ProductFilters({
       </div>
 
       {/* =========================================
-          PRICE RANGE
-      ========================================= */}
+    PRICE RANGE
+========================================= */}
 
-      <div>
-        <label
-          className="
-            mb-1.5
-            flex
-            items-center
-            gap-1.5
-            text-xs
-            font-semibold
-            text-slate-700
-          "
-        >
-          <IndianRupee
-            className="h-3.5 w-3.5 text-amber-600"
-            strokeWidth={2}
-          />
+<div>
+  <label
+    className="
+      mb-1.5
+      flex
+      items-center
+      gap-1.5
+      text-xs
+      font-semibold
+      text-slate-700
+    "
+  >
+    <IndianRupee
+      className="h-3.5 w-3.5 text-amber-600"
+      strokeWidth={2}
+    />
 
-          Price Range
-        </label>
+    Price Range
+  </label>
 
-        <div
-          className="
-            rounded-xl
-            border
-            border-amber-100
-            bg-amber-50/30
-            p-2
-          "
-        >
-          <div className="space-y-2">
-            <input
-              type="number"
-              placeholder="Min Price"
-              className="
-                h-10
-                w-full
-                rounded-lg
-                border
-                border-slate-200
-                bg-white
-                px-3
-                text-sm
-                font-medium
-                text-slate-800
-                outline-none
-                placeholder:text-slate-400
-                transition-all
-                hover:border-amber-200
-                focus:border-amber-500
-                focus:ring-2
-                focus:ring-amber-500/15
-              "
-              value={
-                filters.minPrice || ""
-              }
-              onChange={(e) =>
-                onChange({
-                  ...filters,
-                  minPrice:
-                    Number(
-                      e.target.value
-                    ) || undefined,
-                })
-              }
-            />
+  <div
+    className="
+      rounded-xl
+      border
+      border-amber-100
+      bg-amber-50/30
+      p-2
+    "
+  >
+    <div className="space-y-2">
+      {/* MIN PRICE */}
 
-            <input
-              type="number"
-              placeholder="Max Price"
-              className="
-                h-10
-                w-full
-                rounded-lg
-                border
-                border-slate-200
-                bg-white
-                px-3
-                text-sm
-                font-medium
-                text-slate-800
-                outline-none
-                placeholder:text-slate-400
-                transition-all
-                hover:border-amber-200
-                focus:border-amber-500
-                focus:ring-2
-                focus:ring-amber-500/15
-              "
-              value={
-                filters.maxPrice || ""
-              }
-              onChange={(e) =>
-                onChange({
-                  ...filters,
-                  maxPrice:
-                    Number(
-                      e.target.value
-                    ) || undefined,
-                })
-              }
-            />
-          </div>
-        </div>
-      </div>
+      <input
+        type="number"
+        placeholder="Min Price"
+        className="
+          h-10
+          w-full
+          rounded-lg
+          border
+          border-slate-200
+          bg-white
+          px-3
+          text-sm
+          font-medium
+          text-slate-800
+          outline-none
+          placeholder:text-slate-400
+          transition-all
+          hover:border-amber-200
+          focus:border-amber-500
+          focus:ring-2
+          focus:ring-amber-500/15
+        "
+        value={minPriceInput}
+        onChange={(e) =>
+          setMinPriceInput(e.target.value)
+        }
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            applyPriceFilter();
+          }
+        }}
+      />
+
+      {/* MAX PRICE */}
+
+      <input
+        type="number"
+        placeholder="Max Price"
+        className="
+          h-10
+          w-full
+          rounded-lg
+          border
+          border-slate-200
+          bg-white
+          px-3
+          text-sm
+          font-medium
+          text-slate-800
+          outline-none
+          placeholder:text-slate-400
+          transition-all
+          hover:border-amber-200
+          focus:border-amber-500
+          focus:ring-2
+          focus:ring-amber-500/15
+        "
+        value={maxPriceInput}
+        onChange={(e) =>
+          setMaxPriceInput(e.target.value)
+        }
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            applyPriceFilter();
+          }
+        }}
+      />
+
+      {/* APPLY PRICE FILTER */}
+
+      <button
+        type="button"
+        onClick={applyPriceFilter}
+        className="
+          flex
+          h-10
+          w-full
+          items-center
+          justify-center
+          rounded-lg
+          bg-amber-500
+          px-3
+          text-xs
+          font-bold
+          text-white
+          shadow-sm
+          shadow-amber-500/20
+          transition-all
+          hover:bg-amber-600
+          hover:shadow-md
+          hover:shadow-amber-500/20
+          active:scale-[0.98]
+        "
+      >
+        Filter Price
+      </button>
+    </div>
+  </div>
+</div>
 
       {/* =========================================
           STOCK
