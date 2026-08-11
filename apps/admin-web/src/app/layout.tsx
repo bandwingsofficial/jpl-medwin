@@ -6,7 +6,10 @@ import { Toast } from "@/shared/components/ui/toast";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "JPL Medwin",
+  title: {
+  default: "JPL Medwin Admin",
+  template: "%s | JPL Medwin Admin",
+},
   description: "JPL Medwin",
   icons: {
     icon: "/Metadata/Jpl_Meta1.png",
