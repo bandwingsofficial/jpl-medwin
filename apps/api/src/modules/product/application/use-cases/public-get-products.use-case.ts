@@ -33,6 +33,9 @@ type PublicGetProductsInput = {
   subCategoryId?: string;
 
   miniCategoryId?: string;
+  categorySlug?: string;
+subCategorySlug?: string;
+miniCategorySlug?: string;
 
   brandId?: string;
 

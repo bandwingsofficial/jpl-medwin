@@ -42,16 +42,17 @@ export function ProductFilters({
     useBrands();
 
   const {
-    data: subCategories = [],
-  } = useSubCategories(
-    filters.categoryId || ""
-  );
+  data: subCategories = [],
+} = useSubCategories(
+  filters.categorySlug || "",
+);
 
-  const {
-    data: miniCategories = [],
-  } = useMiniCategories(
-    filters.subCategoryId
-  );
+const {
+  data: miniCategories = [],
+} = useMiniCategories(
+  filters.categorySlug || "",
+  filters.subCategorySlug || "",
+);
     const applyPriceFilter = () => {
     onChange({
       ...filters,
@@ -206,16 +207,16 @@ export function ProductFilters({
             focus:ring-2
             focus:ring-teal-500/15
           "
-          value={filters.categoryId || ""}
+         value={filters.categorySlug || ""}
           onChange={(e) =>
             onChange({
               ...filters,
-              categoryId:
+              categorySlug:
                 e.target.value ||
                 undefined,
-              subCategoryId:
+              subCategorySlug:
                 undefined,
-              miniCategoryId:
+              miniCategorySlug:
                 undefined,
             })
           }
@@ -228,7 +229,7 @@ export function ProductFilters({
             (category: any) => (
               <option
                 key={category.id}
-                value={category.id}
+                value={category.slug}
               >
                 {category.name}
               </option>
@@ -288,18 +289,18 @@ export function ProductFilters({
             disabled:hover:border-slate-200
             disabled:hover:bg-slate-100
           "
-          value={filters.subCategoryId || ""}
+          value={filters.subCategorySlug || ""}
           onChange={(e) =>
             onChange({
               ...filters,
-              subCategoryId:
+              subCategorySlug:
                 e.target.value ||
                 undefined,
-              miniCategoryId:
+              miniCategorySlug:
                 undefined,
             })
           }
-          disabled={!filters.categoryId}
+          disabled={!filters.categorySlug}
         >
           <option value="">
             All Sub Categories
@@ -309,7 +310,7 @@ export function ProductFilters({
             (sub: any) => (
               <option
                 key={sub.id}
-                value={sub.id}
+                value={sub.slug}
               >
                 {sub.name}
               </option>
@@ -370,17 +371,17 @@ export function ProductFilters({
             disabled:hover:bg-slate-100
           "
           value={
-            filters.miniCategoryId || ""
+            filters.miniCategorySlug || ""
           }
           onChange={(e) =>
             onChange({
               ...filters,
-              miniCategoryId:
+              miniCategorySlug:
                 e.target.value ||
                 undefined,
             })
           }
-          disabled={!filters.subCategoryId}
+          disabled={!filters.subCategorySlug}
         >
           <option value="">
             All Mini Categories
@@ -390,7 +391,7 @@ export function ProductFilters({
             (mini: any) => (
               <option
                 key={mini.id}
-                value={mini.id}
+                value={mini.slug}
               >
                 {mini.name}
               </option>

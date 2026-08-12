@@ -22,12 +22,18 @@ export class PublicProductController {
   getAll(
     @Query('categoryId')
     categoryId?: string,
+    @Query('categorySlug')
+  categorySlug?: string,
 
     @Query('subCategoryId')
     subCategoryId?: string,
+     @Query('subCategorySlug')
+  subCategorySlug?: string,
 
     @Query('miniCategoryId')
     miniCategoryId?: string,
+      @Query('miniCategorySlug')
+  miniCategorySlug?: string,
 
     @Query('brandId')
     brandId?: string,

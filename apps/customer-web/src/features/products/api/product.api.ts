@@ -13,11 +13,11 @@ interface GetProductsParams {
 
   search?: string;
 
-  categoryId?: string;
+  categorySlug?: string;
 
-  subCategoryId?: string;
+  subCategorySlug?: string;
 
-  miniCategoryId?: string;
+  miniCategorySlug?: string;
 
   brandId?: string;
 

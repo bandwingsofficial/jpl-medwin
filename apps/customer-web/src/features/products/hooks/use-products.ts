@@ -9,11 +9,11 @@ interface UseProductsParams {
 
   search?: string;
 
-  categoryId?: string;
+  categorySlug?: string;
 
-  subCategoryId?: string;
+  subCategorySlug?: string;
 
-  miniCategoryId?: string;
+  miniCategorySlug?: string;
 
   brandId?: string;
 
@@ -39,9 +39,9 @@ queryKey: [
 
   params?.search,
 
-  params?.categoryId,
-  params?.subCategoryId,
-  params?.miniCategoryId,
+  params?.categorySlug,
+  params?.subCategorySlug,
+  params?.miniCategorySlug,
 
   params?.brandId,
 
