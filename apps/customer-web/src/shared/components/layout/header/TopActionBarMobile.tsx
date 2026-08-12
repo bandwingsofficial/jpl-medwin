@@ -150,7 +150,7 @@ export function TopActionBarMobile({
             </span>
           </button>
 
-          {/* ACCOUNT */}
+          {/* TOP ACCOUNT - KEEP AS IT IS */}
           <div className="relative">
             <button
               type="button"
@@ -166,60 +166,31 @@ export function TopActionBarMobile({
               />
             </button>
 
+            {/* TOP PROFILE POPUP
+                ONLY MY PROFILE + LOGOUT */}
             {mounted && open && isAuthenticated && (
-              <div className="absolute right-0 z-50 mt-3 w-56 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
-                {/* ACCOUNT HEADER */}
-                <div className="border-b border-gray-100 bg-gray-50 px-4 py-3">
-                  <p className="text-sm font-semibold text-gray-900">
-                    My Account
-                  </p>
-
-                  <p className="mt-0.5 text-xs text-gray-400">
-                    Manage your account
-                  </p>
-                </div>
-
-                {/* ACCOUNT ITEMS */}
-                <div className="p-2">
-                  {ACCOUNT_SIDEBAR_ITEMS.map((item) => {
-                    const Icon = item.icon;
-
-                    return (
-                      <button
-                        key={item.href}
-                        type="button"
-                        onClick={() => {
-                          setOpen(false);
-                          router.push(item.href);
-                        }}
-                        className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-gray-600 transition-colors hover:bg-teal-50 hover:text-teal-600"
-                      >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-50 text-gray-400 transition-colors group-hover:bg-teal-100 group-hover:text-teal-600">
-                          <Icon className="h-4 w-4" />
-                        </div>
-
-                        <span className="flex-1">
-                          {item.label}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+              <div className="absolute right-0 z-50 mt-3 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
+                {/* MY PROFILE */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setOpen(false);
+                    router.push("/account");
+                  }}
+                  className="block w-full px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-50"
+                >
+                  My Profile
+                </button>
 
                 {/* LOGOUT */}
-                <div className="border-t border-gray-100 p-2">
-                  <button
-                    type="button"
-                    onClick={handleLogout}
-                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-red-500 transition-colors hover:bg-red-50"
-                  >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-50">
-                      <LogOut className="h-4 w-4" />
-                    </div>
-
-                    <span>Logout</span>
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex w-full items-center gap-2 border-t border-gray-100 px-4 py-3 text-sm text-red-500 transition hover:bg-red-50"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </button>
               </div>
             )}
           </div>
@@ -305,7 +276,7 @@ export function TopActionBarMobile({
           </Link>
 
           {/* FIRST ACTION ITEM - COIN */}
-          {actionItems.length > 0 && (
+          {actionItems.length > 0 &&
             (() => {
               const {
                 icon: Icon,
@@ -389,10 +360,11 @@ export function TopActionBarMobile({
                   </span>
                 </button>
               );
-            })()
-          )}
+            })()}
 
-          {/* ACCOUNT - ONLY WHEN LOGGED IN */}
+          {/* ================================================== */}
+          {/* BOTTOM ACCOUNT - ONLY WHEN LOGGED IN */}
+          {/* ================================================== */}
           {isAuthenticated && (
             <div className="relative flex min-w-[52px] items-center justify-center">
               <button
@@ -445,7 +417,7 @@ export function TopActionBarMobile({
                 </span>
               </button>
 
-              {/* MOBILE ACCOUNT POPUP */}
+              {/* BOTTOM ACCOUNT POPUP */}
               {mounted && open && (
                 <div
                   className="
