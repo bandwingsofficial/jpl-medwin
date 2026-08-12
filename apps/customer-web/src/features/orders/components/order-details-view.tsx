@@ -9,13 +9,13 @@ import {
   Home,
   XCircle,
   Wallet,
-  MoreVertical, // Added 3-dot icon
+  MoreVertical,
 } from "lucide-react";
 
 import { Card } from "@/shared/components/ui/card";
 import { Separator } from "@/shared/components/ui/separator";
 import { Button } from "@/shared/components/ui/button";
-// Imported Dropdown components to hold the actions simply
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -38,7 +38,8 @@ export const OrderDetailsView = ({
   onCancel,
   onRequestReturn,
 }: Props) => {
-    const router = useRouter();
+  const router = useRouter();
+
   /*
   |--------------------------------------------------------------------------
   | ORDER FLOW STEPS
@@ -51,13 +52,11 @@ export const OrderDetailsView = ({
       icon: Package,
       key: "PROCESSING",
     },
-
     {
       label: "Shipped",
       icon: Truck,
       key: "SHIPPED",
     },
-
     {
       label: "Delivered",
       icon: Home,
@@ -75,10 +74,10 @@ export const OrderDetailsView = ({
     order.status === "PROCESSING"
       ? 0
       : order.status === "SHIPPED"
-      ? 1
-      : order.status === "DELIVERED"
-      ? 2
-      : 0;
+        ? 1
+        : order.status === "DELIVERED"
+          ? 2
+          : 0;
 
   /*
   |--------------------------------------------------------------------------
@@ -88,7 +87,7 @@ export const OrderDetailsView = ({
 
   // 🔥 FIX: Removed 'PROCESSING' status from this condition so the cancel button is hidden during warehouse processing
   const canCancel =
-    order.status === "PENDING_PAYMENT" || 
+    order.status === "PENDING_PAYMENT" ||
     order.status === "PENDING";
 
   const isRefunded =
@@ -98,48 +97,55 @@ export const OrderDetailsView = ({
     order.status === "CANCELLED";
 
   const showShipment =
-  order.status === "SHIPPED" ||
-  order.status === "DELIVERED";
+    order.status === "SHIPPED" ||
+    order.status === "DELIVERED";
 
-const hasReturnRequest =
-  !!order.returnRequest;
+  const hasReturnRequest =
+    !!order.returnRequest;
 
-const canRequestReturn =
-  order.status === "DELIVERED" &&
-  !hasReturnRequest;
-  
+  const canRequestReturn =
+    order.status === "DELIVERED" &&
+    !hasReturnRequest;
+
   // Checking if there are any context actions available to show the 3-dot menu icon
-  const hasDropdownActions = (order.status === "PENDING_PAYMENT") || canCancel;
+  const hasDropdownActions =
+    order.status === "PENDING_PAYMENT" ||
+    canCancel;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4 sm:space-y-5">
       {/* ========================= */}
       {/* HEADER */}
       {/* ========================= */}
 
       <div
         className="
-          relative overflow-visible
+          relative
+          overflow-visible
           rounded-2xl
           border border-teal-100
-          bg-gradient-to-br from-teal-50 via-white to-cyan-50
-          p-5
+          bg-gradient-to-br
+          from-teal-50
+          via-white
+          to-cyan-50
+          p-4
+          sm:p-5
           shadow-sm
         "
       >
         <div className="absolute right-0 top-0 h-28 w-28 rounded-full bg-teal-100/40 blur-3xl" />
 
         <div className="relative z-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <p className="mb-2 inline-flex rounded-full bg-teal-600 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-white">
+          <div className="min-w-0">
+            <p className="mb-2 inline-flex max-w-full rounded-full bg-teal-600 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-white sm:text-[11px]">
               Order Details
             </p>
 
-            <h1 className="text-2xl font-black tracking-tight text-black">
+            <h1 className="break-all text-xl font-black tracking-tight text-black sm:text-2xl">
               {order.orderNumber}
             </h1>
 
-            <p className="mt-1 text-sm text-black/60">
+            <p className="mt-1 text-xs text-black/60 sm:text-sm">
               Placed on{" "}
               {new Date(
                 order.createdAt
@@ -154,157 +160,223 @@ const canRequestReturn =
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 relative z-20">
-  <OrderStatusBadge
-    status={order.status}
-  />
+          <div className="relative z-20 flex w-full flex-wrap items-center gap-2 md:w-auto md:gap-3">
+            <OrderStatusBadge
+              status={order.status}
+            />
 
-  {canRequestReturn && (
-    <Button
-      onClick={onRequestReturn}
-      className="
-        rounded-xl
-        bg-amber-600
-        px-4
-        hover:bg-amber-700
-      "
-    >
-      Request Return
-    </Button>
-  )}
+            {canRequestReturn && (
+              <Button
+                onClick={onRequestReturn}
+                className="
+                  w-full
+                  rounded-xl
+                  bg-amber-600
+                  px-4
+                  hover:bg-amber-700
+                  sm:w-auto
+                "
+              >
+                Request Return
+              </Button>
+            )}
 
-  {hasReturnRequest && (
-    <Button
-      disabled
-      className="
-        rounded-xl
-        bg-amber-100
-        text-amber-700
-        px-4
-        cursor-not-allowed
-        hover:bg-amber-100
-      "
-    >
-      {order.returnRequest.type ===
-      "REPLACEMENT"
-        ? "Replacement Requested"
-        : "Refund Requested"}
-    </Button>
-  )}
+            {hasReturnRequest && (
+              <Button
+                disabled
+                className="
+                  w-full
+                  cursor-not-allowed
+                  rounded-xl
+                  bg-amber-100
+                  px-4
+                  text-amber-700
+                  hover:bg-amber-100
+                  sm:w-auto
+                "
+              >
+                {order.returnRequest.type ===
+                "REPLACEMENT"
+                  ? "Replacement Requested"
+                  : "Refund Requested"}
+              </Button>
+            )}
 
-  {/* 3-DOT MENU FOR ACTION BUTTONS */}
-  {hasDropdownActions && (
-    <div className="relative inline-flex items-center justify-center">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            variant="ghost" 
-            className="h-10 w-10 p-0 flex items-center justify-center rounded-xl text-black/70 bg-gray-100 hover:bg-black/5"
-          >
-            <MoreVertical className="h-5 w-5" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48 absolute right-0 top-full mt-2 z-50 rounded-xl p-1 bg-white border border-gray-100 shadow-lg">
-          {order.status === "PENDING_PAYMENT" && (
-            <DropdownMenuItem
-              onClick={() => router.push(`/checkout/payment?orderId=${order.id}`)}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-teal-600 cursor-pointer hover:bg-teal-50"
-            >
-              Make Payment
-            </DropdownMenuItem>
-          )}
-          {canCancel && (
-            <DropdownMenuItem
-              onClick={onCancel}
-              className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold text-red-600 cursor-pointer hover:bg-red-50"
-            >
-              Cancel Order
-            </DropdownMenuItem>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  )}
-</div>
+            {/* 3-DOT MENU FOR ACTION BUTTONS */}
+            {hasDropdownActions && (
+              <div className="relative inline-flex shrink-0 items-center justify-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      className="
+                        flex
+                        h-10
+                        w-10
+                        shrink-0
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-gray-100
+                        p-0
+                        text-black/70
+                        hover:bg-black/5
+                      "
+                    >
+                      <MoreVertical className="h-5 w-5" />
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent
+                    align="end"
+                    className="
+                      absolute
+                      right-0
+                      top-full
+                      z-50
+                      mt-2
+                      w-48
+                      rounded-xl
+                      border
+                      border-gray-100
+                      bg-white
+                      p-1
+                      shadow-lg
+                    "
+                  >
+                    {order.status === "PENDING_PAYMENT" && (
+                      <DropdownMenuItem
+                        onClick={() =>
+                          router.push(
+                            `/checkout/payment?orderId=${order.id}`
+                          )
+                        }
+                        className="
+                          flex
+                          cursor-pointer
+                          items-center
+                          gap-2
+                          rounded-lg
+                          px-3
+                          py-2
+                          text-sm
+                          font-semibold
+                          text-teal-600
+                          hover:bg-teal-50
+                        "
+                      >
+                        Make Payment
+                      </DropdownMenuItem>
+                    )}
+
+                    {canCancel && (
+                      <DropdownMenuItem
+                        onClick={onCancel}
+                        className="
+                          flex
+                          cursor-pointer
+                          items-center
+                          gap-2
+                          rounded-lg
+                          px-3
+                          py-2
+                          text-sm
+                          font-semibold
+                          text-red-600
+                          hover:bg-red-50
+                        "
+                      >
+                        Cancel Order
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-{order?.returnRequest && (
-  <Card className="rounded-2xl border border-amber-200 bg-amber-50 p-5 shadow-sm">
-    <div className="flex items-start gap-4">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-100">
-        <Wallet className="h-6 w-6 text-amber-600" />
-      </div>
 
-      <div>
-        <h3 className="text-lg font-bold text-black">
-          {order.returnRequest.type ===
-          "REPLACEMENT"
-            ? "Replacement Requested"
-            : "Refund Requested"}
-        </h3>
+      {order?.returnRequest && (
+        <Card className="rounded-2xl border border-amber-200 bg-amber-50 p-4 shadow-sm sm:p-5">
+          <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-100 sm:h-12 sm:w-12">
+              <Wallet className="h-5 w-5 text-amber-600 sm:h-6 sm:w-6" />
+            </div>
 
-        <p className="mt-1 text-sm text-black/60">
-          Status:
-          {" "}
-          <span className="font-semibold">
-            {order.returnRequest.status}
-          </span>
-        </p>
+            <div className="min-w-0 flex-1">
+              <h3 className="break-words text-base font-bold text-black sm:text-lg">
+                {order.returnRequest.type ===
+                "REPLACEMENT"
+                  ? "Replacement Requested"
+                  : "Refund Requested"}
+              </h3>
 
-        <p className="mt-1 text-sm text-black/60">
-          Reason:
-          {" "}
-          {order.returnRequest.reason}
-        </p>
-      </div>
-    </div>
-  </Card>
-)}
+              <p className="mt-1 break-words text-sm text-black/60">
+                Status:{" "}
+                <span className="font-semibold">
+                  {order.returnRequest.status}
+                </span>
+              </p>
+
+              <p className="mt-1 break-words text-sm text-black/60">
+                Reason:{" "}
+                {order.returnRequest.reason}
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* ========================= */}
       {/* ORDER TRACKING */}
       {/* ========================= */}
 
       {!isCancelled &&
         !isRefunded && (
-          <Card className="rounded-2xl border border-teal-100 bg-white p-5 shadow-sm">
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <h2 className="text-lg font-bold text-black">
+          <Card className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm sm:p-5">
+            <div className="mb-5 flex min-w-0 items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h2 className="text-base font-bold text-black sm:text-lg">
                   Order Tracking
                 </h2>
 
-                <p className="mt-1 text-sm text-black/60">
+                <p className="mt-1 text-xs text-black/60 sm:text-sm">
                   Live order progress
                 </p>
               </div>
 
-              <div className="rounded-full bg-teal-600 px-3 py-1 text-xs font-semibold text-white">
+              <div className="shrink-0 rounded-full bg-teal-600 px-2.5 py-1 text-[10px] font-semibold text-white sm:px-3 sm:text-xs">
                 {order.status}
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative overflow-hidden">
               <div className="absolute left-0 top-5 h-1 w-full rounded-full bg-gray-200" />
 
               <div
                 className="
-                  absolute left-0 top-5 h-1
+                  absolute
+                  left-0
+                  top-5
+                  h-1
                   rounded-full
                   bg-gradient-to-r
-                  from-teal-500 to-cyan-500
-                  transition-all duration-500
+                  from-teal-500
+                  to-cyan-500
+                  transition-all
+                  duration-500
                 "
                 style={{
                   width: `${
                     (currentStepIndex /
-                      (orderSteps.length -
-                        1)) *
+                      (orderSteps.length - 1)) *
                     100
                   }%`,
                 }}
               />
 
-              <div className="relative grid grid-cols-3 gap-3">
+              <div className="relative grid grid-cols-3 gap-1 sm:gap-3">
                 {orderSteps.map(
                   (
                     step,
@@ -320,37 +392,51 @@ const canRequestReturn =
                     return (
                       <div
                         key={step.key}
-                        className="flex flex-col items-center text-center"
+                        className="flex min-w-0 flex-col items-center text-center"
                       >
                         <div
                           className={`
-                          relative z-10
-                          flex h-10 w-10 items-center justify-center
-                          rounded-full border-4 bg-white
-                          transition-all duration-300
-                          ${
-                            active
-                              ? "border-teal-500 text-teal-600 shadow-md"
-                              : "border-gray-200 text-gray-400"
-                          }
-                        `}
+                            relative
+                            z-10
+                            flex
+                            h-9
+                            w-9
+                            items-center
+                            justify-center
+                            rounded-full
+                            border-4
+                            bg-white
+                            transition-all
+                            duration-300
+                            sm:h-10
+                            sm:w-10
+                            ${
+                              active
+                                ? "border-teal-500 text-teal-600 shadow-md"
+                                : "border-gray-200 text-gray-400"
+                            }
+                          `}
                         >
-                          <Icon className="h-5 w-5" />
+                          <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                         </div>
 
                         <p
                           className={`
-                          mt-2 text-xs font-semibold
-                          ${
-                            active
-                              ? "text-black"
-                              : "text-black/40"
-                          }
-                        `}
+                            mt-2
+                            max-w-full
+                            break-words
+                            text-[10px]
+                            font-semibold
+                            leading-tight
+                            sm:text-xs
+                            ${
+                              active
+                                ? "text-black"
+                                : "text-black/40"
+                            }
+                          `}
                         >
-                          {
-                            step.label
-                          }
+                          {step.label}
                         </p>
                       </div>
                     );
@@ -366,18 +452,18 @@ const canRequestReturn =
       {/* ========================= */}
 
       {isCancelled && (
-        <Card className="rounded-2xl border border-red-100 bg-red-50/40 p-5 shadow-sm">
-          <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100">
-              <XCircle className="h-6 w-6 text-red-600" />
+        <Card className="rounded-2xl border border-red-100 bg-red-50/40 p-4 shadow-sm sm:p-5">
+          <div className="flex min-w-0 items-start gap-3 sm:gap-4">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-100 sm:h-12 sm:w-12">
+              <XCircle className="h-5 w-5 text-red-600 sm:h-6 sm:w-6" />
             </div>
 
-            <div>
-              <h3 className="text-lg font-bold text-black">
+            <div className="min-w-0">
+              <h3 className="break-words text-base font-bold text-black sm:text-lg">
                 Order Cancelled
               </h3>
 
-              <p className="mt-1 text-sm text-black/60">
+              <p className="mt-1 break-words text-sm text-black/60">
                 This order has been cancelled successfully.
               </p>
             </div>
@@ -419,27 +505,24 @@ const canRequestReturn =
         />
       )}
 
-      <div className="grid gap-5 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-3 lg:gap-5">
         {/* ========================= */}
         {/* ITEMS */}
         {/* ========================= */}
 
-        <Card className="rounded-2xl border border-teal-100 bg-white p-5 shadow-sm lg:col-span-2">
+        <Card className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm sm:p-5 lg:col-span-2">
           <div className="mb-5">
-            <h3 className="text-xl font-bold text-black">
+            <h3 className="text-lg font-bold text-black sm:text-xl">
               Order Items
             </h3>
 
-            <p className="mt-1 text-sm text-black/60">
-              {
-                order?.items
-                  ?.length
-              }{" "}
+            <p className="mt-1 text-xs text-black/60 sm:text-sm">
+              {order?.items?.length}{" "}
               items in this order
             </p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {order?.items?.map(
               (item: any) => {
                 const image =
@@ -450,13 +533,19 @@ const canRequestReturn =
                   <div
                     key={item.id}
                     className="
-                      flex gap-4
+                      flex
+                      min-w-0
+                      gap-3
                       rounded-2xl
-                      border border-teal-100
+                      border
+                      border-teal-100
                       bg-teal-50/20
-                      p-4
-                      transition-all duration-300
+                      p-3
+                      transition-all
+                      duration-300
                       hover:border-teal-200
+                      sm:gap-4
+                      sm:p-4
                     "
                   >
                     {/* IMAGE */}
@@ -464,11 +553,16 @@ const canRequestReturn =
                     <div
                       className="
                         relative
-                        h-24 w-24
-                        shrink-0 overflow-hidden
+                        h-20
+                        w-20
+                        shrink-0
+                        overflow-hidden
                         rounded-xl
-                        border border-teal-100
+                        border
+                        border-teal-100
                         bg-gray-100
+                        sm:h-24
+                        sm:w-24
                       "
                     >
                       <Image
@@ -481,21 +575,19 @@ const canRequestReturn =
                         }
                         fill
                         className="object-cover"
-                        sizes="96px"
+                        sizes="(max-width: 640px) 80px, 96px"
                       />
                     </div>
 
                     {/* INFO */}
 
-                    <div className="flex flex-1 flex-col justify-between">
-                      <div>
-                        <h4 className="text-base font-bold text-black">
-                          {
-                            item.productName
-                          }
+                    <div className="flex min-w-0 flex-1 flex-col justify-between">
+                      <div className="min-w-0">
+                        <h4 className="break-words text-sm font-bold leading-snug text-black sm:text-base">
+                          {item.productName}
                         </h4>
 
-                        <p className="mt-1 text-sm text-black/60">
+                        <p className="mt-1 break-words text-xs text-black/60 sm:text-sm">
                           {
                             item
                               ?.variant
@@ -503,8 +595,8 @@ const canRequestReturn =
                           }
                         </p>
 
-                        <div className="mt-2 flex flex-wrap items-center gap-2">
-                          <span className="rounded-full bg-teal-600 px-2.5 py-1 text-[11px] font-semibold text-white">
+                        <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
+                          <span className="rounded-full bg-teal-600 px-2 py-1 text-[10px] font-semibold text-white sm:px-2.5 sm:text-[11px]">
                             Qty:{" "}
                             {
                               item
@@ -516,7 +608,7 @@ const canRequestReturn =
                           {item?.totals
                             ?.discount >
                             0 && (
-                            <span className="rounded-full bg-green-100 px-2.5 py-1 text-[11px] font-semibold text-green-700">
+                            <span className="rounded-full bg-green-100 px-2 py-1 text-[10px] font-semibold text-green-700 sm:px-2.5 sm:text-[11px]">
                               Saved ₹
                               {
                                 item
@@ -528,8 +620,8 @@ const canRequestReturn =
                         </div>
                       </div>
 
-                      <div className="mt-4">
-                        <p className="text-xl font-black text-black">
+                      <div className="mt-3 sm:mt-4">
+                        <p className="break-all text-lg font-black text-black sm:text-xl">
                           ₹
                           {
                             item
@@ -550,27 +642,27 @@ const canRequestReturn =
         {/* RIGHT SIDE */}
         {/* ========================= */}
 
-        <div className="space-y-5">
+        <div className="space-y-4 sm:space-y-5">
           {/* SUMMARY */}
 
-          <Card className="rounded-2xl border border-teal-100 bg-white p-5 shadow-sm">
+          <Card className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm sm:p-5">
             <div className="mb-5">
-              <h3 className="text-lg font-bold text-black">
+              <h3 className="text-base font-bold text-black sm:text-lg">
                 Order Summary
               </h3>
 
-              <p className="mt-1 text-sm text-black/60">
+              <p className="mt-1 text-xs text-black/60 sm:text-sm">
                 Payment details
               </p>
             </div>
 
             <div className="space-y-3 text-sm">
-              <div className="flex items-center justify-between text-black/70">
+              <div className="flex min-w-0 items-center justify-between gap-3 text-black/70">
                 <span>
                   Subtotal
                 </span>
 
-                <span className="font-semibold">
+                <span className="shrink-0 font-semibold">
                   ₹
                   {
                     order?.totals
@@ -579,12 +671,12 @@ const canRequestReturn =
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-black/70">
+              <div className="flex min-w-0 items-center justify-between gap-3 text-black/70">
                 <span>
                   Shipping
                 </span>
 
-                <span className="font-semibold">
+                <span className="shrink-0 font-semibold">
                   ₹
                   {
                     order?.totals
@@ -593,10 +685,10 @@ const canRequestReturn =
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-black/70">
+              <div className="flex min-w-0 items-center justify-between gap-3 text-black/70">
                 <span>Tax</span>
 
-                <span className="font-semibold">
+                <span className="shrink-0 font-semibold">
                   ₹
                   {
                     order?.totals
@@ -607,12 +699,12 @@ const canRequestReturn =
 
               <Separator />
 
-              <div className="flex items-center justify-between rounded-xl bg-teal-50 p-3">
+              <div className="flex min-w-0 items-center justify-between gap-3 rounded-xl bg-teal-50 p-3">
                 <span className="font-bold text-black">
                   Grand Total
                 </span>
 
-                <span className="text-xl font-black text-teal-600">
+                <span className="shrink-0 text-lg font-black text-teal-600 sm:text-xl">
                   ₹
                   {
                     order?.totals
@@ -625,19 +717,19 @@ const canRequestReturn =
 
           {/* ADDRESS */}
 
-          <Card className="rounded-2xl border border-teal-100 bg-white p-5 shadow-sm">
+          <Card className="rounded-2xl border border-teal-100 bg-white p-4 shadow-sm sm:p-5">
             <div className="mb-4">
-              <h3 className="text-lg font-bold text-black">
+              <h3 className="text-base font-bold text-black sm:text-lg">
                 Shipping Address
               </h3>
 
-              <p className="mt-1 text-sm text-black/60">
+              <p className="mt-1 text-xs text-black/60 sm:text-sm">
                 Delivery details
               </p>
             </div>
 
-            <div className="rounded-xl bg-gray-50 p-4 text-sm text-black/70">
-              <p className="font-bold text-black">
+            <div className="rounded-xl bg-gray-50 p-3 text-xs text-black/70 sm:p-4 sm:text-sm">
+              <p className="break-words font-bold text-black">
                 {
                   order
                     ?.shippingAddress
@@ -646,7 +738,7 @@ const canRequestReturn =
               </p>
 
               <div className="mt-2 space-y-1">
-                <p>
+                <p className="break-words">
                   {
                     order
                       ?.shippingAddress
@@ -654,7 +746,7 @@ const canRequestReturn =
                   }
                 </p>
 
-                <p>
+                <p className="break-words">
                   {
                     order
                       ?.shippingAddress
@@ -674,7 +766,7 @@ const canRequestReturn =
                   }
                 </p>
 
-                <p>
+                <p className="break-words">
                   {
                     order
                       ?.shippingAddress
@@ -682,7 +774,7 @@ const canRequestReturn =
                   }
                 </p>
 
-                <p className="pt-2 font-medium text-black">
+                <p className="break-words pt-2 font-medium text-black">
                   Phone:{" "}
                   {
                     order
