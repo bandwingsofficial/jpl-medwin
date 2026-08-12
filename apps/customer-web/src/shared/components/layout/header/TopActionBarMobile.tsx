@@ -7,7 +7,7 @@ import { useLocation } from "@/features/location/context/LocationProvider";
 import { useLocationModal } from "@/features/location/hooks/useLocationModal";
 import { LocationModal } from "@/features/location/components/LocationModal";
 
-import { LogOut, MapPin } from "lucide-react";
+import { LogOut, MapPin, X } from "lucide-react";
 
 import { GlobalSearch } from "@/features/global-search/components/global-search";
 import { useRouter } from "next/navigation";
@@ -433,131 +433,6 @@ export function TopActionBarMobile({
                   Account
                 </span>
               </button>
-
-              {/* BOTTOM ACCOUNT POPUP */}
-              {mounted && bottomOpen && (
-                <div
-                  className="
-                    absolute
-                    bottom-[70px]
-                    left-1/2
-                    z-[10000]
-                    w-[250px]
-                    -translate-x-1/2
-                    overflow-hidden
-                    rounded-2xl
-                    border
-                    border-gray-200
-                    bg-white
-                    shadow-[0_10px_40px_rgba(0,0,0,0.22)]
-                  "
-                >
-                  {/* HEADER */}
-                  <div className="border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white px-4 py-3">
-                    <p className="text-sm font-bold text-gray-900">
-                      My Account
-                    </p>
-
-                    <p className="mt-0.5 text-xs font-medium text-gray-400">
-                      Manage your account
-                    </p>
-                  </div>
-
-                  {/* ACCOUNT NAVIGATION */}
-                  <div className="max-h-[55vh] overflow-y-auto p-2">
-                    {ACCOUNT_SIDEBAR_ITEMS.map((item) => {
-                      const Icon = item.icon;
-
-                      return (
-                        <button
-                          key={item.href}
-                          type="button"
-                          onClick={() => {
-                            setBottomOpen(false);
-                            router.push(item.href);
-                          }}
-                          className="
-                            group
-                            flex
-                            w-full
-                            items-center
-                            gap-3
-                            rounded-xl
-                            px-3
-                            py-2.5
-                            text-left
-                            text-sm
-                            font-medium
-                            text-gray-600
-                            transition-all
-                            duration-200
-                            hover:bg-teal-50
-                            hover:text-teal-600
-                            active:scale-[0.98]
-                          "
-                        >
-                          <div
-                            className="
-                              flex
-                              h-8
-                              w-8
-                              shrink-0
-                              items-center
-                              justify-center
-                              rounded-lg
-                              border
-                              border-gray-100
-                              bg-gray-50
-                              text-gray-400
-                              transition-all
-                              duration-200
-                              group-hover:border-teal-100
-                              group-hover:bg-teal-100
-                              group-hover:text-teal-600
-                            "
-                          >
-                            <Icon className="h-4 w-4" />
-                          </div>
-
-                          <span className="flex-1 text-[13px]">
-                            {item.label}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* LOGOUT */}
-                  <div className="border-t border-gray-100 p-2">
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="
-                        flex
-                        w-full
-                        items-center
-                        gap-3
-                        rounded-xl
-                        px-3
-                        py-2.5
-                        text-sm
-                        font-medium
-                        text-red-500
-                        transition-all
-                        duration-200
-                        hover:bg-red-50
-                        active:scale-[0.98]
-                      "
-                    >
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-50">
-                        <LogOut className="h-4 w-4" />
-                      </div>
-
-                      <span>Logout</span>
-                    </button>
-                  </div>
-                </div>
-              )}
             </div>
           )}
 
@@ -654,6 +529,214 @@ export function TopActionBarMobile({
           )}
         </div>
       </div>
+
+      {/* ====================================================== */}
+      {/* FULL-SCREEN ACCOUNT BOTTOM SHEET - MOBILE */}
+      {/* ====================================================== */}
+      {mounted && bottomOpen && isAuthenticated && (
+        <div
+          className="
+            fixed
+            inset-0
+            z-[10000]
+            flex
+            items-end
+            justify-center
+            bg-black/30
+            backdrop-blur-[1px]
+            animate-in
+            fade-in
+            duration-200
+          "
+          onClick={() => setBottomOpen(false)}
+        >
+          <div
+            className="
+              relative
+              flex
+              h-[100dvh]
+              w-full
+              flex-col
+              overflow-hidden
+              rounded-t-[28px]
+              bg-white
+              shadow-[0_-24px_60px_-24px_rgba(14,107,92,0.25)]
+              animate-in
+              slide-in-from-bottom-full
+              duration-300
+            "
+            onClick={(event) => event.stopPropagation()}
+          >
+            {/* TOP HEADER */}
+            <div
+              className="
+                flex
+                shrink-0
+                items-center
+                justify-between
+                border-b
+                border-gray-100
+                bg-white
+                px-5
+                py-4
+                shadow-sm
+              "
+            >
+              <div>
+                <p className="text-lg font-bold text-gray-900">
+                  My Account
+                </p>
+
+                <p className="mt-0.5 text-xs font-medium text-gray-400">
+                  Manage your account
+                </p>
+              </div>
+
+              {/* CLOSE BUTTON */}
+              <button
+                type="button"
+                onClick={() => setBottomOpen(false)}
+                className="
+                  flex
+                  h-10
+                  w-10
+                  items-center
+                  justify-center
+                  rounded-full
+                  border
+                  border-gray-200
+                  bg-white
+                  text-gray-600
+                  shadow-sm
+                  transition
+                  hover:bg-gray-50
+                  active:scale-95
+                "
+                aria-label="Close account menu"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* ACCOUNT NAVIGATION */}
+            <div className="flex-1 overflow-y-auto px-4 py-5">
+              <div className="space-y-2">
+                {ACCOUNT_SIDEBAR_ITEMS.map((item) => {
+                  const Icon = item.icon;
+
+                  return (
+                    <button
+                      key={item.href}
+                      type="button"
+                      onClick={() => {
+                        setBottomOpen(false);
+                        router.push(item.href);
+                      }}
+                      className="
+                        group
+                        flex
+                        w-full
+                        items-center
+                        gap-4
+                        rounded-2xl
+                        border
+                        border-gray-100
+                        bg-white
+                        px-4
+                        py-4
+                        text-left
+                        text-sm
+                        font-medium
+                        text-gray-700
+                        shadow-sm
+                        transition-all
+                        duration-200
+                        hover:border-teal-100
+                        hover:bg-teal-50
+                        hover:text-teal-600
+                        active:scale-[0.98]
+                      "
+                    >
+                      <div
+                        className="
+                          flex
+                          h-11
+                          w-11
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-xl
+                          border
+                          border-gray-100
+                          bg-gray-50
+                          text-gray-500
+                          transition-all
+                          duration-200
+                          group-hover:border-teal-100
+                          group-hover:bg-teal-100
+                          group-hover:text-teal-600
+                        "
+                      >
+                        <Icon className="h-5 w-5" />
+                      </div>
+
+                      <span className="flex-1 text-[15px]">
+                        {item.label}
+                      </span>
+
+                      <span className="text-gray-300 transition-colors group-hover:text-teal-500">
+                        →
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* LOGOUT */}
+            <div
+              className="
+                shrink-0
+                border-t
+                border-gray-100
+                bg-white
+                p-4
+                pb-[calc(1rem+env(safe-area-inset-bottom))]
+              "
+            >
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="
+                  flex
+                  w-full
+                  items-center
+                  gap-4
+                  rounded-2xl
+                  border
+                  border-red-100
+                  bg-red-50
+                  px-4
+                  py-4
+                  text-sm
+                  font-medium
+                  text-red-500
+                  transition-all
+                  duration-200
+                  hover:bg-red-100
+                  active:scale-[0.98]
+                "
+              >
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm">
+                  <LogOut className="h-5 w-5" />
+                </div>
+
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* LOCATION MODAL */}
       <LocationModal
