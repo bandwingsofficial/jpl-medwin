@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -54,6 +54,86 @@ export function HomeHero() {
 
   const [currentIndex, setCurrentIndex] =
     useState(0);
+
+  /*
+   |--------------------------------------------------------------------------
+   | MOBILE SWIPE
+   |--------------------------------------------------------------------------
+   */
+
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+  const isSwiping = useRef(false);
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+    const touch = event.touches[0];
+
+    if (!touch) return;
+
+    touchStartX.current = touch.clientX;
+    touchStartY.current = touch.clientY;
+    isSwiping.current = false;
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+    if (
+      touchStartX.current === null ||
+      touchStartY.current === null ||
+      heroImages.length <= 1
+    ) {
+      touchStartX.current = null;
+      touchStartY.current = null;
+      return;
+    }
+
+    const touch = event.changedTouches[0];
+
+    if (!touch) return;
+
+    const deltaX = touch.clientX - touchStartX.current;
+    const deltaY = touch.clientY - touchStartY.current;
+
+    touchStartX.current = null;
+    touchStartY.current = null;
+
+    /*
+     * Only treat the gesture as a swipe when the horizontal
+     * movement is clearly greater than the vertical movement.
+     * This keeps normal page scrolling working on mobile.
+     */
+    if (
+      Math.abs(deltaX) < 50 ||
+      Math.abs(deltaX) <= Math.abs(deltaY)
+    ) {
+      return;
+    }
+
+    isSwiping.current = true;
+
+    if (deltaX < 0) {
+      setCurrentIndex(
+        (prevIndex) =>
+          prevIndex === heroImages.length - 1
+            ? 0
+            : prevIndex + 1
+      );
+    } else {
+      setCurrentIndex(
+        (prevIndex) =>
+          prevIndex === 0
+            ? heroImages.length - 1
+            : prevIndex - 1
+      );
+    }
+
+    /*
+     * Allow a normal tap again after the browser finishes
+     * the touch/click sequence.
+     */
+    window.setTimeout(() => {
+      isSwiping.current = false;
+    }, 0);
+  };
 
   /*
    |--------------------------------------------------------------------------
@@ -262,6 +342,10 @@ if (heroImages.length === 0) {
    */
 
   const handleClick = () => {
+    if (isSwiping.current) {
+      return;
+    }
+
     const rawBanner = currentImage as Record<string, any>;
 
     if (rawBanner.productId) {
@@ -316,7 +400,11 @@ if (heroImages.length === 0) {
     md:rounded-[24px]
   "
 >
-      <div className="relative w-full">
+      <div
+        className="relative w-full touch-pan-y select-none md:touch-auto md:select-auto"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         {hasProductId ? (
           <button
             type="button"

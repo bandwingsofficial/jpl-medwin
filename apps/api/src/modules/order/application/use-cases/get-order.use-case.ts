@@ -5,7 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TOKENS } from '@/common/constants/tokens';
 
 import { OrderRepository } from '../../domain/repositories/order.repository';
-
+import { ProductS3ImageResolverService } from '@/modules/product/application/services/product-s3-image-resolver.service';
 import { OrderItemRepository } from '../../domain/repositories/order-item.repository';
 
 import { OrderNotFoundException } from '../../domain/exceptions/order-not-found.exception';
@@ -33,7 +33,7 @@ export class GetOrderUseCase {
     private readonly returnRepo: ReturnRepository,
 
     private readonly ownershipService: OrderOwnershipService,
-
+    private readonly productS3ImageResolver: ProductS3ImageResolverService,
     private readonly summaryService: OrderSummaryService,
   ) {}
 
@@ -93,6 +93,32 @@ export class GetOrderUseCase {
     // =======================
 
     const items = await this.orderItemRepo.findByOrderId(order.id);
+    const itemsWithImages = await Promise.all(
+  items.map(async (item) => {
+    const productImages =
+      await this.productS3ImageResolver.resolveProductImages(
+        item.productName,
+      );
+
+    const variantImages =
+      item.variantName
+        ? await this.productS3ImageResolver.resolveVariantImages(
+            item.productName,
+            item.variantName,
+            productImages,
+          )
+        : null;
+
+    return {
+      item,
+      imageUrl:
+        variantImages?.mainImage ||
+        productImages.mainImage ||
+        item.imageUrl ||
+        null,
+    };
+  }),
+);
 
     // =======================
     // 💰 SUMMARY
@@ -198,7 +224,7 @@ export class GetOrderUseCase {
         adminNote: order.adminNote,
       },
 
-      items: items.map((item) => {
+      items: itemsWithImages.map(({ item, imageUrl }) => {
         const mrp = item.mrp ?? item.price;
 
         const mrpTotal = item.totalMrp ?? mrp * item.quantity;
@@ -232,8 +258,8 @@ export class GetOrderUseCase {
             },
 
             images: {
-              main: item.imageUrl,
-            },
+  main: imageUrl,
+},
           },
 
           totals: {

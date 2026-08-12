@@ -5,7 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TOKENS } from '@/common/constants/tokens';
 
 import { OrderRepository } from '../../domain/repositories/order.repository';
-
+import { ProductS3ImageResolverService } from '@/modules/product/application/services/product-s3-image-resolver.service';
 import { OrderItemRepository } from '../../domain/repositories/order-item.repository';
 
 import { InvalidOrderOperationException } from '../../domain/exceptions/invalid-order-operation.exception';
@@ -25,6 +25,7 @@ export class GetMyOrdersUseCase {
 
     @Inject(TOKENS.RETURN_REPO)
     private readonly returnRepo: ReturnRepository,
+    private readonly productS3ImageResolver: ProductS3ImageResolverService,
   ) {}
 
   async execute(input: { userId: string }) {
@@ -52,9 +53,36 @@ export class GetMyOrdersUseCase {
 
     const data = await Promise.all(
       orders.map(async (order) => {
-        const items = await this.orderItemRepo.findByOrderId(order.id);
+       const items = await this.orderItemRepo.findByOrderId(order.id);
 
-        const latestReturn = await this.returnRepo.findLatestReturnByOrderId(order.id);
+const itemsWithImages = await Promise.all(
+  items.map(async (item) => {
+    const productImages =
+      await this.productS3ImageResolver.resolveProductImages(
+        item.productName,
+      );
+
+    const variantImages = item.variantName
+      ? await this.productS3ImageResolver.resolveVariantImages(
+          item.productName,
+          item.variantName,
+          productImages,
+        )
+      : null;
+
+    return {
+      item,
+      imageUrl:
+        variantImages?.mainImage ||
+        productImages.mainImage ||
+        item.imageUrl ||
+        null,
+    };
+  }),
+);
+
+const latestReturn =
+  await this.returnRepo.findLatestReturnByOrderId(order.id);
 
         const replacementOrder = latestReturn?.replacementOrderId
           ? await this.orderRepo.findById(latestReturn.replacementOrderId)
@@ -127,14 +155,16 @@ export class GetMyOrdersUseCase {
             deliveredAt: order.deliveredAt,
           },
 
-          previewItems: items.slice(0, 3).map((item) => ({
+          previewItems: itemsWithImages
+  .slice(0, 3)
+  .map(({ item, imageUrl }) => ({
             id: item.id,
 
             productName: item.productName,
 
             variantName: item.variantName,
 
-            imageUrl: item.imageUrl,
+            imageUrl,
 
             quantity: item.quantity,
 

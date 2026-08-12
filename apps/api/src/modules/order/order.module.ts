@@ -5,7 +5,7 @@ import { Module, forwardRef } from '@nestjs/common';
 // =======================
 // INFRA
 // =======================
-
+import { ProductModule } from '../product/product.module';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
 
 // =======================
@@ -93,8 +93,15 @@ import { SavedAddressModule } from '../saved-address/saved-address.module';
 import { CouponModule } from '../coupon/coupon.module';
 
 @Module({
-  imports: [CheckoutSessionModule, CoinsModule, forwardRef(() => ReturnModule), SavedAddressModule,forwardRef(() => CouponModule)],
-  controllers: [OrderController, AdminOrderController],
+  imports: [
+    CheckoutSessionModule,
+    CoinsModule,
+    forwardRef(() => ReturnModule),
+    SavedAddressModule,
+    forwardRef(() => CouponModule),
+    ProductModule,
+  ],
+ controllers: [OrderController, AdminOrderController],
 
   providers: [
     PrismaService,

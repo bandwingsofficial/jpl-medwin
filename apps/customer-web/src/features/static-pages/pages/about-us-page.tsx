@@ -812,7 +812,7 @@ export function AboutUsPage() {
       ══════════════════════════════════════ */}
       <section ref={productRef} className="reveal-section product-banner">
         <img
-          src="https://images.unsplash.com/photo-1516549655169-df83a0774514?w=1400&q=85"
+          src="/Logo/about1.png"
           alt="Medical setting"
         />
         <div className="product-banner-overlay" />
