@@ -223,25 +223,24 @@ export function TopActionBarMobile({
       {/* FLOATING BOTTOM NAVIGATION - MOBILE */}
       {/* ====================================================== */}
       <div
-        className="
-          fixed
-          inset-x-0
-          bottom-0
-          z-[9999]
-          sm:hidden
-          overflow-visible
-          rounded-t-[22px]
-          border
-          border-white/20
-          bg-gradient-to-r
-          from-teal-600
-          via-teal-500
-          to-emerald-600
-          shadow-[0_-8px_30px_rgba(0,0,0,0.18)]
-          backdrop-blur-xl
-          pb-[env(safe-area-inset-bottom)]
-        "
-      >
+  className="
+    fixed
+    inset-x-0
+    bottom-[env(safe-area-inset-bottom)]
+    z-[9999]
+    sm:hidden
+    overflow-visible
+    rounded-t-[22px]
+    border
+    border-white/20
+    bg-gradient-to-r
+    from-teal-600
+    via-teal-500
+    to-emerald-600
+    shadow-[0_-8px_30px_rgba(0,0,0,0.18)]
+    backdrop-blur-xl
+  "
+>
         <div
           className="
             flex
