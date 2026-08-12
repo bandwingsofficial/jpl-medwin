@@ -7,10 +7,7 @@ import { useLocation } from "@/features/location/context/LocationProvider";
 import { useLocationModal } from "@/features/location/hooks/useLocationModal";
 import { LocationModal } from "@/features/location/components/LocationModal";
 
-import {
-  LogOut,
-  MapPin,
-} from "lucide-react";
+import { LogOut, MapPin } from "lucide-react";
 
 import { GlobalSearch } from "@/features/global-search/components/global-search";
 import { useRouter } from "next/navigation";
@@ -45,8 +42,9 @@ export function TopActionBarMobile({
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  // Account dropdown
-  const [open, setOpen] = useState(false);
+  // Separate account dropdown states
+  const [topOpen, setTopOpen] = useState(false);
+  const [bottomOpen, setBottomOpen] = useState(false);
 
   // Shared location state
   const { location, loading, setLocation } = useLocation();
@@ -62,7 +60,8 @@ export function TopActionBarMobile({
   // AUTH
   const { isAuthenticated, isLoading } = useAuth();
 
-  const handleProfileClick = () => {
+  // TOP PROFILE CLICK
+  const handleTopProfileClick = () => {
     if (isLoading) {
       return;
     }
@@ -72,7 +71,23 @@ export function TopActionBarMobile({
       return;
     }
 
-    setOpen((prev) => !prev);
+    setTopOpen((prev) => !prev);
+    setBottomOpen(false);
+  };
+
+  // BOTTOM ACCOUNT CLICK
+  const handleBottomProfileClick = () => {
+    if (isLoading) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      setLoginOpen(true);
+      return;
+    }
+
+    setBottomOpen((prev) => !prev);
+    setTopOpen(false);
   };
 
   const handleActionClick = (href: string) => {
@@ -105,7 +120,10 @@ export function TopActionBarMobile({
     try {
       await logout();
       queryClient.clear();
-      setOpen(false);
+
+      setTopOpen(false);
+      setBottomOpen(false);
+
       router.replace("/");
       router.refresh();
     } catch (error) {
@@ -150,11 +168,11 @@ export function TopActionBarMobile({
             </span>
           </button>
 
-          {/* TOP ACCOUNT - KEEP AS IT IS */}
+          {/* TOP ACCOUNT */}
           <div className="relative">
             <button
               type="button"
-              onClick={handleProfileClick}
+              onClick={handleTopProfileClick}
               className="group flex h-9 w-9 items-center justify-center overflow-hidden rounded-full transition-all duration-300"
             >
               <Image
@@ -166,15 +184,14 @@ export function TopActionBarMobile({
               />
             </button>
 
-            {/* TOP PROFILE POPUP
-                ONLY MY PROFILE + LOGOUT */}
-            {mounted && open && isAuthenticated && (
+            {/* TOP PROFILE POPUP */}
+            {mounted && topOpen && isAuthenticated && (
               <div className="absolute right-0 z-50 mt-3 w-44 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl">
                 {/* MY PROFILE */}
                 <button
                   type="button"
                   onClick={() => {
-                    setOpen(false);
+                    setTopOpen(false);
                     router.push("/account");
                   }}
                   className="block w-full px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-50"
@@ -266,7 +283,7 @@ export function TopActionBarMobile({
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001 1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
               />
             </svg>
 
@@ -369,7 +386,7 @@ export function TopActionBarMobile({
             <div className="relative flex min-w-[52px] items-center justify-center">
               <button
                 type="button"
-                onClick={handleProfileClick}
+                onClick={handleBottomProfileClick}
                 className="
                   relative
                   flex
@@ -418,7 +435,7 @@ export function TopActionBarMobile({
               </button>
 
               {/* BOTTOM ACCOUNT POPUP */}
-              {mounted && open && (
+              {mounted && bottomOpen && (
                 <div
                   className="
                     absolute
@@ -456,7 +473,7 @@ export function TopActionBarMobile({
                           key={item.href}
                           type="button"
                           onClick={() => {
-                            setOpen(false);
+                            setBottomOpen(false);
                             router.push(item.href);
                           }}
                           className="
