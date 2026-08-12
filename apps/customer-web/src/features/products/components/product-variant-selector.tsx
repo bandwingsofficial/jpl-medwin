@@ -5,7 +5,10 @@ import {
   Loader2,
   Minus,
   Plus,
+  ReceiptText,
+  RotateCcw,
   ShoppingCart,
+  Truck,
 } from "lucide-react";
 
 import {
@@ -641,16 +644,27 @@ const topSafeArea = isMobile ? 75 : 140;
                   {/* DELIVERY / RETURN INFO */}
 
 <div className="mt-1 whitespace-nowrap text-[9px] font-medium sm:text-[11px]">
-  <span className="hidden sm:inline">
-    <span className="text-amber-400">●</span>{" "}
-    <span className="text-teal-600">10 days return available</span>
-    <span className="text-amber-400"> ●</span>{" "}
-    <span className="text-teal-600">Including all taxes</span>
-    <span className="text-amber-400"> ●</span>{" "}
-    <span className="text-teal-600">
-      Delivery within{" "}
-      <span className="font-semibold text-teal-600">
-        1-3 Days
+  <span className="hidden items-center gap-3 sm:flex">
+    {/* RETURN */}
+    <span className="inline-flex items-center gap-1 text-teal-600">
+      <RotateCcw className="h-3 w-3 text-amber-400" strokeWidth={2.2} />
+      <span>10 days return available</span>
+    </span>
+
+    {/* TAXES */}
+    <span className="inline-flex items-center gap-1 text-teal-600">
+      <ReceiptText className="h-3 w-3 text-amber-400" strokeWidth={2.2} />
+      <span>Including all taxes</span>
+    </span>
+
+    {/* DELIVERY */}
+    <span className="inline-flex items-center gap-1 text-teal-600">
+      <Truck className="h-3 w-3 text-amber-400" strokeWidth={2.2} />
+      <span>
+        Delivery within{" "}
+        <span className="font-semibold text-teal-600">
+          1-3 Days
+        </span>
       </span>
     </span>
   </span>
@@ -678,25 +692,36 @@ const topSafeArea = isMobile ? 75 : 140;
               >
                 {/* MOBILE DELIVERY / RETURN INFO */}
 <div className="min-w-0 flex-1 sm:hidden">
-<div className="flex flex-col text-[8px] font-medium leading-3">
+  <div className="flex flex-col gap-1 text-[9px] font-medium leading-3">
     {/* FIRST LINE */}
-    <div className="flex min-w-0 items-center gap-1 whitespace-nowrap">
-      <span className="text-amber-400">●</span>
-
-      <span className="text-teal-600">
-        10 days return
+    <div className="flex min-w-0 items-center gap-1.5">
+      <span className="inline-flex shrink-0 items-center gap-1 text-teal-600">
+        <RotateCcw
+          className="h-3 w-3 shrink-0 text-amber-400"
+          strokeWidth={2.2}
+        />
+        <span className="truncate">
+          10 days return
+        </span>
       </span>
 
-      <span className="text-amber-400">●</span>
+      <span className="shrink-0 text-amber-400">
+        •
+      </span>
 
-      <span className="text-teal-600">
-        Delivered within{" "}
-        <span className="font-semibold text-teal-600">
-          1-3 Days
+      <span className="inline-flex min-w-0 items-center gap-1 text-teal-600">
+        <Truck
+          className="h-3 w-3 shrink-0 text-amber-400"
+          strokeWidth={2.2}
+        />
+        <span className="truncate">
+          Delivered within{" "}
+          <span className="font-semibold">
+            1-3 Days
+          </span>
         </span>
       </span>
     </div>
-
   </div>
 </div>
 

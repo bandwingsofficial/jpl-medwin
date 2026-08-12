@@ -81,6 +81,7 @@ export interface ProductDescriptions {
 }
 
 export interface ProductCategory {
+  slug: string | undefined;
   id?: string;
 
   main?: string;

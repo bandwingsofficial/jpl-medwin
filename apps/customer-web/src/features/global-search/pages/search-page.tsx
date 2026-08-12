@@ -50,46 +50,45 @@ export function SearchPage() {
    */
 
   const {
-    data,
-    isLoading,
-    isError,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useProducts({
-    search: searchQuery,
+  data,
+  isLoading,
+  isError,
+  error,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+} = useProducts({
+  search: searchQuery,
 
-    categoryId:
-      filters.categoryId,
+  categorySlug:
+    filters.categorySlug,
 
-    subCategoryId:
-      filters.subCategoryId,
+  subCategorySlug:
+    filters.subCategorySlug,
 
-    miniCategoryId:
-      filters.miniCategoryId,
+  miniCategorySlug:
+    filters.miniCategorySlug,
 
-    brandId:
-      filters.brandId,
+  brandId:
+    filters.brandId,
 
-    minPrice:
-      filters.minPrice,
+  minPrice:
+    filters.minPrice,
 
-    maxPrice:
-      filters.maxPrice,
+  maxPrice:
+    filters.maxPrice,
 
-    inStock:
-      filters.inStock,
+  inStock:
+    filters.inStock,
 
-    type:
-      filters.type,
+  type:
+    filters.type,
 
-    sortBy:
-      filters.sortBy,
+  sortBy:
+    filters.sortBy,
 
-    limit: 20,
-  });
-
+  limit: 20,
+});
   /*
    * ================================================================
    * CLIENT

@@ -379,9 +379,9 @@ const selectedVariant = useMemo<ProductVariant | null>(() => {
         {/* RELATED PRODUCTS */}
 
         <RelatedProducts
-          currentProductId={product.id}
-          categoryId={product.category?.id}
-        />
+  currentProductId={product.id}
+  categorySlug={product.category?.slug}
+/>
       </div>
 
     </div>

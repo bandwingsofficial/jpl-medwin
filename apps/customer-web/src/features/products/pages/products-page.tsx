@@ -44,16 +44,16 @@ export function ProductsPage({
     hasNextPage,
     isFetchingNextPage,
   } = useProducts({
-    categoryId:
-      filters.categoryId ??
+    categorySlug:
+      filters.categorySlug ??
       categoryId,
 
-    subCategoryId:
-      filters.subCategoryId ??
+    subCategorySlug:
+      filters.subCategorySlug ??
       subCategoryId,
 
-    miniCategoryId:
-      filters.miniCategoryId ??
+    miniCategorySlug:
+      filters.miniCategorySlug ??
       miniCategoryId,
 
     brandId:
