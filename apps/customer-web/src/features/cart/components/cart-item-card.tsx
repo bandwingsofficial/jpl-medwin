@@ -4,32 +4,64 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Trash2 } from "lucide-react";
+
 import { useAuth } from "@/features/auth/hooks/use-auth";
+
 import { CartItem } from "@/features/cart/types/cart.type";
 
 import { QuantitySelector } from "@/features/cart/components/quantity-selector";
 
 import { useUpdateCartItem } from "@/features/cart/hooks/use-update-cart-item";
+
 import { useRemoveCartItem } from "@/features/cart/hooks/use-remove-cart-item";
 
 interface CartItemCardProps {
   item: CartItem;
 }
 
-export function CartItemCard({ item }: CartItemCardProps) {
+export function CartItemCard({
+  item,
+}: CartItemCardProps) {
   /*
    |--------------------------------------------------------------------------
    | HOOKS
    |--------------------------------------------------------------------------
    */
 
-  const { mutate: updateQuantity, isPending: isUpdatingQuantity } =
-    useUpdateCartItem();
+  const {
+    mutate: updateQuantity,
+    isPending: isUpdatingQuantity,
+  } = useUpdateCartItem();
 
-  const { mutate: removeItem, isPending: isRemovingItem } =
-    useRemoveCartItem();
+  const {
+    mutate: removeItem,
+    isPending: isRemovingItem,
+  } = useRemoveCartItem();
 
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } =
+    useAuth();
+
+  /*
+   |--------------------------------------------------------------------------
+   | SAFE PRICING
+   |--------------------------------------------------------------------------
+   |
+   | Backend can return null pricing values.
+   | Always normalize them before calling
+   | toLocaleString().
+   |
+   */
+
+  const sellingPrice =
+    item.variant.pricing.sellingPrice ??
+    0;
+
+  const mrp =
+    item.variant.pricing.mrp ??
+    sellingPrice;
+
+  const savings =
+    Math.max(mrp - sellingPrice, 0);
 
   /*
    |--------------------------------------------------------------------------
@@ -37,20 +69,48 @@ export function CartItemCard({ item }: CartItemCardProps) {
    |--------------------------------------------------------------------------
    */
 
-  const handleQuantityChange = (quantity: number) => {
-  updateQuantity({
-    productId: item.productId,
-    variantId: item.variantId,
-    quantity,
-  });
-};
+  const handleQuantityChange = (
+    quantity: number,
+  ) => {
+    updateQuantity({
+      /*
+       * Real backend cart item ID.
+       *
+       * Required for authenticated users.
+       */
+      cartItemId: isAuthenticated
+        ? item.id
+        : undefined,
+
+      productId:
+        item.productId,
+
+      variantId:
+        item.variantId,
+
+      quantity,
+    });
+  };
 
   const handleRemoveItem = () => {
-  removeItem({
-    productId: item.productId,
-    variantId: item.variantId,
-  });
-};
+    removeItem({
+      /*
+       * Real backend cart item ID.
+       *
+       * Required for authenticated users.
+       */
+      cartItemId: isAuthenticated
+        ? item.id
+        : undefined,
+
+      productId:
+        item.productId,
+
+      variantId:
+        item.variantId,
+    });
+  };
+
   return (
     <div
       className="
@@ -87,17 +147,18 @@ export function CartItemCard({ item }: CartItemCardProps) {
           "
         >
           <Image
-  src={
-    item.variant.images?.main ||
-    "/Logo/jpl_logo.png"
-  }
-  alt={item.productName}
-  fill
-  className="object-contain p-1.5 sm:p-2"
-  onError={(event) => {
-    event.currentTarget.src = "/Logo/jpl_logo.png";
-  }}
-/>
+            src={
+              item.variant.images?.main ||
+              "/Logo/jpl_logo.png"
+            }
+            alt={item.productName}
+            fill
+            className="object-contain p-1.5 sm:p-2"
+            onError={(event) => {
+              event.currentTarget.src =
+                "/Logo/jpl_logo.png";
+            }}
+          />
         </Link>
 
         {/* ====================================================== */}
@@ -106,9 +167,11 @@ export function CartItemCard({ item }: CartItemCardProps) {
 
         <div className="flex min-w-0 flex-1 flex-col justify-between">
           {/* TOP */}
+
           <div className="flex items-start justify-between gap-2 sm:gap-4">
             <div className="min-w-0">
               {/* BRAND */}
+
               <p
                 className="
                   mb-0.5
@@ -125,7 +188,10 @@ export function CartItemCard({ item }: CartItemCardProps) {
               </p>
 
               {/* TITLE */}
-              <Link href={`/products/${item.productSlug}`}>
+
+              <Link
+                href={`/products/${item.productSlug}`}
+              >
                 <h3
                   className="
                     line-clamp-2
@@ -139,16 +205,23 @@ export function CartItemCard({ item }: CartItemCardProps) {
                     sm:leading-6
                   "
                 >
-                  {item.productName}-{item.variant.name}
+                  {item.productName}
+                  -
+                  {item.variant.name}
                 </h3>
               </Link>
             </div>
 
             {/* REMOVE */}
+
             <button
               type="button"
-              onClick={handleRemoveItem}
-              disabled={isRemovingItem}
+              onClick={
+                handleRemoveItem
+              }
+              disabled={
+                isRemovingItem
+              }
               className="
                 flex
                 h-8
@@ -163,6 +236,8 @@ export function CartItemCard({ item }: CartItemCardProps) {
                 transition
                 hover:bg-red-50
                 hover:text-red-500
+                disabled:cursor-not-allowed
+                disabled:opacity-50
                 sm:h-10
                 sm:w-10
                 sm:rounded-xl
@@ -173,6 +248,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
           </div>
 
           {/* BOTTOM */}
+
           <div
             className="
               mt-3
@@ -187,6 +263,7 @@ export function CartItemCard({ item }: CartItemCardProps) {
             "
           >
             {/* PRICE */}
+
             <div>
               <div className="flex items-baseline gap-1.5 sm:items-center sm:gap-2">
                 <span
@@ -197,7 +274,10 @@ export function CartItemCard({ item }: CartItemCardProps) {
                     sm:text-xl
                   "
                 >
-                  ₹{item.variant.pricing.sellingPrice.toLocaleString()}
+                  ₹
+                  {sellingPrice.toLocaleString(
+                    "en-IN",
+                  )}
                 </span>
 
                 <span
@@ -208,7 +288,10 @@ export function CartItemCard({ item }: CartItemCardProps) {
                     sm:text-sm
                   "
                 >
-                  ₹{item.variant.pricing.mrp.toLocaleString()}
+                  ₹
+                  {mrp.toLocaleString(
+                    "en-IN",
+                  )}
                 </span>
               </div>
 
@@ -223,19 +306,25 @@ export function CartItemCard({ item }: CartItemCardProps) {
                 "
               >
                 You save ₹
-                {(
-                  item.variant.pricing.mrp -
-                  item.variant.pricing.sellingPrice
-                ).toLocaleString()}
+                {savings.toLocaleString(
+                  "en-IN",
+                )}
               </p>
             </div>
 
             {/* QUANTITY */}
+
             <QuantitySelector
-              value={item.variant.quantity}
+              value={
+                item.variant.quantity
+              }
               max={999999}
-              disabled={isUpdatingQuantity}
-              onChange={handleQuantityChange}
+              disabled={
+                isUpdatingQuantity
+              }
+              onChange={
+                handleQuantityChange
+              }
             />
           </div>
         </div>

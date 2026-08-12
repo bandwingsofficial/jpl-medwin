@@ -58,10 +58,9 @@ export const ProductFiltersBar: React.FC<ProductFiltersBarProps> = ({
     (Array.isArray(subCategoriesQuery.data) ? subCategoriesQuery.data : (subCategoriesQuery.data as any)?.data) ?? [];
 
   return (
-    <div className="w-full bg-white rounded-xl border border-gray-100 p-4 mb-4 flex flex-wrap items-center gap-3 shadow-xs">
-      
+    <div className="w-full bg-white rounded-xl border border-gray-100 p-4 mb-4 flex items-center gap-3 shadow-xs overflow-x-auto">  
       {/* Search Input Box with Icon */}
-      <div className="relative flex-1 min-w-[240px]">
+      <div className="relative flex-1 min-w-0">
         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
         <input
           type="text"
@@ -73,7 +72,7 @@ export const ProductFiltersBar: React.FC<ProductFiltersBarProps> = ({
       </div>
 
       {/* Category Dropdown Selector */}
-      <div className="relative min-w-[150px]">
+      <div className="relative w-[180px] shrink-0">
         <select
           value={filters.categoryId || ""}
           onChange={(e) => onFilterChange({ categoryId: e.target.value })}
@@ -90,7 +89,7 @@ export const ProductFiltersBar: React.FC<ProductFiltersBarProps> = ({
       </div>
 
       {/* Sub-Category Dropdown Selector (New) */}
-      <div className="relative min-w-[150px]">
+      <div className="relative w-[180px] shrink-0">
         <select
           value={(filters as any).subCategoryId || ""}
           onChange={(e) => onFilterChange({ subCategoryId: e.target.value } as any)}
@@ -106,8 +105,8 @@ export const ProductFiltersBar: React.FC<ProductFiltersBarProps> = ({
         <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-500" />
       </div>
 
-      {/* Brand Dropdown Selector */}
-      <div className="relative min-w-[150px]">
+      {/* Brand Dropdown Selector */}<div className="relative w-[180px] shrink-0">
+      
         <select
           value={filters.brandId || ""}
           onChange={(e) => onFilterChange({ brandId: e.target.value })}
@@ -144,7 +143,6 @@ export const ProductFiltersBar: React.FC<ProductFiltersBarProps> = ({
           className="h-10 px-4 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ml-auto sm:ml-0 whitespace-nowrap"
         >
           <X className="h-3.5 w-3.5" />
-          Clear Filters
         </button>
       )}
     </div>

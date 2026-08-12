@@ -36,9 +36,11 @@ import {
   ChevronRight,
   RotateCcw,
   ChevronLeft,
+  X,
 } from "lucide-react";
 
 import { Button } from "@/shared/components/ui/button";
+import { ProductPageSkeleton } from "./product-page-skeleton";
 
 // =========================================
 // PRODUCT TABLE
@@ -189,6 +191,13 @@ const handleResetFilters =
 
   const products = productsQuery.data?.data ?? [];
 
+const hasActiveFilters = Boolean(
+  filters.search?.trim() ||
+  filters.categoryId ||
+  filters.subCategoryId ||
+  filters.brandId ||
+  filters.status
+);
   // =========================================
   // PAGINATION MATH
   // =========================================
@@ -219,9 +228,17 @@ const startIndex =
   // RENDER
   // =========================================
 
-  if (productsQuery.isLoading) return <div className="flex justify-center py-8"><Loader /></div>;
-  if (productsQuery.isError) return <EmptyState title="Failed to load products" />;
+ if (productsQuery.isLoading && !productsQuery.isFetching) {
+  return (
+    <div className="flex justify-center py-8">
+      <ProductPageSkeleton />
+    </div>
+  );
+}
 
+if (productsQuery.isError && !hasActiveFilters) {
+  return <EmptyState title="Failed to load products" />;
+}
   return (
     <>
       <CreateProductModal
@@ -232,14 +249,49 @@ const startIndex =
       />
 <ProductFiltersBar
   filters={filters}
-  onFilterChange={
-    handleFilterChange
-  }
-  onReset={
-    handleResetFilters
-  }
+  onFilterChange={handleFilterChange}
+  onReset={handleResetFilters}
 />
-      <div className="w-full bg-white rounded-xl border border-gray-100 overflow-hidden">
+
+{hasActiveFilters && (
+  <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-gray-100 bg-white px-4 py-3 shadow-xs">
+    <span className="mr-1 text-xs font-semibold text-gray-500">
+      Filters:
+    </span>
+
+    {filters.search?.trim() && (
+      <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700">
+        Search: {filters.search}
+      </span>
+    )}
+
+    {filters.categoryId && (
+      <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700">
+        Category
+      </span>
+    )}
+
+    {filters.subCategoryId && (
+      <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700">
+        Sub-Category
+      </span>
+    )}
+
+    {filters.brandId && (
+      <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700">
+        Brand
+      </span>
+    )}
+
+    {filters.status && (
+      <span className="inline-flex items-center rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1 text-xs font-medium text-gray-700">
+        Status: {filters.status}
+      </span>
+    )}
+  </div>
+)}
+
+<div className="w-full bg-white rounded-xl border border-gray-100 overflow-hidden">
         {products.length === 0 ? (
           <EmptyState title="No products match your filters" />
         ) : (

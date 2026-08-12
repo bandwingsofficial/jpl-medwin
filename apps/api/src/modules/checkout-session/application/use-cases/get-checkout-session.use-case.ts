@@ -7,7 +7,7 @@ import { TOKENS } from '@/common/constants/tokens';
 import { CheckoutSessionRepository } from '../../domain/repositories/checkout-session.repository';
 
 import { CheckoutSessionItemRepository } from '../../domain/repositories/checkout-session-item.repository';
-
+import { ProductS3ImageResolverService } from '@/modules/product/application/services/product-s3-image-resolver.service';
 import { CheckoutSessionNotFoundException } from '../../domain/exceptions/checkout-session-not-found.exception';
 
 import { InvalidCheckoutSessionException } from '../../domain/exceptions/invalid-checkout-session.exception';
@@ -28,6 +28,7 @@ export class GetCheckoutSessionUseCase {
     private readonly ownershipService: CheckoutSessionOwnershipService,
 
     private readonly shippingCalculator: ShippingCalculatorService,
+    private readonly productS3ImageResolver: ProductS3ImageResolverService,
   ) {}
 
   async execute(input: {
@@ -145,55 +146,79 @@ export class GetCheckoutSessionUseCase {
 
         totalSavings: session.totalSavings,
       },
-      items: items.map((item) => {
-        const mrpTotal = (item.mrp ?? item.price) * item.quantity;
+      items: await Promise.all(
+  items.map(async (item) => {
+    const mrpTotal =
+      (item.mrp ?? item.price) * item.quantity;
 
-        const discount = mrpTotal - item.totalPrice;
+    const discount =
+      mrpTotal - item.totalPrice;
 
-        return {
-          id: item.id,
+    const s3Images =
+      await this.productS3ImageResolver.resolveProductImages(
+        item.productName,
+      );
 
-          checkoutSessionId: item.checkoutSessionId,
+    return {
+      id: item.id,
 
-          productId: item.productId,
+      checkoutSessionId:
+        item.checkoutSessionId,
 
-          variantId: item.variantId,
+      productId:
+        item.productId,
 
-          productName: item.productName,
+      variantId:
+        item.variantId,
 
-          variant: {
-            id: item.variantId,
+      productName:
+        item.productName,
 
-            name: item.variantName,
+      variant: {
+        id: item.variantId,
 
-            sku: item.sku,
+        name: item.variantName,
 
-            quantity: item.quantity,
+        sku: item.sku,
 
-            pricing: {
-              sellingPrice: item.price,
+        quantity: item.quantity,
 
-              mrp: item.mrp ?? item.price,
-            },
+        pricing: {
+          sellingPrice: item.price,
 
-            images: {
-              main: item.imageUrl,
-            },
-          },
+          mrp:
+            item.mrp ??
+            item.price,
+        },
 
-          totals: {
-            subtotal: item.totalPrice,
+        images: {
+          main:
+            s3Images.mainImage ||
+            item.imageUrl ||
+            null,
 
-            mrpTotal,
+          gallery:
+            s3Images.galleryImages ?? [],
+        },
+      },
 
-            discount,
-          },
+      totals: {
+        subtotal:
+          item.totalPrice,
 
-          createdAt: item.createdAt,
+        mrpTotal,
 
-          updatedAt: item.updatedAt,
-        };
-      }),
+        discount,
+      },
+
+      createdAt:
+        item.createdAt,
+
+      updatedAt:
+        item.updatedAt,
+    };
+  }),
+),
 
       // 🔥 frozen snapshot summary
       summary: {

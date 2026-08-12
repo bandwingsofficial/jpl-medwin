@@ -35,8 +35,7 @@ export function FloatingCartBar() {
    |--------------------------------------------------------------------------
    */
 
-  const hiddenRoutes = ["/cart", "/checkout"];
-
+const hiddenRoutes = ["/cart"];
   /*
    |--------------------------------------------------------------------------
    | CART
@@ -150,7 +149,15 @@ useEffect(() => {
    |--------------------------------------------------------------------------
    */
 
-  if (hiddenRoutes.includes(pathname)) return null;
+ const isCheckoutRoute =
+  pathname === "/checkout" ||
+  pathname.startsWith("/checkout/");
+
+const isHiddenRoute =
+  hiddenRoutes.includes(pathname) ||
+  isCheckoutRoute;
+
+if (isHiddenRoute) return null;
 if (!items.length || isClosed || isOtpOpen) return null;
   return (
     <>

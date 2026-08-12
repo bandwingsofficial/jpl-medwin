@@ -43,11 +43,17 @@ export const useAddToCart = () => {
      |--------------------------------------------------------------------------
      */
     mutationFn: async (
-      payload: AddToCartPayload
+      payload: AddToCartPayload,
     ) => {
-      if (
-        isAuthenticated
-      ) {
+      /*
+       |--------------------------------------------------------------------------
+       | AUTHENTICATED USER
+       |--------------------------------------------------------------------------
+       |
+       | Logged-in users use the real backend cart.
+       |
+       */
+      if (isAuthenticated) {
         return cartApi.addItem({
           productId:
             payload.productId,
@@ -60,16 +66,24 @@ export const useAddToCart = () => {
         });
       }
 
+      /*
+       |--------------------------------------------------------------------------
+       | GUEST USER
+       |--------------------------------------------------------------------------
+       |
+       | Guest users use localStorage.
+       |
+       */
       if (!payload.product) {
         throw new Error(
-          "Product is required for guest cart."
+          "Product is required for guest cart.",
         );
       }
 
       localCartService.addItem(
         payload.product,
         payload.variantId,
-        payload.quantity
+        payload.quantity,
       );
 
       return true;
@@ -85,6 +99,15 @@ export const useAddToCart = () => {
        |--------------------------------------------------------------------------
        | INVALIDATE CART
        |--------------------------------------------------------------------------
+       |
+       | This works for both:
+       |
+       | Guest:
+       | localCartService -> useCart()
+       |
+       | Authenticated:
+       | cartApi.getCart()
+       |
        */
       await queryClient.invalidateQueries({
         queryKey: ["cart"],
@@ -94,6 +117,9 @@ export const useAddToCart = () => {
        |--------------------------------------------------------------------------
        | INVALIDATE CHECKOUT SESSION
        |--------------------------------------------------------------------------
+       |
+       | Cart changes can affect checkout totals/session.
+       |
        */
       await queryClient.invalidateQueries({
         queryKey: [
@@ -108,12 +134,12 @@ export const useAddToCart = () => {
      |--------------------------------------------------------------------------
      */
     onError: (
-      error: AxiosError<any>
+      error: AxiosError,
     ) => {
       console.error(
         "ADD TO CART ERROR",
-        error?.response?.data ??
-          error.message
+        error.response?.data ??
+          error.message,
       );
     },
 
