@@ -705,17 +705,13 @@ const topSafeArea = isMobile ? 75 : 140;
         </span>
       </span>
 
-      <span className="shrink-0 text-amber-400">
-        •
-      </span>
-
       <span className="inline-flex min-w-0 items-center gap-1 text-teal-600">
         <Truck
           className="h-3 w-3 shrink-0 text-amber-400"
           strokeWidth={2.2}
         />
         <span className="truncate">
-          Delivered within{" "}
+          Within{" "}
           <span className="font-semibold">
             1-3 Days
           </span>
