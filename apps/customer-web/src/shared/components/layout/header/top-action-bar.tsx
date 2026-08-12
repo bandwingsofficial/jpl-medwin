@@ -77,7 +77,7 @@ export function TopActionBar() {
    */
   const actionItems: ActionItem[] = [
     {
-      imageSrc: "/Logo/coin6.png",
+      imageSrc: "/Logo/coin8.png",
       label: "Coins",
       href: "/account/coins",
     },
