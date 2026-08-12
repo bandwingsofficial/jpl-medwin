@@ -9,9 +9,7 @@ interface AccountSidebarProps {
   isMobile?: boolean;
 }
 
-export function AccountSidebar({
-  isMobile = false,
-}: AccountSidebarProps) {
+export function AccountSidebar({ isMobile = false }: AccountSidebarProps) {
   const pathname = usePathname();
 
   return (
@@ -19,14 +17,11 @@ export function AccountSidebar({
       className={cn(
         "w-full overflow-hidden select-none",
         isMobile
-          ? "border-0 bg-transparent shadow-none"
+          ? "bg-transparent border-0 shadow-none"
           : "rounded-2xl border border-gray-200 bg-white shadow-sm lg:w-[290px]"
       )}
     >
-      {/* =========================================================
-          DESKTOP HEADER ONLY
-          ========================================================= */}
-
+      {/* 👤 PREMIUM MODERN HEADER (Only shown on Desktop View) */}
       {!isMobile && (
         <div className="border-b border-gray-100 bg-gradient-to-b from-gray-50/50 to-white px-6 py-5">
           <h2
@@ -51,17 +46,8 @@ export function AccountSidebar({
         </div>
       )}
 
-      {/* =========================================================
-          ACCOUNT NAVIGATION
-          ========================================================= */}
-
-      <div
-        className={cn(
-          isMobile
-            ? "w-full p-1"
-            : "p-3"
-        )}
-      >
+      {/* 📋 SEAMLESS NAV MENU */}
+      <div className={isMobile ? "p-1" : "p-3"}>
         <div className="space-y-1">
           {ACCOUNT_SIDEBAR_ITEMS.map((item) => {
             const Icon = item.icon;
@@ -72,45 +58,16 @@ export function AccountSidebar({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  `
-                    group
-                    flex
-                    w-full
-                    items-center
-                    gap-3
-                    rounded-xl
-                    px-2.5
-                    py-2
-                    text-sm
-                    font-medium
-                    transition-all
-                    duration-200
-                    active:scale-[0.99]
-                  `,
-                  isMobile && `
-                    min-h-[44px]
-                    touch-manipulation
-                  `,
+                  "group flex items-center gap-3 rounded-xl px-2.5 py-2 text-sm font-medium transition-all duration-200",
                   isActive
                     ? "bg-[#f0fdfa] font-semibold text-teal-600 shadow-sm"
                     : "text-gray-600 hover:bg-gray-50/80 hover:text-gray-900"
                 )}
               >
                 {/* ICON ACCENT CONTAINER */}
-
                 <div
                   className={cn(
-                    `
-                      flex
-                      h-8
-                      w-8
-                      shrink-0
-                      items-center
-                      justify-center
-                      rounded-lg
-                      transition-all
-                      duration-200
-                    `,
+                    "flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200",
                     isActive
                       ? "bg-teal-600 text-white"
                       : "border border-gray-100/70 bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-gray-600"
@@ -119,37 +76,14 @@ export function AccountSidebar({
                   <Icon className="h-4 w-4" />
                 </div>
 
-                {/* ITEM LABEL */}
-
-                <span
-                  className="
-                    min-w-0
-                    flex-1
-                    truncate
-                    text-[13px]
-                    tracking-wide
-                  "
-                >
+                {/* ITEM LABEL TEXT */}
+                <span className="flex-1 text-[13px] tracking-wide">
                   {item.label}
                 </span>
 
-                {/* ACTIVE INDICATOR */}
-
+                {/* DYNAMIC ACTIVE RIGHT NOTCH INDICATOR */}
                 {isActive && (
-                  <div
-                    className="
-                      mr-1
-                      h-1.5
-                      w-1.5
-                      shrink-0
-                      rounded-full
-                      bg-teal-500
-                      animate-in
-                      fade-in
-                      zoom-in-50
-                      duration-150
-                    "
-                  />
+                  <div className="mr-1 h-1.5 w-1.5 animate-in rounded-full bg-teal-500 fade-in zoom-in-50 duration-150" />
                 )}
               </Link>
             );

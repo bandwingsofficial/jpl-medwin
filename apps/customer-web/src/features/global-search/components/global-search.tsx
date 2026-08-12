@@ -48,6 +48,21 @@ export function GlobalSearch() {
     }
   };
 
+  const handleSearch = () => {
+    const trimmedQuery = query.trim();
+
+    if (!trimmedQuery) {
+      return;
+    }
+
+    setFocused(false);
+    setQuery("");
+
+    router.push(
+      `/search?q=${encodeURIComponent(trimmedQuery)}`
+    );
+  };
+
   return (
     <div className="relative w-full">
       <input
@@ -59,6 +74,12 @@ export function GlobalSearch() {
           }, 200);
         }}
         onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            handleSearch();
+          }
+        }}
         placeholder=""
         className={cn(
           "h-12 w-full rounded-2xl border border-slate-400 bg-white",
