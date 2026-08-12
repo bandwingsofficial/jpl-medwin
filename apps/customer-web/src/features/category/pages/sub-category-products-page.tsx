@@ -60,14 +60,14 @@ export default function SubCategoryProductsPage({
     subCategory?.name || "Sub Category Products";
 
   const {
-    data: productsResponse,
-    isLoading: productLoading,
-    isError: productError,
-  } = useProducts({
-    subCategoryId: subCategory?.id ?? "",
-    miniCategoryId:
-      selectedMiniCategory || undefined,
-  });
+  data: productsResponse,
+  isLoading: productLoading,
+  isError: productError,
+} = useProducts({
+  subCategorySlug: subCategory?.slug ?? "",
+  miniCategorySlug:
+    selectedMiniCategory || undefined,
+});
 
   const products =
     productsResponse?.pages?.flatMap(

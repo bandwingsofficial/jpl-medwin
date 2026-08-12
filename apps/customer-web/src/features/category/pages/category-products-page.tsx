@@ -43,12 +43,12 @@ export default function CategoryProductsPage({
 
   // ✅ Products API can still use the real category ID
   const {
-    data: productsResponse,
-    isLoading: productLoading,
-    isError: productError,
-  } = useProducts({
-    categoryId: category?.id ?? "",
-  });
+  data: productsResponse,
+  isLoading: productLoading,
+  isError: productError,
+} = useProducts({
+  categorySlug: categorySlug,
+});
   const products =
     productsResponse?.pages?.flatMap(
       (page: any) => page?.data?.data || [],
