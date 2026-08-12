@@ -11,6 +11,7 @@ import {
   UserCircle2,
   LogOut,
   MapPin,
+  Menu,
 } from "lucide-react";
 import { GlobalSearch } from "@/features/global-search/components/global-search";
 import { useRouter } from "next/navigation";
@@ -202,7 +203,7 @@ if (!isAuthenticated) {
   className="
     fixed
     inset-x-0
-    bottom-0
+    bottom-[52px]
     z-[9999]
     sm:hidden
     overflow-hidden
@@ -381,6 +382,68 @@ if (!isAuthenticated) {
     )}
   </div>
 </div>
+
+{/* ====================================================== */}
+{/* ACCOUNT MENU BUTTON - BELOW BOTTOM NAV - MOBILE ONLY */}
+{/* ====================================================== */}
+{mounted && isAuthenticated && (
+  <div
+    className="
+      fixed
+      inset-x-0
+      bottom-0
+      z-[10000]
+      block
+      border-t
+      border-slate-200/80
+      bg-white
+      pb-[env(safe-area-inset-bottom)]
+      shadow-[0_-4px_16px_rgba(0,0,0,0.08)]
+      sm:hidden
+    "
+  >
+    <button
+      type="button"
+      onClick={() => router.push("/account")}
+      className="
+        flex
+        h-[52px]
+        w-full
+        items-center
+        justify-center
+        gap-2
+        bg-white
+        px-4
+        text-sm
+        font-semibold
+        text-slate-700
+        transition-all
+        duration-200
+        active:scale-[0.99]
+        active:bg-slate-50
+      "
+      aria-label="Open account menu"
+    >
+      <span
+        className="
+          flex
+          h-8
+          w-8
+          items-center
+          justify-center
+          rounded-lg
+          bg-teal-600
+          text-white
+        "
+      >
+        <Menu className="h-5 w-5" />
+      </span>
+
+      <span>My Account</span>
+    </button>
+  </div>
+)}
+
       {/* LOCATION MODAL */}
       <LocationModal
         open={isLocationModalOpen}
