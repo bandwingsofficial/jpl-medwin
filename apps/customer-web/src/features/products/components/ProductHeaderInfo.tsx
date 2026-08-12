@@ -1,5 +1,8 @@
 import { Star } from "lucide-react";
-import { Product, ProductVariant } from "@/features/products/types/product.type";
+import {
+  Product,
+  ProductVariant,
+} from "@/features/products/types/product.type";
 
 interface ProductHeaderInfoProps {
   product: Product;
@@ -16,30 +19,19 @@ export function ProductHeaderInfo({
    |--------------------------------------------------------------------------
    */
   const averageRating =
-    selectedVariant?.ratings?.average || product.ratings?.average || 0;
+    selectedVariant?.ratings?.average ||
+    product.ratings?.average ||
+    4.5;
 
   const ratingsCount =
-    selectedVariant?.ratings?.count || product.ratings?.count || 0;
+    selectedVariant?.ratings?.count ||
+    product.ratings?.count ||
+    50;
 
   return (
-    <div className="space-y-4">
-      {/* BRAND */}
-      {!!product.brand?.name && (
-        <p
-          className="
-            text-xs
-            font-semibold
-            uppercase
-            tracking-[0.18em]
-            text-gray-500
-          "
-        >
-          {product.brand.name}
-        </p>
-      )}
-
+    <div className="space-y-2">
       {/* TITLE */}
-      <div className="space-y-2">
+      <div>
         <h1
           className="
             text-2xl
@@ -53,71 +45,124 @@ export function ProductHeaderInfo({
         </h1>
       </div>
 
-      {/* META */}
+      {/* BRAND + RATINGS */}
       <div
         className="
           flex
           flex-wrap
           items-center
+          justify-between
           gap-3
         "
       >
-        {/* RATINGS */}
+        {/* BRAND */}
+{!!product.brand?.name && (
+  <div
+    className="
+      inline-flex
+      flex-row
+      flex-nowrap
+      items-center
+      gap-2
+      whitespace-nowrap
+      align-middle
+    "
+  >
+    <span
+      className="
+        inline-flex
+        items-center
+        whitespace-nowrap
+        bg-slate-600
+        bg-clip-text
+        text-sm
+        font-bold
+        tracking-wide
+        text-transparent
+        drop-shadow-[0_1px_1px_rgba(13,148,136,0.12)]
+      "
+    >
+      Brand :
+    </span>
+    <span
+      className="
+        inline-flex
+        items-center
+        whitespace-nowrap
+        bg-gradient-to-r
+        from-blue-600
+        via-teal-600
+        to-emerald-500
+        bg-clip-text
+        text-sm
+        font-bold
+        tracking-wide
+        text-transparent
+        drop-shadow-[0_1px_1px_rgba(13,148,136,0.12)]
+      "
+    >
+    {product.brand.name}
+    </span>
+  </div>
+)}
+        {/* RATINGS & REVIEWS */}
         {ratingsCount > 0 && (
-          <div className="flex items-center gap-2">
-            <div
-              className="
-                flex
-                items-center
-                gap-1
-                rounded-md
-                bg-green-600
-                px-2
-                py-1
-                text-white
-              "
-            >
-              <Star size={13} fill="white" />
-              <span className="text-xs font-semibold">
+          <div
+            className="
+              flex
+              shrink-0
+              items-center
+              gap-2
+              text-sm
+              font-medium
+              text-amber-600
+            "
+          >
+            <div className="flex items-center gap-1">
+              <Star
+                size={15}
+                className="fill-amber-500 stroke-amber-500"
+              />
+
+              <span className="font-semibold text-amber-600">
                 {averageRating.toFixed(1)}
               </span>
             </div>
 
-            <span
-              className="
-                text-sm
-                text-gray-500
-              "
-            >
-              {ratingsCount} ratings
+            <span className="text-gray-400">
+              •
+            </span>
+
+            <span className="text-gray-500">
+              {ratingsCount} Reviews
             </span>
           </div>
         )}
-
-        {/* NOTES */}
-        {!!product.displayNotes?.length && (
-          <div className="flex flex-wrap gap-2">
-            {product.displayNotes.map((note) => (
-              <span
-                key={note}
-                className="
-                  rounded-full
-                  bg-purple-100
-                  px-3
-                  py-1
-                  text-xs
-                  font-semibold
-                  text-purple-700
-                  border
-                  border-purple-200
-                "
-              >
-                {note}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
+
+      {/* NOTES */}
+      {!!product.displayNotes?.length && (
+        <div className="flex flex-wrap gap-2">
+          {product.displayNotes.map((note) => (
+            <span
+              key={note}
+              className="
+                rounded-full
+                border
+                border-purple-200
+                bg-purple-100
+                px-3
+                py-1
+                text-xs
+                font-semibold
+                text-purple-700
+              "
+            >
+              {note}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

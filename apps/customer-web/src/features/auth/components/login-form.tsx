@@ -137,9 +137,8 @@ router.push("/verify-otp");
                   Welcome To JPL Medwin
                 </h1>
                 <p className="text-[13px] leading-relaxed text-[#5C7570]">
-                  Sign in to manage prescriptions, track orders, and message
-                  your pharmacist.
-                </p>
+  Your trusted healthcare supply partner, delivering quality, innovation, and compassionate service for better patient care.
+</p>
                 <PulseLine />
               </div>
 

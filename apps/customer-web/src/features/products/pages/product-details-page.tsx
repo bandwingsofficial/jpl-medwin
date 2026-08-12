@@ -15,7 +15,7 @@ import { ProductCommercialDetails } from "@/features/products/components/Product
 import { ProductSpecifications } from "@/features/products/components/product-specifications";
 import { ProductVariantSelector } from "@/features/products/components/product-variant-selector";
 import { ProductBuyBox } from "@/features/products/components/ProductBuyBox";
-
+import { ProductKeyFeatures } from "@/features/products/components/product-key-features";
 import { useProductDetails } from "@/features/products/hooks/use-product-details";
 
 interface ProductDetailsPageProps {
@@ -299,11 +299,6 @@ const selectedVariant = useMemo<ProductVariant | null>(() => {
           )}
 
           {/* ====================================================== */}
-          {/* 3. DESKTOP BUY BOX */}
-          {/* ====================================================== */}
-
-
-          {/* ====================================================== */}
           {/* 4. COMMERCIAL DETAILS */}
           {/* ====================================================== */}
 
@@ -322,6 +317,16 @@ const selectedVariant = useMemo<ProductVariant | null>(() => {
               product={product}
               selectedVariant={selectedVariant}
             />
+             {/* SPECIFICATIONS - DESKTOP ONLY */}
+
+<div className="mt-4">
+  <ProductSpecifications
+    specifications={
+      product.specifications || []
+    }
+  />
+</div>
+            
           </div>
         </div>
       </div>
@@ -363,14 +368,13 @@ const selectedVariant = useMemo<ProductVariant | null>(() => {
           }
           faq={product.faq || []}
         />
+        {!!product.features?.length && (
+    <ProductKeyFeatures
+      features={product.features}
+    />
+  )}
 
-        {/* SPECIFICATIONS */}
-
-        <ProductSpecifications
-          specifications={
-            product.specifications || []
-          }
-        />
+       
 
         {/* RELATED PRODUCTS */}
 

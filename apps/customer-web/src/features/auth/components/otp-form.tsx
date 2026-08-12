@@ -93,9 +93,18 @@ export function OtpForm() {
   const inputsRef = useRef<Array<HTMLInputElement | null>>([]);
 
   // ---- hydration safe ----
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+useEffect(() => {
+  setMounted(true);
+}, []);
+
+// ---- hide floating cart bar while OTP is open ----
+useEffect(() => {
+  document.body.classList.add("otp-modal-open");
+
+  return () => {
+    document.body.classList.remove("otp-modal-open");
+  };
+}, []);
 
   // ---- load identifier ----
   useEffect(() => {

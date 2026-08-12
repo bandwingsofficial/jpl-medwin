@@ -57,6 +57,7 @@ export function FloatingCartBar() {
   const [isVisible, setIsVisible] = useState(false);
   const [pulse, setPulse] = useState(false);
   const prevCountRef = useRef(0);
+  const [isOtpOpen, setIsOtpOpen] = useState(false);
 
   /*
    |--------------------------------------------------------------------------
@@ -82,6 +83,28 @@ export function FloatingCartBar() {
       setIsVisible(false);
     }
   }, [items.length, isClosed]);
+
+  // ----------------------------------------------------------------
+// HIDE FLOATING BAR WHILE OTP MODAL IS OPEN
+// ----------------------------------------------------------------
+useEffect(() => {
+  const checkOtpState = () => {
+    setIsOtpOpen(
+      document.body.classList.contains("otp-modal-open")
+    );
+  };
+
+  checkOtpState();
+
+  const observer = new MutationObserver(checkOtpState);
+
+  observer.observe(document.body, {
+    attributes: true,
+    attributeFilter: ["class"],
+  });
+
+  return () => observer.disconnect();
+}, []);
 
   /*
    |--------------------------------------------------------------------------
@@ -128,8 +151,7 @@ export function FloatingCartBar() {
    */
 
   if (hiddenRoutes.includes(pathname)) return null;
-  if (!items.length || isClosed) return null;
-
+if (!items.length || isClosed || isOtpOpen) return null;
   return (
     <>
       {/* ====================================================== */}

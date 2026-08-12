@@ -158,6 +158,74 @@ export default function CareersPage() {
           justify-content: space-between;
           cursor: pointer;
         }
+          /* Job cards responsive layout */
+.bk-jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.bk-job-meta {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.bk-job-location,
+.bk-job-type,
+.bk-job-experience {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 12px;
+  color: #64748B;
+}
+
+.bk-job-location span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.bk-job-experience {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+  .bk-jobs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .bk-jobs-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .bk-job-card {
+    padding: 20px;
+  }
+
+  .bk-job-meta {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .bk-job-location,
+  .bk-job-type,
+  .bk-job-experience {
+    grid-column: auto;
+  }
+
+  .bk-job-location span {
+    white-space: normal;
+    line-height: 1.5;
+  }
+}
         .bk-job-card::before {
           content: '';
           position: absolute;
@@ -383,8 +451,8 @@ export default function CareersPage() {
             </h2>
           </div>
           
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 18 }}>
-            {CURATED_JOBS.map((job) => (
+         <div className="bk-jobs-grid">
+             {CURATED_JOBS.map((job) => (
               <div 
                 key={job.id} 
                 className="bk-job-card"
@@ -398,32 +466,29 @@ export default function CareersPage() {
                     {job.title}
                   </h3>
                 </div>
-                <div style={{ 
-  display: "grid", 
-  gridTemplateColumns: "1fr 1fr", // Two-column layout for better readability
-  gap: "12px", 
-  marginTop: "24px" 
-}}>
-  
-  {/* Location - Full width if needed or first column */}
-  <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#64748B" }}>
+                <div className="bk-job-meta">
+
+  {/* Location */}
+  <div className="bk-job-location">
     <MapPin size={14} className="text-teal-600" />
-    <span style={{ whiteSpace: "nowrap" }}>{job.location}</span>
+    <span>{job.location}</span>
   </div>
 
   {/* Job Type */}
-  <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#64748B" }}>
+  <div className="bk-job-type">
     <Clock size={14} className="text-teal-600" />
     <span>{job.type}</span>
   </div>
 
-  {/* Experience - Best to give it its own line or column with a Briefcase icon */}
-  <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "#64748B", gridColumn: "span 2" }}>
+  {/* Experience */}
+  <div className="bk-job-experience">
     <Briefcase size={14} className="text-teal-600" />
-    <span style={{ fontWeight: 600, color: "#334155" }}>{job.Experience}</span>
+    <span style={{ fontWeight: 600, color: "#334155" }}>
+      {job.Experience}
+    </span>
   </div>
 
-</div> </div>
+</div></div>
             ))}
           </div>
         </div>

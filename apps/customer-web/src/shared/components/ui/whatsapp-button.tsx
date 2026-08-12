@@ -36,6 +36,7 @@ export function WhatsappButton() {
         z-[9999]
         flex
         items-center
+        lg:bottom-24
       "
     >
       {/* Sliding/Collapsible Toggle Handle Tab */}

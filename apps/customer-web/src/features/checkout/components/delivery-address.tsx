@@ -135,7 +135,7 @@ const [addressMode, setAddressMode] =
    */
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm">
         <div className="animate-pulse">
           <div className="h-5 w-40 rounded bg-slate-200" />
 
@@ -168,10 +168,10 @@ const [addressMode, setAddressMode] =
 
   return (
     <>
-      <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="w-full min-w-0 max-w-full overflow-hidden rounded-xl border border-slate-200 bg-white p-3 sm:p-4 shadow-sm">
         {/* HEADER */}
-        <div className="mb-4 flex items-center justify-between">
-          <div>
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0 flex-1">
             <h2 className="text-lg font-bold leading-tight text-slate-900">
               Delivery Address
             </h2>
@@ -189,7 +189,7 @@ const [addressMode, setAddressMode] =
     setAddressMode("shipping");
     handleAddAddress();
   }}
-            className="flex items-center gap-1.5 rounded-lg bg-teal-600 px-3 py-2 text-xs font-semibold text-white transition-all hover:bg-teal-700"
+            className="flex w-full items-center justify-center gap-1.5 rounded-lg bg-teal-600 px-3 py-2 text-xs font-semibold text-white transition-all hover:bg-teal-700 sm:w-auto sm:shrink-0"
           >
             <Plus size={14} />
             Add Shipping Address
@@ -197,7 +197,7 @@ const [addressMode, setAddressMode] =
         </div>
 
 
-<label className="flex items-center gap-2 mb-4">
+<label className="mb-4 flex min-w-0 items-start gap-2">
   <input
     type="checkbox"
     checked={isBillingSameAsShipping}
@@ -208,13 +208,13 @@ const [addressMode, setAddressMode] =
     }
   />
 
-  <span className="text-sm">
+  <span className="min-w-0 text-sm leading-5 break-words">
     Billing address same as shipping
   </span>
 </label>
         {/* EMPTY STATE */}
         {!addresses.length && (
-          <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
+          <div className="w-full min-w-0 rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center sm:p-8">
             <MapPin
               size={20}
               className="mx-auto text-slate-400"
@@ -251,7 +251,7 @@ const [addressMode, setAddressMode] =
                   tabIndex={0}
                   onClick={() => onSelectAddress(address)}
                   className={`
-                    group relative cursor-pointer rounded-lg border p-3.5 text-left transition-all
+                    group relative min-w-0 w-full cursor-pointer overflow-hidden rounded-lg border p-3 text-left transition-all sm:p-3.5
                     ${
                       isSelected
   ? "border-teal-600 bg-teal-50/50 ring-1 ring-teal-600"
@@ -267,7 +267,7 @@ const [addressMode, setAddressMode] =
                   )}
 
 
-                  <div className="flex gap-3">
+                  <div className="flex min-w-0 w-full gap-3">
                     {/* ICON */}
                     <div
                       className={`
@@ -283,29 +283,29 @@ const [addressMode, setAddressMode] =
                     </div>
 
 
-                    <div className="flex-1 pr-4">
-                      <div className="flex items-center gap-2">
-                        <h3 className="truncate text-sm font-bold text-slate-900">
+                    <div className="min-w-0 flex-1 pr-1 sm:pr-4">
+                      <div className="flex min-w-0 items-center gap-2">
+                        <h3 className="min-w-0 truncate text-sm font-bold text-slate-900">
                           {address.alias || address.type}
                         </h3>
 
 
                         {address.isDefault && (
-                          <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold uppercase text-emerald-600">
+                          <span className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold uppercase text-emerald-600">
                             Default
                           </span>
                         )}
                       </div>
 
 
-                      <p className="mt-1 line-clamp-2 text-xs leading-normal text-slate-500">
+                      <p className="mt-1 line-clamp-2 break-words text-xs leading-normal text-slate-500">
                         {address.addressLine1},{" "}
                         {address.city},{" "}
                         {address.postalCode}
                       </p>
 
 
-                      <div className="mt-3 flex items-center justify-between">
+                      <div className="mt-3 flex items-center justify-between gap-2">
                         <button
                           type="button"
                           onClick={(event) => {
@@ -314,7 +314,7 @@ const [addressMode, setAddressMode] =
 
                             handleEditAddress(address);
                           }}
-                          className="flex items-center gap-1 text-[11px] font-bold text-slate-600 hover:text-slate-900"
+                          className="inline-flex min-h-8 items-center gap-1 px-1 text-[11px] font-bold text-slate-600 hover:text-slate-900"
                         >
                           <Pencil size={10} />
                           Edit
@@ -328,11 +328,11 @@ const [addressMode, setAddressMode] =
           </div>
         )}
         {!isBillingSameAsShipping && (
-  <div className="mt-8 border-t border-slate-200 pt-6">
+  <div className="mt-6 min-w-0 border-t border-slate-200 pt-5 sm:mt-8 sm:pt-6">
 
     {/* BILLING HEADER */}
-    <div className="mb-5 flex items-center justify-between">
-      <div>
+    <div className="mb-4 flex flex-col gap-3 sm:mb-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
         <h3 className="text-base font-bold text-slate-900">
           Billing Address
         </h3>
@@ -350,7 +350,9 @@ const [addressMode, setAddressMode] =
         }}
         className="
           inline-flex
+          w-full
           items-center
+          justify-center
           gap-2
           rounded-lg
           bg-teal-600
@@ -361,6 +363,8 @@ const [addressMode, setAddressMode] =
           text-white
           transition-colors
           hover:bg-teal-700
+          sm:w-auto
+          sm:shrink-0
         "
       >
         <Plus size={14} />
@@ -385,10 +389,13 @@ const [addressMode, setAddressMode] =
             className={`
               group
               relative
+              min-w-0
+              w-full
               cursor-pointer
+              overflow-hidden
               rounded-lg
               border
-              p-3.5
+              p-3
               text-left
               transition-all
               ${
@@ -407,7 +414,7 @@ const [addressMode, setAddressMode] =
               </div>
             )}
 
-            <div className="flex gap-3">
+            <div className="flex min-w-0 w-full gap-3">
               <div
                 className={`
                   flex
@@ -427,33 +434,33 @@ const [addressMode, setAddressMode] =
                 <MapPin size={16} />
               </div>
 
-              <div className="flex-1 pr-4">
-                <div className="flex items-center gap-2">
-                  <h3 className="truncate text-sm font-bold text-slate-900">
+              <div className="min-w-0 flex-1 pr-1 sm:pr-4">
+                <div className="flex min-w-0 items-center gap-2">
+                  <h3 className="min-w-0 truncate text-sm font-bold text-slate-900">
                     {address.alias || address.type}
                   </h3>
 
                   {address.isDefault && (
-                    <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold uppercase text-emerald-600">
+                    <span className="shrink-0 rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold uppercase text-emerald-600">
                       Default
                     </span>
                   )}
                 </div>
 
-                <p className="mt-1 line-clamp-2 text-xs leading-normal text-slate-500">
+                <p className="mt-1 line-clamp-2 break-words text-xs leading-normal text-slate-500">
                   {address.addressLine1},{" "}
                   {address.city},{" "}
                   {address.postalCode}
                 </p>
 
-                <div className="mt-3 flex items-center justify-between">
+                <div className="mt-3 flex items-center justify-between gap-2">
                   <button
                     type="button"
                     onClick={(event) => {
                       event.stopPropagation();
                       handleEditAddress(address);
                     }}
-                    className="flex items-center gap-1 text-[11px] font-bold text-slate-600 hover:text-slate-900"
+                    className="inline-flex min-h-8 items-center gap-1 px-1 text-[11px] font-bold text-slate-600 hover:text-slate-900"
                   >
                     <Pencil size={10} />
                     Edit
@@ -478,4 +485,3 @@ const [addressMode, setAddressMode] =
     </>
   );
 }
-

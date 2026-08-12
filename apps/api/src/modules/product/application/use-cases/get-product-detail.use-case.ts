@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { TOKENS } from '@/common/constants/tokens';
 import { ProductS3ImageResolverService } from '../services/product-s3-image-resolver.service';
 import { ProductRepository } from '../../domain/repositories/product.repository';
-
+import { BrandRepository } from '@/modules/brand/domain/repositories/brand.repository';
 import { VariantRepository } from '../../domain/repositories/variant.repository';
 
 import { ProductImageRepository } from '../../domain/repositories/product-image.repository';
@@ -17,6 +17,9 @@ export class GetProductDetailUseCase {
  constructor(
    @Inject(TOKENS.PRODUCT_REPO)
    private readonly productRepo: ProductRepository,
+
+   @Inject(TOKENS.BRAND_REPO)
+   private readonly brandRepo: BrandRepository,
 
    @Inject(TOKENS.VARIANT_REPO)
    private readonly variantRepo: VariantRepository,
@@ -63,11 +66,15 @@ console.log("=============================");
     // 📦 LOAD DATA
     // =======================
 
-    const [variants, productImages] = await Promise.all([
-      this.variantRepo.findByProduct(product.id, !onlyActive),
+    const [variants, productImages, brand] = await Promise.all([
+  this.variantRepo.findByProduct(product.id, !onlyActive),
 
-      this.imageRepo.findByProduct(product.id, !onlyActive),
-    ]);
+  this.imageRepo.findByProduct(product.id, !onlyActive),
+
+  product.brandId
+    ? this.brandRepo.findById(product.brandId)
+    : null,
+]);
     console.log("DB Product Images:", productImages.length);
 console.log(productImages);
 
@@ -163,8 +170,9 @@ const gallery = s3Images.galleryImages;
       currency: product.currency,
 
       brand: {
-        id: product.brandId,
-      },
+  id: product.brandId,
+  name: brand?.name ?? '',
+},
 
       category: {
         id: product.categoryId,

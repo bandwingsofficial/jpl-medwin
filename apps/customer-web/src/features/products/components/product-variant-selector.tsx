@@ -611,7 +611,7 @@ const topSafeArea = isMobile ? 75 : 140;
                       <span
                         className="
                           text-[11px]
-                          text-gray-400
+                          text-gray-700
                           line-through
                           sm:text-xs
                         "
