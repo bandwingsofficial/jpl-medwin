@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import { X } from "lucide-react";
-
+import { useAuthModal } from "@/shared/context/auth-modal-context";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useQueryClient } from "@tanstack/react-query";
@@ -82,6 +82,7 @@ export function OtpForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { mutateAsync, isPending } = useVerifyOtp();
+  const { setLoginOpen } = useAuthModal();
   const handleClose = () => {
   const returnUrl =
     sessionStorage.getItem("login_return_url") || "/";
@@ -216,6 +217,7 @@ useEffect(() => {
 sessionStorage.removeItem("login_identifier");
 sessionStorage.removeItem("login_return_url");
 
+setLoginOpen(false);
 router.replace("/");
   } catch (err: any) {
     const message =
