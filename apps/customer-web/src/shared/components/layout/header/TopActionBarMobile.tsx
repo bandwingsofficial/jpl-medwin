@@ -550,76 +550,70 @@ export function TopActionBarMobile({
           onClick={() => setBottomOpen(false)}
         >
           <div
-            className="
-              relative
-              flex
-              h-[100dvh]
-              w-full
-              flex-col
-              overflow-hidden
-              rounded-t-[28px]
-              bg-white
-              shadow-[0_-24px_60px_-24px_rgba(14,107,92,0.25)]
-              animate-in
-              slide-in-from-bottom-full
-              duration-300
-            "
-            onClick={(event) => event.stopPropagation()}
-          >
+  className="
+    relative
+    flex
+    max-h-[72dvh]
+    w-full
+    flex-col
+    overflow-hidden
+    rounded-t-[20px]
+    bg-white
+    shadow-[0_-12px_35px_-18px_rgba(14,107,92,0.25)]
+    animate-in
+    slide-in-from-bottom-full
+    duration-300
+  "
+  onClick={(event) => event.stopPropagation()}
+>
             {/* TOP HEADER */}
             <div
-              className="
-                flex
-                shrink-0
-                items-center
-                justify-between
-                border-b
-                border-gray-100
-                bg-white
-                px-5
-                py-4
-                shadow-sm
-              "
-            >
-              <div>
-                <p className="text-lg font-bold text-gray-900">
-                  My Account
-                </p>
+  className="
+    flex
+    shrink-0
+    items-center
+    justify-between
+    border-b
+    border-gray-100
+    px-4
+    py-3
+  "
+>
+  <div>
+    <p className="text-base font-semibold leading-tight text-gray-900">
+      My Account
+    </p>
 
-                <p className="mt-0.5 text-xs font-medium text-gray-400">
-                  Manage your account
-                </p>
-              </div>
+    <p className="mt-0.5 text-[11px] text-gray-400">
+      Manage your account
+    </p>
+  </div>
 
-              {/* CLOSE BUTTON */}
-              <button
-                type="button"
-                onClick={() => setBottomOpen(false)}
-                className="
-                  flex
-                  h-10
-                  w-10
-                  items-center
-                  justify-center
-                  rounded-full
-                  border
-                  border-gray-200
-                  bg-white
-                  text-gray-600
-                  shadow-sm
-                  transition
-                  hover:bg-gray-50
-                  active:scale-95
-                "
-                aria-label="Close account menu"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
+  <button
+    type="button"
+    onClick={() => setBottomOpen(false)}
+    aria-label="Close account menu"
+    className="
+      flex
+      h-8
+      w-8
+      items-center
+      justify-center
+      rounded-full
+      border
+      border-gray-200
+      text-gray-500
+      transition
+      active:scale-95
+    "
+  >
+    <X className="h-4 w-4" />
+  </button>
+</div>
 
             {/* ACCOUNT NAVIGATION */}
-            <div className="flex-1 overflow-y-auto px-4 py-5">
-              <div className="space-y-2">
+           <div className="flex-1 overflow-y-auto px-3 py-2">
+  <div className="space-y-1">
                 {ACCOUNT_SIDEBAR_ITEMS.map((item) => {
                   const Icon = item.icon;
 
@@ -632,60 +626,51 @@ export function TopActionBarMobile({
                         router.push(item.href);
                       }}
                       className="
-                        group
-                        flex
-                        w-full
-                        items-center
-                        gap-4
-                        rounded-2xl
-                        border
-                        border-gray-100
-                        bg-white
-                        px-4
-                        py-4
-                        text-left
-                        text-sm
-                        font-medium
-                        text-gray-700
-                        shadow-sm
-                        transition-all
-                        duration-200
-                        hover:border-teal-100
-                        hover:bg-teal-50
-                        hover:text-teal-600
-                        active:scale-[0.98]
-                      "
+  group
+  flex
+  w-full
+  items-center
+  gap-3
+  rounded-xl
+  px-3
+  py-2.5
+  text-left
+  text-sm
+  font-medium
+  text-gray-700
+  transition-colors
+  duration-150
+  hover:bg-teal-50
+  hover:text-teal-600
+  active:bg-teal-50
+"
                     >
-                      <div
-                        className="
-                          flex
-                          h-11
-                          w-11
-                          shrink-0
-                          items-center
-                          justify-center
-                          rounded-xl
-                          border
-                          border-gray-100
-                          bg-gray-50
-                          text-gray-500
-                          transition-all
-                          duration-200
-                          group-hover:border-teal-100
-                          group-hover:bg-teal-100
-                          group-hover:text-teal-600
-                        "
-                      >
-                        <Icon className="h-5 w-5" />
-                      </div>
+                     <div
+  className="
+    flex
+    h-9
+    w-9
+    shrink-0
+    items-center
+    justify-center
+    rounded-lg
+    bg-gray-50
+    text-gray-500
+    transition-colors
+    group-hover:bg-teal-50
+    group-hover:text-teal-600
+  "
+>
+  <Icon className="h-[18px] w-[18px]" />
+</div>
 
-                      <span className="flex-1 text-[15px]">
+                      <span className="flex-1 text-[14px]">
                         {item.label}
                       </span>
 
-                      <span className="text-gray-300 transition-colors group-hover:text-teal-500">
-                        →
-                      </span>
+                      <span className="text-xs text-gray-300 group-hover:text-teal-500">
+  →
+</span>
                     </button>
                   );
                 })}
@@ -694,45 +679,41 @@ export function TopActionBarMobile({
 
             {/* LOGOUT */}
             <div
-              className="
-                shrink-0
-                border-t
-                border-gray-100
-                bg-white
-                p-4
-                pb-[calc(1rem+env(safe-area-inset-bottom))]
-              "
-            >
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="
-                  flex
-                  w-full
-                  items-center
-                  gap-4
-                  rounded-2xl
-                  border
-                  border-red-100
-                  bg-red-50
-                  px-4
-                  py-4
-                  text-sm
-                  font-medium
-                  text-red-500
-                  transition-all
-                  duration-200
-                  hover:bg-red-100
-                  active:scale-[0.98]
-                "
-              >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm">
-                  <LogOut className="h-5 w-5" />
-                </div>
+  className="
+    shrink-0
+    border-t
+    border-gray-100
+    px-3
+    py-2
+    pb-[calc(0.5rem+env(safe-area-inset-bottom))]
+  "
+>
+  <button
+    type="button"
+    onClick={handleLogout}
+    className="
+      flex
+      h-11
+      w-full
+      items-center
+      gap-3
+      rounded-xl
+      px-3
+      text-sm
+      font-medium
+      text-red-500
+      transition-colors
+      hover:bg-red-50
+      active:bg-red-50
+    "
+  >
+    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-red-50 text-red-500">
+      <LogOut className="h-4 w-4" />
+    </div>
 
-                <span>Logout</span>
-              </button>
-            </div>
+    <span>Logout</span>
+  </button>
+</div>
           </div>
         </div>
       )}
