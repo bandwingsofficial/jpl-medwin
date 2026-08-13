@@ -125,7 +125,7 @@ if (!brand) {
 
       categoryId: category.id,
 
-      subCategoryId: subCategory!.id,
+      subCategoryId: subCategory?.id ?? null,
 
       miniCategoryId: miniCategory?.id ?? null,
 
@@ -161,6 +161,7 @@ if (!brand) {
       })),
 
       variants: resolvedImages.variants.map((variant) => ({
+        sku: variant.sku,
         name: variant.name,
 
         purchasePrice: variant.purchasePrice,

@@ -50,11 +50,7 @@ export class ProductS3ImageResolverService {
 
  const prefix =
   `${PRODUCT_IMAGE_FOLDER}/${productName}/Variant/${variantName}`;
-  console.log("==================");
-console.log("Product:", productName);
-console.log("Variant:", variantName);
-console.log("Prefix:", prefix);
-console.log("==================");
+  
 
   const variantMainImage =
   await this.resolveVariantImage(prefix);
@@ -85,22 +81,19 @@ console.log("==================");
   for (const fileName of fileNames) {
     for (const extension of IMAGE_EXTENSIONS) {
       const key = `${prefix}/${fileName}.${extension}`;
-console.log("Checking Key:", key);
+
 
       const exists = await this.s3Service.objectExists(key);
 
-      console.log('Exists:', exists);
 
       if (exists) {
         const url = this.s3Service.getPublicUrl(key);
 
-        console.log('[S3] FOUND image:', key);
-        console.log('[S3] URL:', url);
+    
 
         return url;
       }
 
-      console.log('[S3] NOT FOUND image:', key);
     }
   }
 
@@ -114,15 +107,10 @@ console.log("Checking Key:", key);
   for (const extension of IMAGE_EXTENSIONS) {
 
     const key = `${prefix}.${extension}`;
-    console.log("Checking:", key);
-
+   
     const exists =
       await this.s3Service.objectExists(key);
-    console.log("Exists:", exists);
-    console.log({
-      key,
-      exists,
-    });
+
 
     if (exists) {
       return this.s3Service.getPublicUrl(key);
@@ -166,13 +154,10 @@ console.log("Checking Key:", key);
     for (const extension of IMAGE_EXTENSIONS) {
       const key = `${prefix}/${fileName}.${extension}`;
 
-      console.log("[S3] Gallery key checked:", key);
 
       if (await this.s3Service.objectExists(key)) {
         const url = this.s3Service.getPublicUrl(key);
 
-        console.log("[S3] FOUND image:", key);
-        console.log("[S3] Public URL:", url);
 
         return url;
       }

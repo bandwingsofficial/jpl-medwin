@@ -136,19 +136,29 @@ input.customerType = parseCustomerType(
 
     const sellingPrice = variant?.sellingPrice;
 
-    if (
-      sellingPrice === undefined ||
-      sellingPrice === null ||
-      sellingPrice === '' ||
-      Number.isNaN(Number(sellingPrice)) ||
-      Number(sellingPrice) <= 0
-    ) {
-      errors.push({
-        field: `${prefix}.sellingPrice`,
-        message: `${label}: Selling Price is required.`,
-      });
-    }
+if (
+  sellingPrice !== undefined &&
+  sellingPrice !== null &&
+  sellingPrice !== '' &&
+  Number.isNaN(Number(sellingPrice))
+) {
+  errors.push({
+    field: `${prefix}.sellingPrice`,
+    message: `${label}: Selling Price must be a valid number.`,
+  });
+}
 
+if (
+  sellingPrice !== undefined &&
+  sellingPrice !== null &&
+  sellingPrice !== '' &&
+  Number(sellingPrice) < 0
+) {
+  errors.push({
+    field: `${prefix}.sellingPrice`,
+    message: `${label}: Selling Price cannot be negative.`,
+  });
+}
     const purchasePrice = variant?.purchasePrice;
 
     if (

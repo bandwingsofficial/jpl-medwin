@@ -101,64 +101,125 @@ export function normalizeVariantsForProductType(params: {
   existingVariants: VariantLike[];
 }): any[] {
   const { product, input, existingVariants } = params;
+
   const productType = input.type ?? product.type;
   const productName = input.name ?? product.name;
 
+  const incoming = Array.isArray(input.variants)
+    ? input.variants
+    : [];
+
+  // ============================================================
+  // SIMPLE PRODUCT
+  // ============================================================
+
   if (productType === ProductType.SIMPLE) {
-    const incoming = Array.isArray(input.variants) ? input.variants : [];
-    const keeper =
-      incoming.find((variant) => variant.id === product.defaultVariantId) ||
-      incoming[0] ||
-      existingVariants.find((variant) => variant.id === product.defaultVariantId) ||
-      existingVariants[0];
+    const incomingVariant = incoming[0];
 
-    const base = keeper ? { ...keeper } : {};
+    // ----------------------------------------------------------
+    // Excel contains SKU
+    // ----------------------------------------------------------
 
-    return [
-      {
-        ...base,
-        name: productName,
-        isDeleted: false,
-      },
-    ];
+    if (incomingVariant?.sku) {
+      return [
+        {
+          ...incomingVariant,
+
+          sku: incomingVariant.sku,
+
+          name: productName,
+
+          isDeleted: false,
+        },
+      ];
+    }
+
+    // ----------------------------------------------------------
+    // No incoming variant -> preserve existing default variant
+    // ----------------------------------------------------------
+
+    const existingDefault =
+      existingVariants.find(
+        (variant) => variant.id === product.defaultVariantId,
+      ) ?? existingVariants[0];
+
+    if (existingDefault) {
+      return [
+        {
+          id: existingDefault.id,
+
+          sku: existingDefault.sku,
+
+          name: productName,
+
+          purchasePrice: existingDefault.purchasePrice,
+          sellingPrice: existingDefault.sellingPrice,
+          mrp: existingDefault.mrp,
+          quantity: existingDefault.quantity,
+
+          attributes: existingDefault.attributes,
+
+          averageRating: existingDefault.averageRating,
+          reviewCount: existingDefault.reviewCount,
+
+          isWeighted: existingDefault.isWeighted,
+          warrantyMonths: existingDefault.warrantyMonths,
+
+          priorityOrder: existingDefault.priorityOrder,
+
+          isDeleted: false,
+        },
+      ];
+    }
+
+    return [];
   }
 
-  const incoming = Array.isArray(input.variants) ? input.variants : [];
+  // ============================================================
+  // VARIABLE PRODUCT
+  // ============================================================
 
   if (incoming.length > 0) {
-    return incoming;
-  }
+    return incoming.map((variant: any, index: number) => ({
+      ...variant,
 
-  if (existingVariants.length > 0) {
-    return existingVariants.map((variant) => ({
-      id: variant.id,
-      name: variant.name,
-      purchasePrice: variant.purchasePrice,
-      sellingPrice: variant.sellingPrice,
-      mrp: variant.mrp,
-      quantity: variant.quantity,
-      attributes: variant.attributes,
-      averageRating: variant.averageRating,
-      reviewCount: variant.reviewCount,
-      isWeighted: variant.isWeighted,
-      warrantyMonths: variant.warrantyMonths,
-      priorityOrder: variant.priorityOrder,
+      // Keep Excel SKU
       sku: variant.sku,
+
+      priorityOrder: variant.priorityOrder ?? index,
+
       isDeleted: false,
     }));
   }
 
-  return [
-    {
-      name: '',
-      purchasePrice: 0,
-      sellingPrice: 0,
-      mrp: 0,
-      quantity: 0,
-      attributes: {},
-      isDeleted: false,
-    },
-  ];
+  // ============================================================
+  // NO IMPORTED VARIANTS
+  // ============================================================
+
+  return existingVariants.map((variant) => ({
+    id: variant.id,
+
+    sku: variant.sku,
+
+    name: variant.name,
+
+    purchasePrice: variant.purchasePrice,
+    sellingPrice: variant.sellingPrice,
+    mrp: variant.mrp,
+    quantity: variant.quantity,
+
+    attributes: variant.attributes,
+
+    averageRating: variant.averageRating,
+    reviewCount: variant.reviewCount,
+
+    isWeighted: variant.isWeighted,
+    warrantyMonths: variant.warrantyMonths,
+
+    priorityOrder: variant.priorityOrder,
+
+    isDeleted: false,
+  }));
 }
 
 interface VariantLike {

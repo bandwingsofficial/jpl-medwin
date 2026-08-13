@@ -145,9 +145,13 @@ export class ImportProductsUseCase {
         if (existing && mode === ImportMode.OVERRIDE) {
           console.log('OVERRIDE MODE', product.name);
           const result = await this.updateProductUseCase.execute({
-            id: existing.id,
-            ...dto,
-          });
+  id: existing.id,
+
+  ...dto,
+
+  // 🔥 Import OVERRIDE behavior
+  preserveExistingVariants: true,
+});
 
           updated.push({
             id: result.id,
@@ -172,48 +176,84 @@ export class ImportProductsUseCase {
           variants: created.variants?.length ?? 0,
         });
       } catch (e: any) {
-        failed.push({
-          product: product.name,
-
-          reason: e.message,
-        });
-      }
+  failed.push({
+    product: product.name,
+    reason: e?.message ?? 'Unknown import error',
+  });
+}
     }
 
     // =======================
     // 📊 SUMMARY
     // =======================
 
-    return {
-      success: failed.length === 0,
+   // =======================
+// 📊 FINAL IMPORT CHECK
+// =======================
 
-      message: 'Import completed',
+const processed =
+  imported.length +
+  updated.length +
+  restored.length +
+  skipped.length +
+  failed.length;
 
-      summary: {
-        totalRows: rows.length,
+// SHOW ONLY FAILED PRODUCTS
+if (failed.length > 0) {
+  console.error(
+    '\n========== ❌ FAILED PRODUCTS ==========\n',
+    JSON.stringify(failed, null, 2),
+    '\n========================================\n',
+  );
+}
 
-        totalProducts: products.length,
+console.log('==============================================');
+console.log('📊 IMPORT FINAL SUMMARY');
 
-        imported: imported.length,
+console.log({
+  excelRows: rows.length,
+  totalProducts: products.length,
 
-        updated: updated.length,
+  imported: imported.length,
+  updated: updated.length,
+  restored: restored.length,
+  skipped: skipped.length,
+  failed: failed.length,
 
-        restored: restored.length,
+  processed,
 
-        skipped: skipped.length,
+  difference: products.length - processed,
+});
 
-        failed: failed.length,
-      },
+console.log('==============================================');
+// =======================
+// 📊 SUMMARY
+// =======================
 
-      imported,
+return {
+  success: failed.length === 0,
 
-      updated,
+  message: 'Import completed',
 
-      restored,
+  summary: {
+    totalRows: rows.length,
+    totalProducts: products.length,
 
-      skipped,
+    processed,
 
-      failed,
-    };
-  }
+    imported: imported.length,
+    updated: updated.length,
+    restored: restored.length,
+    skipped: skipped.length,
+    failed: failed.length,
+
+    notProcessed: products.length - processed,
+  },
+
+  imported,
+  updated,
+  restored,
+  skipped,
+  failed,
+};  }
 }

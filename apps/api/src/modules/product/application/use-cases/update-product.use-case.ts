@@ -90,7 +90,15 @@ export class UpdateProductUseCase {
         priorityOrder: variant.priorityOrder ?? index,
       }));
 
-      await this.variantSyncService.sync(product, normalizedVariants, tx);
+     await this.variantSyncService.sync(
+  product,
+  normalizedVariants,
+  tx,
+  {
+    preserveExistingVariants:
+      input.preserveExistingVariants === true,
+  },
+);
 
       const activeVariants = await this.variantSyncService.getActiveVariants(product.id, tx);
 

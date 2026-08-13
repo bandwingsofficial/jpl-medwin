@@ -161,139 +161,141 @@ export const OrderDetailsView = ({
           </div>
 
           <div className="relative z-20 flex w-full flex-wrap items-center gap-2 md:w-auto md:gap-3">
-            <OrderStatusBadge
-              status={order.status}
-            />
+  {/* MAKE PAYMENT - LEFT OF STATUS */}
+  {order.status === "PENDING_PAYMENT" && (
+    <Button
+      onClick={() =>
+        router.push(`/checkout/payment?orderId=${order.id}`)
+      }
+      className="
+        order-1
+        w-full
+        rounded-xl
+        bg-teal-600
+        px-4
+        font-semibold
+        text-white
+        shadow-sm
+        hover:bg-teal-700
+        sm:w-auto
+        md:order-none
+      "
+    >
+      Make Payment
+    </Button>
+  )}
 
-            {canRequestReturn && (
-              <Button
-                onClick={onRequestReturn}
-                className="
-                  w-full
-                  rounded-xl
-                  bg-amber-600
-                  px-4
-                  hover:bg-amber-700
-                  sm:w-auto
-                "
-              >
-                Request Return
-              </Button>
-            )}
+  {/* ORDER STATUS */}
+  <div className="order-2 md:order-none">
+    <OrderStatusBadge status={order.status} />
+  </div>
 
-            {hasReturnRequest && (
-              <Button
-                disabled
-                className="
-                  w-full
-                  cursor-not-allowed
-                  rounded-xl
-                  bg-amber-100
-                  px-4
-                  text-amber-700
-                  hover:bg-amber-100
-                  sm:w-auto
-                "
-              >
-                {order.returnRequest.type ===
-                "REPLACEMENT"
-                  ? "Replacement Requested"
-                  : "Refund Requested"}
-              </Button>
-            )}
+  {/* REQUEST RETURN */}
+  {canRequestReturn && (
+    <Button
+      onClick={onRequestReturn}
+      className="
+        order-3
+        w-full
+        rounded-xl
+        bg-amber-600
+        px-4
+        hover:bg-amber-700
+        sm:w-auto
+        md:order-none
+      "
+    >
+      Request Return
+    </Button>
+  )}
 
-            {/* 3-DOT MENU FOR ACTION BUTTONS */}
-            {hasDropdownActions && (
-              <div className="relative inline-flex shrink-0 items-center justify-center">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="ghost"
-                      className="
-                        flex
-                        h-10
-                        w-10
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-xl
-                        bg-gray-100
-                        p-0
-                        text-black/70
-                        hover:bg-black/5
-                      "
-                    >
-                      <MoreVertical className="h-5 w-5" />
-                    </Button>
-                  </DropdownMenuTrigger>
+  {/* RETURN REQUESTED */}
+  {hasReturnRequest && (
+    <Button
+      disabled
+      className="
+        order-3
+        w-full
+        cursor-not-allowed
+        rounded-xl
+        bg-amber-100
+        px-4
+        text-amber-700
+        hover:bg-amber-100
+        sm:w-auto
+        md:order-none
+      "
+    >
+      {order.returnRequest.type === "REPLACEMENT"
+        ? "Replacement Requested"
+        : "Refund Requested"}
+    </Button>
+  )}
 
-                  <DropdownMenuContent
-                    align="end"
-                    className="
-                      absolute
-                      right-0
-                      top-full
-                      z-50
-                      mt-2
-                      w-48
-                      rounded-xl
-                      border
-                      border-gray-100
-                      bg-white
-                      p-1
-                      shadow-lg
-                    "
-                  >
-                    {order.status === "PENDING_PAYMENT" && (
-                      <DropdownMenuItem
-                        onClick={() =>
-                          router.push(
-                            `/checkout/payment?orderId=${order.id}`
-                          )
-                        }
-                        className="
-                          flex
-                          cursor-pointer
-                          items-center
-                          gap-2
-                          rounded-lg
-                          px-3
-                          py-2
-                          text-sm
-                          font-semibold
-                          text-teal-600
-                          hover:bg-teal-50
-                        "
-                      >
-                        Make Payment
-                      </DropdownMenuItem>
-                    )}
+  {/* 3-DOT MENU - CANCEL ONLY */}
+  {canCancel && (
+    <div className="relative order-4 inline-flex shrink-0 items-center justify-center md:order-none">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="
+              flex
+              h-10
+              w-10
+              shrink-0
+              items-center
+              justify-center
+              rounded-xl
+              bg-gray-100
+              p-0
+              text-black/70
+              hover:bg-black/5
+            "
+          >
+            <MoreVertical className="h-5 w-5" />
+          </Button>
+        </DropdownMenuTrigger>
 
-                    {canCancel && (
-                      <DropdownMenuItem
-                        onClick={onCancel}
-                        className="
-                          flex
-                          cursor-pointer
-                          items-center
-                          gap-2
-                          rounded-lg
-                          px-3
-                          py-2
-                          text-sm
-                          font-semibold
-                          text-red-600
-                          hover:bg-red-50
-                        "
-                      >
-                        Cancel Order
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            )}
-          </div>
+        <DropdownMenuContent
+          align="end"
+          className="
+            z-50
+            mt-2
+            w-48
+            rounded-xl
+            border
+            border-gray-100
+            bg-white
+            p-1
+            shadow-lg
+          "
+        >
+          {/* CANCEL ORDER */}
+          <DropdownMenuItem
+            onClick={onCancel}
+            className="
+              flex
+              cursor-pointer
+              items-center
+              gap-2
+              rounded-lg
+              px-3
+              py-2
+              text-sm
+              font-semibold
+              text-red-600
+              hover:bg-red-50
+            "
+          >
+            <XCircle className="h-4 w-4" />
+            Cancel Order
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )}
+</div>
         </div>
       </div>
 

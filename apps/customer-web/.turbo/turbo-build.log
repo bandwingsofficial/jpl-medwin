@@ -1,0 +1,45 @@
+
+> customer-web@0.1.0 build D:\JPL project\jpl-frontend-update\apps\customer-web
+> next build
+
+
+
+#
+# Fatal process out of memory: Zone
+#
+----- Native stack trace -----
+
+
+<--- Last few GCs --->
+
+[11712:000002B3BF301000]     1163 ms: Scavenge 10.5 (13.2) -> 9.3 (18.0) MB, pooled: 0 MB, 1.65 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure; 
+[11712:000002B3BF301000]     1650 ms: Scavenge 16.2 (20.9) -> 13.9 (21.7) MB, pooled: 0 MB, 2.71 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure; 
+[11712:000002B3BF301000]     1847 ms: Scavenge 17.3 (21.9) -> 15.5 (23.2) MB, pooled: 1 MB, 4.10 / 0.00 ms  (average mu = 1.000, current mu = 1.000) allocation failure; 
+
+
+<--- JS stacktrace --->
+
+FATAL ERROR: Zone Allocation failed - process out of memory
+----- Native stack trace -----
+
+ ELIFECYCLE  Command failed with exit code 2147483651.
+ 1: 00007FF7397D4287 
+ 2: 00007FF7396A4CCF 
+ 3: 00007FF73A9A7536 
+ 4: 00007FF73A32E2B1 
+ 5: 00007FF739E0FB7B 
+ 6: 00007FF73AF3EFA2 
+ 7: 00007FF73AF3F4AC 
+ 8: 00007FF73AF3F684 
+ 9: 00007FF73AF3F03E 
+10: 00007FF73AF53692 
+11: 00007FF73AAC7E7C 
+12: 00007FF73AAC1B6A 
+13: 00007FF73A2AB504 
+14: 00007FF73A272002 
+15: 00007FF73A534836 
+16: 00007FF7396A7A70 
+17: 00007FF7398335D3 
+18: 00007FF73B0BFDCB 
+19: 00007FFBA3477374 
+20: 00007FFBA371CC91 

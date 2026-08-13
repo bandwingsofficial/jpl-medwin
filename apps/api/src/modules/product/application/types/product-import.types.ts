@@ -4,14 +4,10 @@ export type ParsedVariant = {
   sku: string;
 
   name: string;
-
-  purchasePrice: number;
-
-  sellingPrice: number;
-
-  mrp: number;
-
-  quantity: number;
+purchasePrice: number | undefined;
+sellingPrice: number | undefined;
+mrp: number | undefined;
+quantity: number | undefined;
 
   attributes: Record<string, string>;
 

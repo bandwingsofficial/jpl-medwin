@@ -158,16 +158,18 @@ export const useWishlist = () => {
       false,
   });
 
-  const wishlistIds =
-    useMemo(() => {
-      const ids =
-        query.data?.items?.map(
-          (item) =>
-            item.product.id
-        ) ?? [];
+ const wishlistIds = useMemo(() => {
+  const ids =
+    query.data?.items
+      ?.filter(
+        (item) => item?.product?.id
+      )
+      .map(
+        (item) => item.product.id
+      ) ?? [];
 
-      return new Set(ids);
-    }, [query.data]);
+  return new Set(ids);
+}, [query.data]);
 
   return {
     ...query,

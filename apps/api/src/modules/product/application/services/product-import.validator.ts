@@ -84,97 +84,181 @@ export class ProductImportValidatorService {
   // =======================
 
   private validateVariant(
-    variant: ParsedVariant,
-    variantIndex: number,
-    row: number,
-    productName: string,
-    errors: ProductImportValidationError[],
+  variant: ParsedVariant,
+  variantIndex: number,
+  row: number,
+  productName: string,
+  errors: ProductImportValidationError[],
+) {
+  // =========================
+  // VARIANT NAME
+  // =========================
+
+  if (!variant.name && productName !== variant.sku) {
+    errors.push({
+      row,
+      product: productName,
+      sku: variant.sku,
+      reason: 'Variant name is required',
+    });
+  }
+
+  // =========================
+  // PURCHASE PRICE
+  // =========================
+
+  if (
+    variant.purchasePrice !== undefined &&
+    variant.purchasePrice < 0
   ) {
-   if (productName === 'Denmax Bur Box Aluminium') {
-  console.log('========== VALIDATOR ==========');
-  console.log({
-    product: productName,
-    sku: variant.sku,
-    purchasePrice: variant.purchasePrice,
-    sellingPrice: variant.sellingPrice,
-    mrp: variant.mrp,
-  });
-}
-    // VARIANT NAME
+    errors.push({
+      row,
+      product: productName,
+      sku: variant.sku,
+      reason: 'Purchase price cannot be negative',
+    });
+  }
 
-   if (!variant.name && productName !== variant.sku) {
+  // =========================
+  // SELLING PRICE
+  // =========================
+
+  if (
+    variant.sellingPrice !== undefined &&
+    variant.sellingPrice < 0
+  ) {
+    errors.push({
+      row,
+      product: productName,
+      sku: variant.sku,
+      reason: 'Selling price cannot be negative',
+    });
+  }
+
+  // =========================
+  // MRP
+  // =========================
+
+  if (
+    variant.mrp !== undefined &&
+    variant.mrp < 0
+  ) {
+    errors.push({
+      row,
+      product: productName,
+      sku: variant.sku,
+      reason: 'MRP cannot be negative',
+    });
+  }
+
+  // =========================
+  // PRICE CHECK
+  // =========================
+
+  // Only compare when BOTH values are provided.
+  // Blank Selling Price is allowed.
+  // Blank Purchase Price is allowed.
+
+  if (
+    variant.purchasePrice !== undefined &&
+    variant.sellingPrice !== undefined &&
+    variant.purchasePrice > 0 &&
+    variant.sellingPrice > 0 &&
+    variant.sellingPrice < variant.purchasePrice
+  ) {
+    errors.push({
+      row,
+      product: productName,
+      sku: variant.sku,
+      reason:
+        'Selling Price must be greater than or equal to Purchase Price',
+    });
+  }
+
+  // =========================
+  // SELLING PRICE vs MRP
+  // =========================
+
+  // Only compare when BOTH values are provided.
+
+  if (
+    variant.sellingPrice !== undefined &&
+    variant.mrp !== undefined &&
+    variant.mrp > 0 &&
+    variant.sellingPrice > variant.mrp
+  ) {
+    errors.push({
+      row,
+      product: productName,
+      sku: variant.sku,
+      reason: 'Selling Price cannot exceed MRP',
+    });
+  }
+
+  // =========================
+  // STOCK
+  // =========================
+
+  if (
+    variant.quantity !== undefined &&
+    variant.quantity < 0
+  ) {
+    errors.push({
+      row,
+      product: productName,
+      sku: variant.sku,
+      reason: 'Quantity cannot be negative',
+    });
+  }
+
+  // =========================
+  // MAIN IMAGE
+  // =========================
+
+  if (
+    variant.images.main &&
+    !this.isValidUrl(variant.images.main)
+  ) {
+    errors.push({
+      row,
+      product: productName,
+      sku: variant.sku,
+      reason: 'Invalid main image URL',
+    });
+  }
+
+  // =========================
+  // GALLERY IMAGES
+  // =========================
+
+  for (const image of variant.images.gallery) {
+    if (!this.isValidUrl(image)) {
       errors.push({
         row,
         product: productName,
         sku: variant.sku,
-        reason: 'Variant name is required',
-      });
-    }
-
-    // PURCHASE PRICE
-
-    if (variant.purchasePrice < 0) {
-      errors.push({
-        row,
-        product: productName,
-        sku: variant.sku,
-        reason: 'Purchase price cannot be negative',
-      });
-    }
-
-    // SELLING PRICE
-
-    // MRP
-
-    // PRICE CHECK
-
-    // STOCK
-
-    if (variant.quantity < 0) {
-      errors.push({
-        row,
-        product: productName,
-        sku: variant.sku,
-        reason: 'Quantity cannot be negative',
-      });
-    }
-
-    // MAIN IMAGE
-
-    if (variant.images.main && !this.isValidUrl(variant.images.main)) {
-      errors.push({
-        row,
-        product: productName,
-        sku: variant.sku,
-        reason: 'Invalid main image URL',
-      });
-    }
-
-    // GALLERY IMAGES
-
-    for (const image of variant.images.gallery) {
-      if (!this.isValidUrl(image)) {
-        errors.push({
-          row,
-          product: productName,
-          sku: variant.sku,
-          reason: `Invalid gallery image URL (${image})`,
-        });
-      }
-    }
-
-    // WARRANTY
-
-    if (variant.warrantyMonths !== null && variant.warrantyMonths < 0) {
-      errors.push({
-        row,
-        product: productName,
-        sku: variant.sku,
-        reason: 'Warranty cannot be negative',
+        reason: `Invalid gallery image URL (${image})`,
       });
     }
   }
 
+  // =========================
+  // WARRANTY
+  // =========================
+
+  if (
+    variant.warrantyMonths !== null &&
+    variant.warrantyMonths !== undefined &&
+    variant.warrantyMonths < 0
+  ) {
+    errors.push({
+      row,
+      product: productName,
+      sku: variant.sku,
+      reason: 'Warranty cannot be negative',
+    });
+  }
+}
   // =======================
   // URL VALIDATION
   // =======================
