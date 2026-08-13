@@ -82,30 +82,52 @@ export function LoginForm({
   const [error, setError] = useState("");
 
   const handleSubmit = async () => {
-    if (!value.trim()) {
-      setError("Enter your email or phone number to continue");
-      return;
-    }
+  if (!value.trim()) {
+    setError("Enter your email or phone number to continue");
+    return;
+  }
 
-    try {
-      setError("");
+  try {
+    setError("");
 
-      const payload = value.includes("@")
-        ? { email: value }
-        : { phone: value };
+    const payload = value.includes("@")
+      ? { email: value.trim() }
+      : { phone: value.trim() };
 
-     await mutateAsync(payload);
+    await mutateAsync(payload);
 
-sessionStorage.setItem("login_identifier", value);
+    // Save login identifier for OTP page
+    sessionStorage.setItem("login_identifier", value.trim());
 
-// Close the login modal before opening OTP verification
-onClose?.();
+    // Save the page from where login was opened
+    const returnUrl =
+      window.location.pathname +
+      window.location.search +
+      window.location.hash;
 
-router.push("/verify-otp");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "We couldn't sign you in. Try again.");
-    }
-  };
+    sessionStorage.setItem("login_return_url", returnUrl);
+
+    // IMPORTANT:
+    // Navigate first.
+    router.push("/verify-otp");
+
+    // Do NOT close before router.push.
+    // The verify-otp page will replace the login UI.
+  } catch (err: unknown) {
+    const responseError = err as {
+      response?: {
+        data?: {
+          message?: string;
+        };
+      };
+    };
+
+    setError(
+      responseError.response?.data?.message ||
+        "We couldn't sign you in. Try again."
+    );
+  }
+};
 
   return (
     <div

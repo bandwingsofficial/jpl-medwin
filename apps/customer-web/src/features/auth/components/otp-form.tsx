@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { X } from "lucide-react";
 
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -81,7 +82,15 @@ export function OtpForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { mutateAsync, isPending } = useVerifyOtp();
+  const handleClose = () => {
+  const returnUrl =
+    sessionStorage.getItem("login_return_url") || "/";
 
+  sessionStorage.removeItem("login_identifier");
+  sessionStorage.removeItem("login_return_url");
+
+  router.replace(returnUrl);
+};
   const [digits, setDigits] = useState<string[]>(
     Array(OTP_LENGTH).fill("")
   );
@@ -175,41 +184,52 @@ useEffect(() => {
     }
   }
 
-  async function handleVerify() {
-    if (otp.length !== OTP_LENGTH) {
-      setError(`Please enter the ${OTP_LENGTH}-digit code`);
-      return;
-    }
-
-    try {
-      setError("");
-
-      const payload = identifier.includes("@")
-        ? { email: identifier }
-        : { phone: identifier };
-
-      await mutateAsync({
-        ...payload,
-        code: otp,
-        deviceId: "device-1",
-        deviceName:
-          typeof window !== "undefined" ? navigator.userAgent : "Chrome",
-        platform: "web",
-      });
-
-      await queryClient.invalidateQueries({ queryKey: ["me"] });
-
-      sessionStorage.removeItem("login_identifier");
-      router.replace("/");
-    } catch (err: any) {
-      const message =
-        err?.response?.data?.message || "Invalid code or session expired";
-
-      setDigits(Array(OTP_LENGTH).fill(""));
-      inputsRef.current[0]?.focus();
-      setError(message);
-    }
+ async function handleVerify() {
+  if (otp.length !== OTP_LENGTH) {
+    setError(`Please enter the ${OTP_LENGTH}-digit code`);
+    return;
   }
+
+  try {
+    setError("");
+
+    const payload = identifier.includes("@")
+      ? { email: identifier }
+      : { phone: identifier };
+
+    await mutateAsync({
+      ...payload,
+      code: otp,
+      deviceId: "device-1",
+      deviceName:
+        typeof window !== "undefined"
+          ? navigator.userAgent
+          : "Chrome",
+      platform: "web",
+    });
+
+    await queryClient.invalidateQueries({
+      queryKey: ["me"],
+    });
+
+    // Return to the page from which login was opened
+    const returnUrl =
+      sessionStorage.getItem("login_return_url") || "/";
+
+    sessionStorage.removeItem("login_identifier");
+    sessionStorage.removeItem("login_return_url");
+
+    router.replace(returnUrl);
+  } catch (err: any) {
+    const message =
+      err?.response?.data?.message ||
+      "Invalid code or session expired";
+
+    setDigits(Array(OTP_LENGTH).fill(""));
+    inputsRef.current[0]?.focus();
+    setError(message);
+  }
+}
 
   function handleResend() {
     if (secondsLeft > 0) return;
@@ -227,13 +247,23 @@ useEffect(() => {
   }
 
   return (
-    <div
-      className="flex items-end justify-center md:items-center p-0 md:p-6 min-h-screen md:min-h-0"
-      style={{ fontFamily: BODY_FONT }}
+   <div
+  className="flex items-end justify-center md:items-center p-0 md:p-6 min-h-screen md:min-h-0"
+  style={{ fontFamily: BODY_FONT }}
+>
+  <div className="relative flex w-full max-w-5xl flex-col md:flex-row overflow-hidden rounded-t-[28px] md:rounded-[28px] border-t md:border border-[#DCE6E2] bg-white shadow-[0_-24px_60px_-24px_rgba(14,107,92,0.18)] md:shadow-[0_24px_60px_-24px_rgba(14,107,92,0.18)] max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-visible">
+
+    {/* CLOSE BUTTON */}
+    <button
+      type="button"
+      onClick={handleClose}
+      aria-label="Close OTP verification"
+      className="absolute right-6 top-6 z-30 flex h-10 w-10 items-center justify-center rounded-full border border-[#DCE6E2] bg-white text-[#12231F] shadow-sm transition hover:bg-gray-50"
     >
-      {/* MAIN UNIFIED CONTAINER BOX */}
-      <div className="flex w-full max-w-5xl flex-col md:flex-row overflow-hidden rounded-t-[28px] md:rounded-[28px] border-t md:border border-[#DCE6E2] bg-white shadow-[0_-24px_60px_-24px_rgba(14,107,92,0.18)] md:shadow-[0_24px_60px_-24px_rgba(14,107,92,0.18)] max-h-[90vh] md:max-h-none overflow-y-auto md:overflow-visible">
-        
+      <X className="h-5 w-5" />
+    </button>
+
+    {/* LEFT — FORM SECTION */} 
         {/* LEFT — FORM SECTION WITH 30px / 48px PADDING */}
         <div className="flex w-full flex-col justify-between px-6 py-6 md:py-8 md:w-1/2 md:px-[48px] md:py-[30px]">
           <div className="space-y-6">
