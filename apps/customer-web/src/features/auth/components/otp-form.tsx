@@ -142,7 +142,7 @@ useEffect(() => {
   }, [mounted, secondsLeft]);
 
   const otp = digits.join("");
-
+  
   function updateDigit(index: number, raw: string) {
     const value = raw.replace(/\D/g, "");
 
@@ -230,6 +230,17 @@ useEffect(() => {
     setError(message);
   }
 }
+useEffect(() => {
+  if (otp.length !== OTP_LENGTH) {
+    return;
+  }
+
+  if (isPending) {
+    return;
+  }
+
+  void handleVerify();
+}, [otp, isPending]);
 
   function handleResend() {
     if (secondsLeft > 0) return;
