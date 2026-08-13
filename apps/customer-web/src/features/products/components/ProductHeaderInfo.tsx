@@ -101,7 +101,7 @@ export function ProductHeaderInfo({
         drop-shadow-[0_1px_1px_rgba(13,148,136,0.12)]
       "
     >
-    {product.brand.name}
+    {product.brand.name.toUpperCase()}
     </span>
   </div>
 )}
