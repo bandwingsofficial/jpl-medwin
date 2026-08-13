@@ -212,14 +212,11 @@ useEffect(() => {
       queryKey: ["me"],
     });
 
-    // Return to the page from which login was opened
-    const returnUrl =
-      sessionStorage.getItem("login_return_url") || "/";
+   // Login successful → always go to Home
+sessionStorage.removeItem("login_identifier");
+sessionStorage.removeItem("login_return_url");
 
-    sessionStorage.removeItem("login_identifier");
-    sessionStorage.removeItem("login_return_url");
-
-    router.replace(returnUrl);
+router.replace("/");
   } catch (err: any) {
     const message =
       err?.response?.data?.message ||
