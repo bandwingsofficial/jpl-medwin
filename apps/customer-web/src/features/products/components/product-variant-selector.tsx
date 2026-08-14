@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Loader2,
   Minus,
@@ -37,7 +37,8 @@ export function ProductVariantSelector({
 }: ProductVariantSelectorProps) {
   const scrollContainerRef =
     useRef<HTMLDivElement | null>(null);
-
+  const [loadingVariantId, setLoadingVariantId] =
+  useState<string | null>(null);
   const variantRefs = useRef<
     Record<string, HTMLDivElement | null>
   >({});
@@ -188,29 +189,37 @@ const topSafeArea = isMobile ? 75 : 140;
    * ================================================================
    */
 
-  const handleAddToCart = (
-    variant: ProductVariant
-  ) => {
-    const stockQuantity =
-      variant.stock?.quantity ?? 0;
+ const handleAddToCart = (
+  variant: ProductVariant
+) => {
+  const stockQuantity =
+    variant.stock?.quantity ?? 0;
 
-    const isInStock =
-      stockQuantity > 0;
+  const isInStock =
+    stockQuantity > 0;
 
-    if (!isInStock) {
-      return;
-    }
+  if (!isInStock) {
+    return;
+  }
 
-    addToCart({
+  setLoadingVariantId(variant.id);
+
+  addToCart(
+    {
       productId: product.id,
       variantId: variant.id,
       quantity: 1,
       product,
-    });
+    },
+    {
+      onSettled: () => {
+        setLoadingVariantId(null);
+      },
+    },
+  );
 
-    onChange(variant.id);
-  };
-
+  onChange(variant.id);
+};
   /*
    * ================================================================
    * INCREMENT
