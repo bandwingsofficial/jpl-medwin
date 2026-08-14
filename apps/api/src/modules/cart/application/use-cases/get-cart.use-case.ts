@@ -3,7 +3,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
-
+import { ProductS3ImageResolverService } from '@/modules/product/application/services/product-s3-image-resolver.service';
 import { ProductRepository } from '@/modules/product/domain/repositories/product.repository';
 
 import { CartRepository } from '../../domain/repositories/cart.repository';
@@ -27,6 +27,8 @@ export class GetCartUseCase {
     private readonly productRepo: ProductRepository,
 
     private readonly summaryService: CartSummaryService,
+
+    private readonly productS3ImageResolver: ProductS3ImageResolverService,
   ) {}
 
   async execute(input: {
@@ -95,6 +97,10 @@ export class GetCartUseCase {
         if (!variant) {
           return null;
         }
+        const s3Images =
+  await this.productS3ImageResolver.resolveProductImages(
+    product.name,
+  );
 
         return {
           id: cartItem.id,
@@ -142,10 +148,14 @@ export class GetCartUseCase {
               inStock: variant.quantity > 0,
             },
 
-            images: {
-              main:
-                variant.images?.[0]?.url ?? cartItem.imageUrl ?? product.images?.[0]?.url ?? null,
-            },
+           images: {
+  main:
+    s3Images.mainImage ??
+    variant.images?.[0]?.url ??
+    cartItem.imageUrl ??
+    product.images?.[0]?.url ??
+    null,
+},
           },
 
           totals: this.summaryService.buildItemSummary(cartItem),
