@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useLogin } from "../hooks/use-login";
-
+import { useAuthModal } from "@/shared/context/auth-modal-context";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
 import { Label } from "@/shared/components/ui/label";
@@ -76,6 +76,7 @@ export function LoginForm({
   onClose,
 }: LoginFormProps) {
   const router = useRouter();
+  const { setLoginOpen } = useAuthModal();
   const { mutateAsync, isPending } = useLogin();
 
   const [value, setValue] = useState("");
@@ -107,9 +108,11 @@ export function LoginForm({
 
     sessionStorage.setItem("login_return_url", returnUrl);
 
-    // IMPORTANT:
-    // Navigate first.
-    router.push("/verify-otp");
+    // Close login modal before navigating to OTP page
+setLoginOpen(false);
+onClose?.();
+
+router.push("/verify-otp");
 
     // Do NOT close before router.push.
     // The verify-otp page will replace the login UI.
