@@ -118,17 +118,11 @@ export class VariantSyncService {
     // VALIDATE SKU
     // ==========================================================
 
-    const inputSku = input?.sku
-      ? String(input.sku).trim()
-      : '';
+    let inputSku = input?.sku
+  ? String(input.sku).trim()
+  : '';
 
-    if (!inputSku) {
-      throw new ConflictException(
-        `SKU is required for variant "${input?.name ?? index + 1}"`,
-      );
-    }
-
-    const normalizedSku = inputSku.toUpperCase();
+const normalizedSku = inputSku.toUpperCase();
 
     // ==========================================================
     // PRICE VALIDATION
@@ -151,23 +145,30 @@ export class VariantSyncService {
     // This is the important part.
     // ==========================================================
 
-    let existing: Variant | undefined;
+   let existing: Variant | undefined;
 
-    // ----------------------------------------------------------
-    // First: ID match
-    // ----------------------------------------------------------
+// 1. Match by ID
+if (input.id) {
+  existing = existingById.get(input.id);
+}
 
-    if (input.id) {
-      existing = existingById.get(input.id);
-    }
+// 2. Match by Excel SKU
+if (!existing && normalizedSku) {
+  existing = existingBySku.get(normalizedSku);
+}
 
-    // ----------------------------------------------------------
-    // Second: SKU match
-    // ----------------------------------------------------------
+// 3. OVERRIDE with blank SKU:
+// Match the existing variant by priority/order.
+if (!existing && preserveExistingVariants) {
+  existing = existingVariants.find(
+    (variant) => variant.priorityOrder === (input.priorityOrder ?? index),
+  );
+}
 
-    if (!existing) {
-      existing = existingBySku.get(normalizedSku);
-    }
+// 4. If existing variant found, ALWAYS preserve its SKU.
+if (existing) {
+  inputSku = existing.sku;
+}
 
     // ==========================================================
     // 🔥 EXISTING VARIANT → UPDATE
@@ -276,7 +277,17 @@ export class VariantSyncService {
     // Do NOT generate a different SKU here.
     // ----------------------------------------------------------
 
-    const sku = inputSku;
+    let sku = inputSku;
+
+if (!sku) {
+  sku = await this.skuService.resolveVariantSku({
+    brandId: product.brandId,
+    customerType: product.customerType,
+    productId: product.id,
+    variantIndex: index,
+    tx,
+  });
+}
 
     // ----------------------------------------------------------
     // Check global SKU ownership

@@ -87,102 +87,100 @@ export class ImportProductsUseCase {
     // =======================
 
     for (const product of products) {
-      try {
-        // =======================
-        // 🔥 RESOLVE IDS
-        // =======================
+  try {
+    // =========================
+    // 🔍 CHECK EXISTING PRODUCT FIRST
+    // =========================
 
-        const dto = await this.resolver.resolve(product);
+    const slug = new SlugVO(product.name).getValue();
 
-        console.log('ImportProductsUseCase resolved DTO mainImage:', dto.mainImage);
+    const existing = await this.productRepo.findBySlug(slug, true);
 
-        // =======================
-        // 🔍 EXISTING PRODUCT
-        // =======================
+    // =========================
+    // ⏭ SKIP
+    // =========================
 
-        const slug = new SlugVO(product.name).getValue();
+    if (existing && mode === ImportMode.SKIP) {
+      skipped.push({
+        product: product.name,
+        reason: 'Product already exists',
+      });
 
-        const existing = await this.productRepo.findBySlug(slug, true);
-
-        // =======================
-        // ⏭ SKIP
-        // =======================
-
-        if (existing && mode === ImportMode.SKIP) {
-          skipped.push({
-            product: product.name,
-
-            reason: 'Product already exists',
-          });
-
-          continue;
-        }
-
-        // =======================
-        // ♻ RESTORE
-        // =======================
-
-        if (existing && existing.isDeleted?.() && mode === ImportMode.RESTORE) {
-          existing.restore();
-
-          existing.activate();
-
-          await this.productRepo.update(existing);
-
-          restored.push({
-            id: existing.id,
-
-            product: existing.name,
-          });
-
-          continue;
-        }
-
-        // =======================
-        // 🔄 OVERRIDE
-        // =======================
-
-        if (existing && mode === ImportMode.OVERRIDE) {
-          console.log('OVERRIDE MODE', product.name);
-          const result = await this.updateProductUseCase.execute({
-  id: existing.id,
-
-  ...dto,
-
-  // 🔥 Import OVERRIDE behavior
-  preserveExistingVariants: true,
-});
-
-          updated.push({
-            id: result.id,
-
-            product: result.name,
-          });
-
-          continue;
-        }
-
-        // =======================
-        // 🆕 CREATE
-        // =======================
-
-        const created = await this.createProductUseCase.execute(dto);
-
-        imported.push({
-          id: created.id,
-
-          product: created.name,
-
-          variants: created.variants?.length ?? 0,
-        });
-      } catch (e: any) {
-  failed.push({
-    product: product.name,
-    reason: e?.message ?? 'Unknown import error',
-  });
-}
+      continue;
     }
 
+    // =========================
+    // ♻ RESTORE
+    // =========================
+
+    if (
+      existing &&
+      existing.isDeleted?.() &&
+      mode === ImportMode.RESTORE
+    ) {
+      existing.restore();
+      existing.activate();
+
+      await this.productRepo.update(existing);
+
+      restored.push({
+        id: existing.id,
+        product: existing.name,
+      });
+
+      continue;
+    }
+
+    // =========================
+    // 🔥 RESOLVE IDS / IMAGES
+    // =========================
+
+    const dto = await this.resolver.resolve(product);
+
+    console.log(
+      'ImportProductsUseCase resolved DTO mainImage:',
+      dto.mainImage,
+    );
+
+    // =========================
+    // 🔄 OVERRIDE
+    // =========================
+
+    if (existing && mode === ImportMode.OVERRIDE) {
+      console.log('OVERRIDE MODE', product.name);
+
+      const result = await this.updateProductUseCase.execute({
+        id: existing.id,
+        ...dto,
+        preserveExistingVariants: true,
+      });
+
+      updated.push({
+        id: result.id,
+        product: result.name,
+      });
+
+      continue;
+    }
+
+    // =========================
+    // 🆕 CREATE
+    // =========================
+
+    const created = await this.createProductUseCase.execute(dto);
+
+    imported.push({
+      id: created.id,
+      product: created.name,
+      variants: created.variants?.length ?? 0,
+    });
+  } catch (e: any) {
+    failed.push({
+      product: product.name,
+      reason: e?.message ?? 'Unknown import error',
+    });
+  }
+}
     // =======================
     // 📊 SUMMARY
     // =======================

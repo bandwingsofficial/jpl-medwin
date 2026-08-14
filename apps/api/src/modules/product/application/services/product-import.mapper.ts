@@ -102,7 +102,10 @@ console.log({
           brand: ExcelParserHelper.normalizeText(
   ExcelParserHelper.getValue(row, 'brand'),
 ),
-       customerType: 'CUSTOMER',
+      customerType:
+  ExcelParserHelper.normalizeText(
+    ExcelParserHelper.getValue(row, 'customer_type'),
+  ) || 'CUSTOMER',
           hsnCode: ExcelParserHelper.normalizeText(
   ExcelParserHelper.getValue(
     row,

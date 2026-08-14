@@ -68,11 +68,12 @@ export class UpdateProductUseCase {
 
       if (productChanged) {
         await this.validationService.validate({
-          categoryId: product.categoryId,
-          subCategoryId: product.subCategoryId,
-          miniCategoryId: product.miniCategoryId,
-          brandId: product.brandId,
-        });
+  categoryId: product.categoryId,
+  subCategoryId: product.subCategoryId,
+  miniCategoryId: product.miniCategoryId,
+  brandId: product.brandId,
+  customerType: product.customerType,
+});
 
         await this.productRepo.update(product, tx);
       }

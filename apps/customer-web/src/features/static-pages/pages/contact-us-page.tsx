@@ -595,11 +595,11 @@ export function ContactUsPage() {
                 AVAILABLE NOW
               </span>
             </div>
-            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(20px, 2.5vw, 26px)", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2, marginBottom: 8 }}>
+            <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(20px, 2.5vw, 24px)", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2, marginBottom: 8 }}>
               Need Dental Supplies Urgently?
             </h3>
-             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(20px, 2.5vw, 26px)", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2, marginBottom: 8 }}>
-              Genuine Dental Products • Fast Delivery • Reliable Support
+             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(20px, 2.5vw, 20px)", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2, marginBottom: 8 }}>
+              • Genuine Dental Products • Fast Delivery • Reliable Support
             </h3>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6, maxWidth: 440 }}>
               From dental consumables and instruments to equipment — we’re here to help with your urgent requirements.
@@ -607,7 +607,7 @@ export function ContactUsPage() {
           </div>
           <a href="tel:+919187969350" className="ct-call-btn">
             <Phone size={15} />
-            📞 Call / WhatsApp: +91 91879 69350
+            Call / WhatsApp: +91 91879 69350
           </a>
         </div>
       </section>
