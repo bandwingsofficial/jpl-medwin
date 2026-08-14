@@ -221,8 +221,10 @@ constructor(
       await this.productS3ImageResolver.resolveProductImages(
         product.name,
       );
-    mapped.images.main = s3Images.mainImage;
-    mapped.images.gallery = s3Images.galleryImages;
+   mapped.images = {
+  main: s3Images.mainImage,
+  gallery: s3Images.galleryImages,
+};
 
     if (input.includeVariants === false) {
       mapped.variants = [];

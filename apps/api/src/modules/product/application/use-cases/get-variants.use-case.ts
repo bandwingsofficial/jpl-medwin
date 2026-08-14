@@ -7,7 +7,7 @@ import { VariantRepository } from '../../domain/repositories/variant.repository'
 import { ProductRepository } from '../../domain/repositories/product.repository';
 
 import { ProductImageRepository } from '../../domain/repositories/product-image.repository';
-
+import { ProductS3ImageResolverService } from '../services/product-s3-image-resolver.service';
 import { ProductStatus } from '../../domain/enums/product-status.enum';
 
 type GetVariantsInput = {
@@ -35,6 +35,8 @@ export class GetVariantsUseCase {
 
     @Inject(TOKENS.PRODUCT_IMAGE_REPO)
     private readonly imageRepo: ProductImageRepository,
+
+    private readonly productS3ImageResolver: ProductS3ImageResolverService,
   ) {}
 
   async execute(input: GetVariantsInput) {
@@ -47,6 +49,10 @@ export class GetVariantsUseCase {
     if (!product) {
       throw new NotFoundException('Product not found');
     }
+    const s3Images =
+  await this.productS3ImageResolver.resolveProductImages(
+    product.name,
+  );
 
     // =======================
     // 📄 PAGINATION
@@ -186,12 +192,21 @@ variants: paginated.map((variant) => {
 
           warrantyMonths: variant.warrantyMonths ?? null,
 
-          images: {
-            main: imgs.find((i) => i.type === 'MAIN')?.url ?? null,
+        images: {
+  main:
+    imgs.find((i) => i.type === 'MAIN')?.url ??
+    s3Images.mainImage ??
+    null,
 
-            gallery: imgs.filter((i) => i.type === 'GALLERY').map((i) => i.url),
-          },
-
+  gallery:
+    imgs
+      .filter((i) => i.type === 'GALLERY')
+      .map((i) => i.url).length > 0
+      ? imgs
+          .filter((i) => i.type === 'GALLERY')
+          .map((i) => i.url)
+      : s3Images.galleryImages,
+},
           createdAt: variant.createdAt,
 
           updatedAt: variant.updatedAt,
