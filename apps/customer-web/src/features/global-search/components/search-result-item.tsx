@@ -93,8 +93,10 @@ export function SearchResultItem({
                   ₹{Number(item.price).toLocaleString()}
                 </span>
 
-                {item.mrp &&
-                  item.mrp > item.price && (
+                {item.mrp !== undefined &&
+  item.mrp !== null &&
+  Number(item.mrp) > 0 &&
+  Number(item.mrp) > Number(item.price) && (
                     <>
                       <span className="text-xs text-slate-400 line-through">
                         ₹{Number(item.mrp).toLocaleString()}
