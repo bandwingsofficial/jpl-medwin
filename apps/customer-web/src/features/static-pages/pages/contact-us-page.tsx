@@ -469,12 +469,16 @@ export function ContactUsPage() {
   href="mailto:connect@jplmedwin.com"
   style={{
     fontFamily: "'Outfit', sans-serif",
-    fontSize: 18,
+    fontSize: "clamp(14px, 2.5vw, 18px)",
     fontWeight: 600,
     color: "#0F172A",
     marginBottom: 4,
     textDecoration: "none",
-    display: "inline-block",
+    display: "block",
+    maxWidth: "100%",
+    overflowWrap: "anywhere",
+    wordBreak: "break-word",
+    lineHeight: 1.4,
     transition: "color 0.2s ease",
     cursor: "pointer",
   }}
@@ -592,17 +596,14 @@ export function ContactUsPage() {
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
               <div className="ct-pulse-dot" />
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "#2DD4BF", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500 }}>
-                AVAILABLE NOW
+                NEED IT URGENTLY? WE’RE HERE.
               </span>
             </div>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(20px, 2.5vw, 24px)", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2, marginBottom: 8 }}>
-              Need Dental Supplies Urgently?
-            </h3>
-             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(20px, 2.5vw, 20px)", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2, marginBottom: 8 }}>
-              • Genuine Dental Products • Fast Delivery • Reliable Support
+              Dental Materials | Instruments | Equipment | Consumables
             </h3>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6, maxWidth: 440 }}>
-              From dental consumables and instruments to equipment — we’re here to help with your urgent requirements.
+              Quick Response • Timely Delivery • Personal Support
             </p>
           </div>
           <a href="tel:+919187969350" className="ct-call-btn">
