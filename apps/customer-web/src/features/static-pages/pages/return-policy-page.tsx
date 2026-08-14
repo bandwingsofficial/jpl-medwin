@@ -85,7 +85,7 @@ export function ReturnPolicyPage() {
           <section className="p-5 bg-white border border-slate-200 rounded-xl shadow-sm">
             <div className="flex items-center gap-2 mb-4">
               <HelpCircle className="h-5 w-5 text-blue-600" />
-              <h2 className="font-bold text-slate-900">How to Open a Claim</h2>
+              <h2 className="font-bold text-slate-900">How to Open a Claim Request</h2>
             </div>
             <ol className="space-y-2 text-sm list-decimal pl-4">
               <li>Navigate to your dashboard panel and open <strong>My Orders</strong>.</li>

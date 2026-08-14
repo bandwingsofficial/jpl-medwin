@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const stats = [
-  { value: "15+", label: "Years of Excellence" },
+  { value: "5+", label: "Years of Excellence" },
   { value: "100+", label: "Trusted Brands" },
   { value: "2,000+", label: "Products Available" },
   { value: "25+", label: "States Served Across India" },
@@ -1126,7 +1126,7 @@ export function AboutUsPage() {
           {/* Ticker */}
           <div style={{ overflow: "hidden", flex: 1 }}>
             <div className="cert-ticker-track">
-              {[...["ISO 13485:2016", "CE Mark", "FDA Registered", "CDSCO Approved", "GST Registered"], ...["ISO 13485:2016", "CE Mark", "FDA Registered", "CDSCO Approved", "GST Registered"]].map((cert, i) => (
+              {[...["ISO 9001:2015", "CE Mark", "FDA Registered", "CDSCO Approved", "GST Registered"], ...["ISO 9001:2015", "CE Mark", "FDA Registered", "CDSCO Approved", "GST Registered"]].map((cert, i) => (
                 <div key={i} className="cert-item">
                   <div className="cert-dot" />
                   <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 12, color: "#334155", fontWeight: 500 }}>{cert}</span>

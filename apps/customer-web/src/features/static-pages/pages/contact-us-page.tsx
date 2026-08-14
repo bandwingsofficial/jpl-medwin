@@ -397,7 +397,7 @@ export function ContactUsPage() {
                 lineHeight: 1.65,
                 maxWidth: 520,
               }}>
-                For product inquiries, order support, or service-related questions, the{" "}
+                For product enquiries, order support, or service-related questions, the{" "}
                 <span style={{ color: "#2DD4BF", fontWeight: 500 }}>JPL Markwin</span> team is here to provide expert assistance.
               </p>
             </div>
@@ -555,7 +555,7 @@ export function ContactUsPage() {
             <div className="ct-badge-row">
               <div className="ct-badge-item">
                 <ShieldCheck size={15} color="#0D9488" style={{ flexShrink: 0 }} />
-                <span>ISO 13485:2016 Facility</span>
+                <span>ISO 9001:2015 Facility</span>
               </div>
               <div className="ct-badge-item">
                 <Truck size={15} color="#0D9488" style={{ flexShrink: 0 }} />
@@ -592,19 +592,22 @@ export function ContactUsPage() {
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
               <div className="ct-pulse-dot" />
               <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 11, color: "#2DD4BF", letterSpacing: "0.12em", textTransform: "uppercase", fontWeight: 500 }}>
-                Available Now
+                AVAILABLE NOW
               </span>
             </div>
             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(20px, 2.5vw, 26px)", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2, marginBottom: 8 }}>
-              Need immediate assistance?
+              Need Dental Supplies Urgently?
+            </h3>
+             <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(20px, 2.5vw, 26px)", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2, marginBottom: 8 }}>
+              Genuine Dental Products • Fast Delivery • Reliable Support
             </h3>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "rgba(255,255,255,0.5)", lineHeight: 1.6, maxWidth: 440 }}>
-              Our procurement specialists are just a call away for urgent medical supplies and order support.
+              From dental consumables and instruments to equipment — we’re here to help with your urgent requirements.
             </p>
           </div>
           <a href="tel:+919187969350" className="ct-call-btn">
             <Phone size={15} />
-            Call Now — +91 91879 69350  
+            📞 Call / WhatsApp: +91 91879 69350
           </a>
         </div>
       </section>

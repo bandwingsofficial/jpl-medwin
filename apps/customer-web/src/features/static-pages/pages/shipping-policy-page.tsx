@@ -65,7 +65,7 @@ export function ShippingPolicyPage() {
           <section className="space-y-4">
             <div className="flex items-center gap-3 border-b border-slate-100 pb-3">
               <FileText className="h-5 w-5 text-blue-600" />
-              <h2 className="text-lg font-bold text-slate-900">3. How to Open a Claim</h2>
+              <h2 className="text-lg font-bold text-slate-900">3. How to Open a Claim Request</h2>
             </div>
             <ol className="text-sm space-y-2 list-decimal pl-4">
               <li>Navigate to your dashboard and open <strong>My Orders</strong>.</li>
