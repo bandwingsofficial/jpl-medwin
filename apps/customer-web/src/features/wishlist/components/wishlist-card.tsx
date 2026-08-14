@@ -134,9 +134,12 @@ const handleAddToCart = async () => {
 
   try {
     await updateCartItem({
-      productId: cartItem.productId,
-      variantId: variant.id,
-      quantity: cartQuantity + 1,
+     productId: cartItem.productId,
+  variantId: variant.id,
+  cartItemId: isAuthenticated
+    ? cartItem.id
+    : undefined,
+  quantity: cartQuantity + 1,
     });
   } catch (error) {
     console.error("UPDATE CART ERROR", error);
@@ -164,9 +167,12 @@ const handleAddToCart = async () => {
     }
 
     await updateCartItem({
-      productId: cartItem.productId,
-      variantId: variant.id,
-      quantity: cartQuantity - 1,
+     productId: cartItem.productId,
+  variantId: variant.id,
+  cartItemId: isAuthenticated
+    ? cartItem.id
+    : undefined,
+  quantity: cartQuantity - 1,
     });
   } catch (error) {
     console.error("UPDATE/REMOVE CART ERROR", error);
