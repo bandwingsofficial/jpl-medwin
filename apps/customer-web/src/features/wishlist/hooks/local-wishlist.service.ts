@@ -78,6 +78,7 @@ class LocalWishlistService {
     this.saveItems(items);
   }
 
+  
   clear() {
     localStorage.removeItem(
       STORAGE_KEY

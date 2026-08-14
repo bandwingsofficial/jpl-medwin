@@ -1,6 +1,8 @@
 "use client";
 
 import { GuestCartMigration } from "@/features/cart/components/guest-cart-migration";
+import { WishlistMigrationProvider } from "@/features/wishlist/components/wishlist-migration-provider";
+
 import {
   QueryClient,
   QueryClientProvider,
@@ -44,6 +46,7 @@ export function QueryProvider({
     <QueryClientProvider client={queryClient}>
       {children}
 <GuestCartMigration />
+<WishlistMigrationProvider />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

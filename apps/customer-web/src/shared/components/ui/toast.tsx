@@ -72,7 +72,7 @@ export function Toast() {
     <div
       className="
         fixed
-        top-4
+        top-24
         right-4
         z-[9999]
         animate-in

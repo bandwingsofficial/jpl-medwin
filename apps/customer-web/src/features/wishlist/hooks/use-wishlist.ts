@@ -113,61 +113,54 @@ export const useWishlist = () => {
   const { isAuthenticated } =
     useAuth();
 
-  const query = useQuery({
-    queryKey: ["wishlist"],
+const query = useQuery({
+  queryKey: ["wishlist", isAuthenticated],
 
-    queryFn: async () => {
-      if (isAuthenticated) {
-        return wishlistApi.getWishlist();
-      }
+  queryFn: async () => {
+    if (isAuthenticated) {
+      return wishlistApi.getWishlist();
+    }
 
-      const products =
-        localWishlistService.getAll();
+    const products = localWishlistService.getAll();
 
-      return {
-        success: true,
-
-        message: "Guest wishlist",
-
-        items: products.map(
-          (product) => ({
-            wishlistId:
-              product.id,
-
-            product:
-              mapProductToWishlistProduct(
-                product as any
-              ),
-
-            addedAt:
-              new Date().toISOString(),
-          })
+    return {
+      success: true,
+      message: "Guest wishlist",
+      items: products.map((product) => ({
+        wishlistId: product.id,
+        product: mapProductToWishlistProduct(
+          product as Product
         ),
+        addedAt: new Date().toISOString(),
+      })),
+      totalItems: products.length,
+    };
+  },
 
-        totalItems:
-          products.length,
-      };
-    },
+  enabled: isAuthenticated !== undefined,
 
-    staleTime:
-      1000 * 60 * 2,
+  staleTime: 0,
 
-    retry: 1,
+  retry: 1,
 
-    refetchOnWindowFocus:
-      false,
-  });
+  refetchOnWindowFocus: true,
 
-  const wishlistIds =
-    useMemo(() => {
-      const ids =
-        query.data?.items?.map(
-          (item) =>
-            item.product.id
-        ) ?? [];
+  // IMPORTANT
+  refetchOnMount: true,
+});
 
-      return new Set(ids);
-    }, [query.data]);
+ const wishlistIds = useMemo(() => {
+  const items = query.data?.items ?? [];
+
+  return new Set(
+    items
+      .map((item) => item?.product?.id)
+      .filter(
+        (id): id is string =>
+          typeof id === "string" && id.length > 0
+      )
+  );
+}, [query.data?.items]);
 
   return {
     ...query,

@@ -69,15 +69,34 @@ export const useAddToWishlist = () => {
       ]);
     },
 
-    onError: (
-      error
-    ) => {
-      showError(
-        error.response?.data
-          ?.message ??
-          "Failed to add wishlist"
-      );
-    },
+  onError: async (error) => {
+  const message =
+    error.response?.data?.message ??
+    "Failed to add wishlist";
+
+  // Refresh wishlist even when backend says
+  // the product already exists.
+  await Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: ["wishlist"],
+    }),
+
+    queryClient.invalidateQueries({
+      queryKey: ["wishlist-count"],
+    }),
+  ]);
+
+  const alreadyExists =
+    message.toLowerCase().includes("already exists") ||
+    message.toLowerCase().includes("already exist");
+
+  // Don't show an error for an already-wishlisted product.
+  if (alreadyExists) {
+    return;
+  }
+
+  showError(message);
+},
 
     retry: false,
   });
