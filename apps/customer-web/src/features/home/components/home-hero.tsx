@@ -393,8 +393,8 @@ if (heroImages.length === 0) {
     overflow-hidden
     rounded-[16px]
     bg-white
+    px-2
     py-2
-
     md:px-4
     md:py-4
     md:rounded-[24px]

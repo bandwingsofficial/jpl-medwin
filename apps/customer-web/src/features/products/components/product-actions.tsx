@@ -294,10 +294,13 @@ const isInStock = stockQuantity > 0;
 
 
     updateCart({
-      productId: cartItem.productId,
-      variantId: selectedVariant.id,
-      quantity: quantity + 1,
-    });
+  productId: cartItem.productId,
+  variantId: selectedVariant.id,
+  cartItemId: isAuthenticated
+    ? cartItem.id
+    : undefined,
+  quantity: quantity + 1,
+});
   };
 
   /*
@@ -323,11 +326,14 @@ const isInStock = stockQuantity > 0;
       return;
     }
 
-    updateCart({
-      productId: cartItem.productId,
-      variantId: selectedVariant.id,
-      quantity: quantity - 1,
-    });
+   updateCart({
+  productId: cartItem.productId,
+  variantId: selectedVariant.id,
+  cartItemId: isAuthenticated
+    ? cartItem.id
+    : undefined,
+  quantity: quantity - 1,
+});
   };
 
   /*
