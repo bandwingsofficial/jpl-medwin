@@ -7,7 +7,7 @@ import CartCoupon from "./cart-coupon";
 import { showError } from "@/shared/store/toast.store";
 import { useRemoveCoupon } from "@/features/cart/hooks/use-remove-coupon";
 import { X, Trash2 } from "lucide-react";
-
+import { useAuthModal } from "@/shared/context/auth-modal-context";
 interface CartSummaryProps {
   cart: Cart;
 }
@@ -26,6 +26,7 @@ export function CartSummary({ cart }: CartSummaryProps) {
    |--------------------------------------------------------------------------
    */
   const { isAuthenticated } = useAuth();
+const { setLoginOpen } = useAuthModal();
 
   /*
    |--------------------------------------------------------------------------
@@ -61,35 +62,23 @@ export function CartSummary({ cart }: CartSummaryProps) {
    |--------------------------------------------------------------------------
    */
   const handleCheckout = () => {
-    /*
-     |--------------------------------------------------------------------------
-     | LOGIN CHECK
-     |--------------------------------------------------------------------------
-     */
-    if (!isAuthenticated) {
-      showError("Please login first to continue checkout.");
-      router.push("/login");
-      return;
-    }
+  if (!cart.cartItems?.length) {
+    showError("Your cart is empty.");
+    return;
+  }
 
-    /*
-     |--------------------------------------------------------------------------
-     | EMPTY CART CHECK
-     |--------------------------------------------------------------------------
-     */
-    if (!cart.cartItems?.length) {
-      showError("Your cart is empty.");
-      return;
-    }
+  if (!isAuthenticated) {
+    sessionStorage.setItem(
+      "login_redirect_after_auth",
+      "/checkout",
+    );
 
-    /*
-     |--------------------------------------------------------------------------
-     | NAVIGATE
-     |--------------------------------------------------------------------------
-     */
-    router.push("/checkout");
-  };
+    setLoginOpen(true);
+    return;
+  }
 
+  router.push("/checkout");
+};
   /*
    |--------------------------------------------------------------------------
    | REMOVE COUPON HANDLER
