@@ -36,12 +36,36 @@ export function ContactUsPage() {
   const ctaRef = useScrollReveal(150);
 
   return (
-    <div style={{ fontFamily: "'DM Sans', sans-serif", color: "#0F172A", background: "#FFFFFF", width: "100%", overflowX: "hidden" }}>
-      <style dangerouslySetInnerHTML={{
+    <div
+  className="ct-contact-page"
+  style={{
+    fontFamily: "'DM Sans', sans-serif",
+    color: "#0F172A",
+    background: "#FFFFFF",
+    width: "100%",
+    maxWidth: "100%",
+    overflowX: "hidden",
+  }}
+> <style dangerouslySetInnerHTML={{
         __html: `
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
         *, *::before, *::after { box-sizing: border-box; }
+       
+  /* Hide scrollbar for Contact Us page */
+.ct-contact-page {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.ct-contact-page::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
 
         /* Scroll reveal */
         .ct-reveal {
