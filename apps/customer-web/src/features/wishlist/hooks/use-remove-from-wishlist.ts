@@ -45,31 +45,19 @@ export const useRemoveFromWishlist =
         return true;
       },
 
-      onSuccess:
-        async () => {
-          showSuccess(
-            "Removed from wishlist"
-          );
+      onSuccess: async () => {
+  showSuccess("Removed from wishlist");
 
-          await Promise.all([
-            queryClient.invalidateQueries(
-              {
-                queryKey: [
-                  "wishlist",
-                ],
-              }
-            ),
+  await Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: ["wishlist", isAuthenticated],
+    }),
 
-            queryClient.invalidateQueries(
-              {
-                queryKey: [
-                  "wishlist-count",
-                ],
-              }
-            ),
-          ]);
-        },
-
+    queryClient.invalidateQueries({
+      queryKey: ["wishlist-count"],
+    }),
+  ]);
+},
       onError: (
         error:
           AxiosError<any>
