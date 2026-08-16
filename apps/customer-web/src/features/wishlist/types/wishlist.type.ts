@@ -1,3 +1,4 @@
+import { Product } from "@/features/products/types/product.type";
 import { ProductVariant } from "@/features/products/types/product.type";
 
 export interface WishlistProduct {
@@ -5,10 +6,9 @@ export interface WishlistProduct {
   tags: any;
   features: any;
   descriptions: any;
+
   id: string;
-
   name: string;
-
   slug: string;
 
   shortDescription: string | null;
@@ -41,10 +41,6 @@ export interface WishlistProduct {
 
   status: string;
 
-  // ==========================
-  // ADD THESE
-  // ==========================
-
   defaultVariantId: string | null;
 
   variants: ProductVariant[];
@@ -52,17 +48,33 @@ export interface WishlistProduct {
 
 export interface WishlistItem {
   wishlistId: string;
-
   product: WishlistProduct;
-
   addedAt: string;
 }
-
 
 export interface WishlistResponse {
   success: boolean;
   message: string;
   items: WishlistItem[];
+  totalItems: number;
+}
+
+/*
+ * Backend GET /wishlist response
+ *
+ * Backend returns the product directly inside items[].
+ */
+export interface WishlistApiItem extends Product {
+  wishlist: {
+    id: string;
+    addedAt: string;
+  };
+}
+
+export interface WishlistApiResponse {
+  success: boolean;
+  message: string;
+  items: WishlistApiItem[];
   totalItems: number;
 }
 

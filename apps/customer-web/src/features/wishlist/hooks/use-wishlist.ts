@@ -110,57 +110,94 @@ const mapProductToWishlistProduct = (
 });
 
 export const useWishlist = () => {
-  const { isAuthenticated } =
-    useAuth();
+  const { isAuthenticated } = useAuth();
 
-const query = useQuery({
-  queryKey: ["wishlist", isAuthenticated],
+  const query = useQuery({
+    queryKey: ["wishlist"],
 
-  queryFn: async () => {
-    if (isAuthenticated) {
-      return wishlistApi.getWishlist();
-    }
+    queryFn: async () => {
+      if (isAuthenticated) {
+        const response =
+          await wishlistApi.getWishlist();
 
-    const products = localWishlistService.getAll();
+        return {
+          success: response.success,
+          message: response.message,
 
-    return {
-      success: true,
-      message: "Guest wishlist",
-      items: products.map((product) => ({
-        wishlistId: product.id,
-        product: mapProductToWishlistProduct(
-          product as Product
+          items: response.items.map(
+            (item) => ({
+              wishlistId: item.wishlist.id,
+
+              product:
+                mapProductToWishlistProduct(
+                  item
+                ),
+
+              addedAt:
+                item.wishlist.addedAt,
+            })
+          ),
+
+          totalItems:
+            response.totalItems,
+        };
+      }
+
+      const products =
+        localWishlistService.getAll();
+
+      return {
+        success: true,
+        message: "Guest wishlist",
+
+        items: products.map(
+          (product) => ({
+            wishlistId: product.id,
+
+            product:
+              mapProductToWishlistProduct(
+                product
+              ),
+
+            addedAt:
+              new Date().toISOString(),
+          })
         ),
-        addedAt: new Date().toISOString(),
-      })),
-      totalItems: products.length,
-    };
-  },
 
-  enabled: isAuthenticated !== undefined,
+        totalItems:
+          products.length,
+      };
+    },
 
-  staleTime: 0,
+    enabled:
+      isAuthenticated !== undefined,
 
-  retry: 1,
+    staleTime: 0,
 
-  refetchOnWindowFocus: true,
+    retry: 1,
 
-  // IMPORTANT
-  refetchOnMount: true,
-});
+    refetchOnWindowFocus: true,
 
- const wishlistIds = useMemo(() => {
-  const items = query.data?.items ?? [];
+    refetchOnMount: true,
+  });
 
-  return new Set(
-    items
-      .map((item) => item?.product?.id)
-      .filter(
-        (id): id is string =>
-          typeof id === "string" && id.length > 0
-      )
-  );
-}, [query.data?.items]);
+  const wishlistIds = useMemo(() => {
+    const items =
+      query.data?.items ?? [];
+
+    return new Set(
+      items
+        .map(
+          (item) =>
+            item?.product?.id
+        )
+        .filter(
+          (id): id is string =>
+            typeof id === "string" &&
+            id.length > 0
+        )
+    );
+  }, [query.data?.items]);
 
   return {
     ...query,

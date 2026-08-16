@@ -49,9 +49,9 @@ export const useRemoveFromWishlist =
   showSuccess("Removed from wishlist");
 
   await Promise.all([
-    queryClient.invalidateQueries({
-      queryKey: ["wishlist", isAuthenticated],
-    }),
+   queryClient.invalidateQueries({
+  queryKey: ["wishlist"],
+}),
 
     queryClient.invalidateQueries({
       queryKey: ["wishlist-count"],

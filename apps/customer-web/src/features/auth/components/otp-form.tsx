@@ -239,7 +239,8 @@ useEffect(() => {
   }
 
   void handleVerify();
-}, [otp, isPending]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [otp]);
 
   function handleResend() {
     if (secondsLeft > 0) return;

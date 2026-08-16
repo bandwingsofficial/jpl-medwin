@@ -3,12 +3,12 @@ import { apiClient } from "@/infrastructure/api/axios-client";
 import { API_ENDPOINTS } from "@/infrastructure/api/endpoints";
 
 import {
-  WishlistResponse,
+  WishlistApiResponse,
   WishlistCountResponse,
 } from "@/features/wishlist/types/wishlist.type";
 
 export const wishlistApi = {
-  async getWishlist(): Promise<WishlistResponse> {
+  async getWishlist(): Promise<WishlistApiResponse> {
     const response =
       await apiClient.get(
         API_ENDPOINTS.WISHLIST.GET
