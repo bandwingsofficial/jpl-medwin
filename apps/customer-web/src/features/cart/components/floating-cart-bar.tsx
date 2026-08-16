@@ -233,7 +233,7 @@ if (!items.length || isClosed || isOtpOpen) return null;
       <div
   className="
     fixed
-    bottom-[84px]
+    bottom-[calc(64px+env(safe-area-inset-bottom)+12px)]
     left-1/2
     z-[999]
     w-[88%]
