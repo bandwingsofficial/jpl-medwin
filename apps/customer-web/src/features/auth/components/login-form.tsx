@@ -205,8 +205,7 @@ router.push("/verify-otp");
             </div>
           </div>
 
-          <div className="mt-6 flex items-center gap-2 text-[11px] leading-relaxed text-[#5C7570]">
-            <svg
+         <div className="mt-6 flex items-start gap-2 pb-3 text-[11px] leading-[1.5] text-[#5C7570]">  <svg
               width="14"
               height="14"
               viewBox="0 0 24 24"

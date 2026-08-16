@@ -358,7 +358,7 @@ style={{ fontFamily: MONO_FONT }}
             </div>
           </div>
 
-          <div className="mt-6 space-y-4">
+          <div className="mt-6 space-y-4 pb-3">
             <div className="text-center text-[13px] text-[#5C7570]">
               {secondsLeft > 0 ? (
                 <span>
