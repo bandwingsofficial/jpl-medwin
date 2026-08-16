@@ -269,7 +269,7 @@ const { setLoginOpen } = useAuthModal();
     fixed
     bottom-[calc(64px+env(safe-area-inset-bottom)+12px)]
     left-1/2
-    z-[999]
+    z-[40]
     flex
     w-[94%]
     max-w-[500px]
