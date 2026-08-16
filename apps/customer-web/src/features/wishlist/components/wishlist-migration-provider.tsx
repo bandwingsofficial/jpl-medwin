@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-
+import { AxiosError } from "axios";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { wishlistApi } from "../api/wishlist.api";
@@ -14,49 +14,88 @@ export function WishlistMigrationProvider() {
 
   const queryClient = useQueryClient();
 
-  const hasMigrated = useRef(false);
+  const isMigratingRef = useRef(false);
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (isAuthenticated !== true) {
       return;
     }
 
-    if (hasMigrated.current) {
+    if (isMigratingRef.current) {
       return;
     }
 
     const migrateGuestWishlist = async () => {
-      const guestProducts =
-        localWishlistService.getAll();
+      const guestProducts = localWishlistService.getAll();
 
       if (guestProducts.length === 0) {
         return;
       }
 
-      hasMigrated.current = true;
+      isMigratingRef.current = true;
 
-      for (const product of guestProducts) {
-        try {
-          await wishlistApi.add(product.id);
-        } catch {
-          // Ignore duplicate products
-          // and continue migrating.
+      let migrationSuccessful = true;
+
+      try {
+        for (const product of guestProducts) {
+          try {
+            await wishlistApi.add(product.id);
+          } catch (error) {
+            const axiosError = error as AxiosError<{
+              message?: string;
+            }>;
+
+            const message =
+              axiosError.response?.data?.message ?? "";
+
+            const normalizedMessage =
+              message.toLowerCase();
+
+            const isDuplicate =
+              normalizedMessage.includes(
+                "already exists"
+              ) ||
+              normalizedMessage.includes(
+                "already exist"
+              );
+
+            if (!isDuplicate) {
+              migrationSuccessful = false;
+
+              console.error(
+                "WISHLIST MIGRATION FAILED",
+                {
+                  productId: product.id,
+                  error,
+                }
+              );
+            }
+          }
         }
+
+        /*
+         * Only clear guest wishlist when every product
+         * was successfully migrated or already existed.
+         */
+        if (migrationSuccessful) {
+          localWishlistService.clear();
+        }
+
+        /*
+         * Refresh authenticated wishlist.
+         */
+        await Promise.all([
+          queryClient.invalidateQueries({
+            queryKey: ["wishlist"],
+          }),
+
+          queryClient.invalidateQueries({
+            queryKey: ["wishlist-count"],
+          }),
+        ]);
+      } finally {
+        isMigratingRef.current = false;
       }
-
-      // Clear guest wishlist after migration.
-      localWishlistService.clear();
-
-      // Refresh authenticated wishlist data.
-      await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["wishlist"],
-        }),
-
-        queryClient.invalidateQueries({
-          queryKey: ["wishlist-count"],
-        }),
-      ]);
     };
 
     void migrateGuestWishlist();
