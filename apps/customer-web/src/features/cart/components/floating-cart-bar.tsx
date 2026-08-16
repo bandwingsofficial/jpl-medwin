@@ -235,7 +235,7 @@ if (!items.length || isClosed || isOtpOpen) return null;
     fixed
     bottom-[calc(64px+env(safe-area-inset-bottom)+12px)]
     left-1/2
-    z-[999]
+    z-[40]
     w-[88%]
     max-w-[400px]
     -translate-x-1/2
