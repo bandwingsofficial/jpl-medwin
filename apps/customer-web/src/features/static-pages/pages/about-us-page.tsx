@@ -741,7 +741,7 @@ export function AboutUsPage() {
           <div className="wwa-dot-grid" />
           <div className="wwa-image-wrap">
             <img
-              src="/Logo/about2.png"
+              src="/Logo/about3.png"
               alt="Medical professional"
             />
           </div>
