@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+
 import {
   ChevronRight,
   Home,
   Search,
+  SlidersHorizontal,
   X,
 } from "lucide-react";
 
@@ -14,8 +16,6 @@ import { useProducts } from "@/features/products/hooks/use-products";
 
 import { ProductFilters } from "@/features/products/components/product-filters";
 import { ProductCard } from "@/features/products/components/product-card";
-
-import { Spinner } from "@/shared/components/ui/spinner";
 
 interface BrandsProductPageProps {
   brandSlug: string;
@@ -34,6 +34,110 @@ interface ProductFiltersState {
   sortBy?: string;
   sortOrder?: "asc" | "desc";
 }
+
+/* =========================================================
+   SKELETON
+========================================================= */
+
+function BrandsProductPageSkeleton() {
+  return (
+    <div className="relative mx-auto max-w-[1600px] px-3 py-4 sm:px-4 lg:px-6 lg:py-6">
+      {/* BREADCRUMB SKELETON */}
+      <div className="mb-5 flex items-center gap-2 overflow-hidden">
+        <div className="h-4 w-14 shrink-0 animate-pulse rounded bg-slate-200" />
+        <div className="h-4 w-2 shrink-0 animate-pulse rounded bg-slate-200" />
+        <div className="h-4 w-14 shrink-0 animate-pulse rounded bg-slate-200" />
+        <div className="h-4 w-2 shrink-0 animate-pulse rounded bg-slate-200" />
+        <div className="h-4 w-20 shrink-0 animate-pulse rounded bg-slate-200" />
+      </div>
+
+      {/* BRAND HEADER SKELETON */}
+      <div className="mb-6 rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm sm:px-5 sm:py-5">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="h-16 w-24 shrink-0 animate-pulse rounded-xl bg-slate-100 sm:w-28" />
+
+          <div className="min-w-0 space-y-2">
+            <div className="h-7 w-36 max-w-full animate-pulse rounded-lg bg-slate-200 sm:h-8 sm:w-40" />
+            <div className="h-4 w-52 max-w-full animate-pulse rounded bg-slate-100 sm:w-64" />
+          </div>
+        </div>
+      </div>
+
+      {/* MAIN CONTENT */}
+      <div className="flex flex-col gap-6 lg:flex-row">
+        {/* FILTER SKELETON */}
+        <aside className="hidden w-[240px] shrink-0 lg:block">
+          <div className="space-y-5 rounded-2xl border border-slate-200 bg-white p-4">
+            <div className="h-[100px] animate-pulse rounded-xl bg-slate-100" />
+
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="space-y-2">
+                <div className="h-4 w-24 animate-pulse rounded bg-slate-200" />
+                <div className="h-11 w-full animate-pulse rounded-xl bg-slate-100" />
+              </div>
+            ))}
+          </div>
+        </aside>
+
+        {/* PRODUCTS SKELETON */}
+        <section className="min-w-0 flex-1">
+          <div className="mb-4 space-y-2">
+            <div className="h-6 w-44 animate-pulse rounded-lg bg-slate-200" />
+            <div className="h-4 w-20 animate-pulse rounded bg-slate-100" />
+          </div>
+
+          <div
+            className="
+              grid
+              grid-cols-2
+              gap-3
+              sm:grid-cols-3
+              md:gap-4
+              lg:grid-cols-4
+              xl:grid-cols-5
+            "
+          >
+            {Array.from({ length: 10 }).map((_, index) => (
+              <div
+                key={index}
+                className="overflow-hidden rounded-xl border border-slate-200 bg-white"
+              >
+                {/* IMAGE */}
+                <div className="relative aspect-square animate-pulse bg-slate-100">
+                  <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-slate-200" />
+                  <div className="absolute bottom-3 left-3 h-6 w-16 rounded-md bg-slate-200" />
+                </div>
+
+                {/* CONTENT */}
+                <div className="space-y-3 p-3 sm:p-4">
+                  <div className="h-3 w-20 animate-pulse rounded bg-slate-200" />
+
+                  <div className="space-y-2">
+                    <div className="h-5 w-full animate-pulse rounded bg-slate-200" />
+                    <div className="h-5 w-4/5 animate-pulse rounded bg-slate-200" />
+                  </div>
+
+                  <div className="h-4 w-full animate-pulse rounded bg-slate-100" />
+
+                  <div className="space-y-2">
+                    <div className="h-7 w-24 animate-pulse rounded bg-slate-200" />
+                    <div className="h-3 w-20 animate-pulse rounded bg-slate-100" />
+                  </div>
+
+                  <div className="h-10 w-full animate-pulse rounded-xl bg-slate-200" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
 
 export default function BrandsProductPage({
   brandSlug,
@@ -67,6 +171,13 @@ export default function BrandsProductPage({
     });
 
   // =========================================================
+  // MOBILE FILTER DRAWER
+  // =========================================================
+
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] =
+    useState(false);
+
+  // =========================================================
   // PRODUCTS
   // =========================================================
 
@@ -77,7 +188,6 @@ export default function BrandsProductPage({
   } = useProducts({
     ...filters,
 
-    // 🔥 IMPORTANT
     // Brand is always locked to this brand.
     brandId: brand?.id,
   });
@@ -99,11 +209,7 @@ export default function BrandsProductPage({
   // =========================================================
 
   if (brandsLoading || productsLoading) {
-    return (
-      <div className="flex justify-center py-24">
-        <Spinner />
-      </div>
-    );
+    return <BrandsProductPageSkeleton />;
   }
 
   // =========================================================
@@ -168,7 +274,7 @@ export default function BrandsProductPage({
     setFilters({
       ...nextFilters,
 
-      // 🔥 NEVER allow the filter sidebar
+      // Never allow the filter sidebar
       // to remove/change the current brand.
       brandId: brand.id,
     });
@@ -191,28 +297,44 @@ export default function BrandsProductPage({
       sortBy: undefined,
       sortOrder: undefined,
 
-      // 🔥 Keep brand locked.
+      // Keep brand locked.
       brandId: brand.id,
     });
   };
+
+  // =========================================================
+  // CHECK ACTIVE FILTERS
+  // =========================================================
+
+  const hasActiveFilters =
+    Boolean(filters.search) ||
+    filters.minPrice !== undefined ||
+    filters.maxPrice !== undefined ||
+    Boolean(filters.inStock) ||
+    Boolean(filters.type) ||
+    Boolean(filters.categorySlug) ||
+    Boolean(filters.subCategorySlug) ||
+    Boolean(filters.miniCategorySlug) ||
+    Boolean(filters.sortBy);
 
   // =========================================================
   // RETURN
   // =========================================================
 
   return (
-    <div className="relative mx-auto max-w-[1600px] px-4 py-4 lg:px-6 lg:py-6">
+    <div className="relative mx-auto max-w-[1600px] px-3 py-4 sm:px-4 lg:px-6 lg:py-6">
 
       {/* =====================================================
           BREADCRUMBS
       ===================================================== */}
 
-      <div className="mb-5 flex items-center gap-2 text-sm">
+      <div className="mb-5 flex items-center gap-2 overflow-hidden text-sm">
 
         <Link
           href="/"
           className="
             inline-flex
+            shrink-0
             items-center
             gap-1.5
             font-medium
@@ -221,18 +343,19 @@ export default function BrandsProductPage({
             hover:text-teal-600
           "
         >
-          <Home className="h-4 w-4" />
-          Home
+          <Home className="h-4 w-4 shrink-0" />
+          <span>Home</span>
         </Link>
 
         <ChevronRight
-          className="h-4 w-4 text-slate-300"
+          className="h-4 w-4 shrink-0 text-slate-300"
           strokeWidth={2}
         />
 
         <Link
           href="/brands"
           className="
+            shrink-0
             font-medium
             text-slate-500
             transition-colors
@@ -243,11 +366,11 @@ export default function BrandsProductPage({
         </Link>
 
         <ChevronRight
-          className="h-4 w-4 text-slate-300"
+          className="h-4 w-4 shrink-0 text-slate-300"
           strokeWidth={2}
         />
 
-        <span className="font-semibold text-teal-600">
+        <span className="truncate font-semibold text-teal-600">
           {brand.name}
         </span>
       </div>
@@ -258,17 +381,27 @@ export default function BrandsProductPage({
 
       <div
         className="
-          mb-6
+          mb-5
           rounded-2xl
           border
           border-slate-200
           bg-white
-          px-5
-          py-5
+          px-4
+          py-4
           shadow-sm
+          sm:mb-6
+          sm:px-5
+          sm:py-5
         "
       >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        {/* 
+          MOBILE:
+          image LEFT + name/description RIGHT
+
+          DESKTOP:
+          same existing horizontal layout
+        */}
+        <div className="flex items-center gap-3 sm:gap-4">
 
           {/* BRAND IMAGE */}
 
@@ -277,7 +410,7 @@ export default function BrandsProductPage({
               className="
                 flex
                 h-16
-                w-28
+                w-24
                 shrink-0
                 items-center
                 justify-center
@@ -286,6 +419,8 @@ export default function BrandsProductPage({
                 border-slate-100
                 bg-white
                 p-2
+                sm:h-16
+                sm:w-28
               "
             >
               <img
@@ -302,20 +437,30 @@ export default function BrandsProductPage({
 
           {/* BRAND DETAILS */}
 
-          <div>
+          <div className="min-w-0">
             <h1
               className="
-                text-2xl
+                truncate
+                text-xl
                 font-bold
                 tracking-tight
                 text-slate-900
+                sm:text-2xl
                 md:text-3xl
               "
             >
               {brand.name}
             </h1>
 
-            <p className="mt-1 text-sm text-gray-500">
+            <p
+              className="
+                mt-1
+                line-clamp-2
+                text-xs
+                text-gray-500
+                sm:text-sm
+              "
+            >
               Explore products from {brand.name}
             </p>
           </div>
@@ -323,65 +468,179 @@ export default function BrandsProductPage({
       </div>
 
       {/* =====================================================
-          MOBILE SEARCH
+          MOBILE FILTER BUTTON
       ===================================================== */}
 
       <div className="mb-5 lg:hidden">
-        <div
+        <button
+          type="button"
+          onClick={() => setIsMobileFiltersOpen(true)}
           className="
             flex
             h-11
+            w-full
             items-center
+            justify-center
+            gap-2
             rounded-xl
             border
-            border-gray-200
+            border-teal-200
             bg-white
-            px-3
+            px-4
+            text-sm
+            font-semibold
+            text-teal-700
+            shadow-sm
+            transition-all
+            active:scale-[0.98]
+            hover:bg-teal-50
           "
         >
-          <Search
-            className="mr-2 h-4 w-4 text-gray-400"
-          />
+          <SlidersHorizontal className="h-4 w-4" />
 
-          <input
-            type="text"
-            value={filters.search || ""}
-            onChange={(e) =>
-              setFilters((previous) => ({
-                ...previous,
-                search: e.target.value,
-                brandId: brand.id,
-              }))
-            }
-            placeholder={`Search ${brand.name} products...`}
+          <span>Filters</span>
+
+          {hasActiveFilters && (
+            <span
+              className="
+                flex
+                h-5
+                min-w-5
+                items-center
+                justify-center
+                rounded-full
+                bg-teal-600
+                px-1.5
+                text-[10px]
+                font-bold
+                text-white
+              "
+            >
+              1
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* =====================================================
+          MOBILE FILTER OVERLAY + SIDEBAR
+      ===================================================== */}
+
+      {isMobileFiltersOpen && (
+        <div className="fixed inset-0 z-[9999] lg:hidden">
+
+          {/* BACKDROP */}
+
+          <button
+            type="button"
+            aria-label="Close filters"
+            onClick={() => setIsMobileFiltersOpen(false)}
             className="
-              h-full
-              w-full
-              bg-transparent
-              text-sm
-              text-gray-800
-              outline-none
-              placeholder:text-gray-400
+              absolute
+              inset-0
+              bg-black/40
+              backdrop-blur-[1px]
             "
           />
 
-          {filters.search && (
-            <button
-              type="button"
-              onClick={() =>
-                setFilters((previous) => ({
-                  ...previous,
-                  search: "",
-                  brandId: brand.id,
-                }))
-              }
-              className="ml-2 text-gray-400 hover:text-gray-600"
+          {/* DRAWER */}
+
+          <aside
+            className="
+              absolute
+              left-0
+              top-0
+              flex
+              h-full
+              w-[88%]
+              max-w-[380px]
+              flex-col
+              overflow-hidden
+              bg-white
+              shadow-2xl
+            "
+          >
+
+            {/* DRAWER HEADER */}
+
+            <div
+              className="
+                flex
+                h-16
+                shrink-0
+                items-center
+                justify-between
+                border-b
+                border-slate-200
+                bg-white
+                px-4
+              "
             >
-              <X className="h-4 w-4" />
-            </button>
-          )}
+              <div className="flex items-center gap-2">
+                <div
+                  className="
+                    flex
+                    h-9
+                    w-9
+                    items-center
+                    justify-center
+                    rounded-lg
+                    bg-teal-600
+                    text-white
+                  "
+                >
+                  <SlidersHorizontal className="h-4 w-4" />
+                </div>
+
+                <div>
+                  <h2 className="text-base font-bold text-slate-900">
+                    Filters
+                  </h2>
+
+                  <p className="text-[11px] text-gray-500">
+                    Refine your products
+                  </p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsMobileFiltersOpen(false)}
+                className="
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-full
+                  border
+                  border-slate-200
+                  text-slate-500
+                  transition-colors
+                  hover:bg-slate-100
+                "
+                aria-label="Close filters"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            {/* DRAWER CONTENT */}
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+
+              <ProductFilters
+                filters={{
+                  ...filters,
+                  brandId: brand.id,
+                }}
+                onChange={handleFilterChange}
+              />
+
+            </div>
+          </aside>
         </div>
-      </div>
+      )}
 
       {/* =====================================================
           MAIN CONTENT
@@ -390,7 +649,8 @@ export default function BrandsProductPage({
       <div className="flex flex-col gap-6 lg:flex-row">
 
         {/* ===================================================
-            FILTER SIDEBAR
+            DESKTOP FILTER SIDEBAR
+            DO NOT CHANGE
         =================================================== */}
 
         <aside className="hidden w-[240px] shrink-0 lg:block">
@@ -411,18 +671,7 @@ export default function BrandsProductPage({
 
           {/* PRODUCT HEADER */}
 
-          <div className="mb-4 flex items-center justify-between">
-
-            <div>
-              <h2 className="text-lg font-bold text-slate-900">
-                {brand.name} Products
-              </h2>
-
-              <p className="mt-0.5 text-xs text-gray-500">
-                {products.length} products
-              </p>
-            </div>
-
+          <div className="mb-4 flex items-center justify-between gap-3">
             {(filters.search ||
               filters.minPrice !== undefined ||
               filters.maxPrice !== undefined ||
@@ -436,6 +685,7 @@ export default function BrandsProductPage({
                 type="button"
                 onClick={handleClearFilters}
                 className="
+                  shrink-0
                   rounded-lg
                   border
                   border-red-100
@@ -449,7 +699,13 @@ export default function BrandsProductPage({
                   hover:bg-red-100
                 "
               >
-                Clear Filters
+                <span className="hidden sm:inline">
+                  Clear Filters
+                </span>
+
+                <span className="sm:hidden">
+                  Clear
+                </span>
               </button>
             )}
           </div>
@@ -463,8 +719,9 @@ export default function BrandsProductPage({
               className="
                 grid
                 grid-cols-2
-                gap-3
+                gap-2.5
                 sm:grid-cols-3
+                sm:gap-3
                 md:gap-4
                 lg:grid-cols-4
                 xl:grid-cols-5
