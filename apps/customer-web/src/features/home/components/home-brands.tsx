@@ -177,7 +177,7 @@ export function HomeBrands() {
         </span>
 
         <span className="bg-gradient-to-r from-[#0BACAE] via-[#089981] to-[#0F8A6B] bg-clip-text text-transparent">
-          Category
+          Brands
         </span>
       </h2>
     </div>
