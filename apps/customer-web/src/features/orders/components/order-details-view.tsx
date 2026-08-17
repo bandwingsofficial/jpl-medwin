@@ -160,7 +160,7 @@ export const OrderDetailsView = ({
             </p>
           </div>
 
-          <div className="relative z-20 flex w-full flex-wrap items-center gap-2 md:w-auto md:gap-3">
+          <div className="relative z-20 flex w-full flex-nowrap items-center gap-2 md:w-auto md:flex-wrap md:gap-3">
   {/* MAKE PAYMENT - LEFT OF STATUS */}
   {order.status === "PENDING_PAYMENT" && (
     <Button
@@ -168,18 +168,20 @@ export const OrderDetailsView = ({
         router.push(`/checkout/payment?orderId=${order.id}`)
       }
       className="
-        order-1
-        w-full
-        rounded-xl
-        bg-teal-600
-        px-4
-        font-semibold
-        text-white
-        shadow-sm
-        hover:bg-teal-700
-        sm:w-auto
-        md:order-none
-      "
+  order-1
+  min-w-0
+  flex-1
+  rounded-xl
+  bg-teal-600
+  px-4
+  font-semibold
+  text-white
+  shadow-sm
+  hover:bg-teal-700
+  sm:w-auto
+  sm:flex-none
+  md:order-none
+"
     >
       Make Payment
     </Button>

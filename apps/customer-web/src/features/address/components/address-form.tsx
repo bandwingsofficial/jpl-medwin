@@ -282,7 +282,7 @@ export function AddressForm({ initialData, onSuccess }: Props) {
               onChange={(e) => setPhoneNumber(e.target.value)}
               placeholder="Enter 10-digit mobile number"
               maxLength={10}
-              className="h-10 rounded-xl border-gray-200 focus-visible:ring-teal-500/20 font-mono"
+             className="h-10 rounded-xl border-gray-200 focus-visible:ring-teal-500/20"
               required
             />
           </div>
@@ -295,7 +295,7 @@ export function AddressForm({ initialData, onSuccess }: Props) {
             <Input
               value={alias}
               onChange={(e) => setAlias(e.target.value)}
-              placeholder="e.g. Clinic, Office, Home 2"
+              placeholder="E.g. Clinic, Office, Home 2"
               className="h-10 rounded-xl border-gray-200 focus-visible:ring-teal-500/20"
             />
           </div>
@@ -310,7 +310,7 @@ export function AddressForm({ initialData, onSuccess }: Props) {
               onChange={(e) => setPostalCode(e.target.value)}
               placeholder="6-digit PIN code"
               maxLength={6}
-              className="h-10 rounded-xl border-gray-200 focus-visible:ring-teal-500/20 font-mono font-semibold"
+             className="h-10 rounded-xl border-gray-200 focus-visible:ring-teal-500/20"
               required
             />
           </div>
