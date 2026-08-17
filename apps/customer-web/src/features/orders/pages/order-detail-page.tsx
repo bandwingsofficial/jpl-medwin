@@ -157,13 +157,13 @@ const [returnOpen, setReturnOpen] =
 
   return (
     <>
-      <div className="mx-auto max-w-7xl px-4 py-8 lg:px-6">
+      <div className="mx-auto w-full max-w-7xl px-3 py-3 sm:px-4 sm:py-5 lg:px-6 lg:py-8">
 
   {/* ========================= */}
   {/* BREADCRUMBS */}
   {/* ========================= */}
 
-  <div className="mb-4 flex items-center gap-2 text-sm">
+  <div className="mb-3 flex items-center gap-1.5 text-sm sm:mb-4 sm:gap-2">
     <Link
       href="/"
       className="

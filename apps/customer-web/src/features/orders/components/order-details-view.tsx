@@ -169,17 +169,19 @@ export const OrderDetailsView = ({
       }
       className="
   order-1
-  min-w-0
-  flex-1
+  shrink-0
   rounded-xl
   bg-teal-600
-  px-4
+  px-3
+  py-2
+  text-xs
   font-semibold
   text-white
   shadow-sm
   hover:bg-teal-700
   sm:w-auto
-  sm:flex-none
+  sm:px-4
+  sm:text-sm
   md:order-none
 "
     >
