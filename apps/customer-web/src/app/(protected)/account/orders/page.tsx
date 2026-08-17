@@ -7,8 +7,8 @@ export const metadata = {
 
 export default function Page() {
   return (
-    <div className="container mx-auto py-8 px-4">
-      <OrderListPage />
-    </div>
+    <div className="container mx-auto px-4 py-3 sm:py-8">
+  <OrderListPage />
+</div>
   );
 }

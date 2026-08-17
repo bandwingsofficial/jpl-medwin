@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Headphones,
 } from "lucide-react";
+import { OrderDetailSkeleton } from "../components/order-detail-skeleton";
 import { RequestReturnDialog } from "../components/request-return-dialog";
 
 import { useRequestReturn } from "../hooks/use-request-return";
@@ -118,24 +119,8 @@ const [returnOpen, setReturnOpen] =
   */
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-[70vh] flex-col items-center justify-center gap-5">
-        <div className="flex h-20 w-20 items-center justify-center rounded-full bg-teal-600">
-          <Loader2 className="h-10 w-10 animate-spin text-white" />
-        </div>
-
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-black">
-            Loading Order Details
-          </h2>
-
-          <p className="mt-2 text-sm text-black/60">
-            Fetching your latest order information...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  return <OrderDetailSkeleton />;
+}
 
   /*
   |--------------------------------------------------------------------------
