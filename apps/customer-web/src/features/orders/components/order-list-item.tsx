@@ -89,30 +89,20 @@ export const OrderListItem = ({
       className="block w-full"
     >
       <Card
-  className="
-    group
-    cursor-pointer
-    w-full
-    rounded-none
-    border-0
-    border-b
-    border-slate-200
-    bg-transparent
-    p-3
-    shadow-none
-    transition-all
-    duration-300
-
-    sm:rounded-2xl
-    sm:border
-    sm:border-teal-100
-    sm:bg-white
-    sm:p-4
-    sm:shadow-sm
-    sm:hover:border-teal-200
-    sm:hover:shadow-md
-  "
->
+        className="
+          group
+          cursor-pointer
+          rounded-2xl
+          border border-teal-100
+          bg-white
+          p-3
+          shadow-sm
+          transition-all duration-300
+          hover:border-teal-200
+          hover:shadow-md
+          sm:p-4
+        "
+      >
         <div className="flex min-w-0 items-center justify-between gap-2 sm:gap-3">
           {/* ========================= */}
           {/* LEFT CONTENT */}

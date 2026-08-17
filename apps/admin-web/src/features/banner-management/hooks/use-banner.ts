@@ -58,7 +58,7 @@ export function useBanner(
         );
       } catch {
         setError(
-          "Failed to load banner"
+          "Banners Coming Soon"
         );
       } finally {
         setIsLoading(false);
