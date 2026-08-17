@@ -161,7 +161,7 @@ export function ProductInfo({
             text-blue-900
           "
         >
-          Delivery within 3–7
+          Delivery within 1-3
           business days
         </p>
       </div>
