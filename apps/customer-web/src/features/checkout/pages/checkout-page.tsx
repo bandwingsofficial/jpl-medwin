@@ -585,36 +585,31 @@ const [
       />
 
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_420px]">
-          <div className="space-y-6">
-            <DeliveryAddress
-  selectedAddress={selectedAddress}
-  onSelectAddress={setSelectedAddress}
-  selectedBillingAddress={selectedBillingAddress}
-  onSelectBillingAddress={setSelectedBillingAddress}
-  isBillingSameAsShipping={isBillingSameAsShipping}
-  onBillingSameChange={setIsBillingSameAsShipping}
-/>
+        <div className="mt-8 grid min-w-0 gap-8 lg:grid-cols-[minmax(0,1fr)_420px]">
+  <div className="min-w-0 max-w-full space-y-6 overflow-hidden">
+    <DeliveryAddress
+      selectedAddress={selectedAddress}
+      onSelectAddress={setSelectedAddress}
+      selectedBillingAddress={selectedBillingAddress}
+      onSelectBillingAddress={setSelectedBillingAddress}
+      isBillingSameAsShipping={isBillingSameAsShipping}
+      onBillingSameChange={setIsBillingSameAsShipping}
+    />
 
+    <CheckoutItems checkout={checkout} />
 
-            <CheckoutItems
-              checkout={checkout}
-            />
+    <PaymentMethods />
+  </div>
 
-
-            <PaymentMethods />
-          </div>
-
-
-          <div>
-            <CheckoutSummary
-  checkout={checkout}
-  selectedAddress={selectedAddress}
-  selectedBillingAddress={selectedBillingAddress}
-  isBillingSameAsShipping={isBillingSameAsShipping}
-/>
-          </div>
-        </div>
+  <div className="min-w-0 max-w-full overflow-hidden">
+    <CheckoutSummary
+      checkout={checkout}
+      selectedAddress={selectedAddress}
+      selectedBillingAddress={selectedBillingAddress}
+      isBillingSameAsShipping={isBillingSameAsShipping}
+    />
+  </div>
+</div>
       </div>
     </div>
   );
