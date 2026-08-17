@@ -100,7 +100,7 @@ export interface ProductBrand {
 
   name?: string;
 
-  slug?: string;
+  slug: string;
 
   image?: string;
 }

@@ -1,9 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { Star } from "lucide-react";
 import {
   Product,
   ProductVariant,
 } from "@/features/products/types/product.type";
+import { useBrands } from "@/features/brands/hooks/use-brands";
 
 interface ProductHeaderInfoProps {
   product: Product;
@@ -14,6 +17,17 @@ export function ProductHeaderInfo({
   product,
   selectedVariant,
 }: ProductHeaderInfoProps) {
+  /*
+   |--------------------------------------------------------------------------
+   | BRAND
+   |--------------------------------------------------------------------------
+   */
+  const { data: brands } = useBrands();
+
+  const brand = brands?.find(
+    (item) => item.id === product.brand?.id,
+  );
+
   /*
    |--------------------------------------------------------------------------
    | RATINGS
@@ -57,58 +71,82 @@ export function ProductHeaderInfo({
         "
       >
         {/* BRAND */}
-{!!product.brand?.name && (
-  <div
-    className="
-      inline-flex
-      flex-row
-      flex-nowrap
-      items-center
-      gap-2
-      whitespace-nowrap
-      align-middle
-    "
-  >
-    <span
-      className="
-        inline-flex
-        items-center
-        whitespace-nowrap
-        bg-slate-600
-        bg-clip-text
-        text-sm
-        font-bold
-        tracking-wide
-        text-transparent
-        drop-shadow-[0_1px_1px_rgba(13,148,136,0.12)]
-      "
-    >
-      Brand :
-    </span>
-   <Link
-  href={`/brands/${product.brand.slug}`}
-  className="
-    inline-flex
-    items-center
-    whitespace-nowrap
-    bg-gradient-to-r
-    from-blue-600
-    via-teal-600
-    to-emerald-500
-    bg-clip-text
-    text-sm
-    font-bold
-    tracking-wide
-    text-transparent
-    drop-shadow-[0_1px_1px_rgba(13,148,136,0.12)]
-    transition-opacity
-    hover:opacity-80
-  "
->
-  {product.brand.name.toUpperCase()}
-</Link>
-  </div>
-)}
+        {!!product.brand?.name && (
+          <div
+            className="
+              inline-flex
+              flex-row
+              flex-nowrap
+              items-center
+              gap-2
+              whitespace-nowrap
+              align-middle
+            "
+          >
+            <span
+              className="
+                inline-flex
+                items-center
+                whitespace-nowrap
+                bg-slate-600
+                bg-clip-text
+                text-sm
+                font-bold
+                tracking-wide
+                text-transparent
+                drop-shadow-[0_1px_1px_rgba(13,148,136,0.12)]
+              "
+            >
+              Brand :
+            </span>
+
+            {brand?.slug ? (
+              <Link
+                href={`/brands/${brand.slug}`}
+                className="
+                  inline-flex
+                  items-center
+                  whitespace-nowrap
+                  bg-gradient-to-r
+                  from-blue-600
+                  via-teal-600
+                  to-emerald-500
+                  bg-clip-text
+                  text-sm
+                  font-bold
+                  tracking-wide
+                  text-transparent
+                  drop-shadow-[0_1px_1px_rgba(13,148,136,0.12)]
+                  transition-opacity
+                  hover:opacity-80
+                "
+              >
+                {product.brand.name.toUpperCase()}
+              </Link>
+            ) : (
+              <span
+                className="
+                  inline-flex
+                  items-center
+                  whitespace-nowrap
+                  bg-gradient-to-r
+                  from-blue-600
+                  via-teal-600
+                  to-emerald-500
+                  bg-clip-text
+                  text-sm
+                  font-bold
+                  tracking-wide
+                  text-transparent
+                  drop-shadow-[0_1px_1px_rgba(13,148,136,0.12)]
+                "
+              >
+                {product.brand.name.toUpperCase()}
+              </span>
+            )}
+          </div>
+        )}
+
         {/* RATINGS & REVIEWS */}
         {ratingsCount > 0 && (
           <div

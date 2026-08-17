@@ -172,6 +172,7 @@ const gallery = s3Images.galleryImages;
       brand: {
   id: product.brandId,
   name: brand?.name ?? '',
+  slug: brand?.name ?? '',
 },
 
       category: {
