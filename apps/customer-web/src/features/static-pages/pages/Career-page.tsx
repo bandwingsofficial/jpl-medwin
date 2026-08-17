@@ -432,10 +432,10 @@ export default function CareersPage() {
           <div style={{ position: "relative", zIndex: 1 }}>
             <div className="bk-eyebrow" style={{ color: "#2DD4BF", marginBottom: 14 }}>Join Our Team</div>
             <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(26px, 4vw, 42px)", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.15, letterSpacing: "-0.01em", marginBottom: 14, maxWidth: 680 }}>
-              Build the Future of Healthcare<br />Logistics & Technology
+             Build Your Career With JPL Medwin
             </h1>
             <p style={{ fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: 1.7, maxWidth: 580, fontWeight: 300 }}>
-              Review our live open parameters below and register your profile. <span style={{ color: "#2DD4BF", fontWeight: 500 }}>JPL Medwin</span> fosters elite operational development across technology pipelines and institutional networks.
+             Be part of a team that is shaping the future of healthcare supply in India. At JPL Medwin, we bring together talented people who are passionate about quality, innovation, trust, and service excellence to support healthcare professionals and institutions across the country.
             </p>
           </div>
         </div>
