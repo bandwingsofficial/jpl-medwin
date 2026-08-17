@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
-
+import { SitemapModule } from '@/modules/sitemap/sitemap.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CategoryModule } from './modules/category/category.module';
 import { BrandModule } from './modules/brand/brand.module';
@@ -25,6 +25,7 @@ import { ShippingConfigurationModule } from './modules/shipping-configuration/sh
 
 import { RedisModule } from './infrastructure/cache/redis.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
+import { RobotsModule } from './modules/robots/robots.module';
 
 @Module({
   imports: [
@@ -37,6 +38,8 @@ import { PrismaModule } from './infrastructure/prisma/prisma.module';
     BrandModule,
     ProductModule,
     ProfileModule,
+    SitemapModule,
+    RobotsModule,
     SavedAddressModule,
     CartModule,
     CheckoutSessionModule,
