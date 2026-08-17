@@ -11,10 +11,9 @@ import {
   useProfile,
   useUpdateProfile,
 } from "@/features/account/hooks/use-profile";
+
 import {
-  showWarning,
   showError,
-  showSuccess,
 } from "@/shared/store/toast.store";
 
 import { ProfileAvatarUpload } from "./profile-avatar-upload";
@@ -31,18 +30,14 @@ export function ProfileForm({
   // PROFILE QUERY
   // =========================================
 
-  const { data, isLoading } =
-    useProfile();
+  const { data, isLoading } = useProfile();
 
   // =========================================
   // MUTATIONS
   // =========================================
 
-  const createMutation =
-    useCreateProfile();
-
-  const updateMutation =
-    useUpdateProfile();
+  const createMutation = useCreateProfile();
+  const updateMutation = useUpdateProfile();
 
   // =========================================
   // PROFILE DATA
@@ -50,50 +45,36 @@ export function ProfileForm({
 
   const profile = data?.data;
 
-  // ✅ DETECT MODE
-
+  // DETECT MODE
   const isEditMode = !!profile;
 
   // =========================================
   // AUTH FIELD DETECTION
   // =========================================
 
-  // ✅ EMAIL LOGIN USER
-  const isEmailLocked =
-    !!profile?.email;
-
-  // ✅ PHONE LOGIN USER
-  const isPhoneLocked =
-    !!profile?.phoneNumber;
+  const isEmailLocked = !!profile?.email;
+  const isPhoneLocked = !!profile?.phoneNumber;
 
   // =========================================
   // HYDRATION SAFE
   // =========================================
 
-  const [mounted, setMounted] =
-    useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // =========================================
   // FORM STATES
   // =========================================
 
-  const [name, setName] =
-    useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
 
-  const [email, setEmail] =
-    useState("");
-
-  // ✅ PHONE NUMBER
   const [
     phoneNumber,
     setPhoneNumber,
   ] = useState("");
 
-  const [avatar, setAvatar] =
-    useState<File | null>(null);
-
-  const [preview, setPreview] =
-    useState<string | null>(null);
+  const [avatar, setAvatar] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
 
   // =========================================
   // HYDRATION FIX
@@ -111,10 +92,8 @@ export function ProfileForm({
     if (!profile) return;
 
     setName(profile.name || "");
-
     setEmail(profile.email || "");
 
-    // ✅ SET PHONE NUMBER
     setPhoneNumber(
       profile.phoneNumber || ""
     );
@@ -200,8 +179,7 @@ export function ProfileForm({
       // =========================================
 
       setPreview(
-        response.data.avatarUrl ||
-          null
+        response.data.avatarUrl || null
       );
 
       // =========================================
@@ -222,8 +200,7 @@ export function ProfileForm({
 
       const backendMessage =
         error?.message ||
-        error?.response?.data
-          ?.message ||
+        error?.response?.data?.message ||
         "Failed to save profile.";
 
       // =========================================
@@ -231,16 +208,11 @@ export function ProfileForm({
       // =========================================
 
       showError(backendMessage);
-
-      // =========================================
-      // DEBUG
-      // =========================================
-
     }
   }
 
   // =========================================
-  // LOADING STATE
+  // SUBMITTING STATE
   // =========================================
 
   const isSubmitting =
@@ -250,17 +222,37 @@ export function ProfileForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-8"
+      className="
+        w-full
+        min-w-0
+        space-y-6
+        sm:space-y-8
+      "
     >
       {/* HEADER */}
-      <div>
-        <h2 className="text-2xl font-semibold tracking-tight">
+      <div className="min-w-0">
+        <h2
+          className="
+            text-xl
+            font-semibold
+            tracking-tight
+            sm:text-2xl
+          "
+        >
           {isEditMode
             ? "Profile Details"
             : "Create Profile"}
         </h2>
 
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p
+          className="
+            mt-1
+            text-sm
+            leading-5
+            text-muted-foreground
+            sm:leading-normal
+          "
+        >
           {isEditMode
             ? "Update your personal information"
             : "Complete your profile information"}
@@ -268,82 +260,114 @@ export function ProfileForm({
       </div>
 
       {/* AVATAR */}
-      <ProfileAvatarUpload
-        preview={preview}
-        onChange={(file) => {
-          setAvatar(file);
+      <div className="w-full min-w-0">
+        <ProfileAvatarUpload
+          preview={preview}
+          onChange={(file) => {
+            setAvatar(file);
 
-          if (file) {
-            const objectUrl =
-              URL.createObjectURL(
-                file
-              );
+            if (file) {
+              const objectUrl =
+                URL.createObjectURL(file);
 
-            setPreview(objectUrl);
-          }
-        }}
-      />
+              setPreview(objectUrl);
+            }
+          }}
+        />
+      </div>
 
       {/* FORM */}
-      <div className="grid gap-5 md:grid-cols-2">
+      <div
+        className="
+          grid
+          min-w-0
+          grid-cols-1
+          gap-5
+          md:grid-cols-2
+        "
+      >
         {/* NAME */}
-        <div className="space-y-2">
+        <div className="min-w-0 space-y-2">
           <Label>Name</Label>
 
           <Input
             value={name}
             onChange={(e) =>
-              setName(
-                e.target.value
-              )
+              setName(e.target.value)
             }
             placeholder="Enter your name"
             required
+            className="
+              w-full
+              min-w-0
+              text-[16px]
+              sm:text-sm
+            "
           />
         </div>
 
         {/* EMAIL */}
-        <div className="space-y-2">
+        <div className="min-w-0 space-y-2">
           <Label>Email</Label>
 
           <Input
             type="email"
             value={email}
             onChange={(e) =>
-              setEmail(
-                e.target.value
-              )
+              setEmail(e.target.value)
             }
             placeholder="Enter your email"
             required
             disabled={isEmailLocked}
+            className="
+              w-full
+              min-w-0
+              text-[16px]
+              sm:text-sm
+            "
           />
 
           {isEmailLocked && (
-            <p className="text-xs text-muted-foreground">
+            <p
+              className="
+                text-xs
+                leading-5
+                text-muted-foreground
+              "
+            >
               Email linked with your login account
             </p>
           )}
         </div>
 
         {/* PHONE NUMBER */}
-        <div className="space-y-2">
+        <div className="min-w-0 space-y-2">
           <Label>Phone Number</Label>
 
           <Input
             type="tel"
             value={phoneNumber}
             onChange={(e) =>
-              setPhoneNumber(
-                e.target.value
-              )
+              setPhoneNumber(e.target.value)
             }
             placeholder="Enter your phone number"
             disabled={isPhoneLocked}
+            className="
+              w-full
+              min-w-0
+              text-[16px]
+              sm:text-sm
+            "
           />
 
           {isPhoneLocked && (
-            <p className="text-xs text-muted-foreground">
+            <p
+              className="
+                text-xs
+                leading-5
+                text-muted-foreground
+              "
+            >
               Phone number linked with your login account
             </p>
           )}
@@ -351,18 +375,29 @@ export function ProfileForm({
       </div>
 
       {/* ACTION */}
-      <div className="flex justify-end">
+      <div
+        className="
+          flex
+          w-full
+          justify-stretch
+          sm:justify-end
+        "
+      >
         <Button
           type="submit"
           disabled={isSubmitting}
+          className="
+            w-full
+            sm:w-auto
+          "
         >
           {isSubmitting
             ? isEditMode
               ? "Updating..."
               : "Creating..."
             : isEditMode
-            ? "Update Profile"
-            : "Create Profile"}
+              ? "Update Profile"
+              : "Create Profile"}
         </Button>
       </div>
     </form>
