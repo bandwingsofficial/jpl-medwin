@@ -111,7 +111,7 @@ export function RedeemCard({
             value={coins}
             onChange={(e) => setCoins(e.target.value)}
             disabled={applyRewardsMutation.isPending}
-            className="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/50 pl-4 pr-12 text-sm font-semibold text-gray-900 outline-none transition-all focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-50/50 disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="h-10 w-full rounded-xl border border-gray-200 bg-gray-50/50 pl-4 pr-12 text-base font-semibold text-gray-900 outline-none transition-all focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-50/50 disabled:opacity-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-bold uppercase tracking-wider text-gray-400">
             Coins

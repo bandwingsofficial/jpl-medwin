@@ -745,11 +745,15 @@ export function AboutUsPage() {
               alt="Medical professional"
             />
           </div>
-          <div className="wwa-overlay-badge">
-            <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 700, color: "#0D9488", lineHeight: 1 }}>ISO</div>
-            <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: "#64748B", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 3 }}>Certified Supplier</div>
-          </div>
-          <div className="wwa-corner-line" />
+         <div className="wwa-overlay-badge">
+  <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 24, fontWeight: 700, color: "#0D9488", lineHeight: 1 }}>
+    ISO
+  </div>
+
+  <div style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 9, color: "#64748B", letterSpacing: "0.1em", textTransform: "uppercase", marginTop: 3 }}>
+    Certified Supplier
+  </div>
+</div>
         </div>
       </section>
 

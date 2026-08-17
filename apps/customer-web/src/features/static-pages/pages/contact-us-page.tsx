@@ -592,18 +592,23 @@ export function ContactUsPage() {
             </div>
           </div>
 
-          {/* Right: map image */}
-          <div className="ct-address-map">
-            <img
-              src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200"
-              alt="Office location"
-            />
-            <div className="ct-map-overlay" />
-            <div className="ct-map-pin">
-              <div className="ct-pin-dot" />
-              <div className="ct-pin-label">Bommasandra , Bangalore</div>
-            </div>
-          </div>
+          {/* Right: Google Map */}
+<div className="ct-address-map">
+  <iframe
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3890.3223975077117!2d77.6836499750739!3d12.822431387479423!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bae6da064db0c49%3A0x852783b23748aca!2sJPL%20Markwin!5e0!3m2!1sen!2sin!4v1786953679683!5m2!1sen!2sin"
+    width="100%"
+    height="100%"
+    style={{
+      border: 0,
+      display: "block",
+      minHeight: "300px",
+    }}
+    allowFullScreen
+    loading="lazy"
+    referrerPolicy="strict-origin-when-cross-origin"
+    title="JPL Markwin office location"
+  />
+</div>
         </div>
       </section>
 
