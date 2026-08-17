@@ -169,6 +169,7 @@ export const OrderListPage = () => {
   */
   if (!Array.isArray(orders) || orders.length === 0) {
     return (
+      
       <div
         className="
           flex flex-col items-center justify-center
@@ -178,7 +179,36 @@ export const OrderListPage = () => {
           px-6 py-16
           text-center
         "
+      >  {/* ========================= */}
+    {/* BREADCRUMBS */}
+    {/* ========================= */}
+    <div className="flex items-center gap-2 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
       >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight
+        className="h-4 w-4 text-slate-300"
+        strokeWidth={2}
+      />
+
+      <span className="font-semibold text-teal-600">
+        My Orders
+      </span>
+    </div>
+
         <div className="flex h-20 w-20 items-center justify-center rounded-full bg-teal-100">
           <ShoppingBag size={38} className="text-teal-600" />
         </div>
@@ -246,24 +276,24 @@ return (
       {/* ========================= */}
       {/* HEADER */}
       {/* ========================= */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-center sm:text-left">
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
-            My Orders
-          </h1>
-          <p className="mt-0.5 text-xs sm:text-sm text-gray-500">
-            Track and manage all your orders
-          </p>
-        </div>
+      <div className="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-5">
+  <div className="text-center sm:text-left">
+    <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
+      My Orders
+    </h1>
 
-        <Button
-          onClick={() => router.push("/products")}
-          className="rounded-xl bg-teal-600 hover:bg-teal-700 w-full sm:w-auto text-sm h-10"
-        >
-          Continue Shopping
-        </Button>
-      </div>
+    <p className="mt-0.5 text-xs sm:text-sm text-gray-500">
+      Track and manage all your orders
+    </p>
+  </div>
 
+  <Button
+    onClick={() => router.push("/products")}
+    className="h-10 w-full rounded-xl bg-teal-600 text-sm hover:bg-teal-700 sm:w-auto"
+  >
+    Continue Shopping
+  </Button>
+</div>
       {/* ========================= */}
       {/* STATS */}
       {/* ========================= */}
