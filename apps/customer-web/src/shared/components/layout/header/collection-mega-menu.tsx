@@ -58,7 +58,7 @@ export function CollectionMegaMenu({
     return (
       <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-[950px] z-50">
         <div className="flex h-[260px] items-center justify-center rounded-2xl border border-gray-200 bg-white text-gray-500 shadow-2xl">
-          Failed to load collection.
+          Collections Coming Soon
         </div>
       </div>
     );

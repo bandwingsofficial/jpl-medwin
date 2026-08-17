@@ -21,7 +21,7 @@ export default function CategoryGrid() {
   if (isError) {
     return (
       <div className="text-center py-20 text-red-500">
-        Failed to load categories
+        Categories Coming Soon
       </div>
     );
   }

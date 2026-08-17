@@ -207,7 +207,7 @@ export default function CategoryProductsPage({
   if (subError || productError) {
     return (
       <div className="py-24 text-center text-red-500">
-        Failed to load products
+        Products Coming Soon
       </div>
     );
   }

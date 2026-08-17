@@ -159,7 +159,7 @@ const [addressMode, setAddressMode] =
     return (
       <div className="rounded-xl border border-red-100 bg-red-50 p-4">
         <p className="text-xs font-medium text-red-600">
-          Failed to load addresses.
+          Your Address....
         </p>
       </div>
     );

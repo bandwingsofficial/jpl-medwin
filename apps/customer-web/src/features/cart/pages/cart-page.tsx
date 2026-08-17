@@ -103,7 +103,7 @@ export function CartPage() {
           <ShoppingCart className="h-8 w-8 md:h-[34px] md:w-[34px] text-red-500" />
         </div>
         <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-          Failed to load cart
+          Cart Loading ...
         </h2>
         <p className="mt-2 text-xs md:text-sm text-gray-500">
           Please login to access the cart

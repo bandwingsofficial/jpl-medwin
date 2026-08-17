@@ -18,7 +18,7 @@ export function HomeCta() {
         {/* BACKGROUND IMAGE */}
         <div className="relative h-[260px] w-full md:h-[340px]">
           <Image
-            src="Images/CTA3.png"
+            src="Images/CTA4.png"
             alt="Dental Clinic"
             fill
             priority

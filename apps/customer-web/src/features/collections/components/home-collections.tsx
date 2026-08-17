@@ -29,7 +29,7 @@ export function HomeCollections() {
   if (error) {
     return (
       <div className="py-10 text-center text-red-500">
-        Failed to load collections
+        Collections Coming Soon
       </div>
     );
   }
