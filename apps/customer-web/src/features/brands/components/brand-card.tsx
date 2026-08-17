@@ -15,7 +15,7 @@ export function BrandCard({ brand }: Props) {
 
   return (
     <Card
-      onClick={() => router.push(`/products?brandId=${brand.id}`)}
+      onClick={() => router.push(`/brands/${brand.slug}`)}
       className="
         group
         cursor-pointer
