@@ -3,7 +3,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Search, ChevronRight } from 'lucide-react';
-
+import {
+  CategoryMegaMenuSkeleton,
+  SubCategorySkeleton,
+  MiniCategorySkeleton,
+} from "@/shared/components/layout/header/category-mega-menu-skeleton";
 import { useCategories } from '@/features/category/hooks/use-category';
 import { useSubCategories } from '@/features/category/hooks/use-sub-categories';
 import { useMiniCategories } from '@/features/category/hooks/use-mini-categories';
@@ -129,9 +133,9 @@ export function CategoryMegaMenu({ onClose }: CategoryMegaMenuProps) {
           "
           >
             {isCategoriesLoading ? (
-              <Spinner />
-            ) : (
-              filteredCategories?.map((category) => {
+  <CategoryMegaMenuSkeleton />
+) : (
+  filteredCategories?.map((category) => {
                 const active = activeCategorySlug === category.slug;
 
                 return (
@@ -262,9 +266,9 @@ function SubCategoryPanel({
 }: SubCategoryPanelProps) {
   const { data: subCategories, isLoading } = useSubCategories(categorySlug);
 
-  if (isLoading) {
-    return <Spinner />;
-  }
+ if (isLoading) {
+  return <SubCategorySkeleton />;
+}
 
   return (
     <div>
@@ -331,9 +335,9 @@ function MiniCategoryPanel({
     );
   }
 
-  if (isLoading) {
-    return <Spinner />;
-  }
+ if (isLoading) {
+  return <MiniCategorySkeleton />;
+}
 
   return (
     <div>
