@@ -209,6 +209,40 @@ export const OrderListPage = () => {
   */
 return (
   <div className="w-full min-w-0 space-y-5">
+
+    {/* ========================= */}
+    {/* BREADCRUMBS */}
+    {/* ========================= */}
+    <div className="flex items-center gap-2 text-sm">
+      <Link
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight
+        className="h-4 w-4 text-slate-300"
+        strokeWidth={2}
+      />
+
+      <span className="font-semibold text-teal-600">
+        My Orders
+      </span>
+    </div>
+
+    {/* ========================= */}
+    {/* HEADER */}
+    {/* ========================= */}
       {/* ========================= */}
       {/* HEADER */}
       {/* ========================= */}
