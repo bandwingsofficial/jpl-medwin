@@ -1,4 +1,5 @@
-import { Link, Star } from "lucide-react";
+import Link from "next/link";
+import { Star } from "lucide-react";
 import {
   Product,
   ProductVariant,
