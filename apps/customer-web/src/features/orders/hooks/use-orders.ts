@@ -19,12 +19,9 @@ export const useOrders = () => {
     */
 
     queryFn: async () => {
-      const data =
-        await ordersApi.getMyOrders();
+      const data = await ordersApi.getMyOrders();
 
-      return Array.isArray(data)
-        ? data
-        : [];
+      return Array.isArray(data) ? data : [];
     },
 
     /*
@@ -33,10 +30,11 @@ export const useOrders = () => {
     |--------------------------------------------------------------------------
     */
 
+    // Keep the existing order list fresh in cache.
+    // React Query will immediately use cached data when available.
     staleTime: 1000 * 60 * 2,
 
-    gcTime:
-      1000 * 60 * 10,
+    gcTime: 1000 * 60 * 10,
 
     /*
     |--------------------------------------------------------------------------
@@ -45,22 +43,25 @@ export const useOrders = () => {
     */
 
     retry: 2,
-
     retryDelay: 1000,
 
     /*
     |--------------------------------------------------------------------------
-    | REFETCH
+    | REFRESH BEHAVIOR
     |--------------------------------------------------------------------------
     */
 
-    refetchOnMount: true,
+    // Do not refetch just because the component mounts again.
+    refetchOnMount: false,
 
+    // Still fetch if the network connection was lost and restored.
     refetchOnReconnect: true,
 
-    refetchOnWindowFocus: true,
+    // Do not refetch every time the user switches back to the tab.
+    refetchOnWindowFocus: false,
 
-    refetchInterval:
-      1000 * 30,
+    // IMPORTANT:
+    // Remove the 30-second automatic polling.
+    refetchInterval: false,
   });
 };

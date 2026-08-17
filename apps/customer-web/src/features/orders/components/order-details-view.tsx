@@ -557,10 +557,10 @@ export const OrderDetailsView = ({
                     {/* IMAGE */}
 
                     <div
-                      className="
-                        relative
-                        h-20
-                        w-20
+                     className="
+  relative
+  h-[76px]
+  w-[76px]
                         shrink-0
                         overflow-hidden
                         rounded-xl
@@ -587,56 +587,38 @@ export const OrderDetailsView = ({
 
                     {/* INFO */}
 
-                    <div className="flex min-w-0 flex-1 flex-col justify-between">
-                      <div className="min-w-0">
-                        <h4 className="break-words text-sm font-bold leading-snug text-black sm:text-base">
-                          {item.productName}
-                        </h4>
+<div className="flex min-w-0 flex-1 flex-col justify-between">
+  <div className="min-w-0">
+    <h4 className="break-words text-sm font-bold leading-snug text-black sm:text-base">
+      {item.productName}
+    </h4>
 
-                        <p className="mt-1 break-words text-xs text-black/60 sm:text-sm">
-                          {
-                            item
-                              ?.variant
-                              ?.name
-                          }
-                        </p>
+    <p className="mt-1 break-words text-xs text-black/60 sm:text-sm">
+      {item?.variant?.name}
+    </p>
 
-                        <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
-                          <span className="rounded-full bg-teal-600 px-2 py-1 text-[10px] font-semibold text-white sm:px-2.5 sm:text-[11px]">
-                            Qty:{" "}
-                            {
-                              item
-                                ?.variant
-                                ?.quantity
-                            }
-                          </span>
+    <div className="mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
+      <span className="rounded-full bg-teal-600 px-2 py-1 text-[10px] font-semibold text-white sm:px-2.5 sm:text-[11px]">
+        Qty:{" "}
+        {item?.variant?.quantity}
+      </span>
 
-                          {item?.totals
-                            ?.discount >
-                            0 && (
-                            <span className="rounded-full bg-green-100 px-2 py-1 text-[10px] font-semibold text-green-700 sm:px-2.5 sm:text-[11px]">
-                              Saved ₹
-                              {
-                                item
-                                  ?.totals
-                                  ?.discount
-                              }
-                            </span>
-                          )}
-                        </div>
-                      </div>
+      {item?.totals?.discount > 0 && (
+        <span className="rounded-full bg-green-100 px-2 py-1 text-[10px] font-semibold text-green-700 sm:px-2.5 sm:text-[11px]">
+          Saved ₹
+          {item?.totals?.discount}
+        </span>
+      )}
+    </div>
+  </div>
 
-                      <div className="mt-3 sm:mt-4">
-                        <p className="break-all text-lg font-black text-black sm:text-xl">
-                          ₹
-                          {
-                            item
-                              ?.totals
-                              ?.subtotal
-                          }
-                        </p>
-                      </div>
-                    </div>
+  <div className="mt-3 sm:mt-4">
+    <p className="break-all text-lg font-black text-black sm:text-xl">
+      ₹
+      {item?.totals?.subtotal}
+    </p>
+  </div>
+</div>
                   </div>
                 );
               }
