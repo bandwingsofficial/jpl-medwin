@@ -207,8 +207,8 @@ export const OrderListPage = () => {
   |--------------------------------------------------------------------------
   |
   */
-  return (
-    <div className="space-y-5">
+return (
+  <div className="w-full min-w-0 space-y-5">
       {/* ========================= */}
       {/* HEADER */}
       {/* ========================= */}
