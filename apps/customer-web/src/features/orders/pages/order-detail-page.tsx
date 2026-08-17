@@ -222,25 +222,6 @@ const [returnOpen, setReturnOpen] =
     </span>
   </div>
 
-  
-        {/* ========================= */}
-        {/* TOP NAVIGATION */}
-        {/* ========================= */}
-
-        <button
-          onClick={() => router.back()}
-          className="
-            group mb-8 flex items-center gap-2
-            text-sm font-medium text-black/60
-            transition-all duration-200
-            hover:text-teal-600
-          "
-        >
-          <ChevronLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1" />
-
-          Back to Orders
-        </button>
-
         {/* ========================= */}
         {/* MAIN ORDER VIEW */}
         {/* ========================= */}
