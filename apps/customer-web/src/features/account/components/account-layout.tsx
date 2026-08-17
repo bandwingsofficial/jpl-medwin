@@ -29,9 +29,27 @@ export function AccountLayout({ children }: Props) {
           </div>
 
           {/* 📦 MAIN PAGE CONTENT PANEL */}
-          <div className="min-w-0 w-full flex-1 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
-            {children}
-          </div>
+          <div
+  className="
+    min-w-0
+    w-full
+    flex-1
+    rounded-none
+    border-0
+    bg-transparent
+    p-0
+    shadow-none
+
+    sm:rounded-2xl
+    sm:border
+    sm:border-gray-200
+    sm:bg-white
+    sm:p-6
+    sm:shadow-sm
+  "
+>
+  {children}
+</div>
         </div>
       </div>
     </section>

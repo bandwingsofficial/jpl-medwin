@@ -159,18 +159,6 @@ const [returnOpen, setReturnOpen] =
             We couldn't retrieve the details for this order.
             Please try again later or contact support.
           </p>
-
-          <Button
-            variant="outline"
-            className="mt-6 rounded-xl"
-            onClick={() =>
-              router.push(
-                "/account/orders"
-              )
-            }
-          >
-            Back to My Orders
-          </Button>
         </div>
       </div>
     );
