@@ -108,7 +108,7 @@ export function HomeBrands() {
                   (brand, index) => (
                     <Link
                       key={`${brand.id}-1-${index}`}
-                      href={`/products?brandId=${brand.id}`}
+                      href={`/brands/${brand.slug}`}
                       className="shrink-0"
                     >
                       <div className="flex h-[105px] w-[105px] items-center justify-center rounded-3xl border border-slate-200 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-teal-500 hover:bg-white">
@@ -140,7 +140,7 @@ export function HomeBrands() {
                   (brand, index) => (
                     <Link
                       key={`${brand.id}-2-${index}`}
-                      href={`/products?brandId=${brand.id}`}
+                      href={`/brands/${brand.slug}`}
                       className="shrink-0"
                     >
                       <div className="flex h-[105px] w-[105px] items-center justify-center rounded-3xl border border-slate-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-teal-500 hover:bg-white hover:shadow-[0_8px_20px_rgba(13,148,136,0.15)]">
@@ -189,7 +189,7 @@ export function HomeBrands() {
             {[...(brands ?? []), ...(brands ?? [])].map((brand, index) => (
               <Link
                 key={`${brand.id}-mob-${index}`}
-                href={`/products?brandId=${brand.id}`}
+                href={`/brands/${brand.slug}`}
                 className="shrink-0"
               >
                 <div className="flex h-24 w-24 items-center justify-center rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-teal-500 hover:bg-white hover:shadow-lg">
