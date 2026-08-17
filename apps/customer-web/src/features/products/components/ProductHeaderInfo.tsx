@@ -1,4 +1,4 @@
-import { Star } from "lucide-react";
+import { Link, Star } from "lucide-react";
 import {
   Product,
   ProductVariant,
@@ -84,25 +84,28 @@ export function ProductHeaderInfo({
     >
       Brand :
     </span>
-    <span
-      className="
-        inline-flex
-        items-center
-        whitespace-nowrap
-        bg-gradient-to-r
-        from-blue-600
-        via-teal-600
-        to-emerald-500
-        bg-clip-text
-        text-sm
-        font-bold
-        tracking-wide
-        text-transparent
-        drop-shadow-[0_1px_1px_rgba(13,148,136,0.12)]
-      "
-    >
-    {product.brand.name.toUpperCase()}
-    </span>
+   <Link
+  href={`/brands/${product.brand.slug}`}
+  className="
+    inline-flex
+    items-center
+    whitespace-nowrap
+    bg-gradient-to-r
+    from-blue-600
+    via-teal-600
+    to-emerald-500
+    bg-clip-text
+    text-sm
+    font-bold
+    tracking-wide
+    text-transparent
+    drop-shadow-[0_1px_1px_rgba(13,148,136,0.12)]
+    transition-opacity
+    hover:opacity-80
+  "
+>
+  {product.brand.name.toUpperCase()}
+</Link>
   </div>
 )}
         {/* RATINGS & REVIEWS */}

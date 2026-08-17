@@ -217,7 +217,7 @@ export function CartPage() {
             >
               <Truck size={14} className="text-teal-600 md:w-[18px] md:h-[18px]" />
               <span className="text-[11px] md:text-sm font-medium text-blue-900">
-                Delivery in 3–7 days
+                Delivery in 1-3 days
               </span>
             </div>
 
