@@ -574,7 +574,7 @@ export const OrderDetailsView = ({
                       <Image
                         src={
                           image ||
-                          "/placeholder.png"
+                          "/Logo/jpl_logo.png"
                         }
                         alt={
                           item.productName

@@ -13,7 +13,7 @@ interface CheckoutItemsProps {
 }
 
 // CRITICAL: Ensure this file actually exists in your /public folder
-const PLACEHOLDER_IMAGE = "/product-placeholder.png"; 
+const PLACEHOLDER_IMAGE = "/Logo/jpl_logo.png"; 
 
 const getImageUrl = (item: any) => {
   if (item.variant?.images?.main) return item.variant.images.main;
@@ -62,7 +62,7 @@ export function CheckoutItems({ checkout }: CheckoutItemsProps) {
               <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md border border-slate-200 bg-white">
                 <Image
                   src={imgSrc}
-                  alt={productName}
+                  alt="/Logo/jpl_logo.png"
                   fill
                   sizes="64px"
                   className="object-contain p-1"
