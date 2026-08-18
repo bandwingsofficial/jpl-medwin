@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { X } from "lucide-react";
+import { Pencil, X } from "lucide-react";
 import { useAuthModal } from "@/shared/context/auth-modal-context";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -62,7 +62,7 @@ function Wordmark() {
     <div className="flex items-center gap-3">
       <div className="relative h-9 w-9 overflow-hidden rounded-xl">
         <Image 
-          src="/Images/Icon.jpeg" 
+          src="/Metadata/Jpl_Meta1.png" 
           alt="JPL Medwin Icon" 
           fill 
           className="object-cover" 
@@ -91,6 +91,11 @@ export function OtpForm() {
   sessionStorage.removeItem("login_return_url");
 
   router.replace(returnUrl);
+};
+const handleEditIdentifier = () => {
+  sessionStorage.removeItem("login_identifier");
+
+  router.replace("/login");
 };
   const [digits, setDigits] = useState<string[]>(
     Array(OTP_LENGTH).fill("")
@@ -289,11 +294,35 @@ useEffect(() => {
                   Verify it's you
                 </h1>
                 <p className="text-[13px] leading-relaxed text-[#5C7570]">
-                  We sent a {OTP_LENGTH}-digit code to{" "}
-                  <span className="font-medium text-[#12231F]">
-                    {identifier}
-                  </span>
-                </p>
+  We sent a {OTP_LENGTH}-digit code to{" "}
+  <span className="inline-flex items-center gap-1.5 font-medium text-[#12231F]">
+    <span>{identifier}</span>
+
+    <button
+      type="button"
+      onClick={handleEditIdentifier}
+      aria-label="Edit phone number"
+      title="Edit phone number"
+      className="
+        inline-flex
+        h-6
+        w-6
+        items-center
+        justify-center
+        rounded-md
+        text-[#0E6B5C]
+        transition-colors
+        hover:bg-[#0E6B5C]/10
+        hover:text-[#0A5347]
+        focus:outline-none
+        focus:ring-2
+        focus:ring-[#0E6B5C]/20
+      "
+    >
+      <Pencil className="h-3.5 w-3.5" />
+    </button>
+  </span>
+</p>
                 <PulseLine />
               </div>
 
