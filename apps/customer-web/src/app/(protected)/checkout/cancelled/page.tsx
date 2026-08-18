@@ -9,7 +9,7 @@ export default function PaymentCancelledPage() {
   const orderId = searchParams.get("orderId") || "";
 
   return (
-    <div className="mx-auto flex min-h-[80vh] w-full max-w-3xl items-center justify-center px-4 py-10 select-none">
+    <div className="mx-auto flex min-h-[80vh] w-full max-w-3xl items-center justify-center px-4 pt-4 pb-10 md:py-10 select-none">
       {/* 👉 UI ENHANCEMENT: Restructured card body template metrics into premium shadow cards */}
       <div className="w-full rounded-3xl bg-white p-8 md:p-12 text-center border border-gray-100 shadow-sm flex flex-col items-center">
         
@@ -39,7 +39,7 @@ export default function PaymentCancelledPage() {
           {/* RETRY PAYMENT ACTION ROUTE */}
           <Link
             href={`/checkout/payment?orderId=${orderId}`}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 h-11 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all hover:bg-blue-700 active:scale-98"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-6 h-11 text-xs font-bold uppercase tracking-wider text-white shadow-sm transition-all hover:bg-teal-700 active:scale-98"
           >
             <CreditCard className="h-4 w-4" />
             <span>Retry Payment</span>
