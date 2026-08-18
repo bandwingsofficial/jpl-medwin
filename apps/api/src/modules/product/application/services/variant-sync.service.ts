@@ -133,6 +133,7 @@ const normalizedSku = inputSku.toUpperCase();
       sellingPrice: input.sellingPrice,
       mrp: input.mrp,
     });
+    
 
     // ==========================================================
     // 🔥 FIND EXISTING VARIANT
@@ -206,10 +207,10 @@ if (existing) {
 
         mrp: pricing.mrp,
 
-        quantity: new QuantityVO(
-          input.quantity ?? 0,
-        ).getValue(),
-
+      quantity:
+  input.quantity !== undefined
+    ? new QuantityVO(input.quantity).getValue()
+    : existing.quantity,
         attributes:
           input.attributes !== undefined
             ? input.attributes
@@ -238,7 +239,7 @@ if (existing) {
         priorityOrder:
           input.priorityOrder ?? existing.priorityOrder,
       });
-
+      
       await this.variantRepo.update(
         existing,
         tx,

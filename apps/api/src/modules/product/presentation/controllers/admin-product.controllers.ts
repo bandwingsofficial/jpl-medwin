@@ -670,29 +670,46 @@ export class AdminProductController {
       };
 
       // =======================
-      // 🔥 DTO BUILD
-      // =======================
+// 🔥 PARSE UPDATE DATA
+// =======================
 
-      const dto: any = {
-        ...rawDto,
+const parsedData =
+  typeof rawDto.data === 'string'
+    ? JSON.parse(rawDto.data)
+    : rawDto.data || rawDto;
 
-        features: parseJson(rawDto.features, undefined),
+console.log('🔥 UPDATE RAW DTO =>', rawDto);
+console.log('🔥 UPDATE PARSED DATA =>', parsedData);
 
-        tags: parseJson(rawDto.tags, undefined),
+console.log(
+  '🔥 UPDATE INPUT VARIANTS =>',
+  JSON.stringify(parsedData.variants, null, 2),
+);
 
-        displayNotes: parseJson(rawDto.displayNotes, undefined),
+// =======================
+// 🔥 DTO BUILD
+// =======================
 
-        specifications: parseJson(rawDto.specifications, undefined),
+const dto: any = {
+  ...parsedData,
 
-        packing: parseJson(rawDto.packing, undefined),
+  features: parseJson(parsedData.features, undefined),
 
-        directionOfUse: parseJson(rawDto.directionOfUse, undefined),
+  tags: parseJson(parsedData.tags, undefined),
 
-        additionalInfo: parseJson(rawDto.additionalInfo, undefined),
+  displayNotes: parseJson(parsedData.displayNotes, undefined),
 
-        faq: parseJson(rawDto.faq, undefined),
+  specifications: parseJson(parsedData.specifications, undefined),
 
-        variants: (parseJson(rawDto.variants, []) ?? []).map((v: any) => {
+  packing: parseJson(parsedData.packing, undefined),
+
+  directionOfUse: parseJson(parsedData.directionOfUse, undefined),
+
+  additionalInfo: parseJson(parsedData.additionalInfo, undefined),
+
+  faq: parseJson(parsedData.faq, undefined),
+
+  variants: (parseJson(parsedData.variants, []) ?? []).map((v: any) => {
           const mappedImages =
             v.images !== undefined
               ? parseJson(v.images, []).map((img: any, index: number) => {
@@ -731,10 +748,15 @@ export class AdminProductController {
           };
         }),
 
-        isWeighted: rawDto.isWeighted !== undefined ? toBoolean(rawDto.isWeighted) : undefined,
+       isWeighted:
+  parsedData.isWeighted !== undefined
+    ? toBoolean(parsedData.isWeighted)
+    : undefined,
 
-        warrantyMonths:
-          rawDto.warrantyMonths !== undefined ? toNumber(rawDto.warrantyMonths) : undefined,
+warrantyMonths:
+  parsedData.warrantyMonths !== undefined
+    ? toNumber(parsedData.warrantyMonths)
+    : undefined,
       };
 
       // =======================
