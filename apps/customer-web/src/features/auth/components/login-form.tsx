@@ -174,7 +174,7 @@ router.push("/verify-otp");
                 <Input
   value={value}
   onChange={(e) => setValue(e.target.value)}
-  placeholder="you@example.com"
+  placeholder="you@example.com/9876543211"
   className="
     h-11
     rounded-xl
