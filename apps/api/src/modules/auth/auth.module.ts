@@ -50,6 +50,8 @@ import { BrevoNotificationAdapter } from '@/infrastructure/notification/brevo-no
 import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 import { RedisModule } from '@modules/auth/infrastructure/redis/redis.module';
 import { CoinsModule } from '../coins/coins.module';
+import { BandWingsSmsAdapter } from './infrastructure/notification/sms.adapter';
+import { NotificationAdapter } from './infrastructure/notification/notification.adapter';
 
 @Module({
   imports: [
@@ -99,6 +101,10 @@ import { CoinsModule } from '../coins/coins.module';
     JwtAuthGuard,
     RolesGuard,
 
+    BandWingsSmsAdapter,
+BrevoNotificationAdapter,
+NotificationAdapter,
+
     // =======================
     // REPOSITORIES
     // =======================
@@ -132,7 +138,7 @@ import { CoinsModule } from '../coins/coins.module';
     },
     {
   provide: TOKENS.NOTIFICATION_PORT,
-  useClass: BrevoNotificationAdapter,
+  useClass: NotificationAdapter,
 },
   ],
 

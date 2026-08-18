@@ -1,15 +1,38 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+
 import { NotificationPort } from '@/application/ports/notification.port';
 
-@Injectable()
-export class ConsoleNotificationAdapter implements NotificationPort {
-  private readonly logger = new Logger(ConsoleNotificationAdapter.name);
+import { BandWingsSmsAdapter } from './sms.adapter';
+import { BrevoNotificationAdapter } from './brevo-notification.adapter';
 
-  async sendSms(phone: string, message: string): Promise<void> {
-    this.logger.log(`[SMS] → ${phone}: ${message}`);
+@Injectable()
+export class NotificationAdapter
+  implements NotificationPort
+{
+  constructor(
+    private readonly smsAdapter: BandWingsSmsAdapter,
+    private readonly emailAdapter: BrevoNotificationAdapter,
+  ) {}
+
+  async sendSms(
+    phone: string,
+    message: string,
+  ): Promise<void> {
+    await this.smsAdapter.sendSms(
+      phone,
+      message,
+    );
   }
 
-  async sendEmail(email: string, subject: string, body: string): Promise<void> {
-    this.logger.log(`[EMAIL] → ${email} | ${subject} | ${body}`);
+  async sendEmail(
+    email: string,
+    subject: string,
+    body: string,
+  ): Promise<void> {
+    await this.emailAdapter.sendEmail(
+      email,
+      subject,
+      body,
+    );
   }
 }
