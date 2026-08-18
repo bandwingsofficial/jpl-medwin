@@ -395,6 +395,9 @@ if (heroImages.length === 0) {
     bg-white
     px-2
     py-2
+
+    md:mx-auto
+    md:max-w-[1312px]
     md:px-4
     md:py-4
     md:rounded-[24px]
