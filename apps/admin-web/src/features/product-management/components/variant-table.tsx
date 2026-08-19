@@ -29,6 +29,8 @@ import {
   Trash2,
   ChevronRight,
   RotateCcw,
+  MoreVertical,
+  Eye,
 } from "lucide-react";
 
 import {
@@ -37,6 +39,7 @@ import {
   showSuccess,
   showWarning,
 } from "@/shared/store/toast.store";
+import { useState } from "react";
 
 // =========================================
 // TYPES
@@ -74,6 +77,8 @@ export function VariantTable(
     productId,
   });
 
+  const [openMenuId, setOpenMenuId] =
+  useState<string | null>(null);
   // =========================================
   // TOGGLE STATUS
   // =========================================
@@ -409,6 +414,12 @@ export function VariantTable(
 
             <TableHead>
               <div className="text-xs font-semibold whitespace-nowrap">
+                Availability
+              </div>
+            </TableHead>
+
+             <TableHead>
+              <div className="text-xs font-semibold whitespace-nowrap">
                 Stock
               </div>
             </TableHead>
@@ -439,13 +450,15 @@ export function VariantTable(
           {variants.map(
             (variant) => {
 
-              const isDeleted =
-                !!variant.deletedAt;
+              const isDeleted = !!variant.deletedAt;
 
-              const isInactive =
-                variant.status ===
-                "INACTIVE";
+const isInactive = variant.status === "INACTIVE";
 
+const stockQuantity = variant.stock?.quantity ?? 0;
+
+const isAvailable =
+  variant.status === "ACTIVE" &&
+  stockQuantity > 0;
               return (
 
                 <TableRow
@@ -577,50 +590,38 @@ export function VariantTable(
                   {/* STOCK */}
 
                   <TableCell>
-                    <div className="py-2 whitespace-nowrap">
-                      <div
-                        className="
-                          inline-flex
-                          items-center
-                          gap-2
-                        "
-                      >
-                        <span
-                          className={`
-                            inline-flex
-                            items-center
-                            rounded-md
-                            border
-                            px-2
-                            py-1
-                            text-[11px]
-                            font-medium
+  <div className="py-2 whitespace-nowrap">
+    <div className="inline-flex items-center gap-2">
+      {/* AVAILABILITY */}
+      <span
+        className={`
+          inline-flex
+          items-center
+          rounded-md
+          border
+          px-2
+          py-1
+          text-[11px]
+          font-medium
+          ${
+            isAvailable
+              ? "border-green-100 bg-green-50 text-green-700"
+              : "border-red-100 bg-red-50 text-red-600"
+          }
+        `}
+      >
+        {isAvailable ? "Available" : "Out of Stock"}
+      </span>
+    </div>
+  </div>
+</TableCell>
 
-                            ${
-                              variant.status === "ACTIVE"
-                                ? "border-green-100 bg-green-50 text-green-700"
-                                : "border-red-100 bg-red-50 text-red-600"
-                            }
-                          `}
-                        >
-                          {variant.status === "ACTIVE"
-                            ? "Available"
-                            : "Unavailable"}
-                        </span>
-
-                        <span
-                          className="
-                            text-[11px]
-                            text-gray-500
-                          "
-                        >
-                          Qty:
-                          {" "}
-                          {variant.stock?.quantity || 0}
-                        </span>
-                      </div>
-                    </div>
-                  </TableCell>
+<TableCell>
+   {/* QUANTITY */}
+      <span className="text-[11px] text-gray-500">
+        Qty: {stockQuantity}
+      </span>
+</TableCell>
 
 
                   {/* STATUS */}
@@ -654,87 +655,181 @@ export function VariantTable(
 
                   {/* ACTIONS */}
 
-                  <TableCell>
+<TableCell>
+  <div className="relative flex items-center justify-end">
+    {/* 3 DOT BUTTON */}
 
-                    <div
-                      className="
-                        py-2
-                        flex
-                        items-center
-                        justify-end
-                        gap-1.5
-                        whitespace-nowrap
-                      "
-                    >
+    <Button
+      size="icon"
+      variant="ghost"
+      className="
+        h-8
+        w-8
+        rounded-lg
+        hover:bg-gray-100
+      "
+      onClick={() =>
+        setOpenMenuId(
+          openMenuId === variant.id
+            ? null
+            : variant.id
+        )
+      }
+    >
+      <MoreVertical className="h-4 w-4 text-gray-500" />
+    </Button>
 
-                      
+    {/* DROPDOWN */}
 
-                      {/* STATUS */}
+    {openMenuId === variant.id && (
+      <div
+        className="
+          absolute
+          right-0
+          top-10
+          z-50
+          w-36
+          rounded-lg
+          border
+          border-gray-200
+          bg-white
+          p-1
+          shadow-lg
+        "
+      >
+        {/* VIEW */}
 
-                      {!isDeleted && (
+<button
+  type="button"
+  onClick={() => {
+    setOpenMenuId(null);
 
-                        <Button
-                          size="icon"
-                          variant="secondary"
-                          className="h-8 w-8"
-                          disabled={
-                            toggleVariantStatusMutation.isPending
-                          }
-                          onClick={() =>
-                            handleToggleStatus(
-                              variant
-                            )
-                          }
-                        >
-                          <Power className="h-3.5 w-3.5" />
-                        </Button>
+    window.location.href =
+      `/products/${productId}/variants/${variant.id}`;
+  }}
+  className="
+    flex
+    w-full
+    items-center
+    gap-2
+    rounded-md
+    px-3
+    py-2
+    text-left
+    text-sm
+    text-gray-700
+    hover:bg-gray-100
+  "
+>
+  <Eye className="h-3.5 w-3.5 text-gray-500" />
 
-                      )}
+  View
+</button>
+        {/* ACTIVATE / DEACTIVATE */}
 
-                      {/* DELETE / RESTORE */}
+        {!isDeleted && (
+          <button
+            type="button"
+            disabled={
+              toggleVariantStatusMutation.isPending
+            }
+            onClick={() => {
+              setOpenMenuId(null);
+              handleToggleStatus(variant);
+            }}
+            className="
+              flex
+              w-full
+              items-center
+              gap-2
+              rounded-md
+              px-3
+              py-2
+              text-left
+              text-sm
+              text-gray-700
+              hover:bg-gray-100
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
+          >
+            <Power className="h-3.5 w-3.5 text-gray-500" />
 
-                      {isDeleted ? (
+            {variant.status === "ACTIVE"
+              ? "Deactivate"
+              : "Activate"}
+          </button>
+        )}
 
-                        <Button
-                          size="icon"
-                          variant="secondary"
-                          className="h-8 w-8"
-                          disabled={
-                            restoreVariantMutation.isPending
-                          }
-                          onClick={() =>
-                            handleRestoreVariant(
-                              variant
-                            )
-                          }
-                        >
-                          <RotateCcw className="h-3.5 w-3.5" />
-                        </Button>
+        {/* RESTORE */}
 
-                      ) : (
+        {isDeleted ? (
+          <button
+            type="button"
+            disabled={
+              restoreVariantMutation.isPending
+            }
+            onClick={() => {
+              setOpenMenuId(null);
+              handleRestoreVariant(variant);
+            }}
+            className="
+              flex
+              w-full
+              items-center
+              gap-2
+              rounded-md
+              px-3
+              py-2
+              text-left
+              text-sm
+              text-gray-700
+              hover:bg-gray-100
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
+          >
+            <RotateCcw className="h-3.5 w-3.5 text-gray-500" />
 
-                        <Button
-                          size="icon"
-                          variant="secondary"
-                          className="h-8 w-8"
-                          disabled={
-                            deleteVariantMutation.isPending
-                          }
-                          onClick={() =>
-                            handleDeleteVariant(
-                              variant
-                            )
-                          }
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
+            Restore
+          </button>
+        ) : (
+          /* DELETE */
 
-                      )}
+          <button
+            type="button"
+            disabled={
+              deleteVariantMutation.isPending
+            }
+            onClick={() => {
+              setOpenMenuId(null);
+              handleDeleteVariant(variant);
+            }}
+            className="
+              flex
+              w-full
+              items-center
+              gap-2
+              rounded-md
+              px-3
+              py-2
+              text-left
+              text-sm
+              text-red-600
+              hover:bg-red-50
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
+          >
+            <Trash2 className="h-3.5 w-3.5 text-red-500" />
 
-                    </div>
-
-                  </TableCell>
-
+            Delete
+          </button>
+        )}
+      </div>
+    )}
+  </div>
+</TableCell>
                 </TableRow>
               );
             }

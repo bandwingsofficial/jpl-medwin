@@ -5,7 +5,7 @@
     useMemo,
     useState,
   } from "react";
-  import { Download } from "lucide-react";
+  import { Download, Home } from "lucide-react";
 
   import ExportOrdersDialog from "./export-orders-dialog";
 
@@ -25,9 +25,11 @@
   } from "lucide-react";
 
   import {
-    useOrders,
-    useOrderDetails,
-  } from "../hooks/use-orders";
+  useOrders,
+  useOrderDetails,
+} from "../hooks/use-orders";
+
+import { useNewOrderNotification } from "../hooks/use-new-order-notification";
 
   import { Order } from "../types/order.type";
 
@@ -105,6 +107,12 @@
   ];
 
   export default function OrderPage() {
+
+  // =========================================
+  // NEW ORDER NOTIFICATION
+  // =========================================
+
+  useNewOrderNotification();
 
     /*
     |--------------------------------------------------------------------------
@@ -346,41 +354,94 @@
     return (
       <>
 
-        <div
-          className="
-            w-full
-            min-w-0
-            overflow-hidden
-            space-y-5
-            p-4
-            md:p-5
-          "
-        >
+       <div
+  className="
+    w-full
+    min-w-0
+    overflow-hidden
+    space-y-5
+    px-1
+    pb-2
+    md:px-2
+    md:pb-5
+  "
+>
 
           {/* HEADER */}
 
-          <div
+<div
+  className="
+    flex
+    flex-col
+    gap-4
+    lg:flex-row
+    lg:items-center
+    lg:justify-between
+  "
+>
+  <div>
+
+    {/* BREADCRUMBS */}
+
+    <div className="mb-2 flex items-center gap-2 text-sm">
+
+      {/* HOME */}
+
+      <a
+        href="/"
+        className="
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
+        "
+      >
+        <Home className="h-4 w-4" />
+        Home
+      </a>
+
+      {/* SEPARATOR */}
+
+      <ChevronRight
+        className="h-4 w-4 text-slate-300"
+        strokeWidth={2}
+      />
+
+      {/* ORDERS */}
+
+      <span className="font-semibold text-teal-600">
+        Orders
+      </span>
+
+    </div>
+
+    {/* TITLE */}
+
+   <h1
             className="
-              flex
-              flex-col
-              gap-4
-              lg:flex-row
-              lg:items-center
-              lg:justify-between
+              animate-text-shine
+              bg-gradient-to-r
+              from-[#001f3f]
+              via-[#0d9488]
+              to-[#001f3f]
+              bg-clip-text
+              text-[28px]
+              font-bold
+              leading-tight
+              text-transparent
             "
           >
+      Order Management
+    </h1>
 
-            <div>
+    <p className="mt-1 text-sm text-gray-500">
+      Manage customer orders
+    </p>
 
-              <h1 className="text-2xl font-bold text-gray-900">
-                Order Management
-              </h1>
-
-              <p className="mt-1 text-sm text-gray-500">
-                Manage customer orders
-              </p>
-
-            </div>
+  </div>
 
             <div className="flex w-full items-center gap-3 lg:w-auto">
 

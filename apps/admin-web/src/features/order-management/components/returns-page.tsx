@@ -11,6 +11,8 @@ import {
   CheckCircle2,
   Clock3,
   PackageCheck,
+  Home,
+  ChevronRight,
 } from "lucide-react";
 
 import {
@@ -23,6 +25,7 @@ import { ReturnRequest } from "../types/return.type";
 import ReturnTable from "./return-table";
 
 import ReturnDetailsDrawer from "./return-details-drawer";
+import Link from "next/link";
 
 export default function ReturnsPage() {
   /*
@@ -185,15 +188,43 @@ export default function ReturnsPage() {
   return (
     <>
       <div
+  className="
+    w-full
+    min-w-0
+    overflow-hidden
+    space-y-5
+    px-1
+    pb-2
+    md:px-2
+    md:pb-5
+  "
+>
+  {/* BREADCRUMBS */}
+
+    <div className="flex items-center gap-2 text-sm">
+      <Link
+        href="/"
         className="
-          w-full
-          min-w-0
-          overflow-hidden
-          space-y-5
-          p-4
-          md:p-5
+          inline-flex
+          items-center
+          gap-1.5
+          font-medium
+          text-slate-500
+          transition-colors
+          hover:text-teal-600
         "
       >
+        <Home className="h-4 w-4" />
+        Home
+      </Link>
+
+      <ChevronRight className="h-4 w-4 text-slate-300" />
+
+      <span className="font-semibold text-teal-600">
+        Order Returns
+      </span>
+    </div>
+
         {/* HEADER */}
 
         <div>

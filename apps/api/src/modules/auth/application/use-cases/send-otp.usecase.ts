@@ -161,7 +161,10 @@ export class SendOtpUseCase {
     return Math.max(0, RATELIMIT_POLICY.MAX_ATTEMPTS - attempts);
   }
 
-  private buildMessage(code: string, purpose: OtpPurpose): string {
-    return `Your OTP for ${purpose.toLowerCase()} is ${code}`;
-  }
+  private buildMessage(
+  code: string,
+  _purpose: OtpPurpose,
+): string {
+  return `Dear Customer, ${code} is your login OTP. JPL MARKWIN PVT LTD - Dental & Medical Supplier, Bengaluru. If not requested, visit https://jplmedwin.com`;
+}
 }

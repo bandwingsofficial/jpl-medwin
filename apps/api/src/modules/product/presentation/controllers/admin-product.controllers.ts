@@ -1272,7 +1272,37 @@ async exportByUpdatedAt(
       limit: limit ? Number(limit) : 20,
     });
   }
+  
+  @Get(':productId/variants/:variantId')
+async getVariantDetail(
+  @Param('productId')
+  productId: string,
 
+  @Param('variantId')
+  variantId: string,
+) {
+  const result =
+    await this.getVariantsUseCase.execute({
+      productId,
+      page: 1,
+      limit: 100,
+      includeDeleted: true,
+      onlyActive: false,
+    });
+
+  const variant =
+    result.variants.find(
+      (item) => item.id === variantId,
+    );
+
+  if (!variant) {
+    throw new NotFoundException(
+      'Variant not found',
+    );
+  }
+
+  return variant;
+}
   // ================= HELPERS =================
 
   private extractFailureReason(err: any): string {

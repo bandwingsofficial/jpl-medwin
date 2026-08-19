@@ -497,8 +497,8 @@ export default function OrderDetailsDrawer({
                               item
                                 ?.variant
                                 ?.images
-                                ?.main ||
-                              "/placeholder.png"
+                                ?.main || 
+                              "/Logo/jpl_logo.png"
                             }
                             alt={
                               item.productName ||

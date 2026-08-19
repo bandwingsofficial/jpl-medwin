@@ -14,7 +14,7 @@ export class BandWingsSmsAdapter implements NotificationPort {
 
   private readonly apiUrl =
     process.env.SMS_API_URL ??
-    'https://sms.bandwings.in/api/sendmsg.php';
+    'http://sms.bandwings.in/api/sendmsg.php';
 
   private readonly username =
     process.env.SMS_USERNAME ?? '';
@@ -38,11 +38,9 @@ export class BandWingsSmsAdapter implements NotificationPort {
     phone: string,
     message: string,
   ): Promise<void> {
+    // SMS disabled.
+    // Do not print OTP or phone number.
     if (!this.enabled) {
-      this.logger.warn(
-        `SMS is disabled. OTP SMS not sent to ${phone}`,
-      );
-
       return;
     }
 
@@ -56,11 +54,13 @@ export class BandWingsSmsAdapter implements NotificationPort {
       );
     }
 
+    const formattedPhone = this.formatPhone(phone);
+
     const params = new URLSearchParams({
       user: this.username,
       pass: this.password,
       sender: this.sender,
-      phone,
+      phone: formattedPhone,
       text: message,
       priority: this.priority,
       stype: this.stype,
@@ -69,33 +69,42 @@ export class BandWingsSmsAdapter implements NotificationPort {
     const url = `${this.apiUrl}?${params.toString()}`;
 
     try {
-      this.logger.log(
-        `Sending OTP SMS to ${phone}`,
-      );
-
       const response = await fetch(url, {
         method: 'GET',
       });
 
-      const responseText =
-        await response.text();
+      const result = (await response.text()).trim();
 
       if (!response.ok) {
         this.logger.error(
-          `SMS gateway failed: HTTP ${response.status}`,
+          `SMS gateway HTTP error: ${response.status}`,
         );
 
-        this.logger.error(
-          `SMS gateway response: ${responseText}`,
-        );
-
-        throw new InternalServerErrorException(
-          'Failed to send OTP SMS',
-        );
+        throw new Error('SMS_GATEWAY_HTTP_ERROR');
       }
 
+      /**
+       * BandWings success responses:
+       *
+       * 123456
+       * S.123456
+       */
+      const successRegex = /^(S\.)?\d+$/;
+
+      if (!successRegex.test(result)) {
+        this.logger.error(
+          'SMS gateway rejected the message',
+        );
+
+        throw new Error('SMS_GATEWAY_REJECTED');
+      }
+
+      const messageId = result.startsWith('S.')
+        ? result.substring(2)
+        : result;
+
       this.logger.log(
-        `OTP SMS gateway response: ${responseText}`,
+        `OTP SMS submitted successfully. MessageId: ${messageId}`,
       );
     } catch (error) {
       if (
@@ -105,9 +114,9 @@ export class BandWingsSmsAdapter implements NotificationPort {
       }
 
       this.logger.error(
-        'SMS gateway request failed',
+        'Failed to send OTP SMS',
         error instanceof Error
-          ? error.stack
+          ? error.message
           : String(error),
       );
 
@@ -117,13 +126,24 @@ export class BandWingsSmsAdapter implements NotificationPort {
     }
   }
 
+  private formatPhone(phone: string): string {
+    const cleaned = phone.replace(/\D/g, '');
+
+    if (
+      cleaned.startsWith('91') &&
+      cleaned.length === 12
+    ) {
+      return cleaned.substring(2);
+    }
+
+    return cleaned;
+  }
+
   async sendEmail(
     email: string,
     subject: string,
     body: string,
   ): Promise<void> {
-    this.logger.warn(
-      `Email notification is not configured for ${email}`,
-    );
+    // Email not configured.
   }
 }

@@ -306,12 +306,17 @@ export function CategoriesPage() {
 
   return (
   <div
-    className="
-      min-h-screen
-      bg-gray-50
-      p-4
-    "
-  >
+  className="
+    w-full
+    min-w-0
+    overflow-hidden
+    space-y-5
+    px-1
+    pb-2
+    md:px-2
+    md:pb-5
+  "
+>
 
     {/* BREADCRUMBS */}
 

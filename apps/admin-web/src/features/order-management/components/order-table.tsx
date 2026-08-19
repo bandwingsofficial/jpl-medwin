@@ -367,7 +367,7 @@ export default function OrderTable({
               top-0
               z-10
               hidden
-              grid-cols-[1fr_1.5fr_1fr_1fr_1fr_1fr_1.2fr]
+              grid-cols-[1fr_1fr_1fr_1fr_0.7fr_0.7fr_1fr]
               items-center
               border-b
               border-gray-200
@@ -412,7 +412,7 @@ export default function OrderTable({
                   key={order.id}
                   className="
                     grid
-                    grid-cols-[1fr_1.5fr_1fr_1fr_1fr_1fr_1.2fr]
+                    grid-cols-[1fr_1fr_1fr_1fr_0.7fr_0.7fr_1fr]
                     items-center
                     gap-2
                     px-4

@@ -322,11 +322,17 @@ export function MiniCategoryPage() {
 
   return (
   <div
-    className="
-      p-6
-      space-y-6
-    "
-  >
+  className="
+    w-full
+    min-w-0
+    overflow-hidden
+    space-y-5
+    px-1
+    pb-2
+    md:px-2
+    md:pb-5
+  "
+>
 
     {/* BREADCRUMBS */}
 

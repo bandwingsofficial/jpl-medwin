@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 import { Download,  Home,
-  ChevronRight,} from "lucide-react";
+  ChevronRight,
+  Upload,} from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/shared/components/ui/button";
 import { ProductPageSkeleton } from "./product-page-skeleton";
@@ -117,84 +118,120 @@ export function ProductPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* EXPORT EXCEL BUTTON */}
+       <div className="flex items-center gap-3">
+  {/* EXPORT EXCEL */}
+  <Button
+    variant="ghost"
+    disabled={isLoading}
+    onClick={() => setExportOpen(true)}
+    className="
+      group
+      h-10
+      shrink-0
+      gap-2
+      rounded-xl
+      border
+      border-teal-200/80
+      bg-white/60
+      px-4
+      text-sm
+      font-semibold
+      text-teal-700
+      shadow-[0_4px_20px_rgba(13,148,136,0.08)]
+      backdrop-blur-xl
+      transition-all
+      duration-200
+      hover:-translate-y-[1px]
+      hover:border-teal-300
+      hover:bg-teal-50/80
+      hover:text-teal-800
+      hover:shadow-[0_8px_24px_rgba(13,148,136,0.14)]
+      disabled:pointer-events-none
+      disabled:opacity-50
+    "
+  >
+    <Download
+      size={16}
+      strokeWidth={2.2}
+      className="
+        transition-transform
+        duration-200
+        group-hover:-translate-y-0.5
+      "
+    />
 
-          <Button
-            variant="primary"
-            disabled={isLoading}
-            onClick={() =>
-              setExportOpen(true)
-            }
-            className="
-              inline-flex
-              shrink-0
-              items-center
-              gap-2
-              rounded-lg
-              bg-teal-600
-              px-4
-              py-2.5
-              text-sm
-              font-medium
-              text-white
-              transition
-              hover:bg-teal-700
-            "
-          >
-            <Download size={16} />
-            Export Excel
-          </Button>
+    <span>Export Excel</span>
+  </Button>
 
-          {/* IMPORT EXCEL BUTTON */}
+  {/* IMPORT EXCEL */}
+  <Button
+    variant="ghost"
+    disabled={isLoading}
+    onClick={() => setImportOpen(true)}
+    className="
+      group
+      h-10
+      shrink-0
+      gap-2
+      rounded-xl
+      border
+      border-teal-200/80
+      bg-white/60
+      px-4
+      text-sm
+      font-semibold
+      text-teal-700
+      shadow-[0_4px_20px_rgba(13,148,136,0.08)]
+      backdrop-blur-xl
+      transition-all
+      duration-200
+      hover:-translate-y-[1px]
+      hover:border-teal-300
+      hover:bg-teal-50/80
+      hover:text-teal-800
+      hover:shadow-[0_8px_24px_rgba(13,148,136,0.14)]
+      disabled:pointer-events-none
+      disabled:opacity-50
+    "
+  >
+    <Upload
+      size={16}
+      strokeWidth={2.2}
+      className="
+        transition-transform
+        duration-200
+        group-hover:-translate-y-0.5
+      "
+    />
 
-          <Button
-            variant="primary"
-            disabled={isLoading}
-            onClick={() =>
-              setImportOpen(true)
-            }
-            className="
-              h-10
-              rounded-xl
-              bg-teal-600
-              px-4
-              text-sm
-              font-medium
-              text-white
-              shadow-sm
-              shadow-teal-600/10
-              transition-all
-              hover:bg-teal-700
-            "
-          >
-            Import Excel
-          </Button>
+    <span>Import Excel</span>
+  </Button>
 
-          {/* ADD PRODUCT BUTTON */}
-
-          <Button
-            disabled={isLoading}
-            onClick={() =>
-              setOpen(true)
-            }
-            className="
-              h-10
-              rounded-xl
-              bg-teal-600
-              px-4
-              text-sm
-              font-medium
-              text-white
-              shadow-sm
-              shadow-teal-600/10
-              transition-all
-              hover:bg-teal-700
-            "
-          >
-            + Add Product
-          </Button>
-        </div>
+  {/* ADD PRODUCT */}
+  <Button
+    disabled={isLoading}
+    onClick={() => setOpen(true)}
+    className="
+      h-10
+      rounded-xl
+      bg-teal-600
+      px-4
+      text-sm
+      font-semibold
+      text-white
+      shadow-[0_6px_20px_rgba(13,148,136,0.22)]
+      transition-all
+      duration-200
+      hover:-translate-y-[1px]
+      hover:bg-teal-700
+      hover:shadow-[0_8px_24px_rgba(13,148,136,0.28)]
+      disabled:pointer-events-none
+      disabled:opacity-50
+    "
+  >
+    + Add Product
+  </Button>
+</div>
       </div>
 
       {/* PRODUCT TABLE */}

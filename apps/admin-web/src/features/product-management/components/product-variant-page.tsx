@@ -197,24 +197,6 @@ response?.data?.pagination;
         {/* LEFT */}
         <div className="space-y-2">
 
-          {/* BREADCRUMB */}
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-
-            <Link
-              href="/products"
-              className="hover:text-gray-900 transition-colors"
-            >
-              Products
-            </Link>
-
-            <span>/</span>
-
-            <span>
-              Variants
-            </span>
-
-          </div>
-
           {/* TITLE */}
           <div className="flex items-center gap-3">
 

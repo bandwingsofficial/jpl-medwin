@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-
+import { MoreVertical } from "lucide-react";
 import {
   showSuccess,
   showError,
@@ -65,6 +65,8 @@ const [filters, setFilters] =
 
   const [editOpen, setEditOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [openMenuId, setOpenMenuId] =
+  useState<string | null>(null);
 
   // =========================================
   // HANDLERS
@@ -304,7 +306,6 @@ if (productsQuery.isError && !hasActiveFilters) {
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Brand</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Category</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Price</div></TableHead>
-                  <TableHead><div className="text-xs font-semibold whitespace-nowrap">Availability</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Variants</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Status</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap text-right">Actions</div></TableHead>
@@ -342,7 +343,23 @@ if (productsQuery.isError && !hasActiveFilters) {
                       </TableCell>
 
                       <TableCell>
-                        <div className="py-2 text-sm text-gray-600 whitespace-nowrap">{p.brand?.name || "N/A"}</div>
+                        <div className="py-2 text-sm text-gray-600 whitespace-nowrap"><p
+    className="
+      truncate
+      text-xs
+      font-bold
+      bg-gradient-to-r
+      from-blue-600
+      via-purple-600
+      to-blue-600
+      bg-[length:200%_auto]
+      bg-clip-text
+      text-transparent
+      animate-text-shine
+    "
+  >
+   {p.brand?.name?.toLowerCase().replace(/\b\w/g, (char: string) => char.toUpperCase())}
+  </p></div>
                       </TableCell>
 
                       <TableCell>
@@ -381,40 +398,159 @@ if (productsQuery.isError && !hasActiveFilters) {
                           </Link>
                         </div>
                       </TableCell>
-
-                      
-
                       <TableCell>
-                        <div className="py-2 whitespace-nowrap">
-                          <span className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium ${isDeleted || isInactive ? "border-red-100 bg-red-50 text-red-600" : "border-green-100 bg-green-50 text-green-700"}`}>
-                            {isDeleted ? "DELETED" : p.status}
-                          </span>
-                        </div>
-                      </TableCell>
+  <div className="relative flex items-center justify-end">
+    {/* 3 DOT BUTTON */}
+    <Button
+      size="icon"
+      variant="ghost"
+      className="h-8 w-8 rounded-lg hover:bg-gray-100"
+      onClick={() =>
+        setOpenMenuId(
+          openMenuId === p.id ? null : p.id
+        )
+      }
+    >
+      <MoreVertical className="h-4 w-4 text-gray-500" />
+    </Button>
 
-                      <TableCell>
-                        <div className="py-2 flex items-center justify-end gap-1.5 whitespace-nowrap">
-                          {!isDeleted && (
-                            <Button size="icon" variant="secondary" className="h-8 w-8 hover:bg-gray-100" onClick={() => handleEdit(p)}>
-                              <Pencil className="h-3.5 w-3.5 text-gray-500" />
-                            </Button>
-                          )}
-                          {!isDeleted && (
-                            <Button size="icon" variant="secondary" className="h-8 w-8 hover:bg-gray-100" disabled={toggleProductStatus.isPending} onClick={() => handleToggleStatus(p)}>
-                              <Power className="h-3.5 w-3.5 text-gray-500" />
-                            </Button>
-                          )}
-                          {isDeleted ? (
-                            <Button size="icon" variant="secondary" className="h-8 w-8 hover:bg-gray-100" disabled={restoreProduct.isPending} onClick={() => handleRestore(p)}>
-                              <RotateCcw className="h-3.5 w-3.5 text-gray-500" />
-                            </Button>
-                          ) : (
-                            <Button size="icon" variant="secondary" className="h-8 w-8 hover:bg-red-50 hover:text-red-600 group" disabled={deleteProduct.isPending} onClick={() => handleDelete(p)}>
-                              <Trash2 className="h-3.5 w-3.5 text-gray-500 group-hover:text-red-600" />
-                            </Button>
-                          )}
-                        </div>
-                      </TableCell>
+    {/* DROPDOWN */}
+    {openMenuId === p.id && (
+      <div
+        className="
+          absolute
+          right-0
+          top-10
+          z-50
+          w-36
+          rounded-lg
+          border
+          border-gray-200
+          bg-white
+          p-1
+          shadow-lg
+        "
+      >
+        {/* EDIT */}
+        {!isDeleted && (
+          <button
+            type="button"
+            onClick={() => {
+              setOpenMenuId(null);
+              handleEdit(p);
+            }}
+            className="
+              flex
+              w-full
+              items-center
+              gap-2
+              rounded-md
+              px-3
+              py-2
+              text-left
+              text-sm
+              text-gray-700
+              hover:bg-gray-100
+            "
+          >
+            <Pencil className="h-3.5 w-3.5 text-gray-500" />
+            Edit
+          </button>
+        )}
+
+        {/* ACTIVATE / DEACTIVATE */}
+        {!isDeleted && (
+          <button
+            type="button"
+            disabled={toggleProductStatus.isPending}
+            onClick={() => {
+              setOpenMenuId(null);
+              handleToggleStatus(p);
+            }}
+            className="
+              flex
+              w-full
+              items-center
+              gap-2
+              rounded-md
+              px-3
+              py-2
+              text-left
+              text-sm
+              text-gray-700
+              hover:bg-gray-100
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
+          >
+            <Power className="h-3.5 w-3.5 text-gray-500" />
+            {p.status === "ACTIVE"
+              ? "Deactivate"
+              : "Activate"}
+          </button>
+        )}
+
+        {/* RESTORE */}
+        {isDeleted ? (
+          <button
+            type="button"
+            disabled={restoreProduct.isPending}
+            onClick={() => {
+              setOpenMenuId(null);
+              handleRestore(p);
+            }}
+            className="
+              flex
+              w-full
+              items-center
+              gap-2
+              rounded-md
+              px-3
+              py-2
+              text-left
+              text-sm
+              text-gray-700
+              hover:bg-gray-100
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
+          >
+            <RotateCcw className="h-3.5 w-3.5 text-gray-500" />
+            Restore
+          </button>
+        ) : (
+          /* DELETE */
+          <button
+            type="button"
+            disabled={deleteProduct.isPending}
+            onClick={() => {
+              setOpenMenuId(null);
+              handleDelete(p);
+            }}
+            className="
+              flex
+              w-full
+              items-center
+              gap-2
+              rounded-md
+              px-3
+              py-2
+              text-left
+              text-sm
+              text-red-600
+              hover:bg-red-50
+              disabled:cursor-not-allowed
+              disabled:opacity-50
+            "
+          >
+            <Trash2 className="h-3.5 w-3.5 text-red-500" />
+            Delete
+          </button>
+        )}
+      </div>
+    )}
+  </div>
+</TableCell>
                     </TableRow>
                   );
                 })}

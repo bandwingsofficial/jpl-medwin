@@ -1,6 +1,11 @@
+import Link from "next/link";
+
+import { ProductVariantPage } from "@/features/product-management/components/product-variant-page";
+
 import {
-  ProductVariantPage,
-} from "@/features/product-management/components/product-variant-page";
+  ChevronRight,
+  Home,
+} from "lucide-react";
 
 // =========================================
 // TYPES
@@ -43,9 +48,77 @@ export default async function VariantsPage(
   // =========================================
 
   return (
-    <ProductVariantPage
-      key={productId}
-      productId={productId}
-    />
+    <div className="space-y-6">
+
+      {/* ========================================= */}
+      {/* BREADCRUMB */}
+      {/* ========================================= */}
+
+      <div className="flex items-center gap-2 text-sm">
+
+        {/* HOME */}
+
+        <Link
+          href="/"
+          className="
+            inline-flex
+            items-center
+            gap-1.5
+            font-medium
+            text-slate-500
+            transition-colors
+            hover:text-teal-600
+          "
+        >
+          <Home className="h-4 w-4" />
+          Home
+        </Link>
+
+        {/* CHEVRON */}
+
+        <ChevronRight
+          className="h-4 w-4 text-slate-300"
+          strokeWidth={2}
+        />
+
+        {/* PRODUCTS */}
+
+        <Link
+          href="/products"
+          className="
+            font-medium
+            text-slate-500
+            transition-colors
+            hover:text-teal-600
+          "
+        >
+          Products
+        </Link>
+
+        {/* CHEVRON */}
+
+        <ChevronRight
+          className="h-4 w-4 text-slate-300"
+          strokeWidth={2}
+        />
+
+        {/* CURRENT PAGE */}
+
+        <span className="font-semibold text-teal-600">
+          Variants
+        </span>
+
+      </div>
+
+      {/* ========================================= */}
+      {/* PRODUCT VARIANTS */}
+      {/* ========================================= */}
+
+      <ProductVariantPage
+        key={productId}
+        productId={productId}
+      />
+
+    </div>
   );
 }
