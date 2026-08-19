@@ -10,42 +10,34 @@ import {
   DialogDescription,
 } from "@/shared/components/ui/dialog";
 
-import {
-  BannerImageForm,
-} from "./banner-image-form";
+import { BannerImageForm } from "./banner-image-form";
 
-import {
-  bannerService,
-} from "@/features/banner-management/services/banner.service";
+import { bannerService } from "@/features/banner-management/services/banner.service";
+
+import { BannerType } from "@/features/banner-management/types/banner.types";
 
 interface Props {
   open: boolean;
-
   bannerId: string;
-
-  onOpenChange: (
-    open: boolean
-  ) => void;
-
+  bannerType: BannerType;
+  onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }
 
 export function AddBannerImageDialog({
   open,
   bannerId,
+  bannerType,
   onOpenChange,
   onSuccess,
 }: Props) {
   async function handleSubmit(
     file: File | undefined,
     productId: string,
-    sortOrder: number
+    sortOrder: number,
   ) {
     if (!file) {
-      toast.error(
-        "Image is required"
-      );
-
+      toast.error("Image is required");
       return;
     }
 
@@ -54,19 +46,23 @@ export function AddBannerImageDialog({
         bannerId,
         file,
         productId,
-        sortOrder
+        sortOrder,
       );
 
       toast.success(
-        "Image added successfully"
+        "Banner image added successfully",
       );
 
       onSuccess();
-
       onOpenChange(false);
-    } catch {
+    } catch (error) {
+      console.error(
+        "Add Banner Image Error:",
+        error,
+      );
+
       toast.error(
-        "Failed to add image"
+        "Failed to add banner image",
       );
     }
   }
@@ -74,29 +70,74 @@ export function AddBannerImageDialog({
   return (
     <Dialog
       open={open}
-      onOpenChange={
-        onOpenChange
-      }
+      onOpenChange={onOpenChange}
     >
-      <DialogContent className="bg-white max-w-xl">
-        <DialogHeader>
+      <DialogContent
+        className="
+          w-[calc(100vw-2rem)]
+          max-w-xl
+
+          h-[calc(100dvh-2rem)]
+          max-h-[calc(100dvh-2rem)]
+
+          overflow-hidden
+          p-0
+
+          flex
+          flex-col
+
+          bg-white
+        "
+      >
+        {/* ================================================
+            FIXED HEADER
+        ================================================= */}
+        <DialogHeader
+          className="
+            shrink-0
+            border-b
+            bg-white
+            px-6
+            py-5
+          "
+        >
           <DialogTitle>
             Add Banner Image
           </DialogTitle>
 
           <DialogDescription>
-            Upload new image
+            Upload an image matching the required
+            banner dimensions.
           </DialogDescription>
         </DialogHeader>
 
-        <BannerImageForm
-          isSubmitting={
-            false
-          }
-          onSubmit={
-            handleSubmit
-          }
-        />
+        {/* ================================================
+            SCROLLABLE FORM AREA
+        ================================================= */}
+        <div
+          className="
+            min-h-0
+            flex-1
+            overflow-y-auto
+            overflow-x-hidden
+
+            overscroll-contain
+
+            px-6
+            py-5
+
+            scrollbar-thin
+            scrollbar-thumb-gray-300
+            scrollbar-track-transparent
+            hover:scrollbar-thumb-gray-400
+          "
+        >
+          <BannerImageForm
+            isSubmitting={false}
+            bannerType={bannerType}
+            onSubmit={handleSubmit}
+          />
+        </div>
       </DialogContent>
     </Dialog>
   );

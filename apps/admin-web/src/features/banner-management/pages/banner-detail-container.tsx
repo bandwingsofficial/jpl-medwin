@@ -28,7 +28,9 @@ import {
 
 import { Loader } from "@/shared/components/ui/loader";
 
-import { EmptyState } from "@/shared/components/ui/empty-state";
+import {
+  EmptyState,
+} from "@/shared/components/ui/empty-state";
 
 interface Props {
   bannerId: string;
@@ -108,6 +110,7 @@ export function BannerDetailContainer({
       <AddBannerImageDialog
         open={addOpen}
         bannerId={banner.id}
+        bannerType={banner.type}
         onSuccess={refresh}
         onOpenChange={
           setAddOpen
@@ -119,6 +122,7 @@ export function BannerDetailContainer({
         image={
           selectedImage
         }
+        bannerType={banner.type}
         onSuccess={refresh}
         onOpenChange={
           setEditOpen
