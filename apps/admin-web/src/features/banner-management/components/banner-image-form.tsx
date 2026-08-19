@@ -5,10 +5,9 @@ import { useState } from "react";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
 import { Select } from "@/shared/components/ui/select";
-
 import {
-  useProduct,
-} from "@/features/product-management/hooks/use-product";
+  useProductsForCollection,
+} from "@/features/collection-management/hooks/use-products-for-collection";
 
 interface Props {
   isSubmitting: boolean;
@@ -50,11 +49,8 @@ export function BannerImageForm({
   // PRODUCTS
 
   const {
-    productsQuery,
-  } = useProduct();
-
-  const products =
-    productsQuery.data?.data ?? [];
+  data: products = [],
+} = useProductsForCollection();
 
   return (
     <form

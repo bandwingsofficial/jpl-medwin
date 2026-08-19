@@ -80,6 +80,23 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+       <head>
+        <Script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-RVVTP2Y7SW"
+          strategy="afterInteractive"
+        />
+
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-RVVTP2Y7SW');
+          `}
+        </Script>
+      </head>
       <body>
         <QueryProvider>
           <AuthModalProvider>

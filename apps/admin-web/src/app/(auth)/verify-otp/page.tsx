@@ -170,7 +170,7 @@ export default function VerifyOtpPage() {
             </Button>
 
             <p className="text-center text-[9px] text-slate-400 tracking-wide font-mono font-medium pt-1">
-              Didn't get a code? Check spam or contact IT.
+              Didn't get a code? contact IT.
             </p>
           </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useLogin } from "../hooks/use-login";
@@ -18,6 +18,16 @@ import { Label } from "@/shared/components/ui/label";
 // ============================================================
 const DISPLAY_FONT = "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
 const BODY_FONT = "ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+
+const PLACEHOLDER_VALUES = [
+  "username@gmail.com",
+  "9876543211",
+];
+
+const TYPING_SPEED = 55;
+const DELETE_SPEED = 35;
+const PAUSE_AFTER_TYPING = 1000;
+const PAUSE_AFTER_DELETING = 300;
 
 function PulseLine() {
   return (
@@ -43,6 +53,86 @@ function PulseLine() {
       />
     </svg>
   );
+}
+function useTypingPlaceholder() {
+  const [placeholder, setPlaceholder] =
+    useState("");
+
+  const [valueIndex, setValueIndex] =
+    useState(0);
+
+  const [charIndex, setCharIndex] =
+    useState(0);
+
+  const [isDeleting, setIsDeleting] =
+    useState(false);
+
+  useEffect(() => {
+    const currentValue =
+      PLACEHOLDER_VALUES[valueIndex];
+
+    let timeout: ReturnType<
+      typeof setTimeout
+    >;
+
+    if (!isDeleting) {
+      if (charIndex < currentValue.length) {
+        timeout = setTimeout(() => {
+          setPlaceholder(
+            currentValue.slice(
+              0,
+              charIndex + 1
+            )
+          );
+
+          setCharIndex(
+            (previous) =>
+              previous + 1
+          );
+        }, TYPING_SPEED);
+      } else {
+        timeout = setTimeout(() => {
+          setIsDeleting(true);
+        }, PAUSE_AFTER_TYPING);
+      }
+    } else {
+      if (charIndex > 0) {
+        timeout = setTimeout(() => {
+          setPlaceholder(
+            currentValue.slice(
+              0,
+              charIndex - 1
+            )
+          );
+
+          setCharIndex(
+            (previous) =>
+              previous - 1
+          );
+        }, DELETE_SPEED);
+      } else {
+        timeout = setTimeout(() => {
+          setIsDeleting(false);
+
+          setValueIndex(
+            (previous) =>
+              (previous + 1) %
+              PLACEHOLDER_VALUES.length
+          );
+        }, PAUSE_AFTER_DELETING);
+      }
+    }
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [
+    charIndex,
+    isDeleting,
+    valueIndex,
+  ]);
+
+  return placeholder;
 }
 
 function Wordmark() {
@@ -81,6 +171,8 @@ export function LoginForm({
 
   const [value, setValue] = useState("");
   const [error, setError] = useState("");
+  const animatedPlaceholder =
+  useTypingPlaceholder();
 
   const handleSubmit = async () => {
   if (!value.trim()) {
@@ -174,7 +266,7 @@ router.push("/verify-otp");
                 <Input
   value={value}
   onChange={(e) => setValue(e.target.value)}
-  placeholder="you@example.com/9876543211"
+  placeholder={animatedPlaceholder}
   className="
     h-11
     rounded-xl

@@ -4,11 +4,14 @@ import {
   Banner,
   BannerImage,
 } from "@/features/banner-management/types/banner.types";
+
 import Link from "next/link";
+
 import {
   ChevronRight,
   Home,
 } from "lucide-react";
+
 import {
   BannerStatusBadge,
 } from "@/features/banner-management/components/banner-status-badge";
@@ -25,6 +28,10 @@ import {
   Button,
 } from "@/shared/components/ui/button";
 
+// =========================================
+// TYPES
+// =========================================
+
 interface Props {
   banner: Banner;
 
@@ -39,145 +46,283 @@ interface Props {
   ) => void;
 }
 
+// =========================================
+// COMPONENT
+// =========================================
+
 export function BannerDetailPage({
   banner,
   onAddImage,
   onEditImage,
   onDeleteImage,
 }: Props) {
- return (
-  <div className="max-w-7xl mx-auto p-6 space-y-8 bg-gray-50/50 min-h-screen">
+  return (
+    <div className="space-y-5">
 
-    {/* BREADCRUMBS */}
+      {/* ===================================== */}
+      {/* BREADCRUMBS */}
+      {/* ===================================== */}
 
-    <div className="flex items-center gap-2 text-sm">
-      <Link
-        href="/"
+      <div className="flex items-center gap-2 text-sm">
+
+        <Link
+          href="/"
+          className="
+            inline-flex
+            items-center
+            gap-1.5
+            font-medium
+            text-slate-500
+            transition-colors
+            hover:text-teal-600
+          "
+        >
+          <Home className="h-4 w-4" />
+
+          Home
+        </Link>
+
+        <ChevronRight
+          className="h-4 w-4 text-slate-300"
+          strokeWidth={2}
+        />
+
+        <Link
+          href="/banners"
+          className="
+            font-medium
+            text-slate-500
+            transition-colors
+            hover:text-teal-600
+          "
+        >
+          Banners
+        </Link>
+
+        <ChevronRight
+          className="h-4 w-4 text-slate-300"
+          strokeWidth={2}
+        />
+
+        <span
+          className="
+            max-w-[280px]
+            truncate
+            font-semibold
+            text-teal-600
+          "
+        >
+          {banner.name}
+        </span>
+
+      </div>
+
+      {/* ===================================== */}
+      {/* HEADER */}
+      {/* ===================================== */}
+
+      <div
         className="
-          inline-flex
-          items-center
-          gap-1.5
-          font-medium
-          text-slate-500
-          transition-colors
-          hover:text-teal-600
+          flex
+          flex-col
+          gap-4
+          rounded-2xl
+          border
+          border-gray-100
+          bg-white
+          px-5
+          py-4
+          shadow-sm
+          sm:flex-row
+          sm:items-center
+          sm:justify-between
         "
       >
-        <Home className="h-4 w-4" />
-        Home
-      </Link>
 
-      <ChevronRight className="h-4 w-4 text-slate-300" />
+        {/* LEFT SIDE */}
 
-      <Link
-        href="/banners"
-        className="
-          font-medium
-          text-slate-500
-          transition-colors
-          hover:text-teal-600
-        "
-      >
-        Banners
-      </Link>
+        <div className="min-w-0">
 
-      <ChevronRight className="h-4 w-4 text-slate-300" />
+          <div className="flex items-center gap-3">
 
-      <span className="font-semibold text-teal-600">
-        {banner.name}
-      </span>
-    </div>
+            
 
-    {/* HEADER SECTION */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-gray-200">
-        <div className="space-y-1.5">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
-            {banner.name}
-          </h1>
+            <div className="min-w-0">
 
-          <div className="flex flex-wrap items-center gap-2">
-            <BannerStatusBadge
-              status={banner.status}
-            />
+              <h1
+                className="
+                  truncate
+                  text-xl
+                  font-bold
+                  tracking-tight
+                  text-gray-900
+                  sm:text-2xl
+                "
+              >
+                {banner.name}
+              </h1>
 
-            <BannerTypeBadge
-              type={banner.type}
-            />
+              <div
+                className="
+                  mt-1.5
+                  flex
+                  flex-wrap
+                  items-center
+                  gap-2
+                "
+              >
+
+                <BannerStatusBadge
+                  status={banner.status}
+                />
+              </div>
+
+            </div>
+
           </div>
+
         </div>
+
+        {/* RIGHT SIDE */}
 
         <Button
           onClick={onAddImage}
-          className="shadow-sm hover:opacity-90 transition-opacity bg-teal-600 hover:bg-teal-700 text-white font-medium px-5 py-2.5 rounded-lg self-start sm:self-center"
+          className="
+            h-10
+            shrink-0
+            rounded-xl
+            bg-teal-600
+            px-5
+            text-sm
+            font-semibold
+            text-white
+            shadow-sm
+            shadow-teal-600/20
+            transition-all
+            hover:bg-teal-700
+            hover:shadow-md
+            sm:self-center
+          "
         >
-          Add Image
+          + Add Image
         </Button>
+
       </div>
 
-      {/* METADATA INFO PANEL */}
-      <div
-        className="
-          bg-white
-          rounded-xl
-          border
-          border-gray-200
-          shadow-sm
-          p-6
-        "
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-              Created On
+      {/* ===================================== */}
+      {/* BANNER IMAGES */}
+      {/* ===================================== */}
+
+      <div className="space-y-3">
+
+        {/* SECTION HEADER */}
+
+        <div
+          className="
+            flex
+            items-end
+            justify-between
+            gap-3
+          "
+        >
+
+          <div>
+
+            <div className="flex items-center gap-2">
+
+              <h2
+                className="
+                  text-base
+                  font-bold
+                  tracking-tight
+                  text-gray-900
+                  sm:text-lg
+                "
+              >
+                Banner Images
+              </h2>
+
+              <span
+                className="
+                  rounded-full
+                  bg-teal-50
+                  px-2
+                  py-0.5
+                  text-[10px]
+                  font-bold
+                  text-teal-700
+                "
+              >
+                {banner.images?.length || 0}
+              </span>
+
+            </div>
+
+            <p
+              className="
+                mt-0.5
+                text-xs
+                text-gray-400
+              "
+            >
+              Manage images associated with this banner.
             </p>
 
-            <p className="text-sm font-medium text-gray-700">
-              {new Date(
-                banner.createdAt
-              ).toLocaleDateString(undefined, { dateStyle: 'medium' })}
-            </p>
           </div>
 
-          <div className="space-y-1">
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
-              Last Updated
-            </p>
-
-            <p className="text-sm font-medium text-gray-700">
-              {new Date(
-                banner.updatedAt
-              ).toLocaleDateString(undefined, { dateStyle: 'medium' })}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* BANNER IMAGES GRID CONTAINER */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold tracking-tight text-gray-900">
-            Banner Images
-          </h2>
-          <span className="text-xs font-medium text-gray-500 bg-gray-200/60 px-2.5 py-1 rounded-full">
-            {banner.images?.length || 0} Assets
+          <span
+            className="
+              hidden
+              rounded-lg
+              border
+              border-gray-100
+              bg-gray-50
+              px-2.5
+              py-1
+              text-[10px]
+              font-semibold
+              text-gray-500
+              sm:inline-flex
+            "
+          >
+            Assets
           </span>
+
         </div>
+
+        {/* ===================================== */}
+        {/* IMAGE GRID */}
+        {/* ===================================== */}
 
         <div
           className="
             grid
             grid-cols-1
+            gap-4
             sm:grid-cols-2
             lg:grid-cols-3
-            gap-6
           "
         >
+
           {banner.images?.map(
             (image) => (
-              <div 
-                key={image.id} 
-                className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col"
+              <div
+                key={image.id}
+                className="
+                  overflow-hidden
+                  rounded-2xl
+                  border
+                  border-gray-100
+                  bg-white
+                  shadow-sm
+                  transition-all
+                  duration-200
+                  hover:-translate-y-0.5
+                  hover:border-gray-200
+                  hover:shadow-lg
+                "
               >
+
                 <BannerImageCard
                   image={image}
                   onEdit={
@@ -187,11 +332,15 @@ export function BannerDetailPage({
                     onDeleteImage
                   }
                 />
+
               </div>
             )
           )}
+
         </div>
+
       </div>
+
     </div>
   );
 }
