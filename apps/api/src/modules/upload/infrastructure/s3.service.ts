@@ -114,14 +114,17 @@ export class S3Service {
   // =======================
 
   private getFileUrl(key: string): string {
-    // 🔥 USE CLOUDFRONT IF AVAILABLE
-    if (this.cdn) {
-      return `${this.cdn}/${key}`;
-    }
+  const encodedKey = key
+    .split('/')
+    .map((segment) => encodeURIComponent(segment))
+    .join('/');
 
-    // fallback to S3
-    return `https://${this.bucket}.s3.${this.region}.amazonaws.com/${key}`;
+  if (this.cdn) {
+    return `${this.cdn.replace(/\/$/, '')}/${encodedKey}`;
   }
+
+  return `https://${this.bucket}.s3.${this.region}.amazonaws.com/${encodedKey}`;
+}
 
   // =======================
   // 🧠 EXTRACT KEY FROM URL
