@@ -262,15 +262,7 @@ export default function CategoryProductsPage({
   </div>
 
   {/* Header */}
-      <div className="mb-4 lg:mb-6">
-        <Link
-          href="/categories"
-          className="mb-2 inline-flex items-center gap-2 text-xs font-medium text-gray-500 transition-colors hover:text-teal-600 lg:text-sm"
-        >
-          <ArrowLeft size={14} />
-          Back to Categories
-        </Link>
-
+      <div className="mb-4 lg:mb-6">       
         <h1 className="text-[24px] font-bold tracking-tight text-gray-900 lg:text-[32px]">
           {category?.name || "Category Products"}
         </h1>

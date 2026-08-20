@@ -306,8 +306,8 @@ if (productsQuery.isError && !hasActiveFilters) {
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Brand</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Category</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Price</div></TableHead>
-                  <TableHead><div className="text-xs font-semibold whitespace-nowrap">Variants</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap">Status</div></TableHead>
+                  <TableHead><div className="text-xs font-semibold whitespace-nowrap">Variants</div></TableHead>
                   <TableHead><div className="text-xs font-semibold whitespace-nowrap text-right">Actions</div></TableHead>
                 </TableRow>
               </TableHeader>

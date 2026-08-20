@@ -308,14 +308,6 @@ export default function SubCategoryProductsPage({
   {/* Header */}
 
   <div className="mb-4 lg:mb-6">
-        <Link
-          href={`/categories/${categorySlug}`}
-          className="mb-2 inline-flex items-center gap-2 text-xs font-medium text-gray-500 transition-colors hover:text-teal-600 lg:text-sm"
-        >
-          <ArrowLeft size={14} />
-          Back
-        </Link>
-
         {/* 🔥 Sub Category Name */}
         <h1
           className="

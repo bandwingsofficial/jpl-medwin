@@ -22,8 +22,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Heart,
-   X,
+  X,
   Share2,
+  Search,
+  Plus,
+  Minus,
 } from "lucide-react";
 
 interface ProductGalleryProps {
@@ -76,13 +79,15 @@ export function ProductGallery({
   }, [mainImage, images]);
 
   const imageContainerRef =
-  useRef<HTMLDivElement | null>(null);
+    useRef<HTMLDivElement | null>(null);
 
-const [zoomPreviewPosition, setZoomPreviewPosition] =
-  useState({
-    top: 0,
-    left: 0,
-  });
+  const zoomHideTimeoutRef =
+    useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [zoomPreviewPosition, setZoomPreviewPosition] =
+    useState({ top: 0, left: 0 });
+
+  const [zoomLevel, setZoomLevel] = useState(2.5);
 
   /*
    |----------------------------------------------------------------------
@@ -91,63 +96,113 @@ const [zoomPreviewPosition, setZoomPreviewPosition] =
    */
 
   const [selectedImage, setSelectedImage] =
-    useState<string>(
-      allImages[0]
+    useState<string>(allImages[0]);
+
+  const [animateImage, setAnimateImage] = useState(false);
+  const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
+  const [isZoomVisible, setIsZoomVisible] = useState(false);
+
+  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
+
+  const showZoomPreview = () => {
+    if (zoomHideTimeoutRef.current) {
+      clearTimeout(zoomHideTimeoutRef.current);
+      zoomHideTimeoutRef.current = null;
+    }
+    setIsZoomVisible(true);
+  };
+
+  const scheduleZoomHide = () => {
+    if (zoomHideTimeoutRef.current) {
+      clearTimeout(zoomHideTimeoutRef.current);
+    }
+    zoomHideTimeoutRef.current = setTimeout(() => {
+      setIsZoomVisible(false);
+    }, 180);
+  };
+
+  const updateZoomPreviewPosition = () => {
+    const rect = imageContainerRef.current?.getBoundingClientRect();
+    if (!rect || typeof window === "undefined") return;
+
+    const panelWidth = 390;
+    const panelHeight = 430;
+    const gap = 18;
+    const margin = 16;
+    const right = rect.right + gap;
+    const leftSide = rect.left - gap - panelWidth;
+
+    const left =
+      right + panelWidth <= window.innerWidth - margin
+        ? right
+        : Math.max(margin, leftSide);
+
+    const preferredTop =
+      rect.top + rect.height / 2 - panelHeight / 2;
+    const top = Math.min(
+      Math.max(margin, preferredTop),
+      Math.max(margin, window.innerHeight - panelHeight - margin)
     );
 
-    const [animateImage, setAnimateImage] = useState(false);
-    const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
-    const [isZoomVisible, setIsZoomVisible] = useState(false);
+    setZoomPreviewPosition({ top, left });
+  };
 
-const [zoomPosition, setZoomPosition] = useState({
-  x: 50,
-  y: 50,
-});
-
-const changeImage = (image: string) => {
-  setAnimateImage(false);
-
-  requestAnimationFrame(() => {
-    setSelectedImage(image);
-
+  const changeImage = (image: string) => {
+    setAnimateImage(false);
     requestAnimationFrame(() => {
-      setAnimateImage(true);
+      setSelectedImage(image);
+      requestAnimationFrame(() => setAnimateImage(true));
     });
-  });
-};
-const handleImageMouseEnter = () => {
-  const rect =
-    imageContainerRef.current?.getBoundingClientRect();
+  };
 
-  if (!rect) {
-    return;
-  }
+  const handleImageMouseEnter = () => {
+    updateZoomPreviewPosition();
+    showZoomPreview();
+  };
 
-  setZoomPreviewPosition({
-    top: rect.top + rect.height / 2,
-    left: rect.right + 16,
-  });
+  const handleImageMouseMove = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
 
-  setIsZoomVisible(true);
-};
+    setZoomPosition({
+      x: Math.max(0, Math.min(100, x)),
+      y: Math.max(0, Math.min(100, y)),
+    });
+  };
 
-const handleImageMouseMove = (
-  event: React.MouseEvent<HTMLDivElement>
-) => {
-  const rect = event.currentTarget.getBoundingClientRect();
+  const handleImageMouseLeave = () => {
+    scheduleZoomHide();
+  };
 
-  const x = ((event.clientX - rect.left) / rect.width) * 100;
-  const y = ((event.clientY - rect.top) / rect.height) * 100;
+  const increaseZoom = () => {
+    setZoomLevel((level) =>
+      Math.min(4, Number((level + 0.5).toFixed(1)))
+    );
+  };
 
-  setZoomPosition({
-    x: Math.max(0, Math.min(100, x)),
-    y: Math.max(0, Math.min(100, y)),
-  });
-};
+  const decreaseZoom = () => {
+    setZoomLevel((level) =>
+      Math.max(1.5, Number((level - 0.5).toFixed(1)))
+    );
+  };
 
-const handleImageMouseLeave = () => {
-  setIsZoomVisible(false);
-};
+  useEffect(() => {
+    const handleResize = () => {
+      if (isZoomVisible) updateZoomPreviewPosition();
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (zoomHideTimeoutRef.current) {
+        clearTimeout(zoomHideTimeoutRef.current);
+      }
+    };
+  }, [isZoomVisible]);
 
 const currentImageIndex = Math.max(
   allImages.indexOf(selectedImage),
@@ -640,59 +695,136 @@ const isWishlistLoading =
   typeof document !== "undefined" &&
   createPortal(
     <div
-      className="
-        pointer-events-none
-        fixed
-        z-[999999]
-        hidden
-        h-[340px]
-        w-[340px]
-        -translate-y-1/2
-        overflow-hidden
-        rounded-2xl
-        border
-        border-gray-200
-        bg-white
-        shadow-[0_12px_35px_rgba(0,0,0,0.16)]
-        md:block
-      "
+      className="fixed z-[999999] hidden md:block"
       style={{
         top: `${zoomPreviewPosition.top}px`,
         left: `${zoomPreviewPosition.left}px`,
       }}
+      onMouseEnter={showZoomPreview}
+      onMouseLeave={scheduleZoomHide}
     >
       <div
         className="
-          h-full
-          w-full
-          bg-white
-          bg-no-repeat
+          relative w-[390px] overflow-visible rounded-[26px]
+          border border-[#9ce7de] bg-[#dff7f2] p-2
+          shadow-[0_18px_45px_rgba(21,128,116,0.20)]
         "
-        style={{
-          backgroundImage: `url("${
-            selectedImage || PLACEHOLDER_IMAGE
-          }")`,
-          backgroundSize: "250% 250%",
-          backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-        }}
-      />
+      >
+        <div
+          className="
+            flex h-[38px] items-center justify-between rounded-t-[18px]
+            border-b border-[#bdece5] bg-[#ecfbf8] px-3
+          "
+        >
+          <div className="flex items-center gap-2">
+            <Search size={14} strokeWidth={2} className="text-[#168d82]" />
+            <span className="text-[11px] font-medium text-slate-600">
+              Zoom View
+            </span>
+          </div>
 
-      <div
-        className="
-          pointer-events-none
-          absolute
-          inset-0
-          rounded-2xl
-          ring-1
-          ring-inset
-          ring-black/5
-        "
-      />
+          <div className="flex items-center gap-4">
+            <span className="text-[11px] font-semibold text-slate-500">
+              {zoomLevel.toFixed(1)}×
+            </span>
+            <button
+              type="button"
+              aria-label="Close zoom preview"
+              onClick={() => setIsZoomVisible(false)}
+              className="
+                flex h-6 w-6 items-center justify-center rounded-full
+                text-slate-500 transition-colors hover:bg-[#d5f2ec]
+              "
+            >
+              <X size={15} strokeWidth={1.8} />
+            </button>
+          </div>
+        </div>
+
+        <div
+          className="
+            relative flex h-[374px] items-center justify-center
+            overflow-visible rounded-b-[18px]
+            bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.92)_0%,rgba(222,247,241,0.95)_58%,rgba(191,237,228,0.90)_100%)]
+          "
+        >
+          <div
+            className="
+              relative h-[340px] w-[340px] overflow-hidden rounded-full
+              border border-[#83d8cf] bg-white
+              shadow-[0_12px_30px_rgba(21,128,116,0.12)]
+            "
+          >
+            <div
+              className="h-full w-full bg-white bg-no-repeat"
+              style={{
+                backgroundImage: `url("${selectedImage || PLACEHOLDER_IMAGE}")`,
+                backgroundSize: `${zoomLevel * 100}% ${zoomLevel * 100}%`,
+                backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+              }}
+            />
+            <div
+              className="
+                pointer-events-none absolute inset-0 rounded-full
+                ring-1 ring-inset ring-white/50
+              "
+            />
+          </div>
+
+          <div
+            className="
+              absolute right-[-22px] top-1/2 z-20 flex w-[50px]
+              -translate-y-1/2 flex-col overflow-hidden rounded-[20px]
+              border border-[#cde6e2] bg-white
+              shadow-[0_10px_25px_rgba(15,23,42,0.14)]
+            "
+          >
+            <button
+              type="button"
+              aria-label="Increase zoom"
+              onClick={increaseZoom}
+              disabled={zoomLevel >= 4}
+              className="
+                flex h-[48px] items-center justify-center border-b
+                border-slate-100 text-slate-500 transition-colors
+                hover:bg-[#effbf8] hover:text-[#168d82]
+                disabled:cursor-not-allowed disabled:opacity-40
+              "
+            >
+              <Plus size={19} strokeWidth={1.8} />
+            </button>
+
+            <div
+              className="
+                flex h-[44px] items-center justify-center text-[11px]
+                font-semibold text-slate-500
+              "
+            >
+              {zoomLevel.toFixed(1)}×
+            </div>
+
+            <button
+              type="button"
+              aria-label="Decrease zoom"
+              onClick={decreaseZoom}
+              disabled={zoomLevel <= 1.5}
+              className="
+                flex h-[48px] items-center justify-center border-t
+                border-slate-100 text-slate-500 transition-colors
+                hover:bg-[#effbf8] hover:text-[#168d82]
+                disabled:cursor-not-allowed disabled:opacity-40
+              "
+            >
+              <Minus size={19} strokeWidth={1.8} />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>,
     document.body
   )}
 
-           {isImagePopupOpen &&
+            {isImagePopupOpen &&
   typeof document !== "undefined" &&
   createPortal(
     <div
