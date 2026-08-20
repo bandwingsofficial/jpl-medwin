@@ -357,20 +357,17 @@ function MiniCategoryPanel({
       "
       >
         {miniCategories.map((mini: MiniCategory) => (
-          <Link
-            key={mini.id}
-            href={`/categories/${subCategorySlug}/${mini.id}`}
-            onClick={onClose}
-            className="
-              block
-              text-sm
-              text-gray-600
-              hover:text-[#0F9EA5]
-            "
-          >
-            {mini.name}
-          </Link>
-        ))}
+  <div
+    key={mini.id}
+    className="
+      block
+      text-sm
+      text-gray-600
+    "
+  >
+    {mini.name}
+  </div>
+))}
       </div>
     </div>
   );

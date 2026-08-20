@@ -80,6 +80,14 @@ export function ProductGallery({
 
   const imageContainerRef =
     useRef<HTMLDivElement | null>(null);
+  const mainImageRef =
+  useRef<HTMLImageElement | null>(null);
+
+const [imageNaturalSize, setImageNaturalSize] =
+  useState({
+    width: 0,
+    height: 0,
+  });
 
   const zoomHideTimeoutRef =
     useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -102,7 +110,11 @@ export function ProductGallery({
   const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
   const [isZoomVisible, setIsZoomVisible] = useState(false);
 
-  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
+const [zoomPosition, setZoomPosition] =
+  useState({
+    x: 0.5,
+    y: 0.5,
+  });
 
   const showZoomPreview = () => {
     if (zoomHideTimeoutRef.current) {
@@ -160,18 +172,116 @@ export function ProductGallery({
     showZoomPreview();
   };
 
-  const handleImageMouseMove = (
-    event: React.MouseEvent<HTMLDivElement>
-  ) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 100;
+ const handleImageMouseMove = (
+  event: React.MouseEvent<HTMLDivElement>
+) => {
+  const container =
+    imageContainerRef.current;
 
-    setZoomPosition({
-      x: Math.max(0, Math.min(100, x)),
-      y: Math.max(0, Math.min(100, y)),
-    });
-  };
+  if (
+    !container ||
+    !imageNaturalSize.width ||
+    !imageNaturalSize.height
+  ) {
+    return;
+  }
+
+  const rect =
+    container.getBoundingClientRect();
+
+  const computedStyle =
+    window.getComputedStyle(container);
+
+  const paddingLeft =
+    Number.parseFloat(
+      computedStyle.paddingLeft
+    );
+
+  const paddingRight =
+    Number.parseFloat(
+      computedStyle.paddingRight
+    );
+
+  const paddingTop =
+    Number.parseFloat(
+      computedStyle.paddingTop
+    );
+
+  const paddingBottom =
+    Number.parseFloat(
+      computedStyle.paddingBottom
+    );
+
+  const availableWidth =
+    rect.width -
+    paddingLeft -
+    paddingRight;
+
+  const availableHeight =
+    rect.height -
+    paddingTop -
+    paddingBottom;
+
+  const imageRatio =
+    imageNaturalSize.width /
+    imageNaturalSize.height;
+
+  const containerRatio =
+    availableWidth /
+    availableHeight;
+
+  let renderedWidth = availableWidth;
+  let renderedHeight = availableHeight;
+
+  if (imageRatio > containerRatio) {
+    renderedHeight =
+      availableWidth / imageRatio;
+  } else {
+    renderedWidth =
+      availableHeight * imageRatio;
+  }
+
+  const imageLeft =
+    rect.left +
+    paddingLeft +
+    (availableWidth - renderedWidth) / 2;
+
+  const imageTop =
+    rect.top +
+    paddingTop +
+    (availableHeight - renderedHeight) / 2;
+
+  const x =
+    (event.clientX - imageLeft) /
+    renderedWidth;
+
+  const y =
+    (event.clientY - imageTop) /
+    renderedHeight;
+
+  setZoomPosition({
+    x: Math.max(0, Math.min(1, x)),
+    y: Math.max(0, Math.min(1, y)),
+  });
+};
+
+  const getZoomBackgroundPosition = (
+  position: number,
+  zoom: number
+) => {
+  if (zoom <= 1) {
+    return 50;
+  }
+
+  const normalizedPosition = position / 100;
+
+  const backgroundPosition =
+    ((normalizedPosition * zoom - 0.5) /
+      (zoom - 1)) *
+    100;
+
+  return backgroundPosition;
+};
 
   const handleImageMouseLeave = () => {
     scheduleZoomHide();
@@ -758,10 +868,19 @@ const isWishlistLoading =
             <div
               className="h-full w-full bg-white bg-no-repeat"
               style={{
-                backgroundImage: `url("${selectedImage || PLACEHOLDER_IMAGE}")`,
-                backgroundSize: `${zoomLevel * 100}% ${zoomLevel * 100}%`,
-                backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-              }}
+  backgroundImage: `url("${selectedImage || PLACEHOLDER_IMAGE}")`,
+  backgroundSize: `${zoomLevel * 100}% ${zoomLevel * 100}%`,
+  backgroundPosition: `
+    ${getZoomBackgroundPosition(
+      zoomPosition.x,
+      zoomLevel
+    )}%
+    ${getZoomBackgroundPosition(
+      zoomPosition.y,
+      zoomLevel
+    )}%
+  `,
+}}
             />
             <div
               className="

@@ -8,13 +8,13 @@ import {
   X,
 } from "lucide-react";
 
-interface ProductErrorProps {
+interface ProductErrorDialogProps {
   message?: string;
 }
 
-export function ProductError({
+export function ProductErrorDialog({
   message,
-}: ProductErrorProps) {
+}: ProductErrorDialogProps) {
   const router = useRouter();
 
   const handleGoBack = () => {
@@ -23,10 +23,6 @@ export function ProductError({
 
   const handleGoHome = () => {
     router.push("/");
-  };
-
-  const handleClose = () => {
-    router.back();
   };
 
   return (
@@ -52,7 +48,7 @@ export function ProductError({
 
           <button
             type="button"
-            onClick={handleClose}
+            onClick={handleGoBack}
             aria-label="Close error dialog"
             className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
           >
@@ -62,13 +58,13 @@ export function ProductError({
 
         {/* CONTENT */}
         <div className="px-5 py-5">
-          <p className="text-sm font-medium leading-6 text-slate-700">
+          <p className="text-sm font-medium text-slate-700">
             The products could not be loaded.
           </p>
 
           <p className="mt-2 text-sm leading-6 text-slate-500">
-            {
-              "Something went wrong while fetching the products. Please go back and try again."}
+            {message ||
+              "Something went wrong while fetching the products. Please try again."}
           </p>
         </div>
 
@@ -77,9 +73,9 @@ export function ProductError({
           <button
             type="button"
             onClick={handleGoBack}
-            className="group inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 active:scale-[0.98]"
+            className="group inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:bg-slate-50 active:scale-[0.98]"
           >
-            <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-0.5" />
+            <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
 
             Go Back
           </button>
@@ -87,9 +83,9 @@ export function ProductError({
           <button
             type="button"
             onClick={handleGoHome}
-            className="group inline-flex items-center justify-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:bg-teal-700 active:scale-[0.98]"
+            className="group inline-flex items-center gap-2 rounded-xl bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-teal-700 active:scale-[0.98]"
           >
-            <House className="h-4 w-4 transition-transform duration-200 group-hover:scale-105" />
+            <House className="h-4 w-4 transition-transform group-hover:scale-105" />
 
             Home
           </button>
