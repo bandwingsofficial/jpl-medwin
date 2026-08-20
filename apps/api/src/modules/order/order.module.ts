@@ -1,7 +1,7 @@
 // src/modules/order/order.module.ts
 
 import { Module, forwardRef } from '@nestjs/common';
-
+import { NotificationsModule } from '../notifications/notifications.module';
 // =======================
 // INFRA
 // =======================
@@ -100,6 +100,7 @@ import { CouponModule } from '../coupon/coupon.module';
     SavedAddressModule,
     forwardRef(() => CouponModule),
     ProductModule,
+    NotificationsModule,
   ],
  controllers: [OrderController, AdminOrderController],
 

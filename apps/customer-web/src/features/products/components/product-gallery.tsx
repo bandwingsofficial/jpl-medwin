@@ -88,7 +88,13 @@ export function ProductGallery({
 
     const [animateImage, setAnimateImage] = useState(false);
     const [isImagePopupOpen, setIsImagePopupOpen] = useState(false);
-    
+    const [isZoomVisible, setIsZoomVisible] = useState(false);
+
+const [zoomPosition, setZoomPosition] = useState({
+  x: 50,
+  y: 50,
+});
+
 const changeImage = (image: string) => {
   setAnimateImage(false);
 
@@ -99,6 +105,28 @@ const changeImage = (image: string) => {
       setAnimateImage(true);
     });
   });
+};
+
+const handleImageMouseEnter = () => {
+  setIsZoomVisible(true);
+};
+
+const handleImageMouseMove = (
+  event: React.MouseEvent<HTMLDivElement>
+) => {
+  const rect = event.currentTarget.getBoundingClientRect();
+
+  const x = ((event.clientX - rect.left) / rect.width) * 100;
+  const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+  setZoomPosition({
+    x: Math.max(0, Math.min(100, x)),
+    y: Math.max(0, Math.min(100, y)),
+  });
+};
+
+const handleImageMouseLeave = () => {
+  setIsZoomVisible(false);
 };
 
 const currentImageIndex = Math.max(
@@ -442,7 +470,7 @@ const isWishlistLoading =
         className={`
           relative
           w-full
-          overflow-hidden
+         overflow-visible
           rounded-2xl
           border
           border-gray-200
@@ -532,6 +560,7 @@ const isWishlistLoading =
 
         <div
   className="
+    group
     relative
     mx-auto
     flex
@@ -540,8 +569,13 @@ const isWishlistLoading =
     cursor-zoom-in
     items-center
     justify-center
+    overflow-hidden
+    rounded-2xl
   "
   onClick={() => setIsImagePopupOpen(true)}
+  onMouseEnter={handleImageMouseEnter}
+  onMouseMove={handleImageMouseMove}
+  onMouseLeave={handleImageMouseLeave}
 >
   <Image
   key={selectedImage}
@@ -571,7 +605,58 @@ const isWishlistLoading =
   `}
 />
         </div>
-      {isImagePopupOpen &&
+
+      {/* HOVER ZOOM PREVIEW - OUTSIDE THE IMAGE OVERFLOW CONTAINER */}
+      {isZoomVisible && (
+        <div
+          className="
+            pointer-events-none
+            absolute
+            left-[calc(100%+16px)]
+            top-1/2
+            z-[999]
+            hidden
+            h-[340px]
+            w-[340px]
+            -translate-y-1/2
+            overflow-hidden
+            rounded-2xl
+            border
+            border-gray-200
+            bg-white
+            shadow-[0_12px_35px_rgba(0,0,0,0.16)]
+            md:block
+          "
+        >
+          <div
+            className="
+              h-full
+              w-full
+              bg-white
+              bg-no-repeat
+            "
+            style={{
+              backgroundImage: `url("${selectedImage || PLACEHOLDER_IMAGE}")`,
+              backgroundSize: "250% 250%",
+              backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+            }}
+          />
+
+          <div
+            className="
+              pointer-events-none
+              absolute
+              inset-0
+              rounded-2xl
+              ring-1
+              ring-inset
+              ring-black/5
+            "
+          />
+        </div>
+      )}
+
+           {isImagePopupOpen &&
   typeof document !== "undefined" &&
   createPortal(
     <div

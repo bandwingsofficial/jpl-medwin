@@ -3,7 +3,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 
 import * as crypto from 'crypto';
-
+import { OrderNotificationService } from '@/modules/notifications/order-notification.service';
 import { TOKENS } from '@/common/constants/tokens';
 
 import { PrismaService } from '../../../../infrastructure/prisma/prisma.service';
@@ -59,6 +59,7 @@ export class CreateOrderFromCheckoutUseCase {
     private readonly orderAddressValidationService: OrderAddressValidationService,
 
     private readonly prisma: PrismaService,
+    private readonly orderNotificationService: OrderNotificationService,
   ) {}
 
   async execute(input: {
@@ -315,6 +316,13 @@ export class CreateOrderFromCheckoutUseCase {
 
       return persistedOrder;
     });
+    // =======================
+// 📧 NEW ORDER EMAIL
+// =======================
+
+void this.orderNotificationService.sendNewOrderNotification(
+  createdOrder.id,
+);
 
     // // =======================
     // // 🪙 REDEEM COINS
