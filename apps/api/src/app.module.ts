@@ -22,7 +22,7 @@ import { SearchModule } from './modules/search/search.module';
 import { ReturnModule } from './modules/return/return.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { ShippingConfigurationModule } from './modules/shipping-configuration/shipping-configuration.module';
-
+import { CareerModule } from './modules/career/career.module';
 import { RedisModule } from './infrastructure/cache/redis.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { RobotsModule } from './modules/robots/robots.module';
@@ -35,6 +35,7 @@ import { RobotsModule } from './modules/robots/robots.module';
     PrismaModule,
     AuthModule,
     CategoryModule,
+    CareerModule,
     BrandModule,
     ProductModule,
     ProfileModule,

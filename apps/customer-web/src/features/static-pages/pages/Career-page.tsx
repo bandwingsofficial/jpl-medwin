@@ -1,5 +1,5 @@
 "use client";
-
+import { careerService } from "@/features/career/services/career.service";
 import React, { useState, useEffect, useRef } from "react";
 import { 
   Briefcase, 
@@ -107,31 +107,46 @@ export default function CareersPage() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  e.preventDefault();
 
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+  if (!formData.resume) {
+    alert("Please upload your resume.");
+    return;
+  }
 
-      const emailTo = "connect@jplmedwin.com";
-      const subject = encodeURIComponent(`Job Application: ${formData.fullName} - ${formData.appliedPosition}`);
-      const body = encodeURIComponent(
-        `Hello Team,\n\nA new candidate has submitted their profile details:\n\n` +
-        `• Name: ${formData.fullName}\n` +
-        `• Mobile Number: ${formData.mobileNumber}\n` +
-        `• Position Applied: ${formData.appliedPosition}\n` +
-        `• Residential Address: ${formData.address}\n\n` +
-        `Note: The applicant's resume (${formData.resume ? formData.resume.name : "No file uploaded"}) was attached via the UI pipeline.`
-      );
+  setIsSubmitting(true);
 
-      window.location.href = `mailto:${emailTo}?subject=${subject}&body=${body}`;
-      setIsSuccess(true);
-    } catch (err) {
-      console.error("Submission Error", err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  try {
+    await careerService.submitApplication({
+      fullName: formData.fullName,
+      mobileNumber: formData.mobileNumber,
+      address: formData.address,
+      appliedPosition: formData.appliedPosition,
+      resume: formData.resume,
+    });
+
+    setIsSuccess(true);
+
+    setFormData({
+      fullName: "",
+      mobileNumber: "",
+      address: "",
+      appliedPosition: "",
+      resume: null,
+    });
+  } catch (error) {
+    console.error(
+      "Career application submission error:",
+      error,
+    );
+
+    alert(
+      "Unable to submit your application. Please try again.",
+    );
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <StaticContentLayout title="Careers">
@@ -661,9 +676,27 @@ export default function CareersPage() {
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", color: "#2DD4BF", fontWeight: 600, marginBottom: 8 }}>
               Operational Data Handling
             </p>
-            <p style={{ fontSize: 14, color: "rgba(255,255,255,0.65)", lineHeight: 1.75, fontWeight: 300, maxWidth: 740 }}>
-              Upon validation, this dashboard parameters translate into standard encrypted parameters via your native local system mail pipeline. Our Human Resources core filters verify every index profile package within the <span style={{ color: "#2DD4BF", fontWeight: 500 }}>same business cycle.</span>
-            </p>
+           <p
+  style={{
+    fontSize: 14,
+    color: "rgba(255,255,255,0.65)",
+    lineHeight: 1.75,
+    fontWeight: 300,
+    maxWidth: 740,
+  }}
+>
+  Upon submission, your application details and resume are securely
+  transmitted to the JPL Medwin recruitment team for review.
+  Our Human Resources team will review every application within the
+  <span
+    style={{
+      color: "#2DD4BF",
+      fontWeight: 500,
+    }}
+  >
+    {" "}same business cycle.
+  </span>
+</p>
           </div>
         </div>
 
