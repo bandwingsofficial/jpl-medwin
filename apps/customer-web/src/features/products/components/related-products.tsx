@@ -122,7 +122,17 @@ export function RelatedProducts({
       {discoverMoreProducts.length > 0 && (
         <section className="w-full">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="
+          animate-text-shine
+          bg-gradient-to-r
+          from-[#001f3f]
+          via-[#0d9488]
+          to-[#001f3f]
+          bg-clip-text
+          text-[28px]
+          font-bold
+          text-transparent
+        ">
               Discover More Products
             </h2>
 
@@ -148,7 +158,17 @@ export function RelatedProducts({
       {trendingProducts.length > 0 && (
         <section className="w-full">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="
+          animate-text-shine
+          bg-gradient-to-r
+          from-[#001f3f]
+          via-[#0d9488]
+          to-[#001f3f]
+          bg-clip-text
+          text-[28px]
+          font-bold
+          text-transparent
+        ">
               Trending Selections
             </h2>
 
@@ -174,7 +194,17 @@ export function RelatedProducts({
       {favoriteProducts.length > 0 && (
         <section className="w-full">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="
+          animate-text-shine
+          bg-gradient-to-r
+          from-[#001f3f]
+          via-[#0d9488]
+          to-[#001f3f]
+          bg-clip-text
+          text-[28px]
+          font-bold
+          text-transparent
+        ">
               Customer Favorites
             </h2>
 
@@ -200,7 +230,17 @@ export function RelatedProducts({
       {allCatalogProducts.length > 0 && (
         <section className="w-full">
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="
+          animate-text-shine
+          bg-gradient-to-r
+          from-[#001f3f]
+          via-[#0d9488]
+          to-[#001f3f]
+          bg-clip-text
+          text-[28px]
+          font-bold
+          text-transparent
+        ">
               Explore Our Catalog
             </h2>
 
