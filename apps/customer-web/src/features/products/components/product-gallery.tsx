@@ -75,6 +75,15 @@ export function ProductGallery({
       : [PLACEHOLDER_IMAGE];
   }, [mainImage, images]);
 
+  const imageContainerRef =
+  useRef<HTMLDivElement | null>(null);
+
+const [zoomPreviewPosition, setZoomPreviewPosition] =
+  useState({
+    top: 0,
+    left: 0,
+  });
+
   /*
    |----------------------------------------------------------------------
    | SELECTED IMAGE
@@ -106,8 +115,19 @@ const changeImage = (image: string) => {
     });
   });
 };
-
 const handleImageMouseEnter = () => {
+  const rect =
+    imageContainerRef.current?.getBoundingClientRect();
+
+  if (!rect) {
+    return;
+  }
+
+  setZoomPreviewPosition({
+    top: rect.top + rect.height / 2,
+    left: rect.right + 16,
+  });
+
   setIsZoomVisible(true);
 };
 
@@ -467,19 +487,28 @@ const isWishlistLoading =
       {/* ---------------------------------------------------------------- */}
 
       <div
-        className={`
-          relative
-          w-full
-         overflow-visible
-          rounded-2xl
-          border
-          border-gray-200
-          bg-white
-          h-[320px]
-          sm:h-[360px]
-          ${allImages.length <= 1 ? "md:h-[360px] md:flex-1" : "md:h-[360px] md:w-[360px]"}
-        `}
-      >
+  className={`
+    relative
+    w-full
+    overflow-visible
+    rounded-2xl
+    border
+    border-gray-200
+    bg-white
+    h-[320px]
+    sm:h-[360px]
+    ${
+      isZoomVisible
+        ? "z-[9999]"
+        : "z-0"
+    }
+    ${
+      allImages.length <= 1
+        ? "md:h-[360px] md:flex-1"
+        : "md:h-[360px] md:w-[360px]"
+    }
+  `}
+>
         {/* INTERACTIVE FLOATING UTILITY COLUMN */}
         <div className="absolute right-4 top-4 z-20 flex flex-col gap-2.5">
           {/* WISHLIST TRIGGER ACTION */}
@@ -558,7 +587,8 @@ const isWishlistLoading =
           </div>
         </div>
 
-        <div
+       <div
+  ref={imageContainerRef}
   className="
     group
     relative
@@ -606,55 +636,61 @@ const isWishlistLoading =
 />
         </div>
 
-      {/* HOVER ZOOM PREVIEW - OUTSIDE THE IMAGE OVERFLOW CONTAINER */}
-      {isZoomVisible && (
-        <div
-          className="
-            pointer-events-none
-            absolute
-            left-[calc(100%+16px)]
-            top-1/2
-            z-[999]
-            hidden
-            h-[340px]
-            w-[340px]
-            -translate-y-1/2
-            overflow-hidden
-            rounded-2xl
-            border
-            border-gray-200
-            bg-white
-            shadow-[0_12px_35px_rgba(0,0,0,0.16)]
-            md:block
-          "
-        >
-          <div
-            className="
-              h-full
-              w-full
-              bg-white
-              bg-no-repeat
-            "
-            style={{
-              backgroundImage: `url("${selectedImage || PLACEHOLDER_IMAGE}")`,
-              backgroundSize: "250% 250%",
-              backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
-            }}
-          />
+     {isZoomVisible &&
+  typeof document !== "undefined" &&
+  createPortal(
+    <div
+      className="
+        pointer-events-none
+        fixed
+        z-[999999]
+        hidden
+        h-[340px]
+        w-[340px]
+        -translate-y-1/2
+        overflow-hidden
+        rounded-2xl
+        border
+        border-gray-200
+        bg-white
+        shadow-[0_12px_35px_rgba(0,0,0,0.16)]
+        md:block
+      "
+      style={{
+        top: `${zoomPreviewPosition.top}px`,
+        left: `${zoomPreviewPosition.left}px`,
+      }}
+    >
+      <div
+        className="
+          h-full
+          w-full
+          bg-white
+          bg-no-repeat
+        "
+        style={{
+          backgroundImage: `url("${
+            selectedImage || PLACEHOLDER_IMAGE
+          }")`,
+          backgroundSize: "250% 250%",
+          backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+        }}
+      />
 
-          <div
-            className="
-              pointer-events-none
-              absolute
-              inset-0
-              rounded-2xl
-              ring-1
-              ring-inset
-              ring-black/5
-            "
-          />
-        </div>
-      )}
+      <div
+        className="
+          pointer-events-none
+          absolute
+          inset-0
+          rounded-2xl
+          ring-1
+          ring-inset
+          ring-black/5
+        "
+      />
+    </div>,
+    document.body
+  )}
 
            {isImagePopupOpen &&
   typeof document !== "undefined" &&
