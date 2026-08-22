@@ -1196,7 +1196,7 @@ export function BulkContactPage() {
             }}
           >
             <img
-              src="Logo/Bulk.png"
+              src="Logo/Bulk1.png"
               alt="Bulk medical equipment"
             />
 

@@ -7,7 +7,7 @@ import { Spinner } from "@/shared/components/ui/spinner";
 import { useCollection } from "@/features/collections/hooks/use-collection";
 
 interface CollectionMegaMenuProps {
-  collectionId: string;
+    collectionSlug: string;
   onClose?: () => void;
 }
 
@@ -39,10 +39,10 @@ function ProductImage({
 }
 
 export function CollectionMegaMenu({
-  collectionId,
+  collectionSlug,
   onClose,
 }: CollectionMegaMenuProps) {
-  const { data, isLoading, isError } = useCollection(collectionId);
+  const { data, isLoading, isError } = useCollection(collectionSlug);
 
   if (isLoading) {
     return (
@@ -89,7 +89,7 @@ export function CollectionMegaMenu({
 
 
           <Link
-            href={`/collections/${collection.id}`}
+            href={`/collections/${collection.slug}`}
             onClick={onClose}
             className="group inline-flex items-center text-xs font-semibold text-[#0F9EA5]"
           >

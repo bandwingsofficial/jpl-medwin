@@ -31,13 +31,12 @@ private readonly productS3ImageResolver: ProductS3ImageResolverService,
 private readonly domainService: CollectionDomainService,
   ) {}
 
-  async execute(input: {
-    collectionId: string;
-
-    page?: number;
-
-    limit?: number;
-  }) {
+ async execute(input: {
+  collectionId?: string;
+  slug?: string;
+  page?: number;
+  limit?: number;
+}){
     // =======================
     // 📄 PAGINATION
     // =======================
@@ -50,11 +49,15 @@ private readonly domainService: CollectionDomainService,
     // 🔍 COLLECTION
     // =======================
 
-    const collection = this.domainService.ensureExists({
-      collection: await this.collectionRepo.findById(input.collectionId),
+const collection = this.domainService.ensureExists({
+  collection: input.slug
+    ? await this.collectionRepo.findBySlug(input.slug)
+    : input.collectionId
+      ? await this.collectionRepo.findById(input.collectionId)
+      : null,
 
-      collectionId: input.collectionId,
-    });
+  collectionId: input.collectionId ?? input.slug ?? '',
+});
 
     // =======================
     // 📦 COLLECTION PRODUCTS

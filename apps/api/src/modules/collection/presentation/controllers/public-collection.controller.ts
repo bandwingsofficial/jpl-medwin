@@ -42,10 +42,10 @@ export class PublicCollectionController {
   // 🔍 COLLECTION DETAILS
   // =======================
 
-  @Get(':id')
+  @Get(':slug')
   async getCollection(
-    @Param('id')
-    id: string,
+    @Param('slug')
+   slug: string,
 
     @Query('page')
     page?: number,
@@ -54,7 +54,7 @@ export class PublicCollectionController {
     limit?: number,
   ) {
     return this.getCollectionUseCase.execute({
-      collectionId: id,
+      slug,
 
       page,
 

@@ -449,7 +449,7 @@ export default function BrandsProductPage({
                 md:text-3xl
               "
             >
-              {brand.name}
+             {brand.name.charAt(0).toUpperCase() + brand.name.slice(1)}
             </h1>
 
             <p

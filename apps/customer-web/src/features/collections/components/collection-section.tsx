@@ -12,23 +12,21 @@ import {
 } from "@/features/products/components/product-card";
 
 interface Props {
-  collectionId: string;
-  collectionName: string;
   collectionSlug: string;
+  collectionName: string;
   collectionImage?: string;
 }
 
 export function CollectionSection({
-  collectionId,
-  collectionName,
   collectionSlug,
+  collectionName,
   collectionImage,
 }: Props) {
   const {
     data: products = [],
     isLoading,
   } = useCollectionProducts(
-    collectionId
+    collectionSlug
   );
 
   if (isLoading) {
@@ -106,7 +104,7 @@ export function CollectionSection({
 
           {showViewAll && (
             <Link
-              href={`/collections/${collectionId}`}
+              href={`/collections/${collectionSlug}`}
               className="
                 group
                 flex

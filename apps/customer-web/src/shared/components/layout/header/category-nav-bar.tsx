@@ -528,7 +528,7 @@ export function CategoryNavBar() {
         "
       >
         <CollectionMegaMenu
-  collectionId={collection.id}
+  collectionSlug={collection.slug}
   onClose={() => {
     setHoverMenu(null);
     setPinnedMenu(null);

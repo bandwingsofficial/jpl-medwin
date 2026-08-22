@@ -69,8 +69,8 @@ export function CollectionNavbarMenu() {
         {collections.map(
           (collection: any) => (
             <Link
-              key={collection.id}
-              href={`/collections/${collection.id}`}
+              key={collection.slug}
+              href={`/collections/${collection.slug}`}
               className="
                 block
                 px-4

@@ -61,20 +61,17 @@ export function HomeCollections() {
               space-y-14
             "
           >
-            <CollectionSection
-              collectionId={
-                collection.id
-              }
-              collectionName={
-                collection.name
-              }
-              collectionSlug={
-                collection.slug
-              }
-              collectionImage={
-                collection.imageUrl
-              }
-            />
+           <CollectionSection
+  collectionSlug={
+    collection.slug
+  }
+  collectionName={
+    collection.name
+  }
+  collectionImage={
+    collection.imageUrl
+  }
+/>
 
             {/* PROMOTIONAL BANNER AFTER EVERY 2 COLLECTIONS */}
 

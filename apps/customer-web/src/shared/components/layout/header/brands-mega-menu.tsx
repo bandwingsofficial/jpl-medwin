@@ -69,7 +69,7 @@ export function BrandsMegaMenu({
                   key={brand.id}
                   onClick={() => {
                     onClose();
-                    router.push(`/products?brandId=${brand.id}`);
+                   router.push(`/brands/${brand.slug}`);
                   }}
                   className="group cursor-pointer flex items-center justify-center border border-gray-100 rounded-xl h-[90px] p-3 hover:border-teal-100 hover:shadow-sm transition-all bg-white"
                 >

@@ -13,7 +13,7 @@ export function CollectionCard({
 }: CollectionCardProps) {
   return (
     <Link
-      href={`/collections/${collection.id}`}
+      href={`/collections/${collection.slug}`}
       className="
         group
         block

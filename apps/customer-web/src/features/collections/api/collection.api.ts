@@ -23,24 +23,24 @@ export const collectionApi = {
       : [];
   },
 
- async getCollection(
-  collectionId: string
-): Promise<CollectionDetailResponse> {
-  const response =
-    await apiClient.get(
-      `${BASE_URL}/${collectionId}`
-    );
+  async getCollection(
+    slug: string
+  ): Promise<CollectionDetailResponse> {
+    const response =
+      await apiClient.get(
+        `${BASE_URL}/${slug}`
+      );
 
-  return response.data.data;
-},
-async getCollectionProducts(
-    collectionId: string
+    return response.data.data;
+  },
+
+  async getCollectionProducts(
+    slug: string
   ) {
     const response =
       await apiClient.get(
-        `${BASE_URL}/${collectionId}`
+        `${BASE_URL}/${slug}`
       );
-
 
     return (
       response.data?.data?.products ??
