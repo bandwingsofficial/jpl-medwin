@@ -1,0 +1,213 @@
+"use client";
+
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+import { toast } from "sonner";
+
+import {
+  returnsApi,
+} from "../api/returns.api";
+
+export interface UseReturnsOptions {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  type?: string;
+  from?: string;
+  to?: string;
+  dateType?: "created" | "updated";
+}
+
+/*
+|--------------------------------------------------------------------------
+| GET RETURNS
+|--------------------------------------------------------------------------
+*/
+export const useReturns = (
+  options?: UseReturnsOptions | number,
+  legacyLimit = 10
+) => {
+  const params: UseReturnsOptions =
+    typeof options === "number"
+      ? { page: options, limit: legacyLimit }
+      : options || {};
+
+  const page = params.page || 1;
+  const limit = params.limit || 10;
+  const search = params.search || "";
+  const status = params.status || "";
+  const type = params.type || "";
+  const from = params.from || "";
+  const to = params.to || "";
+  const dateType = params.dateType || "created";
+
+  return useQuery({
+    queryKey: [
+      "admin-returns",
+      page,
+      limit,
+      search,
+      status,
+      type,
+      from,
+      to,
+      dateType,
+    ],
+    queryFn: () =>
+      returnsApi.getReturns({
+        page,
+        limit,
+        search,
+        status,
+        type,
+        from,
+        to,
+        dateType,
+      }),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+  });
+};
+
+/*
+|--------------------------------------------------------------------------
+| GET RETURN DETAILS
+|--------------------------------------------------------------------------
+*/
+export const useReturnDetails =
+  (id: string) => {
+    return useQuery({
+      queryKey: [
+        "admin-return",
+        id,
+      ],
+      queryFn: () =>
+        returnsApi.getReturnDetails(id),
+      enabled: !!id,
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+    });
+  };
+
+/*
+|--------------------------------------------------------------------------
+| APPROVE
+|--------------------------------------------------------------------------
+*/
+export const useApproveReturn = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => returnsApi.approveReturn(id),
+    onSuccess: (data, id) => {
+      toast.success("Return approved successfully");
+
+      // 1. Refreshes the list table view
+      qc.invalidateQueries({
+        queryKey: ["admin-returns"],
+      });
+      
+      // 2. Refreshes the drawer data automatically
+      qc.invalidateQueries({
+        queryKey: ["admin-return", id],
+      });
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message || "Failed to approve return"
+      );
+    },
+  });
+};
+
+/*
+|--------------------------------------------------------------------------
+| REJECT
+|--------------------------------------------------------------------------
+*/
+export const useRejectReturn = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => returnsApi.rejectReturn(id),
+    onSuccess: (data, id) => {
+      toast.success("Return rejected successfully");
+
+      qc.invalidateQueries({
+        queryKey: ["admin-returns"],
+      });
+
+      qc.invalidateQueries({
+        queryKey: ["admin-return", id],
+      });
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message || "Failed to reject return"
+      );
+    },
+  });
+};
+
+/*
+|--------------------------------------------------------------------------
+| PICKUP
+|--------------------------------------------------------------------------
+*/
+export const usePickupReturn = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => returnsApi.pickupReturn(id),
+    onSuccess: (data, id) => {
+      toast.success("Return picked up successfully");
+
+      qc.invalidateQueries({
+        queryKey: ["admin-returns"],
+      });
+
+      qc.invalidateQueries({
+        queryKey: ["admin-return", id],
+      });
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message || "Failed to pickup return"
+      );
+    },
+  });
+};
+
+/*
+|--------------------------------------------------------------------------
+| COMPLETE
+|--------------------------------------------------------------------------
+*/
+export const useCompleteReturn = () => {
+  const qc = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => returnsApi.completeReturn(id),
+    onSuccess: (data, id) => {
+      toast.success("Return completed successfully");
+
+      qc.invalidateQueries({
+        queryKey: ["admin-returns"],
+      });
+
+      qc.invalidateQueries({
+        queryKey: ["admin-return", id],
+      });
+    },
+    onError: (error: any) => {
+      toast.error(
+        error?.response?.data?.message || "Failed to complete return"
+      );
+    },
+  });
+};

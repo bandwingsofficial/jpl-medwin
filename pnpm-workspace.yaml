@@ -1,0 +1,15 @@
+packages:
+  - apps/*
+  - packages/*
+  - backend
+  - tooling/*
+
+ignoredBuiltDependencies:
+  - '@prisma/client'
+  - '@prisma/engines'
+  - prisma
+
+onlyBuiltDependencies:
+  - msw
+  - sharp
+  - unrs-resolver

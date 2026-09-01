@@ -1,0 +1,387 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Search, ChevronRight } from 'lucide-react';
+import {
+  CategoryMegaMenuSkeleton,
+  SubCategorySkeleton,
+  MiniCategorySkeleton,
+} from "@/shared/components/layout/header/category-mega-menu-skeleton";
+import { useCategories } from '@/features/category/hooks/use-category';
+import { useSubCategories } from '@/features/category/hooks/use-sub-categories';
+import { useMiniCategories } from '@/features/category/hooks/use-mini-categories';
+
+import { Spinner } from '@/shared/components/ui/spinner';
+import { useCheckoutNavigation } from '../../checkout-navigation-guard';
+
+interface CategoryMegaMenuProps {
+  onClose?: () => void;
+}
+
+interface MiniCategory {
+  id: string;
+  name: string;
+}
+
+export function CategoryMegaMenu({ onClose }: CategoryMegaMenuProps) {
+  const { data: categories, isLoading: isCategoriesLoading } = useCategories();
+  const { navigate } = useCheckoutNavigation();
+
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const [activeCategorySlug, setActiveCategorySlug] = useState<string | null>(null);
+
+  const [activeSubCategorySlug, setActiveSubCategorySlug] = useState<string | null>(null);
+ 
+  useEffect(() => {
+    if (categories && categories.length > 0 && !activeCategorySlug) {
+      setActiveCategorySlug(categories[0].slug);
+    }
+  }, [categories, activeCategorySlug]);
+
+  const filteredCategories = categories?.filter((category) =>
+    category.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  const activeCategoryName = categories?.find((c) => c.slug === activeCategorySlug)?.name || 'Items';
+
+  return (
+    <div
+      className="
+      absolute
+      top-full
+      left-1/2
+      -translate-x-1/2
+      pt-2
+      w-[1100px]
+      z-50
+    "
+    >
+      <div
+        className="
+        bg-white
+        border
+        border-gray-200
+        rounded-2xl
+        shadow-2xl
+        overflow-hidden
+        flex
+        flex-col
+        h-[380px]
+      "
+      >
+        {/* SEARCH */}
+
+        <div
+          className="
+          p-3
+          border-b
+          border-gray-100
+        "
+        >
+          <div className="relative">
+            <Search
+              className="
+                absolute
+                left-3
+                top-1/2
+                -translate-y-1/2
+                w-4
+                h-4
+                text-gray-400
+              "
+            />
+
+            <input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search categories..."
+              className="
+                w-full
+                pl-10
+                pr-4
+                py-2
+                rounded-full
+                bg-gray-50
+                border
+                border-gray-200
+                text-sm
+                outline-none
+              "
+            />
+          </div>
+        </div>
+
+        {/* THREE COLUMN AREA */}
+
+        <div
+          className="
+          flex
+          flex-1
+          min-h-0
+        "
+        >
+          {/* CATEGORY COLUMN */}
+
+          <div
+            className="
+            w-[240px]
+            bg-gray-50/70
+            border-r
+            border-gray-100
+            overflow-y-auto
+            py-2
+          "
+          >
+            {isCategoriesLoading ? (
+  <CategoryMegaMenuSkeleton />
+) : (
+  filteredCategories?.map((category) => {
+                const active = activeCategorySlug === category.slug;
+
+                return (
+                  <div
+                    key={category.id}
+                   onMouseEnter={() => {
+  setActiveCategorySlug(category.slug);
+  setActiveSubCategorySlug(null);
+}}
+                    className={`
+                      flex
+                      items-center
+                      justify-between
+                      px-4
+                      py-3
+                      mx-2
+                      rounded-xl
+                      cursor-pointer
+                      ${active ? 'bg-[#E6F7F5] text-[#0F9EA5]' : 'text-gray-600 hover:bg-gray-100'}
+                    `}
+                  >
+                    <span
+                      className="
+                      text-[13px]
+                      font-medium
+                    "
+                    >
+                      {category.name}
+                    </span>
+
+                    {active && (
+                      <ChevronRight
+                        className="
+                          w-4
+                          h-4
+                        "
+                      />
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+
+          {/* SUB CATEGORY COLUMN */}
+
+          <div
+            className="
+            w-[360px]
+            border-r
+            border-gray-100
+            p-5
+            overflow-y-auto
+          "
+          >
+            {activeCategorySlug && (
+              <SubCategoryPanel
+  categorySlug={activeCategorySlug}
+  categoryName={activeCategoryName}
+  activeSubCategorySlug={activeSubCategorySlug}
+  setActiveSubCategorySlug={setActiveSubCategorySlug}
+  onClose={onClose}
+   navigate={navigate}
+/>
+            )}
+          </div>
+
+          {/* MINI CATEGORY COLUMN */}
+
+          <div
+            className="
+            flex-1
+            p-5
+            overflow-y-auto
+          "
+          >
+           <MiniCategoryPanel
+  categorySlug={activeCategorySlug}
+  subCategorySlug={activeSubCategorySlug}
+  onClose={onClose}
+/>
+</div>
+        </div>
+
+        {/* FOOTER */}
+
+        <div
+          className="
+          border-t
+          border-gray-100
+          px-5
+          py-3
+        "
+        >
+          <button
+  type="button"
+  onClick={() => {
+    onClose?.();
+    navigate("/categories");
+  }}
+  className="
+    text-xs
+    font-semibold
+    text-[#0F9EA5]
+  "
+>
+  Full Store Directory
+</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface SubCategoryPanelProps {
+  categorySlug: string;
+  categoryName: string;
+  activeSubCategorySlug: string | null;
+
+  setActiveSubCategorySlug: (
+    slug: string | null
+  ) => void;
+
+  onClose?: () => void;
+
+  navigate: (href: string) => void;
+}
+
+function SubCategoryPanel({
+  categorySlug,
+  categoryName,
+  setActiveSubCategorySlug,
+  onClose,
+  navigate,
+}: SubCategoryPanelProps) {
+  const { data: subCategories, isLoading } = useSubCategories(categorySlug);
+
+ if (isLoading) {
+  return <SubCategorySkeleton />;
+}
+
+  return (
+    <div>
+      <h3
+        className="
+        font-bold
+        text-gray-800
+        mb-4
+      "
+      >
+        {categoryName}
+      </h3>
+
+      <div
+        className="
+        space-y-3
+      "
+      >
+        {subCategories?.map((sub) => (
+          <button
+  key={sub.id}
+  type="button"
+  onMouseEnter={() => {
+    setActiveSubCategorySlug(sub.slug);
+  }}
+  onClick={() => {
+    onClose?.();
+    navigate(`/categories/${categorySlug}/${sub.slug}`);
+  }}
+  className="
+    block
+    text-left
+    text-sm
+    text-gray-600
+    hover:text-[#0F9EA5]
+  "
+>
+  {sub.name}
+</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function MiniCategoryPanel({
+  categorySlug,
+  subCategorySlug,
+  onClose,
+}: {
+  categorySlug: string | null;
+  subCategorySlug: string | null;
+  onClose?: () => void;
+}) {
+  const {
+    data: miniCategories = [],
+    isLoading,
+  } = useMiniCategories(
+    categorySlug ?? undefined,
+    subCategorySlug ?? undefined,
+  );
+
+  if (!categorySlug || !subCategorySlug) {
+    return (
+      <div>
+        Hover sub category
+      </div>
+    );
+  }
+
+ if (isLoading) {
+  return <MiniCategorySkeleton />;
+}
+
+  return (
+    <div>
+      <h3
+        className="
+        font-bold
+        text-gray-800
+        mb-4
+      "
+      >
+        Mini Categories
+      </h3>
+
+      <div
+        className="
+        space-y-3
+      "
+      >
+        {miniCategories.map((mini: MiniCategory) => (
+  <div
+    key={mini.id}
+    className="
+      block
+      text-sm
+      text-gray-600
+    "
+  >
+    {mini.name}
+  </div>
+))}
+      </div>
+    </div>
+  );
+}

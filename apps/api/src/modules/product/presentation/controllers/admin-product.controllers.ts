@@ -1,0 +1,1462 @@
+import {
+  Body,
+  Controller,
+  Post,
+  Get,
+  Patch,
+  Delete,
+  Param,
+  Query,
+  UploadedFiles,
+  UseInterceptors,
+  NotFoundException,
+  UseGuards,
+  BadRequestException,
+  Res,
+} from '@nestjs/common';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
+
+import { multerConfig } from '@/modules/upload/infrastructure/multer.config';
+import { productAndCatalogueMulterConfig } from '@/modules/upload/infrastructure/catalogue-multer.config';
+import { excelMulterConfig } from '@/modules/upload/infrastructure/excel-multer.config';
+import { ImportMode } from '../../application/dtos/import-products.dto';
+import { UploadImageUseCase } from '@/modules/upload/application/upload-image.usecase';
+
+// ================= PRODUCT USE CASES =================
+
+import { CreateProductUseCase } from '../../../product/application/use-cases/create-product.use-case';
+import { UpdateProductUseCase } from '../../../product/application/use-cases/update-product.use-case';
+import { DeleteProductUseCase } from '../../../product/application/use-cases/delete-product.use-case';
+
+import { GetProductsUseCase } from '../../../product/application/use-cases/get-products.use-case';
+import { GetProductDetailUseCase } from '../../../product/application/use-cases/get-product-detail.use-case';
+
+import { UpdateProductStatusUseCase } from '../../../product/application/use-cases/update-product-status.use-case';
+import { PreviewProductImportUseCase } from '../../application/use-cases/preview-product-import.use-case';
+import { ImportProductsUseCase } from '../../application/use-cases/import-products.use-case';
+import { ExportProductsUseCase } from '../../application/use-cases/export-products.use-case';
+
+// ================= VARIANT USE CASES =================
+
+// import { AddVariantUseCase } from '../../../product/application/use-cases/add-variant.usecase';
+// import { UpdateVariantUseCase } from '../../../product/application/use-cases/update-variant.use-case';
+// import { DeleteVariantUseCase } from '../../../product/application/use-cases/delete-variant.use-case';
+import { GetVariantsUseCase } from '../../../product/application/use-cases/get-variants.use-case';
+import { UpdateVariantStatusUseCase } from '../../../product/application/use-cases/update-variant-status.use-case';
+import { RestoreVariantUseCase } from '../../../product/application/use-cases/restore-variant.use-case';
+
+// ================= DTO =================
+
+import { CreateProductDto } from '../../application/dtos/create-product.dto';
+import { UpdateProductDto } from '../../application/dtos/update-product.dto';
+
+import { ProductStatus } from '../../domain/enums/product-status.enum';
+import { ProductResponseMapper } from '../../infrastructure/persistence/prisma/mappers/product-response.mapper';
+import { RolesGuard } from '@/modules/auth/presentation/guards/role.guard';
+import { UserRole } from '@/modules/auth/domain/enums/user-role.enum';
+import { Roles } from '@/modules/category/presentation/decorators/roles.decorator';
+import { JwtAuthGuard } from '@/modules/auth/presentation/guards/jwt-auth.guard';
+import { ExportProductsByUpdatedAtUseCase } from '../../application/use-cases/export-products-by-updated-at.use-case';
+import { ExportProductsByCreatedAtUseCase } from '../../application/use-cases/export-products-by-created-at.use-case';
+import { ProductSkuService } from '../../application/services/product-sku.service';
+import { PreviewSkuDto } from '../../application/dtos/preview-sku.dto';
+import { ProductType } from '../../domain/enums/product-type.enum';
+
+@Controller('admin/products')
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
+export class AdminProductController {
+  constructor(
+    private readonly createProduct: CreateProductUseCase,
+    private readonly updateProduct: UpdateProductUseCase,
+    private readonly deleteProductUseCase: DeleteProductUseCase,
+    private readonly updateProductStatusUseCase: UpdateProductStatusUseCase,
+    private readonly getProducts: GetProductsUseCase,
+    private readonly getProductDetail: GetProductDetailUseCase,
+
+    private readonly uploadUseCase: UploadImageUseCase,
+    private readonly previewImportUseCase: PreviewProductImportUseCase,
+    private readonly importProductsUseCase: ImportProductsUseCase,
+    private readonly exportProductsUseCase: ExportProductsUseCase,
+    private readonly exportProductsByCreatedAtUseCase: ExportProductsByCreatedAtUseCase,
+    private readonly exportProductsByUpdatedAtUseCase: ExportProductsByUpdatedAtUseCase,
+
+    // 🔥 VARIANTS
+    // private readonly deleteVariantUseCase: DeleteVariantUseCase,
+    private readonly getVariantsUseCase: GetVariantsUseCase,
+    private readonly updateVariantStatusUseCase: UpdateVariantStatusUseCase,
+    private readonly restoreVariantUseCase: RestoreVariantUseCase,
+
+    private readonly productSkuService: ProductSkuService,
+  ) {}
+
+  // ================= SKU PREVIEW =================
+
+  @Post('sku/preview')
+  async previewSku(@Body() body: PreviewSkuDto) {
+    console.log('[SKU_TRACE] controller received body', JSON.stringify(body));
+
+    if (!body.brandId) {
+      throw new BadRequestException('brandId is required');
+    }
+
+    if (!body.productType) {
+      throw new BadRequestException('productType is required');
+    }
+
+    if (!body.customerType) {
+      throw new BadRequestException('customerType is required');
+    }
+
+    const result = await this.productSkuService.preview({
+      brandId: body.brandId,
+      customerType: body.customerType,
+      productType: body.productType as ProductType,
+      productName: body.productName,
+      productId: body.productId,
+      excludeVariantIds: body.excludeVariantIds,
+      variants: body.variants,
+    });
+
+    console.log('[SKU_TRACE] controller raw result (pre-interceptor)', JSON.stringify(result));
+
+    return result;
+  }
+
+  // ================= CREATE PRODUCT =================
+
+  // @Post()
+  // @UseInterceptors(
+  //   FileFieldsInterceptor(
+  //     [
+  //       { name: 'mainImage', maxCount: 1 },
+  //       { name: 'images', maxCount: 20 },
+  //       { name: 'variantMainImages', maxCount: 20 },
+  //       { name: 'variantImages', maxCount: 50 },
+  //     ],
+  //     multerConfig,
+  //   ),
+  // )
+  // async create(
+  //   @UploadedFiles()
+  //   files: {
+  //     mainImage?: Express.Multer.File[];
+  //     images?: Express.Multer.File[];
+  //     variantMainImages?: Express.Multer.File[];
+  //     variantImages?: Express.Multer.File[];
+  //   },
+  //   @Body() rawDto: any,
+  // ) {
+  //   const uploadedUrls: string[] = [];
+
+  //   try {
+  //     // =======================
+  //     // 🔥 SAFE HELPERS
+  //     // =======================
+
+  //     const parseJson = (val: any, fallback: any) => {
+  //       try {
+  //         return typeof val === 'string' ? JSON.parse(val) : (val ?? fallback);
+  //       } catch {
+  //         return fallback;
+  //       }
+  //     };
+
+  //     const toBoolean = (val: any) => val === true || val === 'true';
+
+  //     const toNumber = (val: any): number | undefined => {
+  //       if (val === null || val === undefined || val === '') {
+  //         return undefined;
+  //       }
+
+  //       const parsed = Number(val);
+
+  //       return Number.isNaN(parsed) ? undefined : parsed;
+  //     };
+
+  //     // =======================
+  //     // 🔥 PARSE ROOT JSON
+  //     // =======================
+
+  //     const parsedData =
+  //       typeof rawDto.data === 'string' ? JSON.parse(rawDto.data) : rawDto.data || {};
+
+  //     console.log('🔥 RAW DTO =>', rawDto);
+
+  //     console.log('🔥 PARSED DATA =>', parsedData);
+
+  //     // =======================
+  //     // 🔥 DTO BUILD
+  //     // =======================
+
+  //     const dto: CreateProductDto = {
+  //       // BASIC
+  //       name: parsedData.name?.trim(),
+
+  //       type: parsedData.type,
+
+  //       status: parsedData.status,
+
+  //       categoryId: parsedData.categoryId,
+
+  //       subCategoryId: parsedData.subCategoryId,
+
+  //       miniCategoryId: parsedData.miniCategoryId,
+
+  //       brandId: parsedData.brandId,
+
+  //       shortDescription: parsedData.shortDescription?.trim(),
+
+  //       longDescription: parsedData.longDescription?.trim(),
+
+  //       // ARRAYS
+  //       features: parsedData.features || [],
+
+  //       tags: parsedData.tags || [],
+
+  //       displayNotes: parsedData.displayNotes || [],
+
+  //       specifications: parsedData.specifications || [],
+
+  //       packing: parsedData.packing || [],
+
+  //       directionOfUse: parsedData.directionOfUse || [],
+
+  //       additionalInfo: parsedData.additionalInfo || [],
+
+  //       faq: parsedData.faq || [],
+
+  //       // VARIANTS
+  //       variants: (parsedData.variants || []).map((v: any) => ({
+  //         ...v,
+
+  //         purchasePrice: toNumber(v.purchasePrice),
+
+  //         sellingPrice: toNumber(v.sellingPrice),
+
+  //         mrp: toNumber(v.mrp),
+
+  //         quantity: toNumber(v.quantity),
+
+  //         attributes: v.attributes || {},
+  //       })),
+
+  //       // BOOLEAN
+  //       isWeighted: toBoolean(parsedData.isWeighted),
+
+  //       // NUMBER
+  //       warrantyMonths: toNumber(parsedData.warrantyMonths),
+  //     };
+
+  //     console.log('🔥 FINAL DTO =>', dto);
+
+  //     // =======================
+  //     // 📤 UPLOAD HELPERS
+  //     // =======================
+
+  //     const uploadFile = async (file?: Express.Multer.File) => {
+  //       if (!file) return undefined;
+
+  //       const res = await this.uploadUseCase.execute(file, 'products');
+  //       uploadedUrls.push(res.url);
+
+  //       return res.url;
+  //     };
+
+  //     const uploadMany = async (files?: Express.Multer.File[]) => {
+  //       if (!files?.length) return [];
+
+  //       const results: string[] = [];
+
+  //       for (const file of files) {
+  //         const url = await uploadFile(file);
+  //         if (url) results.push(url);
+  //       }
+
+  //       return results;
+  //     };
+
+  //     // =======================
+  //     // 🖼 PRODUCT IMAGES
+  //     // =======================
+
+  //     const mainImage = await uploadFile(files.mainImage?.[0]);
+
+  //     const galleryUrls = await uploadMany(files.images);
+
+  //     const productImages = galleryUrls.map((url, i) => ({
+  //       url,
+  //       alt: dto.name,
+  //       sortOrder: i,
+  //     }));
+
+  //     // =======================
+  //     // 🔥 VARIANT FILE MAPPING
+  //     // =======================
+
+  //     let mainIndex = 0;
+  //     let galleryIndex = 0;
+
+  //     const variants = (dto.variants ?? []).map((v: any) => {
+  //       const mainFile = files.variantMainImages?.[mainIndex++];
+
+  //       const galleryCount = v.images?.length || 0;
+
+  //       const galleryFiles =
+  //         files.variantImages?.slice(galleryIndex, galleryIndex + galleryCount) || [];
+
+  //       galleryIndex += galleryCount;
+
+  //       return {
+  //         ...v,
+  //         mainFile,
+  //         galleryFiles,
+  //       };
+  //     });
+
+  //     // =======================
+  //     // 🚀 UPLOAD VARIANT IMAGES
+  //     // =======================
+
+  //     for (const v of variants) {
+  //       if (v.mainFile) {
+  //         v.mainImage = await uploadFile(v.mainFile);
+  //       }
+
+  //       const galleryUrls = await uploadMany(v.galleryFiles);
+
+  //       v.images = galleryUrls.map((url, i) => ({
+  //         url,
+  //         alt: v.name,
+  //         sortOrder: i,
+  //       }));
+
+  //       delete v.mainFile;
+  //       delete v.galleryFiles;
+  //     }
+
+  //     // =======================
+  //     // 🚀 EXECUTE USECASE
+  //     // =======================
+
+  //     const product = await this.createProduct.execute({
+  //       ...dto,
+  //       mainImage,
+  //       images: productImages,
+  //       variants,
+  //     });
+
+  //     return ProductResponseMapper.map(product);
+  //   } catch (err) {
+  //     await this.safeDeleteMany(uploadedUrls);
+  //     throw err;
+  //   }
+  // }
+
+  @Post()
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'mainImage', maxCount: 1 },
+        { name: 'images', maxCount: 20 },
+        { name: 'variantMainImages', maxCount: 20 },
+        { name: 'variantImages', maxCount: 50 },
+        { name: 'catalogueFile', maxCount: 1 },
+      ],
+      productAndCatalogueMulterConfig,
+    ),
+  )
+  async create(
+    @UploadedFiles()
+    files: {
+      mainImage?: Express.Multer.File[];
+      images?: Express.Multer.File[];
+      variantMainImages?: Express.Multer.File[];
+      variantImages?: Express.Multer.File[];
+      catalogueFile?: Express.Multer.File[];
+    },
+
+    @Body() rawDto: any,
+  ) {
+    const uploadedUrls: string[] = [];
+
+    try {
+      // =======================
+      // 🔥 HELPERS
+      // =======================
+
+      const parseJson = (val: any, fallback: any) => {
+        try {
+          if (val === undefined || val === null || val === '') {
+            return fallback;
+          }
+
+          return typeof val === 'string' ? JSON.parse(val) : val;
+        } catch {
+          return fallback;
+        }
+      };
+
+      const toBoolean = (val: any) => {
+        return val === true || val === 'true';
+      };
+
+      const toNumber = (val: any): number | undefined => {
+        if (val === undefined || val === null || val === '') {
+          return undefined;
+        }
+
+        const parsed = Number(val);
+
+        return Number.isNaN(parsed) ? undefined : parsed;
+      };
+
+      // =======================
+      // 🔥 SUPPORT BOTH
+      // raw form-data + data json
+      // =======================
+
+      const parsedData =
+        typeof rawDto.data === 'string' ? JSON.parse(rawDto.data) : rawDto.data || rawDto;
+
+      console.log('🔥 RAW DTO =>', rawDto);
+
+      console.log('🔥 PARSED DATA =>', parsedData);
+
+      // =======================
+      // 📄 CATALOGUE UPLOAD
+      // =======================
+
+      let hasCatalogue = toBoolean(parsedData.hasCatalogue);
+      let catalogueFileName = parsedData.catalogueFileName || undefined;
+      let catalogueFileUrl = parsedData.catalogueFileUrl || undefined;
+      let catalogueFileType = parsedData.catalogueFileType || undefined;
+      let catalogueFileSize = toNumber(parsedData.catalogueFileSize);
+
+      if (files.catalogueFile?.[0]) {
+        const catFile = files.catalogueFile[0];
+        const catUpload = await this.uploadUseCase.execute(catFile, 'catalogues');
+        uploadedUrls.push(catUpload.url);
+        hasCatalogue = true;
+        catalogueFileName = catFile.originalname;
+        catalogueFileUrl = catUpload.url;
+        catalogueFileType = catFile.mimetype;
+        catalogueFileSize = catFile.size;
+      }
+
+      // =======================
+      // 🔥 DTO BUILD
+      // =======================
+
+      const dto: CreateProductDto = {
+        // BASIC
+        name: parsedData.name?.trim(),
+
+        type: parsedData.type,
+
+        customerType: parsedData.customerType,
+
+        status: parsedData.status,
+
+        categoryId: parsedData.categoryId,
+
+        subCategoryId: parsedData.subCategoryId,
+
+        miniCategoryId: parsedData.miniCategoryId,
+
+        brandId: parsedData.brandId,
+
+        hsnCode: parsedData.hsnCode?.trim() || undefined,
+
+        shortDescription: parsedData.shortDescription?.trim(),
+
+        longDescription: parsedData.longDescription?.trim(),
+
+        // ARRAYS
+        features: parseJson(parsedData.features, []),
+
+        tags: parseJson(parsedData.tags, []),
+
+        displayNotes: parseJson(parsedData.displayNotes, []),
+
+        specifications: parseJson(parsedData.specifications, []),
+
+        packing: parseJson(parsedData.packing, []),
+
+        directionOfUse: parseJson(parsedData.directionOfUse, []),
+
+        additionalInfo: parseJson(parsedData.additionalInfo, []),
+
+        faq: parseJson(parsedData.faq, []),
+
+        // VARIANTS
+        variants: parseJson(parsedData.variants, []).map((v: any) => ({
+          id: v.id,
+          name: v.name,
+          purchasePrice: toNumber(v.purchasePrice),
+          sellingPrice: toNumber(v.sellingPrice),
+          mrp: toNumber(v.mrp),
+          quantity: toNumber(v.quantity),
+          attributes: v.attributes || {},
+          averageRating: toNumber(v.averageRating),
+          reviewCount: toNumber(v.reviewCount),
+          isWeighted: toBoolean(v.isWeighted),
+          warrantyMonths: toNumber(v.warrantyMonths),
+          priorityOrder: toNumber(v.priorityOrder),
+          isDeleted: toBoolean(v.isDeleted),
+          images: v.images,
+        })),
+
+        // BOOLEAN
+        isWeighted: toBoolean(parsedData.isWeighted),
+
+        isOverweight: toBoolean(parsedData.isOverweight),
+
+        weightKg: toNumber(parsedData.weightKg),
+
+        // NUMBER
+        warrantyMonths: toNumber(parsedData.warrantyMonths),
+
+        // 📄 CATALOGUE
+        hasCatalogue,
+        catalogueFileName,
+        catalogueFileUrl,
+        catalogueFileType,
+        catalogueFileSize,
+      };
+
+      console.log('🔥 FINAL DTO =>', {
+        ...dto,
+        customerType: dto.customerType,
+        variantCount: dto.variants?.length ?? 0,
+      });
+
+      // =======================
+      // 📤 UPLOAD HELPERS
+      // =======================
+
+      const uploadFile = async (file?: Express.Multer.File) => {
+        if (!file) return undefined;
+
+        const res = await this.uploadUseCase.execute(file, 'products');
+
+        uploadedUrls.push(res.url);
+
+        return res.url;
+      };
+
+      const uploadMany = async (files?: Express.Multer.File[]) => {
+        if (!files?.length) return [];
+
+        const results: string[] = [];
+
+        for (const file of files) {
+          const url = await uploadFile(file);
+
+          if (url) {
+            results.push(url);
+          }
+        }
+
+        return results;
+      };
+
+      // =======================
+      // 🖼 PRODUCT IMAGES
+      // =======================
+
+      const mainImage = await uploadFile(files.mainImage?.[0]);
+
+      const galleryUrls = await uploadMany(files.images);
+
+      const productImages = galleryUrls.map((url, i) => ({
+        url,
+        alt: dto.name,
+        sortOrder: i,
+      }));
+
+      // =======================
+      // 🔥 VARIANT FILE MAPPING
+      // =======================
+
+      let mainIndex = 0;
+
+      let galleryIndex = 0;
+
+      const variants = (dto.variants ?? []).map((v: any) => {
+        const mainFile = files.variantMainImages?.[mainIndex++];
+
+        const galleryCount = v.images?.length || 0;
+
+        const galleryFiles =
+          files.variantImages?.slice(galleryIndex, galleryIndex + galleryCount) || [];
+
+        galleryIndex += galleryCount;
+
+        return {
+          ...v,
+          mainFile,
+          galleryFiles,
+        };
+      });
+
+      // =======================
+      // 🚀 UPLOAD VARIANT IMAGES
+      // =======================
+
+      for (const v of variants) {
+        if (v.mainFile) {
+          v.mainImage = await uploadFile(v.mainFile);
+        }
+
+        const galleryUrls = await uploadMany(v.galleryFiles);
+
+        v.images = galleryUrls.map((url, i) => ({
+          url,
+          alt: v.name,
+          sortOrder: i,
+        }));
+
+        delete v.mainFile;
+
+        delete v.galleryFiles;
+      }
+
+      // =======================
+      // 🚀 EXECUTE
+      // =======================
+
+      const product = await this.createProduct.execute({
+        ...dto,
+        mainImage,
+        images: productImages,
+        variants,
+      });
+
+      return ProductResponseMapper.map(product);
+    } catch (err) {
+      const reason = this.extractFailureReason(err);
+
+      console.error(`[ProductCreate] Rolling back ${uploadedUrls.length} uploaded file(s). Reason: ${reason}`);
+
+      await this.safeDeleteMany(uploadedUrls, reason);
+
+      throw err;
+    }
+  }
+
+  // ================= UPDATE PRODUCT =================
+
+  @Patch(':id')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'mainImage', maxCount: 1 },
+        { name: 'images', maxCount: 20 },
+
+        { name: 'variantMainImages', maxCount: 20 },
+        { name: 'variantImages', maxCount: 50 },
+        { name: 'catalogueFile', maxCount: 1 },
+      ],
+      productAndCatalogueMulterConfig,
+    ),
+  )
+  async update(
+    @Param('id') id: string,
+
+    @UploadedFiles()
+    files: {
+      mainImage?: Express.Multer.File[];
+      images?: Express.Multer.File[];
+
+      variantMainImages?: Express.Multer.File[];
+      variantImages?: Express.Multer.File[];
+      catalogueFile?: Express.Multer.File[];
+    },
+
+    @Body() rawDto: any,
+  ) {
+    const uploadedUrls: string[] = [];
+
+    try {
+      // =======================
+      // 🔥 HELPERS
+      // =======================
+
+      const parseJson = (val: any, fallback: any) => {
+        try {
+          if (val === undefined || val === null || val === '') {
+            return fallback;
+          }
+
+          return typeof val === 'string' ? JSON.parse(val) : val;
+        } catch (err) {
+          return fallback;
+        }
+      };
+
+      const toBoolean = (val: any) => val === true || val === 'true';
+
+      const toNumber = (val: any) => {
+        if (val === null || val === undefined || val === '') {
+          return undefined;
+        }
+
+        return Number(val);
+      };
+
+      // =======================
+// 🔥 PARSE UPDATE DATA
+// =======================
+
+const parsedData =
+  typeof rawDto.data === 'string'
+    ? JSON.parse(rawDto.data)
+    : rawDto.data || rawDto;
+
+console.log('🔥 UPDATE RAW DTO =>', rawDto);
+console.log('🔥 UPDATE PARSED DATA =>', parsedData);
+
+console.log(
+  '🔥 UPDATE INPUT VARIANTS =>',
+  JSON.stringify(parsedData.variants, null, 2),
+);
+
+// =======================
+// 📄 CATALOGUE UPDATE LOGIC
+// =======================
+
+let hasCatalogueUpdate: boolean | undefined = undefined;
+let catalogueFileNameUpdate: string | null | undefined = undefined;
+let catalogueFileUrlUpdate: string | null | undefined = undefined;
+let catalogueFileTypeUpdate: string | null | undefined = undefined;
+let catalogueFileSizeUpdate: number | null | undefined = undefined;
+
+let oldCatalogueToDelete: string | null = null;
+const existingProduct = await this.getProductDetail.execute(id).catch(() => null);
+
+if (parsedData.hasCatalogue !== undefined) {
+  const hasCat = toBoolean(parsedData.hasCatalogue);
+  if (!hasCat) {
+    // Admin selected No -> remove catalogue
+    hasCatalogueUpdate = false;
+    catalogueFileNameUpdate = null;
+    catalogueFileUrlUpdate = null;
+    catalogueFileTypeUpdate = null;
+    catalogueFileSizeUpdate = null;
+    if (existingProduct?.hasCatalogue && existingProduct?.catalogueFileUrl) {
+      oldCatalogueToDelete = existingProduct.catalogueFileUrl;
+    }
+  } else {
+    hasCatalogueUpdate = true;
+    if (parsedData.catalogueFileName !== undefined) catalogueFileNameUpdate = parsedData.catalogueFileName;
+    if (parsedData.catalogueFileUrl !== undefined) catalogueFileUrlUpdate = parsedData.catalogueFileUrl;
+    if (parsedData.catalogueFileType !== undefined) catalogueFileTypeUpdate = parsedData.catalogueFileType;
+    if (parsedData.catalogueFileSize !== undefined) catalogueFileSizeUpdate = toNumber(parsedData.catalogueFileSize);
+  }
+}
+
+if (files.catalogueFile?.[0]) {
+  const catFile = files.catalogueFile[0];
+  const catUpload = await this.uploadUseCase.execute(catFile, 'catalogues');
+  uploadedUrls.push(catUpload.url);
+  hasCatalogueUpdate = true;
+  catalogueFileNameUpdate = catFile.originalname;
+  catalogueFileUrlUpdate = catUpload.url;
+  catalogueFileTypeUpdate = catFile.mimetype;
+  catalogueFileSizeUpdate = catFile.size;
+
+  if (existingProduct?.hasCatalogue && existingProduct?.catalogueFileUrl) {
+    oldCatalogueToDelete = existingProduct.catalogueFileUrl;
+  }
+}
+
+// =======================
+// 🔥 DTO BUILD
+// =======================
+
+const dto: any = {
+  ...parsedData,
+
+  features: parseJson(parsedData.features, undefined),
+
+  tags: parseJson(parsedData.tags, undefined),
+
+  displayNotes: parseJson(parsedData.displayNotes, undefined),
+
+  specifications: parseJson(parsedData.specifications, undefined),
+
+  packing: parseJson(parsedData.packing, undefined),
+
+  directionOfUse: parseJson(parsedData.directionOfUse, undefined),
+
+  additionalInfo: parseJson(parsedData.additionalInfo, undefined),
+
+  faq: parseJson(parsedData.faq, undefined),
+
+  variants: (parseJson(parsedData.variants, []) ?? []).map((v: any) => {
+          const mappedImages =
+            v.images !== undefined
+              ? parseJson(v.images, []).map((img: any, index: number) => {
+                  const mapped = {
+                    id: img.id,
+
+                    url: img.url,
+
+                    alt: img.alt,
+
+                    // 🔥 IMPORTANT
+                    isDeleted: img.isDeleted === true || img.isDeleted === 'true',
+
+                    sortOrder: img.sortOrder ?? index,
+                  };
+
+                  return mapped;
+                })
+              : undefined;
+
+          return {
+            id: v.id,
+            name: v.name,
+            purchasePrice: toNumber(v.purchasePrice),
+            sellingPrice: toNumber(v.sellingPrice),
+            mrp: toNumber(v.mrp),
+            quantity: toNumber(v.quantity),
+            averageRating: v.averageRating !== undefined ? toNumber(v.averageRating) : undefined,
+            reviewCount: v.reviewCount !== undefined ? toNumber(v.reviewCount) : undefined,
+            isWeighted: v.isWeighted !== undefined ? toBoolean(v.isWeighted) : undefined,
+            warrantyMonths: v.warrantyMonths !== undefined ? toNumber(v.warrantyMonths) : undefined,
+            attributes: parseJson(v.attributes, {}),
+            priorityOrder: toNumber(v.priorityOrder),
+            isDeleted: toBoolean(v.isDeleted),
+            images: mappedImages,
+          };
+        }),
+
+       isWeighted:
+  parsedData.isWeighted !== undefined
+    ? toBoolean(parsedData.isWeighted)
+    : undefined,
+
+isOverweight:
+  parsedData.isOverweight !== undefined
+    ? toBoolean(parsedData.isOverweight)
+    : undefined,
+
+weightKg:
+  parsedData.weightKg !== undefined
+    ? toNumber(parsedData.weightKg)
+    : undefined,
+
+warrantyMonths:
+  parsedData.warrantyMonths !== undefined
+    ? toNumber(parsedData.warrantyMonths)
+    : undefined,
+
+hasCatalogue: hasCatalogueUpdate,
+catalogueFileName: catalogueFileNameUpdate,
+catalogueFileUrl: catalogueFileUrlUpdate,
+catalogueFileType: catalogueFileTypeUpdate,
+catalogueFileSize: catalogueFileSizeUpdate,
+      };
+
+      // =======================
+      // 📤 UPLOAD HELPERS
+      // =======================
+
+      const uploadFile = async (file?: Express.Multer.File) => {
+        if (!file) {
+          return undefined;
+        }
+
+        const res = await this.uploadUseCase.execute(file, 'products');
+
+        uploadedUrls.push(res.url);
+        return res.url;
+      };
+
+      const uploadMany = async (files?: Express.Multer.File[]) => {
+        if (!files?.length) {
+          return [];
+        }
+
+        const urls: string[] = [];
+
+        for (const file of files) {
+          const url = await uploadFile(file);
+
+          if (url) {
+            urls.push(url);
+          }
+        }
+
+        return urls;
+      };
+
+      // =======================
+      // 🖼 PRODUCT IMAGES
+      // =======================
+
+      const mainImage = await uploadFile(files.mainImage?.[0]);
+
+      if (mainImage) {
+        console.log('🔥 PRODUCT MAIN IMAGE UPLOADED:', mainImage);
+      }
+
+      const galleryUrls = await uploadMany(files.images);
+
+      if (galleryUrls.length) {
+        console.log('🔥 NEW PRODUCT GALLERY IMAGES:', galleryUrls);
+      }
+
+      // 🔥 EXISTING PRODUCT IMAGES
+      const existingProductImages = parseJson(rawDto.imagesData, []) ?? [];
+
+      console.log('🔥 EXISTING PRODUCT IMAGES:', existingProductImages);
+
+      // 🔥 NEW PRODUCT GALLERY
+      const uploadedProductImages = galleryUrls.map((url, i) => ({
+        url,
+        alt: dto.name,
+        sortOrder: existingProductImages.length + i,
+      }));
+
+      // 🔥 FINAL PRODUCT GALLERY
+      const productImages = [...existingProductImages, ...uploadedProductImages];
+
+      console.log('🔥 FINAL PRODUCT GALLERY:', productImages);
+
+      // =======================
+      // 🔥 VARIANT FILE MAPPING
+      // =======================
+
+      let mainIdx = 0;
+      let galleryIdx = 0;
+
+      const variants = (dto.variants ?? []).map((v: any) => {
+        const mainFile = files.variantMainImages?.[mainIdx++];
+
+        const galleryCount = v.images?.filter((img: any) => !img.id && !img.isDeleted).length || 0;
+
+        const galleryFiles =
+          files.variantImages?.slice(galleryIdx, galleryIdx + galleryCount) ?? [];
+
+        galleryIdx += galleryCount;
+
+        return {
+          ...v,
+          mainFile,
+          galleryFiles,
+        };
+      });
+
+      // =======================
+      // 🚀 UPLOAD VARIANT IMAGES
+      // =======================
+
+      for (const v of variants) {
+        // =======================
+        // MAIN IMAGE
+        // =======================
+
+        if (v.mainFile) {
+          v.mainImage = await uploadFile(v.mainFile);
+
+          console.log(`🔥 VARIANT MAIN IMAGE UPDATED (${v.id}):`, v.mainImage);
+        }
+
+        // =======================
+        // GALLERY
+        // =======================
+
+        const urls = await uploadMany(v.galleryFiles);
+
+        if (urls.length) {
+          console.log(`🔥 NEW VARIANT GALLERY IMAGES (${v.id}):`, urls);
+        }
+
+        if (urls.length) {
+          const uploadedImages = urls.map((url, i) => ({
+            url,
+            alt: v.name,
+            sortOrder: (v.images?.length || 0) + i,
+          }));
+
+          v.images = [...(v.images ?? []), ...uploadedImages];
+        }
+
+        console.log(`🔥 FINAL VARIANT IMAGES (${v.id}):`, v.images);
+
+        delete v.mainFile;
+        delete v.galleryFiles;
+      }
+
+      // =======================
+      // 🚀 EXECUTE
+      // =======================
+
+      console.log('\n🔥 EXECUTING UPDATE USECASE');
+
+      const product = await this.updateProduct.execute({
+        id,
+
+        ...dto,
+
+        mainImage,
+
+        images: productImages,
+
+        variants,
+      });
+
+      console.log('✅ UPDATE SUCCESS');
+
+      if (oldCatalogueToDelete && oldCatalogueToDelete !== product.catalogueFileUrl) {
+        this.safeDelete(oldCatalogueToDelete, 'Replaced or removed catalogue file').catch((err) => {
+          console.warn('[ProductUpdate] Failed to delete old catalogue from storage:', err);
+        });
+      }
+
+      return ProductResponseMapper.map(product);
+    } catch (err) {
+      console.log('❌ UPDATE FAILED:', err);
+
+      await this.safeDeleteMany(uploadedUrls);
+
+      throw err;
+    }
+  }
+
+  // // ================= UPDATE VARIANT STATUS =================
+  @Patch(':productId/variants/:variantId/status')
+  async updateVariantStatus(
+    @Param('productId')
+    productId: string,
+
+    @Param('variantId')
+    variantId: string,
+
+    @Body()
+    body: {
+      status: ProductStatus;
+    },
+  ) {
+    const result = await this.updateVariantStatusUseCase.execute({
+      productId,
+      id: variantId,
+      status: body.status,
+    });
+
+    return result;
+  }
+
+  //========================update product status endpoint=======================
+  @Patch(':id/status')
+  async updateProductStatus(
+    @Param('id') id: string,
+
+    @Body()
+    body: {
+      status: ProductStatus;
+      force?: boolean;
+    },
+  ) {
+    return this.updateProductStatusUseCase.execute({
+      id,
+      status: body.status,
+      force: body.force,
+    });
+  }
+
+  //=====================product delete endpoint========================
+  @Delete(':productId')
+  async deleteProduct(
+    @Param('productId')
+    productId: string,
+
+    @Query('force')
+    force?: string,
+
+    @Query('preview')
+    preview?: string,
+  ) {
+    return this.deleteProductUseCase.execute(
+      productId,
+
+      force === 'true',
+
+      preview === 'true',
+    );
+  }
+
+  // // ================= RESTORE VARIANT =================
+  @Patch(':productId/variants/:variantId/restore')
+  async restoreVariant(
+    @Param('productId')
+    productId: string,
+
+    @Param('variantId')
+    variantId: string,
+  ) {
+    return this.restoreVariantUseCase.execute(variantId);
+  }
+
+  // ========================
+  // 📦 PREVIEW IMPORT
+  // ========================
+
+  @Post('import/preview')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        {
+          name: 'file',
+          maxCount: 1,
+        },
+      ],
+      excelMulterConfig,
+    ),
+  )
+  async previewImport(
+    @UploadedFiles()
+    files: {
+      file?: Express.Multer.File[];
+    },
+  ) {
+    const file = files.file?.[0];
+
+    if (!file) {
+      throw new NotFoundException('File not found');
+    }
+
+    return this.previewImportUseCase.execute(file);
+  }
+
+  // ========================
+  // 📦 IMPORT PRODUCTS
+  // ========================
+
+  @Post('import')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        {
+          name: 'file',
+          maxCount: 1,
+        },
+      ],
+      excelMulterConfig,
+    ),
+  )
+  async importProducts(
+    @UploadedFiles()
+    files: {
+      file?: Express.Multer.File[];
+    },
+
+    @Query('mode')
+    mode: ImportMode = ImportMode.SKIP,
+  ) {
+    const file = files.file?.[0];
+
+    // ========================
+    // 📄 FILE REQUIRED
+    // ========================
+
+    if (!file) {
+      throw new BadRequestException('Excel file is required');
+    }
+
+    // ========================
+    // 🔒 VALIDATE MODE
+    // ========================
+
+    if (!Object.values(ImportMode).includes(mode)) {
+      throw new BadRequestException(`Invalid import mode '${mode}'`);
+    }
+
+    // ========================
+    // 🚀 IMPORT
+    // ========================
+
+    return this.importProductsUseCase.execute(file, mode);
+  }
+
+  // ========================
+  // 📦 EXPORT PRODUCTS
+  // ========================
+
+  @Get('export')
+  async exportProducts(@Res() res: Response) {
+    const { buffer } = await this.exportProductsUseCase.execute();
+
+    const filename = `products-${Date.now()}.xlsx`;
+
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+
+    return res.end(buffer);
+  }
+
+@Get('export/created-at')
+async exportByCreatedAt(
+  @Query('fromDate') fromDate: string,
+  @Query('toDate') toDate: string,
+  @Res() res: Response,
+) {
+  const result = await this.exportProductsByCreatedAtUseCase.execute(
+    new Date(fromDate),
+    new Date(toDate),
+  );
+
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  );
+
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename="${result.file.name}"`,
+  );
+
+  return res.end(result.buffer);
+}
+
+@Get('export/updated-at')
+async exportByUpdatedAt(
+  @Query('fromDate') fromDate: string,
+  @Query('toDate') toDate: string,
+  @Res() res: Response,
+) {
+  const result = await this.exportProductsByUpdatedAtUseCase.execute(
+    new Date(fromDate),
+    new Date(toDate),
+  );
+
+  res.setHeader(
+    'Content-Type',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  );
+
+  res.setHeader(
+    'Content-Disposition',
+    `attachment; filename="${result.file.name}"`,
+  );
+
+  return res.end(result.buffer);
+}
+  // ================= GET product + details =================
+
+  @Get()
+  getAll(
+    @Query('categoryId')
+    categoryId?: string,
+
+    @Query('subCategoryId')
+    subCategoryId?: string,
+
+    @Query('miniCategoryId')
+    miniCategoryId?: string,
+
+    @Query('brandId')
+    brandId?: string,
+
+    @Query('type')
+    type?: string,
+
+    @Query('search')
+    search?: string,
+
+    @Query('tag')
+    tag?: string,
+
+    @Query('minPrice')
+    minPrice?: string,
+
+    @Query('maxPrice')
+    maxPrice?: string,
+
+    @Query('inStock')
+    inStock?: string,
+
+    @Query('status')
+    status?: ProductStatus,
+
+    @Query('includeVariants')
+    includeVariants?: string,
+
+    @Query('sortBy')
+    sortBy?: 'newest' | 'oldest' | 'nameAsc' | 'nameDesc' | 'priceLowToHigh' | 'priceHighToLow',
+
+    @Query('page')
+    page?: string,
+
+    @Query('limit')
+    limit?: string,
+  ) {
+    return this.getProducts.execute({
+      categoryId,
+
+      subCategoryId,
+
+      miniCategoryId,
+
+      brandId,
+
+      type,
+
+      search,
+
+      tag,
+
+      minPrice: minPrice !== undefined ? Number(minPrice) : undefined,
+
+      maxPrice: maxPrice !== undefined ? Number(maxPrice) : undefined,
+
+      inStock: inStock === 'true',
+
+      status,
+
+      includeVariants: includeVariants !== 'false',
+
+      sortBy,
+
+      page: page ? Number(page) : 1,
+
+      limit: limit ? Number(limit) : 20,
+
+      onlyActive: false,
+    });
+  }
+
+  @Get(':id')
+  getById(
+    @Param('id')
+    id: string,
+
+    @Query('onlyActive')
+    onlyActive?: string,
+  ) {
+    return this.getProductDetail.execute(id, onlyActive === 'true');
+  }
+
+  // ================= products VARIANT  =================
+  @Get(':productId/variants')
+  async getVariants(
+    @Param('productId')
+    productId: string,
+
+    @Query('search')
+    search?: string,
+
+    @Query('onlyActive')
+    onlyActive?: string,
+
+    @Query('includeDeleted')
+    includeDeleted?: string,
+
+    @Query('page')
+    page?: string,
+
+    @Query('limit')
+    limit?: string,
+  ) {
+    return this.getVariantsUseCase.execute({
+      productId,
+
+      search,
+
+      onlyActive: onlyActive === 'true',
+
+      includeDeleted: includeDeleted === 'true',
+
+      page: page ? Number(page) : 1,
+
+      limit: limit ? Number(limit) : 20,
+    });
+  }
+  
+  @Get(':productId/variants/:variantId')
+async getVariantDetail(
+  @Param('productId')
+  productId: string,
+
+  @Param('variantId')
+  variantId: string,
+) {
+  const result =
+    await this.getVariantsUseCase.execute({
+      productId,
+      page: 1,
+      limit: 100,
+      includeDeleted: true,
+      onlyActive: false,
+    });
+
+  const variant =
+    result.variants.find(
+      (item) => item.id === variantId,
+    );
+
+  if (!variant) {
+    throw new NotFoundException(
+      'Variant not found',
+    );
+  }
+
+  return variant;
+}
+  // ================= HELPERS =================
+
+  private extractFailureReason(err: any): string {
+    if (!err) {
+      return 'Unknown error';
+    }
+
+    if (typeof err.getResponse === 'function') {
+      const response = err.getResponse();
+
+      if (typeof response === 'object' && response?.message) {
+        if (Array.isArray(response.errors) && response.errors[0]?.message) {
+          return response.errors[0].message;
+        }
+
+        return String(response.message);
+      }
+
+      if (typeof response === 'string') {
+        return response;
+      }
+    }
+
+    if (err.code === 'P2002') {
+      return 'Duplicate SKU or unique constraint violation';
+    }
+
+    if (err.code === 'P2003') {
+      return 'Foreign key constraint violation';
+    }
+
+    return err.message || 'Product creation failed';
+  }
+
+  private async safeDelete(url: string, reason?: string) {
+    try {
+      console.warn(`[ProductCreate] Deleting uploaded file: ${url}${reason ? ` (${reason})` : ''}`);
+      await this.uploadUseCase.delete(url);
+    } catch (deleteError) {
+      console.error(`[ProductCreate] Failed to delete uploaded file: ${url}`, deleteError);
+    }
+  }
+
+  private async safeDeleteMany(urls: string[], reason?: string) {
+    for (const url of urls) {
+      await this.safeDelete(url, reason);
+    }
+  }
+}

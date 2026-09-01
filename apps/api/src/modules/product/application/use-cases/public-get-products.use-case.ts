@@ -1,0 +1,336 @@
+import { Injectable, Inject } from '@nestjs/common';
+
+import { TOKENS } from '@/common/constants/tokens';
+
+import { ProductRepository } from '../../domain/repositories/product.repository';
+
+import { ProductStatus } from '../../domain/enums/product-status.enum';
+import { ProductS3ImageResolverService } from '../services/product-s3-image-resolver.service';
+import { ProductResponseMapper } from '../../infrastructure/persistence/prisma/mappers/product-response.mapper';
+
+// =======================
+// RESPONSE
+// =======================
+
+type PaginatedProducts = {
+  data: any[];
+
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+};
+
+// =======================
+// INPUT
+// =======================
+
+type PublicGetProductsInput = {
+  categoryId?: string;
+
+  subCategoryId?: string;
+
+  miniCategoryId?: string;
+  categorySlug?: string;
+subCategorySlug?: string;
+miniCategorySlug?: string;
+
+  brandId?: string;
+
+  type?: string;
+
+  search?: string;
+
+  tag?: string;
+
+  minPrice?: number;
+
+  maxPrice?: number;
+
+  inStock?: boolean;
+
+  includeVariants?: boolean;
+
+  sortBy?: 'newest' | 'oldest' | 'nameAsc' | 'nameDesc' | 'priceLowToHigh' | 'priceHighToLow';
+
+  page?: number;
+
+  limit?: number;
+};
+
+@Injectable()
+export class PublicGetProductsUseCase {
+ constructor(
+  @Inject(TOKENS.PRODUCT_REPO)
+  private readonly productRepo: ProductRepository,
+
+  private readonly productS3ImageResolver: ProductS3ImageResolverService,
+) {}
+
+  async execute(input: PublicGetProductsInput = {}): Promise<PaginatedProducts> {
+    // =======================
+    // PAGINATION
+    // =======================
+
+    const page = Number(input.page) || 1;
+
+    const limit = Math.min(Number(input.limit) || 20, 100);
+
+    const skip = (page - 1) * limit;
+
+    // =======================
+    // FILTER
+    // =======================
+
+    const where: any = {
+      deletedAt: null,
+
+      status: ProductStatus.ACTIVE,
+    };
+
+   // =======================
+// CATEGORY FILTERS
+// =======================
+
+if (input.categoryId) {
+  where.categoryId = input.categoryId;
+}
+
+if (input.subCategoryId) {
+  where.subCategoryId = input.subCategoryId;
+}
+
+if (input.miniCategoryId) {
+  where.miniCategoryId = input.miniCategoryId;
+}
+
+// Slug-based filters
+if (input.categorySlug) {
+  where.category = {
+    slug: input.categorySlug,
+  };
+}
+
+if (input.subCategorySlug) {
+  where.subCategory = {
+    slug: input.subCategorySlug,
+  };
+}
+
+if (input.miniCategorySlug) {
+  where.miniCategory = {
+    slug: input.miniCategorySlug,
+  };
+}
+
+    if (input.brandId) {
+      where.brandId = input.brandId;
+    }
+
+    if (input.type) {
+      where.type = input.type;
+    }
+    if (input.inStock === true) {
+  where.variants = {
+    some: {
+      quantity: {
+        gt: 0,
+      },
+    },
+  };
+}
+    if (input.tag) {
+      where.tags = {
+        has: input.tag,
+      };
+    }
+
+    if (input.search?.trim()) {
+  const searchTokens = input.search
+    .trim()
+    .toLowerCase()
+    .split(/[\s,./\\|_+-]+/)
+    .map((token) => token.trim())
+    .filter((token) => token.length > 0);
+
+  if (searchTokens.length > 0) {
+    where.AND = searchTokens.map((token) => ({
+      OR: [
+        {
+          name: {
+            contains: token,
+            mode: 'insensitive',
+          },
+        },
+        {
+          slug: {
+            contains: token,
+            mode: 'insensitive',
+          },
+        },
+        {
+          shortDescription: {
+            contains: token,
+            mode: 'insensitive',
+          },
+        },
+        {
+          longDescription: {
+            contains: token,
+            mode: 'insensitive',
+          },
+        },
+      ],
+    }));
+  }
+}
+    // =======================
+    // SORT
+    // =======================
+
+
+let orderBy: any = { createdAt: "desc" };
+
+switch (input.sortBy) {
+  case "newest":
+    orderBy = {
+      createdAt: "desc",
+    };
+    break;
+
+  case "oldest":
+    orderBy = {
+      createdAt: "asc",
+    };
+    break;
+
+  case "nameAsc":
+    orderBy = {
+      name: "asc",
+    };
+    break;
+
+  case "nameDesc":
+    orderBy = {
+      name: "desc",
+    };
+    break;
+
+  case "priceLowToHigh":
+    orderBy = [
+      {
+        minPrice: "asc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ];
+    break;
+
+  case "priceHighToLow":
+    orderBy = [
+      {
+        minPrice: "desc",
+      },
+      {
+        createdAt: "desc",
+      },
+    ];
+    break;
+}
+
+    // =======================
+    // QUERY
+    // =======================
+
+    const [products, total] = await Promise.all([
+      this.productRepo.findMany({
+        where,
+
+        skip,
+
+        take: limit,
+
+        orderBy,
+      }),
+
+      this.productRepo.count(where),
+    ]);
+
+    // =======================
+    // MAP
+    // =======================
+
+    let data = await Promise.all(
+  products.map(async (product) => {
+    const mapped = ProductResponseMapper.map(product);
+
+    const s3Images =
+      await this.productS3ImageResolver.resolveProductImages(
+        product.name,
+      );
+
+    mapped.images.main = s3Images.mainImage;
+    mapped.images.gallery = s3Images.galleryImages;
+
+    mapped.variants?.forEach((variant: any) => {
+      delete variant.createdAt;
+      delete variant.updatedAt;
+      delete variant.deletedAt;
+      delete variant.pricing.purchasePrice;
+    });
+
+    delete mapped.createdAt;
+    delete mapped.updatedAt;
+    delete mapped.deletedAt;
+
+    if (input.includeVariants === false) {
+      mapped.variants = [];
+    }
+
+    return mapped;
+  }),
+);
+
+    // =======================
+    // PRICE FILTER
+    // =======================
+
+    if (input.minPrice !== undefined || input.maxPrice !== undefined) {
+      data = data.filter((p) => {
+        const price = p.price.min ?? 0;
+
+        if (input.minPrice !== undefined && price < input.minPrice) {
+          return false;
+        }
+
+        if (input.maxPrice !== undefined && price > input.maxPrice) {
+          return false;
+        }
+
+        return true;
+      });
+    }
+
+    // =======================
+    // STOCK FILTER
+    // =======================
+
+
+    return {
+      data,
+
+      pagination: {
+        total,
+
+        page,
+
+        limit,
+
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
+}
