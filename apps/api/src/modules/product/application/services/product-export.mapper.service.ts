@@ -75,6 +75,12 @@ export class ProductExportMapperService {
             answer: faq.answer,
           })) ?? [],
 
+        isReturnable: product.isReturnable !== false,
+
+        isOverweight: Boolean(product.isOverweight),
+
+        weightKg: product.weightKg ?? null,
+
         images: {
           main: product.images?.find((image: any) => image.isMain)?.url ?? null,
 

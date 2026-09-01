@@ -779,6 +779,19 @@ const topSafeArea = isMobile ? 75 : 140;
         </span>
       </span>
     </span>
+
+    {/* RETURN STATUS */}
+    {product.isReturnable !== false ? (
+      <span className="inline-flex items-center gap-1 text-teal-600">
+        <RotateCcw className="h-3 w-3 text-amber-400" strokeWidth={2.2} />
+        <span>7 Days Returnable</span>
+      </span>
+    ) : (
+      <span className="inline-flex items-center gap-1 text-rose-500 font-medium">
+        <RotateCcw className="h-3 w-3 text-rose-400" strokeWidth={2.2} />
+        <span>Non Returnable Item</span>
+      </span>
+    )}
   </span>
 </div>
                 </button>
@@ -831,6 +844,21 @@ const topSafeArea = isMobile ? 75 : 140;
         </span>
       </span>
     </span>
+  </div>
+
+  {/* MOBILE RETURN STATUS */}
+  <div className="mt-1 flex min-w-0 items-center text-[9px] font-medium leading-3 whitespace-nowrap">
+    {product.isReturnable !== false ? (
+      <span className="inline-flex items-center gap-1 text-teal-600">
+        <RotateCcw className="h-3 w-3 shrink-0 text-amber-400" strokeWidth={2.2} />
+        <span className="whitespace-nowrap">7 Days Returnable</span>
+      </span>
+    ) : (
+      <span className="inline-flex items-center gap-1 text-rose-500 font-medium">
+        <RotateCcw className="h-3 w-3 shrink-0 text-rose-400" strokeWidth={2.2} />
+        <span className="whitespace-nowrap">Non Returnable Item</span>
+      </span>
+    )}
   </div>
 </div>
                 {isInCart ? (

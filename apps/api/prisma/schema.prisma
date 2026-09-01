@@ -530,6 +530,7 @@ model Product {
   isOverweight     Boolean @default(false)
   weightKg         Float?
   warrantyMonths   Int?
+  isReturnable     Boolean @default(true)
 
   // 📄 Catalogue / Attachment
   hasCatalogue      Boolean  @default(false)

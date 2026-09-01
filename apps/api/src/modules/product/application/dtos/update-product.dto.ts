@@ -202,6 +202,11 @@ export class UpdateProductDto {
   weightKg?: number;
 
   @IsOptional()
+  @Type(() => Boolean)
+  @IsBoolean()
+  isReturnable?: boolean;
+
+  @IsOptional()
   @IsString()
   warranty?: string;
 

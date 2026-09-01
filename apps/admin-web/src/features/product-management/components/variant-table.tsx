@@ -39,7 +39,10 @@ import {
   showSuccess,
   showWarning,
 } from "@/shared/store/toast.store";
-import { useState } from "react";
+import {
+  useState,
+  type MouseEvent,
+} from "react";
 
 // =========================================
 // TYPES
@@ -79,6 +82,15 @@ export function VariantTable(
 
   const [openMenuId, setOpenMenuId] =
   useState<string | null>(null);
+
+
+const [menuPosition, setMenuPosition] =
+  useState<"top" | "bottom">("bottom");
+
+const [menuCoords, setMenuCoords] = useState({
+  top: 0,
+  left: 0,
+});
   // =========================================
   // TOGGLE STATUS
   // =========================================
@@ -185,6 +197,49 @@ export function VariantTable(
       }
     };
 
+    const handleMenuToggle = (
+  variantId: string,
+  event: MouseEvent<HTMLButtonElement>,
+) => {
+  if (openMenuId === variantId) {
+    setOpenMenuId(null);
+    return;
+  }
+
+  const rect =
+    event.currentTarget.getBoundingClientRect();
+
+  const menuHeight = 180;
+  const menuWidth = 144;
+  const gap = 8;
+
+  const spaceBelow =
+    window.innerHeight - rect.bottom;
+
+  const spaceAbove =
+    rect.top;
+
+  if (
+    spaceBelow < menuHeight &&
+    spaceAbove > spaceBelow
+  ) {
+    setMenuPosition("top");
+
+    setMenuCoords({
+      top: rect.top - menuHeight - gap,
+      left: rect.right - menuWidth,
+    });
+  } else {
+    setMenuPosition("bottom");
+
+    setMenuCoords({
+      top: rect.bottom + gap,
+      left: rect.right - menuWidth,
+    });
+  }
+
+  setOpenMenuId(variantId);
+};
   // =========================================
   // DELETE VARIANT
   // =========================================
@@ -668,13 +723,9 @@ const isAvailable =
         rounded-lg
         hover:bg-gray-100
       "
-      onClick={() =>
-        setOpenMenuId(
-          openMenuId === variant.id
-            ? null
-            : variant.id
-        )
-      }
+      onClick={(event) =>
+  handleMenuToggle(variant.id, event)
+}
     >
       <MoreVertical className="h-4 w-4 text-gray-500" />
     </Button>
@@ -683,20 +734,22 @@ const isAvailable =
 
     {openMenuId === variant.id && (
       <div
-        className="
-          absolute
-          right-0
-          top-10
-          z-50
-          w-36
-          rounded-lg
-          border
-          border-gray-200
-          bg-white
-          p-1
-          shadow-lg
-        "
-      >
+  className="
+    fixed
+    z-[9999]
+    w-36
+    rounded-lg
+    border
+    border-gray-200
+    bg-white
+    p-1
+    shadow-lg
+  "
+  style={{
+    top: menuCoords.top,
+    left: menuCoords.left,
+  }}
+>
         {/* VIEW */}
 
 <button

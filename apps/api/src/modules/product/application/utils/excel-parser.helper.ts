@@ -68,8 +68,21 @@ static getValue(
   ...keys: string[]
 ) {
   for (const key of keys) {
-    if (row[key] !== undefined && row[key] !== null && row[key] !== '') {
+    if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') {
       return row[key];
+    }
+  }
+
+  const rowKeys = Object.keys(row);
+  for (const key of keys) {
+    const normKey = this.normalizeHeader(key);
+    for (const rk of rowKeys) {
+      if (this.normalizeHeader(rk) === normKey) {
+        const val = row[rk];
+        if (val !== undefined && val !== null && String(val).trim() !== '') {
+          return val;
+        }
+      }
     }
   }
 
@@ -203,6 +216,51 @@ static getValue(
       .toLowerCase();
 
     return ['true', '1', 'yes', 'y', 'active', 'enabled', 'on'].includes(normalized);
+  }
+
+  // =======================
+  // 🔄 RETURNABLE PARSER
+  // =======================
+
+  static parseIsReturnable(value?: any): boolean {
+    if (value === null || value === undefined || String(value).trim() === '') {
+      return true; // default is returnable
+    }
+
+    const normalized = String(value).trim().toLowerCase();
+    if (['no', 'false', '0', 'n', 'non-returnable', 'non_returnable', 'non returnable'].includes(normalized)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  // =======================
+  // ⚖️ OVERWEIGHT PARSER
+  // =======================
+
+  static parseOverweight(value?: any): { isOverweight: boolean; weightKg: number | null } {
+    if (value === null || value === undefined || String(value).trim() === '') {
+      return { isOverweight: false, weightKg: null };
+    }
+
+    const str = String(value).trim().toLowerCase();
+    if (['no', 'false', '0', 'none', 'n', ''].includes(str)) {
+      return { isOverweight: false, weightKg: null };
+    }
+
+    // Match numbers like "yes-3kg", "yes-3.5kg", "yes-3", "yes - 3 kg", "3kg", "3.5"
+    const weightMatch = str.match(/(\d+(?:\.\d+)?)\s*(?:kg|kgs|kilo|kilos)?/i);
+    const parsedWeight = weightMatch ? parseFloat(weightMatch[1]) : null;
+
+    if (str.includes('yes') || parsedWeight !== null) {
+      return {
+        isOverweight: true,
+        weightKg: parsedWeight && parsedWeight > 0 ? parsedWeight : null,
+      };
+    }
+
+    return { isOverweight: false, weightKg: null };
   }
 
   // =======================

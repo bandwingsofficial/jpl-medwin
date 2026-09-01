@@ -218,6 +218,8 @@ const gallery = s3Images.galleryImages;
 
       warrantyMonths: product.warrantyMonths ?? null,
 
+      isReturnable: product.isReturnable ?? true,
+
       hasCatalogue: Boolean(product.hasCatalogue),
 
       catalogueFileName: product.catalogueFileName ?? null,

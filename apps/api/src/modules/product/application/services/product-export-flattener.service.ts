@@ -67,6 +67,12 @@ export class ProductExportFlattenerService {
             product.faq
               ?.map(faq => `${faq.question}:${faq.answer}`)
               .join("\n") ?? "",
+
+          isreturnable: product.isReturnable !== false ? "yes" : "no",
+
+          isoverweighteditem: product.isOverweight
+            ? (product.weightKg ? `yes-${product.weightKg}kg` : "yes")
+            : "no",
         });
       }
     }

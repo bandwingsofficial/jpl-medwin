@@ -54,6 +54,7 @@ export class Product {
     public isOverweight: boolean = false,
     public weightKg?: number | null,
     public warrantyMonths?: number,
+    public isReturnable: boolean = true,
 
     // 📄 Catalogue / Attachment
     public hasCatalogue: boolean = false,
@@ -144,6 +145,7 @@ export class Product {
     isOverweight?: boolean;
     weightKg?: number | null;
     warrantyMonths?: number;
+    isReturnable?: boolean;
 
     hasCatalogue?: boolean;
     catalogueFileName?: string | null;
@@ -211,6 +213,7 @@ export class Product {
     if (params.weightKg !== undefined) this.weightKg = params.weightKg;
 
     if (params.warrantyMonths !== undefined) this.warrantyMonths = params.warrantyMonths;
+    if (params.isReturnable !== undefined) this.isReturnable = params.isReturnable;
 
     if (params.hasCatalogue !== undefined) this.hasCatalogue = params.hasCatalogue;
 

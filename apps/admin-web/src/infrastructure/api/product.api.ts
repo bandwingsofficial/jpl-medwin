@@ -108,6 +108,10 @@ const buildProductFormData = (
         ? Number(jsonPayload.weightKg)
         : null,
 
+    isReturnable:
+      jsonPayload.isReturnable !== false &&
+      jsonPayload.isReturnable !== "false",
+
     hasCatalogue:
       jsonPayload.hasCatalogue === true ||
       jsonPayload.hasCatalogue === "true",

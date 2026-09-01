@@ -122,6 +122,8 @@ export interface Product {
 
   weightKg?: number | null;
 
+  isReturnable?: boolean;
+
   hasCatalogue?: boolean;
 
   catalogueFileName?: string | null;

@@ -60,6 +60,8 @@ export function mapProductToForm(product: Product) {
 
     warrantyMonths: product.warrantyMonths || 0,
 
+    isReturnable: (product as any).isReturnable !== false,
+
     hasCatalogue: (product as any).hasCatalogue || false,
 
     catalogueFileName: (product as any).catalogueFileName || "",

@@ -65,6 +65,8 @@ export class ProductBuilderService {
 
         warrantyMonths: input.warrantyMonths,
 
+        isReturnable: input.isReturnable !== undefined ? input.isReturnable : true,
+
         hasCatalogue: input.hasCatalogue,
 
         catalogueFileName: input.catalogueFileName,
@@ -133,6 +135,8 @@ export class ProductBuilderService {
       weightKg: input.weightKg,
 
       warrantyMonths: input.warrantyMonths,
+
+      isReturnable: input.isReturnable !== undefined ? input.isReturnable : true,
 
       hasCatalogue: input.hasCatalogue,
 

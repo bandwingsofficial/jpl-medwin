@@ -135,6 +135,8 @@ export interface CreateProductPayload {
 
   warrantyMonths?: number;
 
+  isReturnable?: boolean;
+
   hasCatalogue?: boolean;
 
   catalogueFile?: File | null;
@@ -311,6 +313,8 @@ export interface ProductResponse {
 
   warrantyMonths: number | null;
 
+  isReturnable?: boolean;
+
   hasCatalogue?: boolean;
 
   catalogueFileName?: string | null;
@@ -430,6 +434,8 @@ export interface Product {
   weightKg: number | null;
 
   warrantyMonths: number | null;
+
+  isReturnable?: boolean;
 
   hasCatalogue?: boolean;
 

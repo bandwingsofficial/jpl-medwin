@@ -515,6 +515,13 @@ export class AdminProductController {
 
         weightKg: toNumber(parsedData.weightKg),
 
+        isReturnable:
+          parsedData.isReturnable === undefined ||
+          parsedData.isReturnable === null ||
+          parsedData.isReturnable === ''
+            ? true
+            : toBoolean(parsedData.isReturnable),
+
         // NUMBER
         warrantyMonths: toNumber(parsedData.warrantyMonths),
 
@@ -847,6 +854,11 @@ isOverweight:
 weightKg:
   parsedData.weightKg !== undefined
     ? toNumber(parsedData.weightKg)
+    : undefined,
+
+isReturnable:
+  parsedData.isReturnable !== undefined
+    ? toBoolean(parsedData.isReturnable)
     : undefined,
 
 warrantyMonths:

@@ -153,6 +153,12 @@ if (!brand) {
 
       faq: product.faq,
 
+      isReturnable: product.isReturnable !== false,
+
+      isOverweight: product.isOverweight ?? false,
+
+      weightKg: product.weightKg ?? null,
+
       mainImage: resolvedImages.mainImage,
 
       images: resolvedImages.gallery.map((url, index) => ({

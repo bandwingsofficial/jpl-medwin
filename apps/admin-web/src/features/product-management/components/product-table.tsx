@@ -76,6 +76,11 @@ const [filters, setFilters] =
   const [menuPosition, setMenuPosition] =
   useState<"top" | "bottom">("bottom");
 
+  const [menuCoords, setMenuCoords] = useState({
+  top: 0,
+  left: 0,
+});
+
 
   // =========================================
   // HANDLERS
@@ -265,6 +270,8 @@ const handleMenuToggle = (
     event.currentTarget.getBoundingClientRect();
 
   const menuHeight = 180;
+  const menuWidth = 144;
+  const gap = 8;
 
   const spaceBelow =
     window.innerHeight - rect.bottom;
@@ -277,13 +284,22 @@ const handleMenuToggle = (
     spaceAbove > spaceBelow
   ) {
     setMenuPosition("top");
+
+    setMenuCoords({
+      top: rect.top - menuHeight - gap,
+      left: rect.right - menuWidth,
+    });
   } else {
     setMenuPosition("bottom");
+
+    setMenuCoords({
+      top: rect.bottom + gap,
+      left: rect.right - menuWidth,
+    });
   }
 
   setOpenMenuId(productId);
 };
-
   return (
     <>
       <CreateProductModal
@@ -457,25 +473,23 @@ const handleMenuToggle = (
 </Button>
     {/* DROPDOWN */}
     {openMenuId === p.id && (
-      <div
-        className={`
-  absolute
-  right-0
-  z-50
-  w-36
-  rounded-lg
-  border
-  border-gray-200
-  bg-white
-  p-1
-  shadow-lg
-  ${
-    menuPosition === "top"
-      ? "bottom-10"
-      : "top-10"
-  }
-`}
-      >
+     <div
+  className="
+    fixed
+    z-[9999]
+    w-36
+    rounded-lg
+    border
+    border-gray-200
+    bg-white
+    p-1
+    shadow-lg
+  "
+  style={{
+    top: menuCoords.top,
+    left: menuCoords.left,
+  }}
+>
         {/* EDIT */}
         {!isDeleted && (
           <button

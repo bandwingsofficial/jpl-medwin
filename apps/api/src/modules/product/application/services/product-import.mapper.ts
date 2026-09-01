@@ -138,6 +138,37 @@ console.log({
 
           faq: ExcelParserHelper.parseFaq(ExcelParserHelper.getValue(row, 'faq')),
 
+          isReturnable: ExcelParserHelper.parseIsReturnable(
+            ExcelParserHelper.getValue(
+              row,
+              'is_returnable',
+              'isreturnable',
+              'returnable',
+              'is_returnable_item',
+              'is_return',
+            ),
+          ),
+
+          ...ExcelParserHelper.parseOverweight(
+            ExcelParserHelper.getValue(
+              row,
+              'isoverweighteditem',
+              'is_overweighteditem',
+              'is_overweighted_item',
+              'isoverweighted_item',
+              'isoverweightitem',
+              'is_overweight_item',
+              'isoverweight',
+              'is_overweight',
+              'isoverwighteditem',
+              'is_overwighteditem',
+              'isoverwighted_item',
+              'is_overwighted_item',
+              'overweight',
+              'is_weighted_item',
+            ),
+          ),
+
           images: {
             main: ExcelParserHelper.parseImages(ExcelParserHelper.getValue(
     row,
@@ -152,6 +183,46 @@ console.log({
       }
 
       const product = grouped.get(productName)!;
+
+      // Also check subsequent variant rows for returnable or overweight definitions
+      const subsequentReturnableRaw = ExcelParserHelper.getValue(
+        row,
+        'is_returnable',
+        'isreturnable',
+        'returnable',
+        'is_returnable_item',
+        'is_return',
+      );
+      if (subsequentReturnableRaw) {
+        product.isReturnable = ExcelParserHelper.parseIsReturnable(subsequentReturnableRaw);
+      }
+
+      const subsequentOverweightRaw = ExcelParserHelper.getValue(
+        row,
+        'isoverweighteditem',
+        'is_overweighteditem',
+        'is_overweighted_item',
+        'isoverweighted_item',
+        'isoverweightitem',
+        'is_overweight_item',
+        'isoverweight',
+        'is_overweight',
+        'isoverwighteditem',
+        'is_overwighteditem',
+        'isoverwighted_item',
+        'is_overwighted_item',
+        'overweight',
+        'is_weighted_item',
+      );
+      if (subsequentOverweightRaw) {
+        const parsedOw = ExcelParserHelper.parseOverweight(subsequentOverweightRaw);
+        if (parsedOw.isOverweight) {
+          product.isOverweight = true;
+          if (parsedOw.weightKg !== null) {
+            product.weightKg = parsedOw.weightKg;
+          }
+        }
+      }
       
       const excelProductType = ExcelParserHelper
   .normalizeText(

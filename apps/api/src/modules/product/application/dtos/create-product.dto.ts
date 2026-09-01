@@ -85,6 +85,8 @@ export class CreateProductDto {
 
   warrantyMonths?: number;
 
+  isReturnable?: boolean;
+
   // =======================
   // CATALOGUE / ATTACHMENT
   // =======================

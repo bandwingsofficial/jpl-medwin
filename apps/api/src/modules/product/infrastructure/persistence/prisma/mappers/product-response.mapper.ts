@@ -122,6 +122,11 @@ export class ProductResponseMapper {
           ? Number(product.warrantyMonths)
           : null,
 
+      isReturnable:
+        product?.isReturnable !== undefined && product?.isReturnable !== null
+          ? Boolean(product.isReturnable)
+          : true,
+
       hasCatalogue: Boolean(product?.hasCatalogue),
 
       catalogueFileName: product?.catalogueFileName ?? null,

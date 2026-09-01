@@ -146,6 +146,7 @@ export class ProductMapper {
       p.isOverweight ?? false,
       p.weightKg ?? undefined,
       p.warrantyMonths ?? undefined,
+      (p as any).isReturnable ?? true,
 
       p.hasCatalogue ?? false,
       p.catalogueFileName ?? undefined,
@@ -203,6 +204,7 @@ export class ProductMapper {
       isOverweight: e.isOverweight,
       weightKg: e.weightKg ?? null,
       warrantyMonths: e.warrantyMonths ?? null,
+      isReturnable: e.isReturnable ?? true,
 
       hasCatalogue: e.hasCatalogue ?? false,
       catalogueFileName: e.catalogueFileName ?? null,
@@ -257,6 +259,7 @@ export class ProductMapper {
       isOverweight: e.isOverweight,
       weightKg: e.weightKg ?? null,
       warrantyMonths: e.warrantyMonths ?? null,
+      isReturnable: e.isReturnable ?? true,
 
       hasCatalogue: e.hasCatalogue ?? false,
       catalogueFileName: e.catalogueFileName ?? null,

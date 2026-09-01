@@ -316,6 +316,50 @@ export function ProductDetailsSection({ data, onChange }: Props) {
             </div>
           )}
 
+          {/* IS RETURNABLE */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-gray-500 uppercase">
+              Is Returnable?
+            </label>
+
+            <div className="flex p-1 bg-gray-100 rounded-lg w-fit">
+              <button
+                type="button"
+                onClick={() =>
+                  onChange("isReturnable", true)
+                }
+                className={cn(
+                  "px-4 py-1.5 text-xs font-bold rounded-md transition-all",
+                  data.isReturnable !== false
+                    ? "bg-white text-purple-600 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                )}
+              >
+                Yes
+              </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  onChange("isReturnable", false)
+                }
+                className={cn(
+                  "px-4 py-1.5 text-xs font-bold rounded-md transition-all",
+                  data.isReturnable === false
+                    ? "bg-white text-purple-600 shadow-sm"
+                    : "text-gray-500 hover:text-gray-700"
+                )}
+              >
+                No
+              </button>
+            </div>
+            <p className="text-[11px] text-gray-400">
+              {data.isReturnable !== false
+                ? "Item is returnable (displays 7 Days Returnable to customers)"
+                : "Non-returnable item (displays Non Returnable Item to customers)"}
+            </p>
+          </div>
+
           {/* WARRANTY */}
           <div className="space-y-2">
             <label className="text-xs font-bold text-gray-500 uppercase">

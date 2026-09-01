@@ -69,6 +69,12 @@ type?: 'SIMPLE' | 'VARIABLE';
     answer: string;
   }[];
 
+  isReturnable?: boolean;
+
+  isOverweight?: boolean;
+
+  weightKg?: number | null;
+
   images: {
     main: string | null;
 
