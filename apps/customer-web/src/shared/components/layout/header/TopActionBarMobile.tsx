@@ -16,6 +16,7 @@ import { logout } from "@/infrastructure/api/auth.api";
 import { useState } from "react";
 import { useAuth } from "@/features/auth/hooks/use-auth";
 import { ACCOUNT_SIDEBAR_ITEMS } from "@/features/account/constants/account-sidebar.constant";
+import { useCheckoutNavigation } from "@/shared/components/checkout-navigation-guard";
 
 interface ActionItem {
   icon?: any;
@@ -41,6 +42,7 @@ export function TopActionBarMobile({
 }: TopActionBarMobileProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { navigate } = useCheckoutNavigation();
 
   // Separate account dropdown states
   const [topOpen, setTopOpen] = useState(false);
@@ -94,30 +96,30 @@ const profile = profileData?.data;
   };
 
   const handleActionClick = (href: string) => {
-  if (isLoading) {
-    return;
-  }
+    if (isLoading) {
+      return;
+    }
 
-  // Allow guest access
-  if (href === "/wishlist") {
-    router.push(href);
-    return;
-  }
+    // Allow guest access
+    if (href === "/wishlist") {
+      navigate(href);
+      return;
+    }
 
-  // Allow guest access
-  if (href === "/cart") {
-    router.push(href);
-    return;
-  }
+    // Allow guest access
+    if (href === "/cart") {
+      navigate(href);
+      return;
+    }
 
-  // Require login for protected pages
-  if (!isAuthenticated) {
-    setLoginOpen(true);
-    return;
-  }
+    // Require login for protected pages
+    if (!isAuthenticated) {
+      setLoginOpen(true);
+      return;
+    }
 
-  router.push(href);
-};
+    navigate(href);
+  };
 
   const handleLogout = async () => {
     try {
@@ -195,7 +197,7 @@ const profile = profileData?.data;
                   type="button"
                   onClick={() => {
                     setTopOpen(false);
-                    router.push("/account");
+                    navigate("/account");
                   }}
                   className="block w-full px-4 py-3 text-left text-sm font-medium text-gray-700 transition hover:bg-gray-50"
                 >
@@ -626,7 +628,7 @@ const profile = profileData?.data;
                       type="button"
                       onClick={() => {
                         setBottomOpen(false);
-                        router.push(item.href);
+                        navigate(item.href);
                       }}
                       className="
   group

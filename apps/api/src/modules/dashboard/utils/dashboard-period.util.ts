@@ -29,7 +29,9 @@ export class DashboardPeriodUtil {
       }
 
       case DashboardPeriod.MONTH: {
-        const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        const startDate = new Date(now);
+
+        startDate.setDate(now.getDate() - 30);
 
         return {
           startDate,
@@ -38,7 +40,9 @@ export class DashboardPeriodUtil {
       }
 
       case DashboardPeriod.YEAR: {
-        const startDate = new Date(now.getFullYear(), 0, 1);
+        const startDate = new Date(now);
+
+        startDate.setDate(now.getDate() - 365);
 
         return {
           startDate,

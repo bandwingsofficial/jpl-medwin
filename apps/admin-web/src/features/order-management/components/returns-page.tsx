@@ -95,14 +95,10 @@ export default function ReturnsPage() {
       past.setDate(past.getDate() - 7);
       setFromDate(format(past));
       setToDate(format(now));
-    } else if (preset === "30days") {
+    } else if (preset === "30days" || preset === "thisMonth" || preset === "month") {
       const past = new Date(now);
       past.setDate(past.getDate() - 30);
       setFromDate(format(past));
-      setToDate(format(now));
-    } else if (preset === "thisMonth") {
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-      setFromDate(format(startOfMonth));
       setToDate(format(now));
     } else {
       setFromDate("");
@@ -674,8 +670,8 @@ export default function ReturnsPage() {
           { label: "Today", value: "today" },
           { label: "Yesterday", value: "yesterday" },
           { label: "Last 7 Days", value: "7days" },
+          { label: "Month", value: "thisMonth" },
           { label: "Last 30 Days", value: "30days" },
-          { label: "This Month", value: "thisMonth" },
         ].map((p) => (
           <button
             key={p.value}

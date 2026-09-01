@@ -7,7 +7,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { CheckoutExitConfirmation } from "@/features/checkout/components/checkout-exit-confirmation"; 
 import { useRouter } from "next/navigation";
 import {
   Loader2,
@@ -58,47 +57,6 @@ const [
   setGstNumber,
 ] = useState<string>("");
 
-const [showExitConfirmation, setShowExitConfirmation] =
-  useState(false);
-
-const [pendingExitPath, setPendingExitPath] =
-  useState<string | null>(null);
-
-const [isBrowserBack, setIsBrowserBack] =
-  useState(false);
-
-  const requestCheckoutExit = (path: string) => {
-  setPendingExitPath(path);
-  setIsBrowserBack(false);
-  setShowExitConfirmation(true);
-};
-
-const handleContinueCheckout = () => {
-  setShowExitConfirmation(false);
-  setPendingExitPath(null);
-  setIsBrowserBack(false);
-};
-
-const handleExitAnyway = () => {
-  setShowExitConfirmation(false);
-
-  if (isBrowserBack) {
-    setIsBrowserBack(false);
-    setPendingExitPath(null);
-
-    router.back();
-    return;
-  }
-
-  const path = pendingExitPath;
-
-  setPendingExitPath(null);
-  setIsBrowserBack(false);
-
-  if (path) {
-    router.push(path);
-  }
-};
 
 const [
   gstError,
@@ -214,31 +172,7 @@ const [
       createSessionError,
   } = useCreateCheckout();
 
-  useEffect(() => {
-  const handlePopState = () => {
-    window.history.pushState(
-      { checkoutGuard: true },
-      "",
-      window.location.href
-    );
 
-    setPendingExitPath(null);
-    setIsBrowserBack(true);
-    setShowExitConfirmation(true);
-  };
-
-  window.history.pushState(
-    { checkoutGuard: true },
-    "",
-    window.location.href
-  );
-
-  window.addEventListener("popstate", handlePopState);
-
-  return () => {
-    window.removeEventListener("popstate", handlePopState);
-  };
-}, []);
   /*
    |--------------------------------------------------------------------------
    | INITIALIZE CHECKOUT FLOW
@@ -717,11 +651,6 @@ const [
       gstNumber={gstNumber}
     />
   </div>
-  <CheckoutExitConfirmation
-  open={showExitConfirmation}
-  onContinue={handleContinueCheckout}
-  onExit={handleExitAnyway}
-/>
 </div>
       </div>
     </div>

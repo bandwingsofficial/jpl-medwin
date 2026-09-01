@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useCheckoutNavigation } from "@/shared/components/checkout-navigation-guard";
 import { useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -11,7 +11,7 @@ import { AnimatedPlaceholder } from "./AnimatedPlaceholder";
 import { SearchDropdown } from "./search-dropdown";
 
 export function GlobalSearch() {
-  const router = useRouter();
+  const { navigate } = useCheckoutNavigation();
 
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
@@ -24,23 +24,23 @@ export function GlobalSearch() {
 
     switch (item.type) {
       case "PRODUCT":
-        router.push(`/products/${item.slug}`);
+        navigate(`/products/${item.slug}`);
         break;
 
       case "CATEGORY":
-        router.push(`/categories/${item.id}`);
+        navigate(`/categories/${item.id}`);
         break;
 
       case "BRAND":
-        router.push(`/products?brand=${item.id}`);
+        navigate(`/products?brand=${item.id}`);
         break;
 
       case "SUB_CATEGORY":
-        router.push(`/products?subCategory=${item.id}`);
+        navigate(`/products?subCategory=${item.id}`);
         break;
 
       case "MINI_CATEGORY":
-        router.push(`/products?miniCategory=${item.id}`);
+        navigate(`/products?miniCategory=${item.id}`);
         break;
 
       default:
@@ -58,7 +58,7 @@ export function GlobalSearch() {
     setFocused(false);
     setQuery("");
 
-    router.push(
+    navigate(
       `/search?q=${encodeURIComponent(trimmedQuery)}`
     );
   };

@@ -281,15 +281,11 @@ export function CheckoutNavigationGuard({
     setIsBrowserBack(false);
 
     /*
-     * Browser Back navigation.
+     * Browser Back navigation -> always go to cart page.
      */
     if (browserBack) {
-      /*
-       * Tell popstate handler that the next Back is intentional.
-       */
       allowNextBackRef.current = true;
-
-      router.back();
+      router.push("/cart");
       return;
     }
 
@@ -298,7 +294,11 @@ export function CheckoutNavigationGuard({
      */
     if (path) {
       router.push(path);
+      return;
     }
+
+    // Default fallback
+    router.push("/cart");
   };
 
   /* ============================================================
