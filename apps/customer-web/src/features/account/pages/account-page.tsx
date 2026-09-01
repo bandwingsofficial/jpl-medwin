@@ -73,18 +73,37 @@ export function AccountPage() {
               {/* PROFILE IMAGE */}
               <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full border-4 border-white bg-muted shadow-md sm:h-24 sm:w-24 lg:h-28 lg:w-28">
                 {profile?.avatarUrl ? (
-                  <Image
-                    src={profile.avatarUrl}
-                    alt="Profile"
-                    fill
-                    unoptimized
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-slate-100">
-                    <User2 className="h-9 w-9 text-slate-400 sm:h-10 sm:w-10 lg:h-12 lg:w-12" />
-                  </div>
-                )}
+  <Image
+    src={profile.avatarUrl}
+    alt={profile?.name || "Profile"}
+    fill
+    unoptimized
+    className="object-cover"
+  />
+) : (
+  <div
+    className="
+      flex
+      h-full
+      w-full
+      items-center
+      justify-center
+      bg-teal-600
+      text-white
+      text-3xl
+      font-bold
+      uppercase
+      sm:text-4xl
+      lg:text-5xl
+    "
+  >
+    {(
+      profile?.name?.trim()?.charAt(0) ||
+      profile?.firstName?.trim()?.charAt(0) ||
+      "U"
+    ).toUpperCase()}
+  </div>
+)}
               </div>
 
               {/* TEXT */}
