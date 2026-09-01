@@ -642,143 +642,229 @@ useEffect(() => {
           </div>
 
           {/* ========================================================= */}
-          {/* ADVANCED FILTERS PANEL (DATE / TIME / PAYMENT STATUS) */}
-          {/* ========================================================= */}
-          <div className="w-full rounded-2xl border border-gray-200 bg-white p-4 shadow-sm space-y-3.5">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              
-              {/* DATE TYPE TOGGLE */}
-              <div className="flex items-center gap-2">
-                <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-gray-500">
-                  <Calendar size={14} className="text-teal-600" />
-                  Filter By:
-                </span>
-                <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDateType("created");
-                      setPage(1);
-                    }}
-                    className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${
-                      dateType === "created"
-                        ? "bg-teal-600 text-white shadow-xs"
-                        : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    Created Time
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDateType("updated");
-                      setPage(1);
-                    }}
-                    className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${
-                      dateType === "updated"
-                        ? "bg-teal-600 text-white shadow-xs"
-                        : "text-gray-600 hover:text-gray-900"
-                    }`}
-                  >
-                    Updated Time
-                  </button>
-                </div>
-              </div>
+{/* ADVANCED FILTERS PANEL */}
+{/* ========================================================= */}
 
-              {/* DATE RANGE INPUTS + PAYMENT STATUS */}
-              <div className="flex flex-wrap items-center gap-2.5">
-                {/* FROM DATE */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium text-gray-500 whitespace-nowrap">From:</span>
-                  <Input
-                    type="date"
-                    value={fromDate}
-                    onChange={(e) => {
-                      setDatePreset("custom");
-                      setPage(1);
-                      setFromDate(e.target.value);
-                    }}
-                    className="h-8.5 w-[140px] text-xs bg-gray-50/50 border-gray-200 rounded-lg focus:bg-white"
-                  />
-                </div>
+<div className="w-full rounded-2xl border border-gray-200 bg-white shadow-sm">
+  {/* MAIN FILTER ROW */}
+  <div className="flex flex-wrap items-center gap-3 px-4 py-3">
 
-                {/* TO DATE */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium text-gray-500 whitespace-nowrap">To:</span>
-                  <Input
-                    type="date"
-                    value={toDate}
-                    onChange={(e) => {
-                      setDatePreset("custom");
-                      setPage(1);
-                      setToDate(e.target.value);
-                    }}
-                    className="h-8.5 w-[140px] text-xs bg-gray-50/50 border-gray-200 rounded-lg focus:bg-white"
-                  />
-                </div>
+    {/* FILTER BY + DATE TYPE */}
+    <div className="flex shrink-0 items-center gap-3">
+      <div className="flex items-center gap-1.5 whitespace-nowrap">
+        <Calendar
+          size={15}
+          className="text-teal-600"
+        />
+      </div>
 
-                {/* PAYMENT STATUS DROPDOWN */}
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-medium text-gray-500 whitespace-nowrap">Payment:</span>
-                  <select
-                    value={paymentStatus}
-                    onChange={(e) => {
-                      setPage(1);
-                      setPaymentStatus(e.target.value);
-                    }}
-                    className="h-8.5 rounded-lg border border-gray-200 bg-gray-50/50 px-2.5 text-xs font-medium text-gray-700 focus:bg-white focus:outline-none focus:ring-1 focus:ring-teal-500"
-                  >
-                    <option value="">All Payments</option>
-                    <option value="SUCCESS">Success</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="FAILED">Failed</option>
-                    <option value="REFUNDED">Refunded</option>
-                  </select>
-                </div>
+      <div className="inline-flex h-9 rounded-lg border border-gray-200 bg-gray-50 p-1">
+        <button
+          type="button"
+          onClick={() => {
+            setDateType("created");
+            setPage(1);
+          }}
+          className={`
+            rounded-md px-3.5 text-xs font-semibold transition-all
+            ${
+              dateType === "created"
+                ? "bg-teal-600 text-white shadow-sm"
+                : "text-gray-600 hover:bg-white hover:text-gray-900"
+            }
+          `}
+        >
+          Created Time
+        </button>
 
-                {/* RESET BUTTON */}
-                {activeFilterCount > 0 && (
-                  <button
-                    type="button"
-                    onClick={handleResetFilters}
-                    className="inline-flex items-center gap-1 h-8.5 rounded-lg border border-red-200 bg-red-50/70 px-2.5 text-xs font-medium text-red-600 hover:bg-red-100 transition-colors"
-                  >
-                    <RotateCcw size={12} />
-                    Reset ({activeFilterCount})
-                  </button>
-                )}
-              </div>
+        <button
+          type="button"
+          onClick={() => {
+            setDateType("updated");
+            setPage(1);
+          }}
+          className={`
+            rounded-md px-3.5 text-xs font-semibold transition-all
+            ${
+              dateType === "updated"
+                ? "bg-teal-600 text-white shadow-sm"
+                : "text-gray-600 hover:bg-white hover:text-gray-900"
+            }
+          `}
+        >
+          Updated Time
+        </button>
+      </div>
+    </div>
 
-            </div>
+    {/* DIVIDER */}
+    <div className="hidden h-7 w-px bg-gray-200 xl:block" />
 
-            {/* QUICK DATE PRESETS */}
-            <div className="flex flex-wrap items-center gap-1.5 pt-1 border-t border-gray-100 text-xs">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 mr-1">
-                Presets:
-              </span>
-              {[
-                { label: "All Time", value: "all" },
-                { label: "Today", value: "today" },
-                { label: "Yesterday", value: "yesterday" },
-                { label: "Last 7 Days", value: "7days" },
-                { label: "Last 30 Days", value: "30days" },
-                { label: "This Month", value: "thisMonth" },
-              ].map((p) => (
-                <button
-                  key={p.value}
-                  type="button"
-                  onClick={() => handlePresetChange(p.value)}
-                  className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition-all ${
-                    datePreset === p.value
-                      ? "bg-teal-50 text-teal-700 border border-teal-200 font-semibold"
-                      : "bg-gray-50 text-gray-600 hover:bg-gray-100 border border-transparent"
-                  }`}
-                >
-                  {p.label}
-                </button>
-              ))}
-            </div>
-          </div>
+    {/* FROM */}
+    <div className="flex shrink-0 items-center gap-2">
+      <span className="text-xs font-semibold text-gray-500">
+        From
+      </span>
+
+      <Input
+        type="date"
+        value={fromDate}
+        onChange={(e) => {
+          setDatePreset("custom");
+          setPage(1);
+          setFromDate(e.target.value);
+        }}
+        className="
+          h-9
+          w-[135px]
+          rounded-lg
+          border-gray-200
+          bg-gray-50
+          px-3
+          text-xs
+          focus:bg-white
+          focus:ring-1
+          focus:ring-teal-500
+        "
+      />
+    </div>
+
+    {/* TO */}
+    <div className="flex shrink-0 items-center gap-2">
+      <span className="text-xs font-semibold text-gray-500">
+        To
+      </span>
+
+      <Input
+        type="date"
+        value={toDate}
+        onChange={(e) => {
+          setDatePreset("custom");
+          setPage(1);
+          setToDate(e.target.value);
+        }}
+        className="
+          h-9
+          w-[135px]
+          rounded-lg
+          border-gray-200
+          bg-gray-50
+          px-3
+          text-xs
+          focus:bg-white
+          focus:ring-1
+          focus:ring-teal-500
+        "
+      />
+    </div>
+
+    {/* PAYMENT */}
+    <div className="flex shrink-0 items-center gap-2">
+      <span className="text-xs font-semibold text-gray-500">
+        Payment
+      </span>
+
+      <select
+        value={paymentStatus}
+        onChange={(e) => {
+          setPage(1);
+          setPaymentStatus(e.target.value);
+        }}
+        className="
+          h-9
+          min-w-[125px]
+          rounded-lg
+          border
+          border-gray-200
+          bg-gray-50
+          px-3
+          text-xs
+          font-semibold
+          text-gray-700
+          outline-none
+          transition
+          focus:bg-white
+          focus:ring-1
+          focus:ring-teal-500
+        "
+      >
+        <option value="">All Payments</option>
+        <option value="SUCCESS">Success</option>
+        <option value="PENDING">Pending</option>
+        <option value="FAILED">Failed</option>
+        <option value="REFUNDED">Refunded</option>
+      </select>
+    </div>
+
+    {/* RESET */}
+    {activeFilterCount > 0 && (
+      <button
+        type="button"
+        onClick={handleResetFilters}
+        className="
+          inline-flex
+          h-9
+          shrink-0
+          items-center
+          gap-1.5
+          rounded-lg
+          border
+          border-red-200
+          bg-red-50
+          px-3
+          text-xs
+          font-semibold
+          text-red-600
+          transition
+          hover:bg-red-100
+        "
+      >
+        <RotateCcw size={13} />
+        Reset ({activeFilterCount})
+      </button>
+    )}
+  </div>
+
+  {/* PRESETS */}
+  <div className="flex flex-wrap items-center gap-2 border-t border-gray-100 px-4 py-2.5">
+    <span className="mr-1 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+      Presets
+    </span>
+
+    {[
+      { label: "All Time", value: "all" },
+      { label: "Today", value: "today" },
+      { label: "Yesterday", value: "yesterday" },
+      { label: "Last 7 Days", value: "7days" },
+      { label: "Last 30 Days", value: "30days" },
+      { label: "This Month", value: "thisMonth" },
+    ].map((preset) => (
+      <button
+        key={preset.value}
+        type="button"
+        onClick={() =>
+          handlePresetChange(preset.value)
+        }
+        className={`
+          rounded-full
+          border
+          px-3
+          py-1.5
+          text-[11px]
+          font-semibold
+          transition-all
+          ${
+            datePreset === preset.value
+              ? "border-teal-200 bg-teal-50 text-teal-700"
+              : "border-transparent bg-gray-50 text-gray-600 hover:border-gray-200 hover:bg-white hover:text-gray-900"
+          }
+        `}
+      >
+        {preset.label}
+      </button>
+    ))}
+  </div>
+</div>
 
           {/* STATUS TABS */}
 
