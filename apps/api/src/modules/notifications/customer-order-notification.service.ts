@@ -46,12 +46,12 @@ export class CustomerOrderNotificationService {
     this.supportEmail =
       this.configService.get<string>(
         'ORDER_SUPPORT_EMAIL',
-      ) ?? 'support@jplmedwin.com';
+      ) ?? 'connect@jplmedwin.com';
 
     this.supportPhone =
       this.configService.get<string>(
         'ORDER_SUPPORT_PHONE',
-      ) ?? '+91-728-9999-456';
+      ) ?? '+91-9187969350';
 
     this.supportWhatsApp =
       this.configService.get<string>(
@@ -337,8 +337,7 @@ export class CustomerOrderNotificationService {
 
         shippingAddress,
 
-        logoUrl:
-          this.logoUrl,
+       logoUrl: `${process.env.NEXT_PUBLIC_APP_URL_LOGO}/Logo/jpl_logo.png`,
 
         supportEmail:
           this.supportEmail,

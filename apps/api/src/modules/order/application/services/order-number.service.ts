@@ -41,7 +41,7 @@ export class OrderNumberService {
     // 🚀 RESULT
     // =======================
 
-   return `JPL-${yyyy}${mm}${dd}-${hh}${min}${ss}-${sequentialNumber}`;
+   return `JPL-WEB-${sequentialNumber}`;
   }
 
   // =======================
@@ -49,7 +49,7 @@ export class OrderNumberService {
   // =======================
 
   isValid(orderNumber: string): boolean {
-    const regex = /^JPL-\d{8}-\d{6}-\d{3,}$/;
+    const regex = /^JPL-WEB-\d{3,}$/;
 
     return regex.test(orderNumber);
   }

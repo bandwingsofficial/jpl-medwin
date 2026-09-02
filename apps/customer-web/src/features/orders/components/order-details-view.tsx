@@ -1199,8 +1199,6 @@ export const OrderDetailsView = ({
     lg:grid-cols-3
     lg:items-stretch
     lg:gap-5
-    lg:h-[calc(100vh-220px)]
-    lg:min-h-0
   "
 >
         {/* ITEMS */}

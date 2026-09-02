@@ -1,11 +1,12 @@
+
 export type OrderCustomerEmailStatus =
   | 'PLACED'
   | 'CONFIRMED'
   | 'PACKED'
   | 'SHIPPED'
-  | 'OUT_FOR_DELIVERY'
   | 'DELIVERED'
-  | 'CANCELLED';
+  | 'CANCELLED'
+  | 'REFUNDED';
 
 export interface CustomerOrderEmailItem {
   productName: string;
@@ -57,7 +58,7 @@ export interface CustomerOrderEmailData {
    * Example:
    * https://your-domain.com/images/jpl-medwin-logo.png
    */
-  logoUrl: string;
+logoUrl: string;
 
   /**
    * Optional support information.
@@ -116,13 +117,7 @@ const STATUS_CONTENT: Record<
     activeStep: 2,
   },
 
-  OUT_FOR_DELIVERY: {
-    label: 'OUT FOR DELIVERY',
-    title: 'Your order is out for delivery.',
-    message:
-      'Your order is on the final leg of its journey and is expected to reach you soon.',
-    activeStep: 3,
-  },
+
 
   DELIVERED: {
     label: 'DELIVERED',
@@ -139,6 +134,13 @@ const STATUS_CONTENT: Record<
       'Your order has been cancelled. If you believe this was unexpected, please contact our support team.',
     activeStep: -1,
   },
+   REFUNDED: {
+    label: 'REFUNDED',
+    title: 'Your order has been refunded.',
+    message:
+      'Your order has been refunded. If you have any questions, please contact our support team.',
+    activeStep: -1,
+  }
 };
 
 function escapeHtml(value: unknown): string {
@@ -1329,7 +1331,7 @@ export function buildCustomerOrderEmail(
                 "
               >
                 © ${new Date().getFullYear()}
-                JPL Medwin. All rights reserved.
+                JPL Markwin. All rights reserved.
               </div>
             </td>
           </tr>

@@ -68,7 +68,7 @@ export class ProcessOrderUseCase {
 
     void this.customerOrderNotificationService.sendCustomerOrderNotification(
       updated.id,
-      updated.status as any,
+      'PACKED',
     );
 
     // =======================

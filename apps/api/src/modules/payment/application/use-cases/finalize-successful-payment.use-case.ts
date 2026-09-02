@@ -225,11 +225,13 @@ export class FinalizeSuccessfulPaymentUseCase {
     // ==========================================
     // 6. GENERATE UNIQUE ORDER NUMBER
     // ==========================================
-    let orderNumber = this.orderNumberService.generate();
+    let sequence = 1;
+let orderNumber = this.orderNumberService.generate('JPL-WEB', sequence);
 
-    while (await this.orderRepo.existsByOrderNumber(orderNumber)) {
-      orderNumber = this.orderNumberService.generate();
-    }
+while (await this.orderRepo.existsByOrderNumber(orderNumber)) {
+  sequence++;
+  orderNumber = this.orderNumberService.generate('JPL-WEB', sequence);
+}
 
     // ==========================================
     // 7. SNAPSHOTS & REWARDS

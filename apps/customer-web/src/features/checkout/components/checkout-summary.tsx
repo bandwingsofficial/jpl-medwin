@@ -599,12 +599,12 @@ export function CheckoutSummary({
       }
 
       /*
-       |--------------------------------------------------------------------------
-       | PROCESS SELECTED PAYMENT METHOD DIRECTLY
-       |--------------------------------------------------------------------------
-       */
+ |-------------------------------------------------------------------------- 
+ | OPEN PAYMENT METHOD MODAL
+ |-------------------------------------------------------------------------- 
+ */
 
-      handlePaymentMethodSelect(paymentMethod);
+setPaymentMethodModalOpen(true);
     } catch (error: any) {
       console.error(
         "Checkout / Payment Error:",
