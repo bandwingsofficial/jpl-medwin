@@ -57,6 +57,8 @@ const [
   setGstNumber,
 ] = useState<string>("");
 
+const [isSessionRestored, setIsSessionRestored] =
+  useState(false);
 
 const [
   gstError,

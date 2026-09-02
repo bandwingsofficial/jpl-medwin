@@ -16,14 +16,16 @@ interface PaymentMethodModalProps {
   open: boolean;
   grandTotal: number;
   isCodAllowed: boolean;
+  selectedMethod?: "RAZORPAY" | "UPI" | "COD";
   onClose: () => void;
-  onSelect: (method: "RAZORPAY" | "COD") => void;
+  onSelect: (method: "RAZORPAY" | "UPI" | "COD") => void;
 }
 
 export function PaymentMethodModal({
   open,
   grandTotal,
   isCodAllowed,
+  selectedMethod,
   onClose,
   onSelect,
 }: PaymentMethodModalProps) {
@@ -279,272 +281,306 @@ export function PaymentMethodModal({
           {/* ONLINE PAYMENT */}
           {/* -------------------------------------------------- */}
 
-          <button
-            type="button"
-            onClick={() => {
-              onSelect("RAZORPAY");
-            }}
-            className="
-              group
-              flex
-              w-full
-              items-center
-              gap-3
-              rounded-xl
-              border
-              border-slate-200
-              bg-white
-              p-3
-              text-left
-              transition-all
-              hover:border-teal-300
-              hover:bg-teal-50/40
-              hover:shadow-sm
-              focus:outline-none
-              focus:ring-2
-              focus:ring-teal-500
-              focus:ring-offset-2
-              sm:gap-4
-              sm:p-4
-            "
-          >
-            <div
-              className="
-                flex
-                h-11
-                w-11
-                shrink-0
-                items-center
-                justify-center
-                rounded-xl
-                bg-teal-50
-                text-teal-600
-                sm:h-12
-                sm:w-12
-              "
-            >
-              <CreditCard
-                className="
-                  h-5
-                  w-5
-                  sm:h-6
-                  sm:w-6
-                "
-              />
-            </div>
+          {(() => {
+            const isOnlineSelected =
+              selectedMethod === "RAZORPAY" || selectedMethod === "UPI";
+            const isCodSelected = selectedMethod === "COD";
 
-            <div className="min-w-0 flex-1">
-              <div
-                className="
-                  flex
-                  flex-wrap
-                  items-center
-                  gap-2
-                "
-              >
-                <p
-                  className="
-                    text-sm
-                    font-bold
-                    text-slate-900
-                    sm:text-base
-                  "
-                >
-                  Online Payment
-                </p>
-
-                <span
-                  className="
-                    rounded-full
-                    bg-teal-50
-                    px-2
-                    py-0.5
-                    text-[9px]
-                    font-bold
-                    uppercase
-                    tracking-wide
-                    text-teal-700
-                    sm:text-[10px]
-                  "
-                >
-                  Recommended
-                </span>
-              </div>
-
-              <p
-                className="
-                  mt-0.5
-                  text-xs
-                  text-slate-500
-                  sm:text-sm
-                "
-              >
-                UPI, Cards, Net Banking
-              </p>
-            </div>
-
-            <ChevronRight
-              className="
-                h-5
-                w-5
-                shrink-0
-                text-slate-400
-                transition-transform
-                group-hover:translate-x-0.5
-                group-hover:text-teal-600
-              "
-            />
-          </button>
-
-          {/* -------------------------------------------------- */}
-          {/* CASH ON DELIVERY */}
-          {/* -------------------------------------------------- */}
-
-          <button
-            type="button"
-            disabled={!isCodAllowed}
-            aria-disabled={!isCodAllowed}
-            onClick={() => {
-              if (!isCodAllowed) {
-                return;
-              }
-
-              onSelect("COD");
-            }}
-            className={`
-              group
-              flex
-              w-full
-              items-center
-              gap-3
-              rounded-xl
-              border
-              p-3
-              text-left
-              transition-all
-              focus:outline-none
-              sm:gap-4
-              sm:p-4
-              ${
-                isCodAllowed
-                  ? `
-                    border-slate-200
-                    bg-white
-                    hover:border-emerald-300
-                    hover:bg-emerald-50/40
+            return (
+              <>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onSelect("RAZORPAY");
+                  }}
+                  className={`
+                    group
+                    flex
+                    w-full
+                    items-center
+                    gap-3
+                    rounded-xl
+                    border
+                    p-3
+                    text-left
+                    transition-all
+                    hover:border-teal-400
+                    hover:bg-teal-50/40
                     hover:shadow-sm
+                    focus:outline-none
                     focus:ring-2
-                    focus:ring-emerald-500
+                    focus:ring-teal-500
                     focus:ring-offset-2
-                  `
-                  : `
-                    cursor-not-allowed
-                    border-slate-200
-                    bg-slate-50
-                    opacity-70
-                  `
-              }
-            `}
-          >
-            <div
-              className={`
-                flex
-                h-11
-                w-11
-                shrink-0
-                items-center
-                justify-center
-                rounded-xl
-                sm:h-12
-                sm:w-12
-                ${
-                  isCodAllowed
-                    ? `
-                      bg-emerald-50
-                      text-emerald-600
-                    `
-                    : `
-                      bg-slate-100
+                    sm:gap-4
+                    sm:p-4
+                    ${
+                      isOnlineSelected
+                        ? "border-teal-600 bg-teal-50/30 ring-1 ring-teal-600"
+                        : "border-slate-200 bg-white"
+                    }
+                  `}
+                >
+                  <div
+                    className="
+                      flex
+                      h-11
+                      w-11
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-xl
+                      bg-teal-50
+                      text-teal-600
+                      sm:h-12
+                      sm:w-12
+                    "
+                  >
+                    <CreditCard
+                      className="
+                        h-5
+                        w-5
+                        sm:h-6
+                        sm:w-6
+                      "
+                    />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div
+                      className="
+                        flex
+                        flex-wrap
+                        items-center
+                        gap-2
+                      "
+                    >
+                      <p
+                        className="
+                          text-sm
+                          font-bold
+                          text-slate-900
+                          sm:text-base
+                        "
+                      >
+                        Online Payment
+                      </p>
+
+                      <span
+                        className="
+                          rounded-full
+                          bg-teal-50
+                          px-2
+                          py-0.5
+                          text-[9px]
+                          font-bold
+                          uppercase
+                          tracking-wide
+                          text-teal-700
+                          sm:text-[10px]
+                        "
+                      >
+                        Recommended
+                      </span>
+
+                      {isOnlineSelected && (
+                        <span
+                          className="
+                            rounded-full
+                            bg-emerald-50
+                            px-2
+                            py-0.5
+                            text-[9px]
+                            font-bold
+                            uppercase
+                            tracking-wide
+                            text-emerald-700
+                            sm:text-[10px]
+                          "
+                        >
+                          Selected
+                        </span>
+                      )}
+                    </div>
+
+                    <p
+                      className="
+                        mt-0.5
+                        text-xs
+                        text-slate-500
+                        sm:text-sm
+                      "
+                    >
+                      UPI, Cards, Net Banking
+                    </p>
+                  </div>
+
+                  <ChevronRight
+                    className="
+                      h-5
+                      w-5
+                      shrink-0
                       text-slate-400
-                    `
-                }
-              `}
-            >
-              {isCodAllowed ? (
-                <Banknote
-                  className="
-                    h-5
-                    w-5
-                    sm:h-6
-                    sm:w-6
-                  "
-                />
-              ) : (
-                <Lock
-                  className="
-                    h-5
-                    w-5
-                    sm:h-6
-                    sm:w-6
-                  "
-                />
-              )}
-            </div>
+                      transition-transform
+                      group-hover:translate-x-0.5
+                      group-hover:text-teal-600
+                    "
+                  />
+                </button>
 
-            <div className="min-w-0 flex-1">
-              <p
-                className="
-                  text-sm
-                  font-bold
-                  text-slate-900
-                  sm:text-base
-                "
-              >
-                Cash on Delivery
-              </p>
+                {/* -------------------------------------------------- */}
+                {/* CASH ON DELIVERY */}
+                {/* -------------------------------------------------- */}
 
-              {isCodAllowed ? (
-                <p
-                  className="
-                    mt-0.5
-                    text-xs
-                    text-slate-500
-                    sm:text-sm
-                  "
+                <button
+                  type="button"
+                  disabled={!isCodAllowed}
+                  aria-disabled={!isCodAllowed}
+                  onClick={() => {
+                    if (!isCodAllowed) {
+                      return;
+                    }
+
+                    onSelect("COD");
+                  }}
+                  className={`
+                    group
+                    flex
+                    w-full
+                    items-center
+                    gap-3
+                    rounded-xl
+                    border
+                    p-3
+                    text-left
+                    transition-all
+                    focus:outline-none
+                    sm:gap-4
+                    sm:p-4
+                    ${
+                      isCodAllowed
+                        ? isCodSelected
+                          ? "border-emerald-600 bg-emerald-50/30 ring-1 ring-emerald-600 hover:border-emerald-400"
+                          : "border-slate-200 bg-white hover:border-emerald-300 hover:bg-emerald-50/40 hover:shadow-sm focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+                        : "cursor-not-allowed border-slate-200 bg-slate-50 opacity-70"
+                    }
+                  `}
                 >
-                  Pay when your order is delivered
-                </p>
-              ) : (
-                <p
-                  className="
-                    mt-0.5
-                    text-xs
-                    font-medium
-                    leading-relaxed
-                    text-amber-700
-                    sm:text-sm
-                  "
-                >
-                  Available only for orders below
-                  ₹10,000
-                </p>
-              )}
-            </div>
+                  <div
+                    className={`
+                      flex
+                      h-11
+                      w-11
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-xl
+                      sm:h-12
+                      sm:w-12
+                      ${
+                        isCodAllowed
+                          ? "bg-emerald-50 text-emerald-600"
+                          : "bg-slate-100 text-slate-400"
+                      }
+                    `}
+                  >
+                    {isCodAllowed ? (
+                      <Banknote
+                        className="
+                          h-5
+                          w-5
+                          sm:h-6
+                          sm:w-6
+                        "
+                      />
+                    ) : (
+                      <Lock
+                        className="
+                          h-5
+                          w-5
+                          sm:h-6
+                          sm:w-6
+                        "
+                      />
+                    )}
+                  </div>
 
-            {isCodAllowed && (
-              <ChevronRight
-                className="
-                  h-5
-                  w-5
-                  shrink-0
-                  text-slate-400
-                  transition-transform
-                  group-hover:translate-x-0.5
-                  group-hover:text-emerald-600
-                "
-              />
-            )}
-          </button>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p
+                        className="
+                          text-sm
+                          font-bold
+                          text-slate-900
+                          sm:text-base
+                        "
+                      >
+                        Cash on Delivery
+                      </p>
+
+                      {isCodSelected && isCodAllowed && (
+                        <span
+                          className="
+                            rounded-full
+                            bg-emerald-50
+                            px-2
+                            py-0.5
+                            text-[9px]
+                            font-bold
+                            uppercase
+                            tracking-wide
+                            text-emerald-700
+                            sm:text-[10px]
+                          "
+                        >
+                          Selected
+                        </span>
+                      )}
+                    </div>
+
+                    {isCodAllowed ? (
+                      <p
+                        className="
+                          mt-0.5
+                          text-xs
+                          text-slate-500
+                          sm:text-sm
+                        "
+                      >
+                        Pay when your order is delivered
+                      </p>
+                    ) : (
+                      <p
+                        className="
+                          mt-0.5
+                          text-xs
+                          font-medium
+                          leading-relaxed
+                          text-amber-700
+                          sm:text-sm
+                        "
+                      >
+                        Available only for orders below ₹10,000
+                      </p>
+                    )}
+                  </div>
+
+                  {isCodAllowed && (
+                    <ChevronRight
+                      className="
+                        h-5
+                        w-5
+                        shrink-0
+                        text-slate-400
+                        transition-transform
+                        group-hover:translate-x-0.5
+                        group-hover:text-emerald-600
+                      "
+                    />
+                  )}
+                </button>
+              </>
+            );
+          })()}
         </div>
 
         {/* ====================================================== */}

@@ -173,32 +173,6 @@ export class FinalizeSuccessfulPaymentUseCase {
       });
     }
 
-    // Check if an order was already created for this checkout session (race condition check)
-    const existingOrders = await this.prisma.order.findMany({
-      where: { checkoutSessionId: session.id },
-    });
-
-    if (existingOrders.length > 0) {
-      const existingOrder = existingOrders[0];
-      if (!payment.orderId) {
-        payment.linkOrder(existingOrder.id);
-        payment.status = PaymentStatus.SUCCESS;
-        if (input.providerPaymentId) payment.providerPaymentId = input.providerPaymentId;
-        if (input.providerSignature) payment.providerSignature = input.providerSignature;
-        payment.capturedAt = new Date();
-        await this.paymentRepo.update(payment);
-      }
-
-      return {
-        success: true,
-        orderId: existingOrder.id,
-        orderNumber: existingOrder.orderNumber,
-        status: existingOrder.status,
-        paymentStatus: existingOrder.paymentStatus,
-        isDuplicate: true,
-      };
-    }
-
     // ==========================================
     // 4. GET CHECKOUT ITEMS
     // ==========================================
@@ -342,68 +316,115 @@ export class FinalizeSuccessfulPaymentUseCase {
     );
 
     // ==========================================
-    // 10. UPDATE PAYMENT & SESSION & CART STATE
+    // 10. ATOMIC TRANSACTION (IDEMPOTENT ORDER CREATION & PAYMENT UPDATE)
     // ==========================================
-    payment.linkOrder(order.id);
-    payment.status = PaymentStatus.SUCCESS;
-    if (input.providerPaymentId) payment.providerPaymentId = input.providerPaymentId;
-    if (input.providerSignature) payment.providerSignature = input.providerSignature;
-    payment.capturedAt = new Date();
-
-    if (input.webhookEvent) {
-      payment.storeWebhook({
-        event: input.webhookEvent,
-        payload: input.webhookPayload,
+    const finalOrder = await this.prisma.$transaction(async (tx) => {
+      // Check if payment was already linked to an order by concurrent execution
+      const currentPayment = await tx.payment.findUnique({
+        where: { id: payment.id },
       });
-    }
 
-    session.complete();
-    await this.checkoutSessionRepo.update(session);
+      if (currentPayment?.orderId) {
+        const existingOrder = await this.orderRepo.findById(currentPayment.orderId, tx);
+        if (existingOrder) {
+          return existingOrder;
+        }
+      }
 
-    const cart = await this.cartRepo.findById(session.cartId);
-    if (cart && !cart.isConverted()) {
-      cart.convert();
-      await this.cartRepo.update(cart);
-    }
+      // Check if an order already exists for this checkout session
+      const existingSessionOrder = await tx.order.findFirst({
+        where: {
+          checkoutSessionId: session.id,
+          deletedAt: null,
+        },
+      });
 
-    // ==========================================
-    // 11. ATOMIC DATABASE TRANSACTION
-    // ==========================================
-    const createdOrder = await this.prisma.$transaction(async (tx) => {
+      if (existingSessionOrder) {
+        // Link payment to this existing order
+        payment.linkOrder(existingSessionOrder.id);
+        payment.status = PaymentStatus.SUCCESS;
+        if (input.providerPaymentId) payment.providerPaymentId = input.providerPaymentId;
+        if (input.providerSignature) payment.providerSignature = input.providerSignature;
+        payment.capturedAt = new Date();
+        if (input.webhookEvent) {
+          payment.storeWebhook({
+            event: input.webhookEvent,
+            payload: input.webhookPayload,
+          });
+        }
+        await this.paymentRepo.update(payment, tx);
+
+        const loadedOrder = await this.orderRepo.findById(existingSessionOrder.id, tx);
+        return loadedOrder || (existingSessionOrder as unknown as Order);
+      }
+
+      // 1. Create order
       const persistedOrder = await this.orderRepo.create(order, tx);
+
+      // 2. Create order items
       await this.orderItemRepo.createMany(orderItems, tx);
+
+      // 3. Associate payment with created order & update payment status
+      payment.linkOrder(persistedOrder.id);
+      payment.status = PaymentStatus.SUCCESS;
+      if (input.providerPaymentId) payment.providerPaymentId = input.providerPaymentId;
+      if (input.providerSignature) payment.providerSignature = input.providerSignature;
+      payment.capturedAt = new Date();
+
+      if (input.webhookEvent) {
+        payment.storeWebhook({
+          event: input.webhookEvent,
+          payload: input.webhookPayload,
+        });
+      }
+
       await this.paymentRepo.update(payment, tx);
+
+      // 4. Mark checkout session completed
+      session.complete();
+      await this.checkoutSessionRepo.update(session, tx);
+
+      // 5. Convert cart
+      const cart = await this.cartRepo.findById(session.cartId);
+      if (cart && !cart.isConverted()) {
+        cart.convert();
+        await tx.cart.update({
+          where: { id: cart.id },
+          data: { status: 'CONVERTED' },
+        });
+      }
+
       return persistedOrder;
     });
 
     // ==========================================
-    // 12. REDEEM COUPON & REWARD COINS
+    // 11. REDEEM COUPON & REWARD COINS (POST-COMMIT)
     // ==========================================
-    if (createdOrder.couponCode && createdOrder.couponDiscount > 0) {
+    if (finalOrder.couponCode && finalOrder.couponDiscount > 0) {
       try {
         const coupon = await this.couponApplicationService.findCouponByCode(
-          createdOrder.couponCode,
+          finalOrder.couponCode,
         );
         await this.redeemCouponUseCase.execute({
           couponId: coupon.id,
-          userId: createdOrder.userId!,
-          orderId: createdOrder.id,
-          discountAmount: createdOrder.couponDiscount,
+          userId: finalOrder.userId!,
+          orderId: finalOrder.id,
+          discountAmount: finalOrder.couponDiscount,
         });
       } catch (err) {
         console.error('Coupon redemption error during payment finalization:', err);
       }
     }
 
-    if (redeemedCoins > 0 && redeemedAmount > 0 && createdOrder.userId) {
+    if (redeemedCoins > 0 && redeemedAmount > 0 && finalOrder.userId) {
       try {
         await this.redeemCoinsUseCase.execute({
-          userId: createdOrder.userId,
-          orderId: createdOrder.id,
+          userId: finalOrder.userId,
+          orderId: finalOrder.id,
           coins: redeemedCoins,
-          orderAmount: createdOrder.grandTotal + createdOrder.redeemedAmount,
+          orderAmount: finalOrder.grandTotal + finalOrder.redeemedAmount,
           metadata: {
-            orderNumber: createdOrder.orderNumber,
+            orderNumber: finalOrder.orderNumber,
           },
         });
       } catch (err) {
@@ -412,20 +433,20 @@ export class FinalizeSuccessfulPaymentUseCase {
     }
 
     // ==========================================
-    // 13. SEND CONFIRMED ORDER NOTIFICATION
+    // 12. SEND CONFIRMED ORDER NOTIFICATION
     // ==========================================
-    void this.orderNotificationService.sendNewOrderNotification(createdOrder.id);
+    void this.orderNotificationService.sendNewOrderNotification(finalOrder.id);
 
     // ==========================================
-    // 14. RETURN SUCCESS RESPONSE
+    // 13. RETURN SUCCESS RESPONSE WITH CONFIRMED ORDER ID
     // ==========================================
     return {
       success: true,
-      orderId: createdOrder.id,
-      orderNumber: createdOrder.orderNumber,
-      status: createdOrder.status,
-      paymentStatus: createdOrder.paymentStatus,
-      checkoutSessionId: createdOrder.checkoutSessionId,
+      orderId: finalOrder.id,
+      orderNumber: finalOrder.orderNumber,
+      status: finalOrder.status,
+      paymentStatus: finalOrder.paymentStatus,
+      checkoutSessionId: finalOrder.checkoutSessionId,
     };
   }
 }

@@ -54,7 +54,7 @@ export class VerifyPaymentUseCase {
     // =======================
     // 🔄 IDEMPOTENCY CHECK
     // =======================
-    if (payment.status === PaymentStatus.SUCCESS && payment.orderId) {
+    if (payment.status === PaymentStatus.SUCCESS) {
       return this.finalizeSuccessfulPaymentUseCase.execute({
         paymentId: payment.id,
         providerPaymentId: input.providerPaymentId,

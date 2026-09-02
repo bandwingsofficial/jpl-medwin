@@ -8,6 +8,8 @@ import { BrevoService } from './brevo.service';
 
 import { OrderNotificationService } from './order-notification.service';
 
+import { CustomerOrderNotificationService } from './customer-order-notification.service';
+
 import { OrderDetailsPdfService } from './order-details-pdf.service';
 
 @Module({
@@ -23,6 +25,8 @@ import { OrderDetailsPdfService } from './order-details-pdf.service';
     OrderDetailsPdfService,
 
     OrderNotificationService,
+
+    CustomerOrderNotificationService,
   ],
 
   exports: [
@@ -31,6 +35,8 @@ import { OrderDetailsPdfService } from './order-details-pdf.service';
     OrderDetailsPdfService,
 
     OrderNotificationService,
+
+    CustomerOrderNotificationService,
   ],
 })
 export class NotificationsModule {}

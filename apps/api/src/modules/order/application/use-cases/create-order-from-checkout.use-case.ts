@@ -1,9 +1,11 @@
 // src/modules/order/application/use-cases/create-order-from-checkout.use-case.ts
 
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 
 import * as crypto from 'crypto';
 import { OrderNotificationService } from '@/modules/notifications/order-notification.service';
+
+import { CustomerOrderNotificationService } from '@/modules/notifications/customer-order-notification.service';
 import { TOKENS } from '@/common/constants/tokens';
 
 import { PrismaService } from '../../../../infrastructure/prisma/prisma.service';
@@ -64,6 +66,8 @@ export class CreateOrderFromCheckoutUseCase {
 
     private readonly prisma: PrismaService,
     private readonly orderNotificationService: OrderNotificationService,
+
+    private readonly customerOrderNotificationService: CustomerOrderNotificationService,
   ) {}
 
   async execute(input: {
@@ -143,10 +147,80 @@ export class CreateOrderFromCheckoutUseCase {
     }
 
     // =======================
+    // 🔄 IDEMPOTENCY CHECK
+    // =======================
+    const existingOrder = await this.orderRepo.findByCheckoutSessionId(session.id);
+    if (existingOrder) {
+      const existingItems = await this.orderItemRepo.findByOrderId(existingOrder.id);
+      const summary = this.summaryService.build({
+        items: existingItems,
+        couponDiscount: existingOrder.couponDiscount ?? 0,
+        rewardDiscount: existingOrder.redeemedAmount ?? 0,
+        shippingCharge: existingOrder.shippingCharge ?? 0,
+        overweightDeliveryCharge: existingOrder.overweightDeliveryCharge ?? 0,
+        tax: existingOrder.tax ?? 0,
+      });
+
+      return {
+        orderId: existingOrder.id,
+        orderNumber: existingOrder.orderNumber,
+        status: existingOrder.status,
+        paymentStatus: existingOrder.paymentStatus,
+        checkoutSessionId: existingOrder.checkoutSessionId,
+        cart: {
+          id: existingOrder.cartId,
+          status: 'CONVERTED',
+          couponCode: existingOrder.couponCode,
+        },
+        rewards: {
+          redeemedCoins: existingOrder.redeemedCoins,
+          redeemedAmount: existingOrder.redeemedAmount,
+        },
+        items: existingItems.map((item) => {
+          const mrp = item.mrp ?? item.price;
+          const mrpTotal = mrp * item.quantity;
+          const discount = mrpTotal - item.totalPrice;
+          return {
+            id: item.id,
+            orderId: item.orderId,
+            productId: item.productId,
+            variantId: item.variantId,
+            productName: item.productName,
+            variant: {
+              id: item.variantId,
+              name: item.variantName,
+              sku: item.sku,
+              quantity: item.quantity,
+              pricing: {
+                sellingPrice: item.price,
+                mrp,
+              },
+              images: {
+                main: item.imageUrl,
+              },
+            },
+            totals: {
+              subtotal: item.totalPrice,
+              mrpTotal,
+              discount,
+            },
+          };
+        }),
+        summary,
+        ...OrderAddressResponseMapper.toOrderAddressFields(existingOrder),
+        customerNote: existingOrder.customerNote,
+        gstNumber: existingOrder.gstNumber ?? null,
+        createdAt: existingOrder.createdAt,
+      };
+    }
+
+    // =======================
     // 📦 GET CHECKOUT ITEMS
     // =======================
 
     const checkoutItems = await this.checkoutSessionItemRepo.findByCheckoutSessionId(session.id);
+
+console.log("🔥 ORDER STEP 1 - CHECKOUT ITEMS:", checkoutItems.length);
 
     // =======================
     // ❌ EMPTY SESSION
@@ -164,12 +238,15 @@ export class CreateOrderFromCheckoutUseCase {
     // 📍 VALIDATE ADDRESSES
     // =======================
 
-    const validatedAddresses = await this.orderAddressValidationService.validateForOrderCreation({
-      userId: input.userId,
-      shippingAddressId: input.shippingAddressId,
-      billingAddressId: input.billingAddressId,
-      isBillingSameAsShipping: input.isBillingSameAsShipping,
-    });
+    const validatedAddresses =
+  await this.orderAddressValidationService.validateForOrderCreation({
+    userId: input.userId,
+    shippingAddressId: input.shippingAddressId,
+    billingAddressId: input.billingAddressId,
+    isBillingSameAsShipping: input.isBillingSameAsShipping,
+  });
+
+console.log("🔥 ORDER STEP 2 - ADDRESSES VALIDATED");
 
     // =======================
     // 🔢 GENERATE ORDER NUMBER
@@ -178,9 +255,10 @@ export class CreateOrderFromCheckoutUseCase {
     let orderNumber = this.orderNumberService.generate();
 
     while (await this.orderRepo.existsByOrderNumber(orderNumber)) {
-      orderNumber = this.orderNumberService.generate();
-    }
+  orderNumber = this.orderNumberService.generate();
+}
 
+console.log("🔥 ORDER STEP 3 - ORDER NUMBER:", orderNumber);
     // =======================
     // 🪙 REWARDS SNAPSHOT
     // =======================
@@ -195,8 +273,17 @@ export class CreateOrderFromCheckoutUseCase {
 
     const finalGrandTotal = session.grandTotal;
 
-    const isCod =
-  input.paymentMethod === 'COD';
+    const isCod = input.paymentMethod === 'COD';
+
+    // =======================
+    // 💵 COD LIMIT CHECK
+    // =======================
+    const COD_MAX_AMOUNT = 10000;
+    if (isCod && finalGrandTotal >= COD_MAX_AMOUNT) {
+      throw new BadRequestException(
+        'Cash on Delivery is available only for orders below ₹10,000. Please choose an online payment method.',
+      );
+    }
 
     const shippingAddressSnapshot = OrderAddressSnapshotMapper.fromSavedAddress(
       validatedAddresses.shippingAddress,
@@ -296,16 +383,6 @@ export class CreateOrderFromCheckoutUseCase {
     // =======================
     if (isCod) {
       order.confirmCodOrder();
-
-      // Complete checkout session and convert cart so cart is cleared for COD order
-      session.complete();
-      await this.checkoutSessionRepo.update(session);
-
-      const cart = await this.cartRepo.findById(session.cartId);
-      if (cart && !cart.isConverted()) {
-        cart.convert();
-        await this.cartRepo.update(cart);
-      }
     }
 
     const orderItems = checkoutItems.map(
@@ -341,19 +418,46 @@ export class CreateOrderFromCheckoutUseCase {
         ),
     );
 
-    const createdOrder = await this.prisma.$transaction(async (tx) => {
-      const persistedOrder = await this.orderRepo.create(order, tx);
+   console.log("🔥 ORDER: BEFORE TRANSACTION");
 
-      await this.orderItemRepo.createMany(orderItems, tx);
+const cart = isCod
+  ? await this.cartRepo.findById(session.cartId)
+  : null;
 
-      return persistedOrder;
-    });
+const createdOrder = await this.prisma.$transaction(async (tx) => {
+  const persistedOrder = await this.orderRepo.create(order, tx);
+
+  await this.orderItemRepo.createMany(orderItems, tx);
+
+  if (isCod) {
+    session.complete();
+
+    await this.checkoutSessionRepo.update(session, tx);
+
+    if (cart && !cart.isConverted()) {
+      cart.convert();
+
+      await tx.cart.update({
+        where: { id: cart.id },
+        data: { status: 'CONVERTED' },
+      });
+    }
+  }
+
+  return persistedOrder;
+});
+console.log("🔥 ORDER: TRANSACTION COMPLETED", createdOrder.id);
     // =======================
 // 📧 NEW ORDER EMAIL
 // =======================
 
 void this.orderNotificationService.sendNewOrderNotification(
   createdOrder.id,
+);
+
+void this.customerOrderNotificationService.sendCustomerOrderNotification(
+  createdOrder.id,
+  'PLACED',
 );
 
     // // =======================

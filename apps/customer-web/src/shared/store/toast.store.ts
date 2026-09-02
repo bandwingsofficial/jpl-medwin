@@ -23,6 +23,22 @@ interface ToastState {
   hideToast: () => void;
 }
 
+const formatToastMessage = (msg: unknown): string => {
+  if (typeof msg === "string") return msg;
+  if (Array.isArray(msg)) return msg.map((m) => formatToastMessage(m)).join(", ");
+  if (msg && typeof msg === "object") {
+    const obj = msg as Record<string, any>;
+    if (typeof obj.message === "string") return obj.message;
+    if (Array.isArray(obj.message)) return obj.message.map((m) => formatToastMessage(m)).join(", ");
+    try {
+      return JSON.stringify(msg);
+    } catch {
+      return String(msg);
+    }
+  }
+  return String(msg || "");
+};
+
 export const useToastStore =
   create<ToastState>((set) => ({
     message: "",
@@ -36,7 +52,7 @@ export const useToastStore =
       type
     ) => {
       set({
-        message,
+        message: formatToastMessage(message),
         type,
         visible: true,
       });

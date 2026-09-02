@@ -41,25 +41,42 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   async validate(payload: JwtPayload) {
-    const userId = payload.sub;
-    const { sessionId, role, type } = payload;
+  console.log("🔥 JWT VALIDATE START", payload);
 
-    if (!userId || !sessionId || type !== 'access') {
-      throw new UnauthorizedException('Invalid token');
-    }
+  const userId = payload.sub;
+  const { sessionId, role, type } = payload;
 
-    const session = await this.sessionRepo.findById(sessionId);
+  console.log("🔥 JWT PAYLOAD CHECK", {
+    userId,
+    sessionId,
+    role,
+    type,
+  });
 
-    if (!session) {
-      throw new UnauthorizedException('Session not found');
-    }
-
-    this.sessionService.validateSession(session);
-
-    return {
-      userId,
-      sessionId,
-      role,
-    };
+  if (!userId || !sessionId || type !== 'access') {
+    throw new UnauthorizedException('Invalid token');
   }
+
+  console.log("🔥 BEFORE SESSION REPO");
+
+  const session = await this.sessionRepo.findById(sessionId);
+
+  console.log("🔥 AFTER SESSION REPO", session);
+
+  if (!session) {
+    throw new UnauthorizedException('Session not found');
+  }
+
+  console.log("🔥 BEFORE SESSION VALIDATION");
+
+  this.sessionService.validateSession(session);
+
+  console.log("🔥 JWT VALIDATE SUCCESS");
+
+  return {
+    userId,
+    sessionId,
+    role,
+  };
+}
 }

@@ -7,7 +7,7 @@ import { TOKENS } from '@/common/constants/tokens';
 import { OrderRepository } from '../../domain/repositories/order.repository';
 
 import { OrderItemRepository } from '../../domain/repositories/order-item.repository';
-
+import { CustomerOrderNotificationService } from '@/modules/notifications/customer-order-notification.service';
 import { OrderNotFoundException } from '../../domain/exceptions/order-not-found.exception';
 
 import { OrderDomainService } from '../../domain/services/order-domain.service';
@@ -22,6 +22,7 @@ export class ConfirmOrderUseCase {
     private readonly orderItemRepo: OrderItemRepository,
 
     private readonly domainService: OrderDomainService,
+    private readonly customerOrderNotificationService: CustomerOrderNotificationService,
   ) {}
 
   async execute(input: { orderId: string }) {
@@ -60,6 +61,11 @@ export class ConfirmOrderUseCase {
     // =======================
 
     const updated = await this.orderRepo.update(order);
+
+    void this.customerOrderNotificationService.sendCustomerOrderNotification(
+  updated.id,
+  'CONFIRMED',
+);
 
     // =======================
     // 📦 ITEMS

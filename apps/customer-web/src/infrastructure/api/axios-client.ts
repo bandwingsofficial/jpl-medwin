@@ -3,6 +3,7 @@ import axios from "axios";
 export const apiClient = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   withCredentials: true,
+  timeout: 15000,
 });
 
 let isRefreshing = false;
@@ -35,15 +36,44 @@ const isProtectedRoute = (pathname: string) => {
   );
 };
 
+apiClient.interceptors.request.use(
+  (config) => {
+    console.log("🚀 AXIOS REQUEST:", {
+      method: config.method,
+      url: `${config.baseURL}${config.url}`,
+      data: config.data,
+    });
+
+    return config;
+  },
+  (error) => {
+    console.error("❌ AXIOS REQUEST ERROR:", error);
+    return Promise.reject(error);
+  }
+);
+
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log(
+      "✅ API RESPONSE:",
+      response.config.method?.toUpperCase(),
+      response.config.url,
+      response.status
+    );
+
+    return response;
+  },
 
   async (error) => {
     const originalRequest = error?.config;
 
-    // ========================================
-    // SAFE GUARD
-    // ========================================
+    console.log(
+      "❌ API ERROR:",
+      originalRequest?.method?.toUpperCase(),
+      originalRequest?.url,
+      error?.response?.status,
+      error?.response?.data
+    );
 
     if (!originalRequest) {
       return Promise.reject(error);
@@ -53,21 +83,16 @@ apiClient.interceptors.response.use(
     const status = error?.response?.status;
     const message = error?.response?.data?.message;
 
-    // ========================================
-    // NEVER REFRESH REFRESH API
-    // ========================================
-
     if (
       originalRequest?.url?.includes("/auth/refresh")
     ) {
+      console.log("❌ REFRESH API FAILED");
       return Promise.reject(error);
     }
 
-    // ========================================
-    // SESSION REVOKED
-    // ========================================
-
     if (errorCode === "SESSION.REVOKED") {
+      console.log("❌ SESSION REVOKED");
+
       if (typeof window !== "undefined") {
         const currentPath = window.location.pathname;
 
@@ -78,10 +103,6 @@ apiClient.interceptors.response.use(
 
       return Promise.reject(error);
     }
-
-    // ========================================
-    // ONLY HANDLE TOKEN ERRORS
-    // ========================================
 
     const shouldRefresh =
       status === 401 &&
@@ -96,11 +117,14 @@ apiClient.interceptors.response.use(
       shouldRefresh &&
       !originalRequest._retry
     ) {
-      // ========================================
-      // WAIT FOR EXISTING REFRESH
-      // ========================================
+      console.log(
+        "🔄 TOKEN ERROR → REFRESHING:",
+        originalRequest.url
+      );
 
       if (isRefreshing) {
+        console.log("⏳ ALREADY REFRESHING → QUEUING");
+
         return new Promise(
           (resolve, reject) => {
             queue.push({
@@ -117,28 +141,35 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // ========================================
-        // REFRESH TOKEN
-        // ========================================
+        console.log("🔄 CALLING /auth/refresh");
 
         await apiClient.post("/auth/refresh");
 
+        console.log("✅ /auth/refresh SUCCESS");
+
         processQueue(null);
+
+        console.log(
+          "🔁 RETRYING:",
+          originalRequest.url
+        );
 
         return apiClient(originalRequest);
       } catch (refreshError) {
+        console.log(
+          "❌ /auth/refresh ERROR:",
+          refreshError
+        );
+
         processQueue(refreshError);
 
         if (typeof window !== "undefined") {
-         localStorage.removeItem("accessToken");
-localStorage.removeItem("refreshToken");
-sessionStorage.clear();
+          localStorage.removeItem("accessToken");
+          localStorage.removeItem("refreshToken");
+          sessionStorage.clear();
+
           const currentPath =
             window.location.pathname;
-
-          // ========================================
-          // ONLY REDIRECT FROM PROTECTED PAGES
-          // ========================================
 
           if (isProtectedRoute(currentPath)) {
             window.location.replace("/login");

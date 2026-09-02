@@ -5,7 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { TOKENS } from '@/common/constants/tokens';
 
 import { OrderRepository } from '../../domain/repositories/order.repository';
-
+import { CustomerOrderNotificationService } from '@/modules/notifications/customer-order-notification.service';
 import { OrderItemRepository } from '../../domain/repositories/order-item.repository';
 
 import { OrderNotFoundException } from '../../domain/exceptions/order-not-found.exception';
@@ -22,6 +22,7 @@ export class ShipOrderUseCase {
     private readonly orderItemRepo: OrderItemRepository,
 
     private readonly domainService: OrderDomainService,
+    private readonly customerOrderNotificationService: CustomerOrderNotificationService,
   ) {}
 
   async execute(input: {
@@ -69,6 +70,15 @@ export class ShipOrderUseCase {
     // =======================
 
     const updated = await this.orderRepo.update(order);
+
+    // =======================
+// 📧 CUSTOMER SHIPPED EMAIL
+// =======================
+
+void this.customerOrderNotificationService.sendCustomerOrderNotification(
+  updated.id,
+  'SHIPPED',
+);
 
     // =======================
     // 📦 ITEMS

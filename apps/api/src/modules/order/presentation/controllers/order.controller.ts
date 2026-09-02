@@ -40,6 +40,8 @@ export class OrderController {
     @Body()
     body: CreateOrderDto,
   ) {
+    console.log('[OrderController] Creating order for user:', req.user?.userId, 'method:', body.paymentMethod, 'session:', body.checkoutSessionId);
+
     const data = await this.createOrderFromCheckoutUseCase.execute({
       ...body,
 

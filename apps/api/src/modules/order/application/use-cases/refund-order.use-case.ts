@@ -8,7 +8,7 @@ import { OrderRepository } from '../../domain/repositories/order.repository';
 import { OrderItemRepository } from '../../domain/repositories/order-item.repository';
 
 import { OrderNotFoundException } from '../../domain/exceptions/order-not-found.exception';
-
+import { CustomerOrderNotificationService } from '@/modules/notifications/customer-order-notification.service';
 import { OrderDomainService } from '../../domain/services/order-domain.service';
 
 import { RefundCoinsUseCase } from '@/modules/coins/application/use-cases/wallet/refund-coins.use-case';
@@ -25,6 +25,7 @@ export class RefundOrderUseCase {
     private readonly domainService: OrderDomainService,
 
     private readonly refundCoinsUseCase: RefundCoinsUseCase,
+    private readonly customerOrderNotificationService: CustomerOrderNotificationService,
   ) {}
 
   async execute(input: {
@@ -105,6 +106,15 @@ export class RefundOrderUseCase {
         );
       }
     }
+
+    // =======================
+// 📧 CUSTOMER REFUND EMAIL
+// =======================
+
+void this.customerOrderNotificationService.sendCustomerOrderNotification(
+  updated.id,
+  'CANCELLED',
+);
 
     // =======================
     // 📦 ITEMS

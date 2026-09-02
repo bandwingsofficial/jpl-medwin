@@ -47,14 +47,12 @@ export const ordersApi = {
    |--------------------------------------------------------------------------
    | POST /orders
    */
-  createOrder: async (
-  payload: CreateOrderPayload
-) => {
-  const res =
-    await apiClient.post(
-      "/orders",
-      payload
-    );
+ createOrder: async (payload: CreateOrderPayload) => {
+  console.log("🔥 ordersApi.createOrder CALLED", payload);
+
+  const res = await apiClient.post("/orders", payload);
+
+  console.log("🔥 ordersApi.createOrder RESPONSE", res.data);
 
   return res.data;
 },

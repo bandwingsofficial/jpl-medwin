@@ -53,6 +53,7 @@ export function CheckoutSummary({
   selectedBillingAddress,
   isBillingSameAsShipping,
   customerNote,
+  paymentMethod,
   gstNumber,
 }: CheckoutSummaryProps) {
   /*
@@ -190,13 +191,15 @@ export function CheckoutSummary({
    |--------------------------------------------------------------------------
    |
    | This function contains the existing COD and online payment flows.
-   | Only the payment method trigger has been moved into the modal.
    |
    */
 
   const handlePaymentMethodSelect = async (
-    selectedPaymentMethod: "RAZORPAY" | "COD"
+    selectedPaymentMethod: "RAZORPAY" | "UPI" | "COD"
   ) => {
+    console.log("🔥 PAYMENT METHOD SELECTED:", selectedPaymentMethod);
+    console.log("[handlePaymentMethodSelect] Triggered with method:", selectedPaymentMethod, "checkoutId:", checkout?.id, "shippingAddressId:", selectedAddress?.id);
+
     /*
      |--------------------------------------------------------------------------
      | PREVENT MULTIPLE CLICKS
@@ -209,12 +212,18 @@ export function CheckoutSummary({
       createPaymentMutation.isPending ||
       isVerifying
     ) {
+      console.warn("[handlePaymentMethodSelect] Blocked by pending/redirecting state:", {
+        isRedirecting,
+        isOrderPending: createOrderMutation.isPending,
+        isPaymentPending: createPaymentMutation.isPending,
+        isVerifying,
+      });
       return;
     }
 
     /*
      |--------------------------------------------------------------------------
-     | CLOSE PAYMENT METHOD MODAL
+     | CLOSE PAYMENT METHOD MODAL IF OPEN
      |--------------------------------------------------------------------------
      */
 
@@ -238,6 +247,21 @@ export function CheckoutSummary({
         return;
       }
 
+      const shippingAddressId = selectedAddress?.id;
+      const billingAddressId = isBillingSameAsShipping
+        ? selectedAddress?.id
+        : selectedBillingAddress?.id || selectedAddress?.id;
+
+      if (!shippingAddressId) {
+        showError("Please select a shipping address");
+        return;
+      }
+
+      const formattedGstNumber =
+        gstNumber && gstNumber.trim()
+          ? gstNumber.trim().toUpperCase()
+          : undefined;
+
       /*
        |--------------------------------------------------------------------------
        | 1. CASH ON DELIVERY (COD) FLOW - Creates order immediately
@@ -248,42 +272,43 @@ export function CheckoutSummary({
         selectedPaymentMethod === "COD"
       ) {
         setIsRedirecting(true);
+        console.log("🔥 ABOUT TO CREATE COD ORDER", {
+          checkoutSessionId: checkout?.id,
+          shippingAddressId,
+          billingAddressId,
+          paymentMethod: selectedPaymentMethod,
+        });
 
         const response =
           await createOrderMutation.mutateAsync({
             checkoutSessionId:
               checkout!.id,
 
-            shippingAddressId:
-              selectedAddress!.id,
+            shippingAddressId,
 
             billingAddressId:
-              isBillingSameAsShipping
-                ? selectedAddress!.id
-                : selectedBillingAddress!.id,
+              billingAddressId!,
 
             isBillingSameAsShipping,
 
             customerNote,
 
             gstNumber:
-              gstNumber &&
-              gstNumber.trim()
-                ? gstNumber
-                    .trim()
-                    .toUpperCase()
-                : undefined,
+              formattedGstNumber,
 
             paymentMethod:
               selectedPaymentMethod,
           });
+        console.log("🔥 ORDER API RETURNED:", response);
 
         const order =
           response as any;
 
         const orderId =
           order?.id ||
-          order?.orderId;
+          order?.orderId ||
+          order?.data?.id ||
+          order?.data?.orderId;
 
         if (!orderId) {
           console.error(
@@ -297,16 +322,20 @@ export function CheckoutSummary({
         }
 
         // Clear checkout session storage
-        sessionStorage.removeItem(
-          "checkout-session-id"
-        );
+        try {
+          sessionStorage.removeItem(
+            "checkout-session-id"
+          );
+        } catch {
+          // ignore storage errors
+        }
 
-        // Invalidate and remove cart query cache so badge becomes 0 and cart is cleared immediately
+        // Invalidate queries in background
         queryClient.removeQueries({
           queryKey: ["cart"],
         });
 
-        await Promise.all([
+        void Promise.all([
           queryClient.invalidateQueries({
             queryKey: ["cart"],
           }),
@@ -330,10 +359,9 @@ export function CheckoutSummary({
           }),
         ]);
 
-        setCodOrderId(orderId);
-
-        setCodSuccessOpen(true);
-
+        router.replace(
+          `/checkout/success?orderId=${orderId}&paymentMethod=COD`
+        );
         return;
       }
 
@@ -356,30 +384,27 @@ export function CheckoutSummary({
 
           provider: "RAZORPAY",
 
-          shippingAddressId:
-            selectedAddress!.id,
+          shippingAddressId,
 
           billingAddressId:
-            isBillingSameAsShipping
-              ? selectedAddress!.id
-              : selectedBillingAddress!.id,
+            billingAddressId!,
 
           isBillingSameAsShipping,
 
           customerNote,
 
           gstNumber:
-            gstNumber &&
-            gstNumber.trim()
-              ? gstNumber
-                  .trim()
-                  .toUpperCase()
-              : undefined,
+            formattedGstNumber,
         });
 
+      const payment = paymentResponse as any;
+      const paymentId = payment?.id || payment?.data?.id;
+      const providerOrderId = payment?.providerOrderId || payment?.data?.providerOrderId;
+      const paymentAmount = payment?.amount ?? payment?.data?.amount ?? grandTotal;
+
       if (
-        !paymentResponse?.id ||
-        !paymentResponse?.providerOrderId
+        !paymentId ||
+        !providerOrderId
       ) {
         throw new Error(
           "Failed to initialize payment gateway"
@@ -387,23 +412,21 @@ export function CheckoutSummary({
       }
 
       await openRazorpay({
-        paymentId:
-          paymentResponse.id,
+        paymentId,
 
         checkoutSessionId:
           checkout!.id,
 
-        providerOrderId:
-          paymentResponse.providerOrderId,
+        providerOrderId,
 
         amount:
-          paymentResponse.amount,
+          paymentAmount,
 
         customerName:
-          selectedAddress!.fullName,
+          selectedAddress?.fullName || "",
 
         customerPhone:
-          selectedAddress!.phoneNumber,
+          selectedAddress?.phoneNumber || "",
 
         onDismiss: () => {
           setIsRedirecting(false);
@@ -422,7 +445,14 @@ export function CheckoutSummary({
         ) => {
           setIsRedirecting(false);
 
-          router.push(
+          if (!confirmedOrderId) {
+            showError(
+              "Payment was not completed. You can try again."
+            );
+            return;
+          }
+
+          router.replace(
             `/checkout/success?orderId=${confirmedOrderId}`
           );
         },
@@ -529,6 +559,14 @@ export function CheckoutSummary({
         return;
       }
 
+      if (!isBillingSameAsShipping && !selectedBillingAddress?.id) {
+        showError(
+          "Please select a billing address"
+        );
+
+        return;
+      }
+
       /*
        |--------------------------------------------------------------------------
        | GST VALIDATION
@@ -562,11 +600,11 @@ export function CheckoutSummary({
 
       /*
        |--------------------------------------------------------------------------
-       | OPEN PAYMENT METHOD MODAL
+       | PROCESS SELECTED PAYMENT METHOD DIRECTLY
        |--------------------------------------------------------------------------
        */
 
-      setPaymentMethodModalOpen(true);
+      handlePaymentMethodSelect(paymentMethod);
     } catch (error: any) {
       console.error(
         "Checkout / Payment Error:",
@@ -864,8 +902,10 @@ export function CheckoutSummary({
           createPaymentMutation.isPending ||
           isVerifying ? (
             <Loader2 className="h-5 w-5 animate-spin" />
+          ) : paymentMethod === "COD" ? (
+            "Place Order (Cash on Delivery)"
           ) : (
-            "Proceed to Order"
+            `Pay ₹${grandTotal.toLocaleString()}`
           )}
         </button>
 
@@ -911,6 +951,9 @@ export function CheckoutSummary({
         isCodAllowed={
           isCodAllowed
         }
+        selectedMethod={
+          paymentMethod
+        }
         onClose={() => {
           if (
             isRedirecting ||
@@ -925,9 +968,9 @@ export function CheckoutSummary({
             false
           );
         }}
-        onSelect={
-          handlePaymentMethodSelect
-        }
+       onSelect={(method) => {
+  handlePaymentMethodSelect(method);
+}}
       />
 
       {/* COD SUCCESS */}

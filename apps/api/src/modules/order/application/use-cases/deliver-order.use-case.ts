@@ -8,7 +8,7 @@ import { OrderItemRepository } from '../../domain/repositories/order-item.reposi
 import { OrderNotFoundException } from '../../domain/exceptions/order-not-found.exception';
 
 import { OrderDomainService } from '../../domain/services/order-domain.service';
-
+import { CustomerOrderNotificationService } from '@/modules/notifications/customer-order-notification.service';
 import { ProcessOrderRewardUseCase } from '@/modules/coins/application/use-cases/rewards/process-order-reward.use-case';
 
 @Injectable()
@@ -23,6 +23,7 @@ export class DeliverOrderUseCase {
     private readonly domainService: OrderDomainService,
 
     private readonly processOrderRewardUseCase: ProcessOrderRewardUseCase,
+    private readonly customerOrderNotificationService: CustomerOrderNotificationService,
   ) {}
 
   async execute(input: { orderId: string }) {
@@ -71,6 +72,15 @@ export class DeliverOrderUseCase {
     // =======================
 
     const updated = await this.orderRepo.update(order);
+
+    // =======================
+// 📧 CUSTOMER EMAIL
+// =======================
+
+void this.customerOrderNotificationService.sendCustomerOrderNotification(
+  updated.id,
+  'DELIVERED',
+);
 
     // =======================
     // 🪙 PROCESS REWARDS

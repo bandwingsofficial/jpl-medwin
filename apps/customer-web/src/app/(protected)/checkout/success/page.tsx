@@ -1,22 +1,16 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-
 import { PaymentSuccess } from "@/features/payments/components/PaymentSuccess";
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const searchParams = useSearchParams();
-
   const router = useRouter();
 
-  const orderId =
-    searchParams.get("orderId") ?? "";
-
-  const paymentMethod =
-    searchParams.get("paymentMethod") ?? "";
-
-  const isCod =
-    paymentMethod === "COD";
+  const orderId = searchParams.get("orderId") ?? "";
+  const paymentMethod = searchParams.get("paymentMethod") ?? "";
+  const isCod = paymentMethod === "COD";
 
   return (
     <PaymentSuccess
@@ -25,5 +19,13 @@ export default function OrderSuccessPage() {
       open={true}
       onClose={() => router.push("/")}
     />
+  );
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <OrderSuccessContent />
+    </Suspense>
   );
 }

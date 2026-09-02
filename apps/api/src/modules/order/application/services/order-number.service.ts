@@ -41,7 +41,7 @@ export class OrderNumberService {
     // 🚀 RESULT
     // =======================
 
-    return `${prefix}-${sequentialNumber}`;
+   return `JPL-${yyyy}${mm}${dd}-${hh}${min}${ss}-${sequentialNumber}`;
   }
 
   // =======================

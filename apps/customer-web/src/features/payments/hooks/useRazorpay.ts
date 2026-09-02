@@ -210,7 +210,7 @@ export const useRazorpay = () => {
              |--------------------------------------------------------------------------
              */
 
-            const verifyResult = await verifyPaymentMutation.mutateAsync({
+            const verifyResult: any = await verifyPaymentMutation.mutateAsync({
               paymentId,
 
               providerPaymentId: response.razorpay_payment_id,
@@ -221,8 +221,13 @@ export const useRazorpay = () => {
             const confirmedOrderId =
               verifyResult?.orderId ||
               verifyResult?.data?.orderId ||
+              verifyResult?.data?.id ||
               orderId ||
               "";
+
+            if (!confirmedOrderId) {
+              throw new Error("Order creation failed or confirmed order ID is missing");
+            }
 
             /*
              |--------------------------------------------------------------------------
@@ -230,7 +235,11 @@ export const useRazorpay = () => {
              |--------------------------------------------------------------------------
              */
 
-            sessionStorage.removeItem("checkout-session-id");
+            try {
+              sessionStorage.removeItem("checkout-session-id");
+            } catch {
+              // ignore storage errors
+            }
 
             /*
              |--------------------------------------------------------------------------
@@ -242,7 +251,7 @@ export const useRazorpay = () => {
               queryKey: ["cart"],
             });
 
-            await Promise.all([
+            void Promise.all([
               queryClient.invalidateQueries({
                 queryKey: ["orders"],
               }),
@@ -278,9 +287,7 @@ export const useRazorpay = () => {
               onSuccess(confirmedOrderId);
             } else {
               router.replace(
-                confirmedOrderId
-                  ? `/checkout/success?orderId=${confirmedOrderId}`
-                  : "/checkout/success"
+                `/checkout/success?orderId=${confirmedOrderId}`
               );
             }
           } catch (error) {
@@ -289,11 +296,9 @@ export const useRazorpay = () => {
             if (onFailed) {
               onFailed(error);
             } else {
-              router.replace(
-                orderId
-                  ? `/checkout/failed?orderId=${orderId}`
-                  : "/checkout/failed"
-              );
+              if (orderId) {
+                router.replace(`/checkout/failed?orderId=${orderId}`);
+              }
             }
           }
         },

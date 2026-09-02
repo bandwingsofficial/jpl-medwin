@@ -1,18 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
-
+import { Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { CodOrderSuccess } from "@/features/payments/components/cod-order-success";
 
-export default function CodSuccessPage() {
+function CodSuccessContent() {
   const router = useRouter();
-
-  const searchParams =
-    useSearchParams();
-
-  const orderId =
-    searchParams.get("orderId") ?? "";
+  const searchParams = useSearchParams();
+  const orderId = searchParams.get("orderId") ?? "";
 
   return (
     <CodOrderSuccess
@@ -20,5 +15,13 @@ export default function CodSuccessPage() {
       open={true}
       onClose={() => router.push("/")}
     />
+  );
+}
+
+export default function CodSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+      <CodSuccessContent />
+    </Suspense>
   );
 }
