@@ -51,7 +51,7 @@ export class CustomerOrderNotificationService {
     this.supportPhone =
       this.configService.get<string>(
         'ORDER_SUPPORT_PHONE',
-      ) ?? '+91-9187969350';
+      ) ?? '+91-91879 69350';
 
     this.supportWhatsApp =
       this.configService.get<string>(
@@ -383,14 +383,13 @@ export class CustomerOrderNotificationService {
         SHIPPED:
           `Order shipped — ${order.orderNumber}`,
 
-        OUT_FOR_DELIVERY:
-          `Out for delivery — ${order.orderNumber}`,
-
         DELIVERED:
           `Order delivered — ${order.orderNumber}`,
 
         CANCELLED:
           `Order cancelled — ${order.orderNumber}`,
+        REFUNDED:
+          `Order refunded — ${order.orderNumber}`,
       };
 
       const subject =
