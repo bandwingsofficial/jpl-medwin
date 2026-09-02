@@ -249,16 +249,30 @@ console.log("🔥 ORDER STEP 1 - CHECKOUT ITEMS:", checkoutItems.length);
 console.log("🔥 ORDER STEP 2 - ADDRESSES VALIDATED");
 
     // =======================
-    // 🔢 GENERATE ORDER NUMBER
-    // =======================
+// 🔢 GENERATE ORDER NUMBER
+// =======================
 
-    let orderNumber = this.orderNumberService.generate();
+let sequence = 1;
 
-    while (await this.orderRepo.existsByOrderNumber(orderNumber)) {
-  orderNumber = this.orderNumberService.generate();
+let orderNumber = this.orderNumberService.generate(
+  'JPL-WEB',
+  sequence,
+);
+
+while (await this.orderRepo.existsByOrderNumber(orderNumber)) {
+  sequence++;
+
+  orderNumber = this.orderNumberService.generate(
+    'JPL-WEB',
+    sequence,
+  );
 }
 
-console.log("🔥 ORDER STEP 3 - ORDER NUMBER:", orderNumber);
+console.log(
+  "🔥 ORDER STEP 3 - ORDER NUMBER:",
+  orderNumber,
+);
+
     // =======================
     // 🪙 REWARDS SNAPSHOT
     // =======================
