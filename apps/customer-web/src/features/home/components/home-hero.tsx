@@ -59,6 +59,10 @@ export function HomeHero() {
   const [currentIndex, setCurrentIndex] =
     useState(0);
 
+    const [isPaused, setIsPaused] = useState(false);
+
+  const isPausedRef = useRef(false);
+
   /*
    |--------------------------------------------------------------------------
    | MOBILE SWIPE
@@ -73,6 +77,7 @@ export function HomeHero() {
     const touch = event.touches[0];
 
     if (!touch) return;
+    setIsPaused(true);
 
     touchStartX.current = touch.clientX;
     touchStartY.current = touch.clientY;
@@ -80,7 +85,8 @@ export function HomeHero() {
   };
 
   const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
-    if (
+     setIsPaused(false);
+     if (
       touchStartX.current === null ||
       touchStartY.current === null ||
       heroImages.length <= 1
@@ -165,27 +171,26 @@ export function HomeHero() {
    |
    */
 
-  useEffect(() => {
-    if (
-      heroImages.length <= 1
-    ) {
+useEffect(() => {
+  if (heroImages.length <= 1) {
+    return;
+  }
+
+  const interval = setInterval(() => {
+    if (isPausedRef.current) {
       return;
     }
 
-    const interval =
-      setInterval(() => {
-        setCurrentIndex(
-          (prevIndex) =>
-            prevIndex ===
-            heroImages.length - 1
-              ? 0
-              : prevIndex + 1
-        );
-      }, 5000);
+    setCurrentIndex(
+      (prevIndex) =>
+        prevIndex === heroImages.length - 1
+          ? 0
+          : prevIndex + 1
+    );
+  }, 5000);
 
-    return () =>
-      clearInterval(interval);
-  }, [heroImages.length]);
+  return () => clearInterval(interval);
+}, [heroImages.length]);
 
   /*
    |--------------------------------------------------------------------------
@@ -373,10 +378,20 @@ if (heroImages.length === 0) {
   "
 >
       <div
-        className="relative w-full touch-pan-y select-none md:touch-auto md:select-auto"
-        onTouchStart={handleTouchStart}
-        onTouchEnd={handleTouchEnd}
-      >
+  className="relative w-full touch-pan-y select-none md:touch-auto md:select-auto"
+  onTouchStart={handleTouchStart}
+  onTouchEnd={handleTouchEnd}
+  onMouseEnter={() => {
+  isPausedRef.current = true;
+  isPausedRef.current = true;
+setIsPaused(true);
+}}
+onMouseLeave={() => {
+  isPausedRef.current = false;
+  isPausedRef.current = false;
+setIsPaused(false);
+}}
+>
         {hasDestination ? (
           <button
             type="button"
