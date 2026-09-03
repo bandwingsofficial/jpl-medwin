@@ -9,7 +9,7 @@ import { PaymentRepository } from '../../domain/repositories/payment.repository'
 import { PaymentStatus } from '../../domain/enums/payment-status.enum';
 import { PaymentNotFoundException } from '../../domain/exceptions/payment-not-found.exception';
 import { PaymentFailedException } from '../../domain/exceptions/payment-failed.exception';
-
+import { CustomerOrderNotificationService } from '@/modules/notifications/customer-order-notification.service';
 import { Order } from '@/modules/order/domain/entities/order.entity';
 import { OrderItem } from '@/modules/order/domain/entities/order-item.entity';
 import { OrderStatus } from '@/modules/order/domain/enums/order-status.enum';
@@ -72,6 +72,7 @@ export class FinalizeSuccessfulPaymentUseCase {
     private readonly redeemCouponUseCase: RedeemCouponUseCase,
     private readonly redeemCoinsUseCase: RedeemCoinsUseCase,
     private readonly prisma: PrismaService,
+    private readonly customerOrderNotificationService: CustomerOrderNotificationService,
   ) {}
 
   async execute(input: FinalizeSuccessfulPaymentInput) {
@@ -137,13 +138,18 @@ export class FinalizeSuccessfulPaymentUseCase {
 
       existingOrder.markPaymentSuccess();
 
-      const updatedOrder = await this.prisma.$transaction(async (tx) => {
-        await this.paymentRepo.update(payment, tx);
-        const persisted = await this.orderRepo.update(existingOrder, tx);
-        return persisted;
-      });
+     const updatedOrder = await this.prisma.$transaction(async (tx) => {
+  await this.paymentRepo.update(payment, tx);
+  const persisted = await this.orderRepo.update(existingOrder, tx);
+  return persisted;
+});
 
-      return {
+void this.customerOrderNotificationService.sendCustomerOrderNotification(
+  updatedOrder.id,
+  'CONFIRMED',
+);
+
+return {
         success: true,
         orderId: updatedOrder.id,
         orderNumber: updatedOrder.orderNumber,
@@ -438,6 +444,10 @@ while (await this.orderRepo.existsByOrderNumber(orderNumber)) {
     // 12. SEND CONFIRMED ORDER NOTIFICATION
     // ==========================================
     void this.orderNotificationService.sendNewOrderNotification(finalOrder.id);
+    void this.customerOrderNotificationService.sendCustomerOrderNotification(
+  finalOrder.id,
+  'CONFIRMED',
+);
 
     // ==========================================
     // 13. RETURN SUCCESS RESPONSE WITH CONFIRMED ORDER ID

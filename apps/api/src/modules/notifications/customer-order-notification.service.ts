@@ -88,23 +88,36 @@ export class CustomerOrderNotificationService {
   }
 
   try {
-    await fetch(webhookUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        phone: input.phone,
-        customerName: input.customerName,
-        orderNumber: input.orderNumber,
-        status: input.status,
-        grandTotal: input.grandTotal,
-      }),
-    });
+   const response = await fetch(webhookUrl, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    phone: input.phone,
+    customerName: input.customerName,
+    orderNumber: input.orderNumber,
+    status: input.status,
+    grandTotal: input.grandTotal,
+  }),
+});
 
-    this.logger.log(
-      `WhatsApp notification sent for ${input.orderNumber} (${input.status})`,
-    );
+const responseText = await response.text();
+
+this.logger.log(
+  `TurboDev WhatsApp response | order=${input.orderNumber} | status=${response.status} | body=${responseText}`,
+);
+
+if (!response.ok) {
+  this.logger.error(
+    `TurboDev WhatsApp webhook rejected order ${input.orderNumber}`,
+  );
+  return;
+}
+
+this.logger.log(
+  `TurboDev WhatsApp webhook accepted for ${input.orderNumber}`,
+);
   } catch (error) {
     this.logger.error(
       `WhatsApp notification failed for ${input.orderNumber}`,
@@ -340,7 +353,7 @@ customerWhatsApp =
         orderNumber:
           order.orderNumber,
 
-        status: orderStatus,
+        status: orderStatus === 'CONFIRMED' ? 'PLACED' : orderStatus,
 
         orderDate:
           order.createdAt.toISOString(),
@@ -565,13 +578,15 @@ ${this.supportPhone}
       // =========================================
       // SEND CUSTOMER WHATSAPP
       // =========================================
-
+this.logger.log(
+  `WhatsApp DEBUG | order=${order.orderNumber} | status=${orderStatus} | phone=${customerWhatsApp ?? 'MISSING'}`,
+);
       if (customerWhatsApp) {
         await this.sendWhatsAppNotification({
           phone: customerWhatsApp,
           customerName,
           orderNumber: order.orderNumber,
-          status: orderStatus,
+          status: orderStatus === 'CONFIRMED' ? 'PLACED' : orderStatus,
           grandTotal: Number(order.grandTotal ?? 0),
         });
       }
