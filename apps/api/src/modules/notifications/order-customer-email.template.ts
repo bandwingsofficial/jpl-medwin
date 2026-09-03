@@ -1,4 +1,3 @@
-
 export type OrderCustomerEmailStatus =
   | 'PLACED'
   | 'CONFIRMED'
@@ -58,7 +57,7 @@ export interface CustomerOrderEmailData {
    * Example:
    * https://your-domain.com/images/jpl-medwin-logo.png
    */
-logoUrl: string;
+  logoUrl: string;
 
   /**
    * Optional support information.
@@ -81,10 +80,23 @@ interface StatusContent {
   activeStep: number;
 }
 
-const STATUS_CONTENT: Record<
-  OrderCustomerEmailStatus,
-  StatusContent
-> = {
+const COLORS = {
+  accent: '#0798b5',
+  accentDark: '#087fa0',
+  accentText: '#e6007e',
+  danger: '#d62828',
+  ink: '#222222',
+  body: '#262626',
+  muted: '#666666',
+  faint: '#999999',
+  border: '#e5e5e5',
+  track: '#d7d7d7',
+  bg: '#f4f4f4',
+};
+
+const FONT = "Georgia, 'Times New Roman', serif";
+
+const STATUS_CONTENT: Record<OrderCustomerEmailStatus, StatusContent> = {
   PLACED: {
     label: 'ORDER PLACED',
     title: 'We’ve got your order.',
@@ -92,7 +104,6 @@ const STATUS_CONTENT: Record<
       'Your order has been placed successfully. We’ll keep you updated as it moves through our fulfillment process.',
     activeStep: 0,
   },
-
   CONFIRMED: {
     label: 'CONFIRMED',
     title: 'Your order is confirmed.',
@@ -100,7 +111,6 @@ const STATUS_CONTENT: Record<
       'Your order has been confirmed. Our team is preparing it for the next step.',
     activeStep: 0,
   },
-
   PACKED: {
     label: 'PACKED',
     title: 'Your order has been packed.',
@@ -108,7 +118,6 @@ const STATUS_CONTENT: Record<
       'Your order has been packed and is ready to be handed over to our delivery partner.',
     activeStep: 1,
   },
-
   SHIPPED: {
     label: 'SHIPPED',
     title: 'Your order is on its way.',
@@ -116,9 +125,6 @@ const STATUS_CONTENT: Record<
       'Your order has been shipped and is now on its way to you. We’ll email you when it reaches the next stage.',
     activeStep: 2,
   },
-
-
-
   DELIVERED: {
     label: 'DELIVERED',
     title: 'Your order has been delivered.',
@@ -126,7 +132,6 @@ const STATUS_CONTENT: Record<
       'Your order has been delivered successfully. Thank you for shopping with JPL Medwin.',
     activeStep: 4,
   },
-
   CANCELLED: {
     label: 'CANCELLED',
     title: 'Your order has been cancelled.',
@@ -134,13 +139,13 @@ const STATUS_CONTENT: Record<
       'Your order has been cancelled. If you believe this was unexpected, please contact our support team.',
     activeStep: -1,
   },
-   REFUNDED: {
+  REFUNDED: {
     label: 'REFUNDED',
     title: 'Your order has been refunded.',
     message:
       'Your order has been refunded. If you have any questions, please contact our support team.',
     activeStep: -1,
-  }
+  },
 };
 
 function escapeHtml(value: unknown): string {
@@ -153,18 +158,11 @@ function escapeHtml(value: unknown): string {
 }
 
 function formatMoney(value: string | number | null | undefined): string {
-  if (
-    value === null ||
-    value === undefined ||
-    value === ''
-  ) {
+  if (value === null || value === undefined || value === '') {
     return 'Rs. 0';
   }
 
-  const numericValue =
-    typeof value === 'number'
-      ? value
-      : Number(value);
+  const numericValue = typeof value === 'number' ? value : Number(value);
 
   if (Number.isNaN(numericValue)) {
     return `Rs. ${escapeHtml(value)}`;
@@ -173,144 +171,127 @@ function formatMoney(value: string | number | null | undefined): string {
   return `Rs. ${numericValue.toLocaleString('en-IN')}`;
 }
 
-function formatPaymentMethod(
-  value?: string | null,
-): string {
+function formatPaymentMethod(value?: string | null): string {
   if (!value) {
     return 'Payment at delivery';
   }
 
   return value
     .replace(/_/g, ' ')
-    .replace(/\b\w/g, (letter) =>
-      letter.toUpperCase(),
-    );
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function renderProgressTracker(
-  status: OrderCustomerEmailStatus,
-): string {
+/**
+ * Renders the step tracker as dots connected by a horizontal line,
+ * using a single email-safe table (no absolute positioning).
+ *
+ * Layout per row:  dot - connector - dot - connector - dot - connector - dot - connector - dot
+ * The connector cell is a 2px-tall bar that is colored solid once the
+ * flanking step has been completed, giving the appearance of one
+ * continuous progress line running through the circles.
+ */
+function renderProgressTracker(status: OrderCustomerEmailStatus): string {
   const statusInfo = STATUS_CONTENT[status];
-
-  const steps = [
-    'PLACED',
-    'PACKED',
-    'SHIPPED',
-    'OUT FOR DELIVERY',
-    'DELIVERED',
-  ];
-
   const activeStep = statusInfo.activeStep;
+  const isCancelledLike = status === 'CANCELLED';
+
+  const steps = ['PLACED', 'PACKED', 'SHIPPED', 'DELIVERED'];
+
+  const dotCell = (index: number) => {
+    const isDone = !isCancelledLike && activeStep > index;
+    const isCurrent = !isCancelledLike && activeStep === index;
+    const isActive = isDone || isCurrent;
+
+    return `
+      <td width="26" style="width:26px; padding:0;">
+        <table role="presentation" width="26" cellpadding="0" cellspacing="0" border="0">
+          <tr>
+            <td align="center" style="height:26px; font-size:0;">
+              <div
+                style="
+                  width: 22px;
+                  height: 22px;
+                  line-height: 22px;
+                  border-radius: 50%;
+                  background: ${isActive ? COLORS.accent : '#ffffff'};
+                  border: 2px solid ${isActive ? COLORS.accent : COLORS.track};
+                  color: #ffffff;
+                  font-family: Arial, Helvetica, sans-serif;
+                  font-size: 12px;
+                  text-align: center;
+                "
+              >
+                ${isDone ? '&#10003;' : ''}
+              </div>
+            </td>
+          </tr>
+        </table>
+      </td>
+    `;
+  };
+
+  const connectorCell = (index: number) => {
+    // Connector sits between step `index` and step `index + 1`.
+    const isActive = !isCancelledLike && activeStep > index;
+
+    return `
+      <td style="padding: 0 2px;">
+        <div
+          style="
+            height: 2px;
+            line-height: 2px;
+            font-size: 0;
+            background-color: ${isActive ? COLORS.accent : COLORS.track};
+          "
+        >&nbsp;</div>
+      </td>
+    `;
+  };
+
+  const labelCell = (index: number) => {
+    const isActive = !isCancelledLike && activeStep >= index;
+
+    return `
+      <td
+        align="center"
+        style="
+          padding-top: 9px;
+          font-family: ${FONT};
+          font-size: 11px;
+          line-height: 15px;
+          letter-spacing: 0.5px;
+          color: ${isActive ? COLORS.accentDark : COLORS.faint};
+          font-weight: ${isActive ? 'bold' : 'normal'};
+        "
+      >
+        ${escapeHtml(steps[index])}
+      </td>
+    `;
+  };
+
+  // Build the row of dots + connectors.
+  let trackRow = '';
+  let labelRow = '';
+
+  steps.forEach((_step, index) => {
+    trackRow += dotCell(index);
+    labelRow += labelCell(index);
+
+    if (index < steps.length - 1) {
+      trackRow += connectorCell(index);
+      labelRow += `<td></td>`;
+    }
+  });
 
   return `
-    <table
-      role="presentation"
-      width="100%"
-      cellpadding="0"
-      cellspacing="0"
-      border="0"
-      style="margin: 30px 0 20px;"
-    >
-      <tr>
-        ${steps
-          .map((step, index) => {
-            const isActive =
-              activeStep >= index &&
-              status !== 'CANCELLED';
-
-            const isCurrent =
-              activeStep === index &&
-              status !== 'CANCELLED';
-
-            return `
-              <td
-                width="20%"
-                align="center"
-                valign="top"
-                style="padding: 0 3px;"
-              >
-                <table
-                  role="presentation"
-                  width="100%"
-                  cellpadding="0"
-                  cellspacing="0"
-                  border="0"
-                >
-                  <tr>
-                    <td
-                      align="center"
-                      style="
-                        height: 20px;
-                        font-size: 0;
-                      "
-                    >
-                      <span
-                        style="
-                          display: inline-block;
-                          width: 20px;
-                          height: 20px;
-                          line-height: 20px;
-                          border-radius: 50%;
-                          background: ${
-                            isActive
-                              ? '#0798b5'
-                              : '#d7d7d7'
-                          };
-                          color: ${
-                            isActive
-                              ? '#ffffff'
-                              : '#999999'
-                          };
-                          font-size: 10px;
-                          font-weight: bold;
-                        "
-                      >
-                        ${
-                          isCurrent
-                            ? '●'
-                            : ''
-                        }
-                      </span>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td
-                      align="center"
-                      style="
-                        padding-top: 8px;
-                        font-family: Georgia, 'Times New Roman', serif;
-                        font-size: 12px;
-                        line-height: 16px;
-                        letter-spacing: 1px;
-                        color: ${
-                          isActive
-                            ? '#087fa0'
-                            : '#999999'
-                        };
-                        font-weight: ${
-                          isActive
-                            ? 'bold'
-                            : 'normal'
-                        };
-                      "
-                    >
-                      ${escapeHtml(step)}
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            `;
-          })
-          .join('')}
-      </tr>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 30px 0 20px;">
+      <tr>${trackRow}</tr>
+      <tr>${labelRow}</tr>
     </table>
   `;
 }
 
-function renderItems(
-  items: CustomerOrderEmailItem[],
-): string {
+function renderItems(items: CustomerOrderEmailItem[]): string {
   return items
     .map(
       (item) => `
@@ -318,53 +299,28 @@ function renderItems(
           <td
             style="
               padding: 16px 0;
-              border-bottom: 1px solid #e5e5e5;
-              font-family: Georgia, 'Times New Roman', serif;
-              color: #262626;
+              border-bottom: 1px solid ${COLORS.border};
+              font-family: ${FONT};
+              color: ${COLORS.body};
             "
           >
-            <div
-              style="
-                font-size: 17px;
-                line-height: 23px;
-                font-weight: 500;
-              "
-            >
+            <div style="font-size: 17px; line-height: 23px; font-weight: 500;">
               ${escapeHtml(item.productName)}
             </div>
 
             ${
               item.variantName
                 ? `
-                  <div
-                    style="
-                      margin-top: 5px;
-                      color: #777777;
-                      font-size: 14px;
-                      line-height: 20px;
-                    "
-                  >
+                  <div style="margin-top: 5px; color: #777777; font-size: 14px; line-height: 20px;">
                     ${escapeHtml(item.variantName)}
                   </div>
                 `
                 : ''
             }
 
-            <div
-              style="
-                margin-top: 5px;
-                color: #777777;
-                font-size: 13px;
-                line-height: 18px;
-              "
-            >
+            <div style="margin-top: 5px; color: #777777; font-size: 13px; line-height: 18px;">
               Qty ${escapeHtml(item.quantity)}
-              ${
-                item.unitPrice !==
-                undefined
-                  ? ` · ${formatMoney(item.unitPrice)} each`
-                  : ''
-              }
+              ${item.unitPrice !== undefined ? ` &middot; ${formatMoney(item.unitPrice)} each` : ''}
             </div>
           </td>
 
@@ -373,9 +329,9 @@ function renderItems(
             valign="top"
             style="
               padding: 16px 0;
-              border-bottom: 1px solid #e5e5e5;
-              font-family: Georgia, 'Times New Roman', serif;
-              color: #262626;
+              border-bottom: 1px solid ${COLORS.border};
+              font-family: ${FONT};
+              color: ${COLORS.body};
               font-size: 16px;
               white-space: nowrap;
             "
@@ -388,19 +344,10 @@ function renderItems(
     .join('');
 }
 
-function renderAddress(
-  address?: CustomerOrderEmailAddress | null,
-): string {
+function renderAddress(address?: CustomerOrderEmailAddress | null): string {
   if (!address) {
     return `
-      <div
-        style="
-          font-family: Georgia, 'Times New Roman', serif;
-          color: #555555;
-          font-size: 15px;
-          line-height: 24px;
-        "
-      >
+      <div style="font-family: ${FONT}; color: #555555; font-size: 15px; line-height: 24px;">
         Shipping address unavailable.
       </div>
     `;
@@ -410,213 +357,72 @@ function renderAddress(
     address.name,
     address.addressLine1,
     address.addressLine2,
-    [address.city, address.state]
-      .filter(Boolean)
-      .join(', '),
+    [address.city, address.state].filter(Boolean).join(', '),
     address.pincode,
-    address.phone
-      ? `Phone: ${address.phone}`
-      : null,
+    address.phone ? `Phone: ${address.phone}` : null,
   ].filter(Boolean);
 
   return `
-    <div
-      style="
-        font-family: Georgia, 'Times New Roman', serif;
-        color: #262626;
-        font-size: 15px;
-        line-height: 24px;
-      "
-    >
-      ${lines
-        .map((line) => escapeHtml(line))
-        .join('<br />')}
+    <div style="font-family: ${FONT}; color: ${COLORS.body}; font-size: 15px; line-height: 24px;">
+      ${lines.map((line) => escapeHtml(line)).join('<br />')}
     </div>
   `;
 }
 
-function renderSummary(
-  data: CustomerOrderEmailData,
-): string {
+function renderSummary(data: CustomerOrderEmailData): string {
+  const row = (label: string, value: string, opts?: { prefix?: string }) => `
+    <tr>
+      <td style="padding: 7px 0; color: #666666; font-size: 15px; font-family: ${FONT};">
+        ${label}
+      </td>
+      <td align="right" style="padding: 7px 0; color: #333333; font-size: 15px; font-family: ${FONT};">
+        ${opts?.prefix ?? ''}${value}
+      </td>
+    </tr>
+  `;
+
   return `
-    <table
-      role="presentation"
-      width="100%"
-      cellpadding="0"
-      cellspacing="0"
-      border="0"
-      style="
-        margin-top: 10px;
-        font-family: Georgia, 'Times New Roman', serif;
-      "
-    >
-      <tr>
-        <td
-          style="
-            padding: 7px 0;
-            color: #666666;
-            font-size: 15px;
-          "
-        >
-          Item total
-        </td>
-
-        <td
-          align="right"
-          style="
-            padding: 7px 0;
-            color: #333333;
-            font-size: 15px;
-          "
-        >
-          ${formatMoney(data.subtotal)}
-        </td>
-      </tr>
-
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 10px; font-family: ${FONT};">
+      ${row('Item total', formatMoney(data.subtotal))}
       ${
-        data.shippingCharge !==
-        undefined
-          ? `
-            <tr>
-              <td
-                style="
-                  padding: 7px 0;
-                  color: #666666;
-                  font-size: 15px;
-                "
-              >
-                Delivery partner fee
-              </td>
-
-              <td
-                align="right"
-                style="
-                  padding: 7px 0;
-                  color: #333333;
-                  font-size: 15px;
-                "
-              >
-                ${formatMoney(
-                  data.shippingCharge,
-                )}
-              </td>
-            </tr>
-          `
+        data.shippingCharge !== undefined
+          ? row('Delivery partner fee', formatMoney(data.shippingCharge))
           : ''
       }
-
       ${
         data.couponDiscount
-          ? `
-            <tr>
-              <td
-                style="
-                  padding: 7px 0;
-                  color: #666666;
-                  font-size: 15px;
-                "
-              >
-                Coupon discount
-              </td>
-
-              <td
-                align="right"
-                style="
-                  padding: 7px 0;
-                  color: #333333;
-                  font-size: 15px;
-                "
-              >
-                − ${formatMoney(
-                  data.couponDiscount,
-                )}
-              </td>
-            </tr>
-          `
+          ? row('Coupon discount', formatMoney(data.couponDiscount), { prefix: '&minus; ' })
           : ''
       }
-
       ${
         data.overweightDeliveryCharge
-          ? `
-            <tr>
-              <td
-                style="
-                  padding: 7px 0;
-                  color: #666666;
-                  font-size: 15px;
-                "
-              >
-                Additional delivery charge
-              </td>
-
-              <td
-                align="right"
-                style="
-                  padding: 7px 0;
-                  color: #333333;
-                  font-size: 15px;
-                "
-              >
-                ${formatMoney(
-                  data.overweightDeliveryCharge,
-                )}
-              </td>
-            </tr>
-          `
+          ? row('Additional delivery charge', formatMoney(data.overweightDeliveryCharge))
           : ''
       }
-
-      ${
-        data.tax
-          ? `
-            <tr>
-              <td
-                style="
-                  padding: 7px 0;
-                  color: #666666;
-                  font-size: 15px;
-                "
-              >
-                Tax
-              </td>
-
-              <td
-                align="right"
-                style="
-                  padding: 7px 0;
-                  color: #333333;
-                  font-size: 15px;
-                "
-              >
-                ${formatMoney(data.tax)}
-              </td>
-            </tr>
-          `
-          : ''
-      }
+      ${data.tax ? row('Tax', formatMoney(data.tax)) : ''}
 
       <tr>
         <td
           style="
             padding: 14px 0 0;
-            border-top: 1px solid #222222;
+            border-top: 1px solid ${COLORS.ink};
             font-size: 20px;
             font-weight: bold;
-            color: #222222;
+            color: ${COLORS.ink};
+            font-family: ${FONT};
           "
         >
           Grand total
         </td>
-
         <td
           align="right"
           style="
             padding: 14px 0 0;
-            border-top: 1px solid #222222;
+            border-top: 1px solid ${COLORS.ink};
             font-size: 20px;
             font-weight: bold;
-            color: #222222;
+            color: ${COLORS.ink};
+            font-family: ${FONT};
           "
         >
           ${formatMoney(data.grandTotal)}
@@ -626,99 +432,36 @@ function renderSummary(
   `;
 }
 
-function renderSupport(
-  data: CustomerOrderEmailData,
-): string {
+function renderSupport(data: CustomerOrderEmailData): string {
+  const linkStyle = 'color:#0084a3; text-decoration: underline;';
   const links: string[] = [];
 
   if (data.helpCenterUrl) {
-    links.push(`
-      <a
-        href="${escapeHtml(data.helpCenterUrl)}"
-        style="
-          color: #0084a3;
-          text-decoration: underline;
-        "
-      >
-        Help Center
-      </a>
-    `);
+    links.push(`<a href="${escapeHtml(data.helpCenterUrl)}" style="${linkStyle}">Help Center</a>`);
   }
-
   if (data.supportEmail) {
-    links.push(`
-      <a
-        href="mailto:${escapeHtml(data.supportEmail)}"
-        style="
-          color: #0084a3;
-          text-decoration: underline;
-        "
-      >
-        ${escapeHtml(data.supportEmail)}
-      </a>
-    `);
+    links.push(
+      `<a href="mailto:${escapeHtml(data.supportEmail)}" style="${linkStyle}">${escapeHtml(data.supportEmail)}</a>`,
+    );
   }
-
   if (data.supportPhone) {
-    links.push(`
-      <a
-        href="tel:${escapeHtml(data.supportPhone)}"
-        style="
-          color: #0084a3;
-          text-decoration: underline;
-        "
-      >
-        ${escapeHtml(data.supportPhone)}
-      </a>
-    `);
+    links.push(`<a href="tel:${escapeHtml(data.supportPhone)}" style="${linkStyle}">${escapeHtml(data.supportPhone)}</a>`);
   }
-
   if (data.supportWhatsApp) {
-    links.push(`
-      <a
-        href="${escapeHtml(data.supportWhatsApp)}"
-        style="
-          color: #0084a3;
-          text-decoration: underline;
-        "
-      >
-        WhatsApp
-      </a>
-    `);
+    links.push(`<a href="${escapeHtml(data.supportWhatsApp)}" style="${linkStyle}">WhatsApp</a>`);
   }
 
   return `
-    <div
-      style="
-        text-align: center;
-        padding-top: 20px;
-      "
-    >
-      <div
-        style="
-          font-family: Georgia, 'Times New Roman', serif;
-          color: #262626;
-          font-size: 20px;
-          line-height: 28px;
-        "
-      >
+    <div style="text-align: center; padding-top: 20px;">
+      <div style="font-family: ${FONT}; color: ${COLORS.body}; font-size: 20px; line-height: 28px;">
         Questions about your order?
       </div>
 
       ${
         links.length
           ? `
-            <div
-              style="
-                margin-top: 20px;
-                font-family: Georgia, 'Times New Roman', serif;
-                font-size: 15px;
-                line-height: 25px;
-              "
-            >
-              ${links.join(
-                '<span style="color:#999999; padding:0 8px;">·</span>',
-              )}
+            <div style="margin-top: 20px; font-family: ${FONT}; font-size: 15px; line-height: 25px;">
+              ${links.join('<span style="color:#999999; padding:0 8px;">&middot;</span>')}
             </div>
           `
           : ''
@@ -727,376 +470,120 @@ function renderSupport(
   `;
 }
 
-export function buildCustomerOrderEmail(
-  data: CustomerOrderEmailData,
-): string {
-  const statusInfo =
-    STATUS_CONTENT[data.status];
-
-  const customerName =
-    data.customerName?.trim() || 'Customer';
-
-  const paymentMethod =
-    formatPaymentMethod(
-      data.paymentMethod,
-    );
-
+export function buildCustomerOrderEmail(data: CustomerOrderEmailData): string {
+  const statusInfo = STATUS_CONTENT[data.status];
+  const customerName = data.customerName?.trim() || 'Customer';
+  const paymentMethod = formatPaymentMethod(data.paymentMethod);
   const paymentText = data.paymentStatus
-    ? `${paymentMethod} — ${formatPaymentMethod(
-        data.paymentStatus,
-      )}`
+    ? `${paymentMethod} &mdash; ${formatPaymentMethod(data.paymentStatus)}`
     : paymentMethod;
-
-  const cancelled =
-    data.status === 'CANCELLED';
+  const cancelled = data.status === 'CANCELLED';
 
   return `
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta
-    http-equiv="Content-Type"
-    content="text/html; charset=UTF-8"
-  />
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
-
-  <title>
-    ${escapeHtml(statusInfo.label)} —
-    Order ${escapeHtml(data.orderNumber)}
-  </title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escapeHtml(statusInfo.label)} — Order ${escapeHtml(data.orderNumber)}</title>
 </head>
-
-<body
-  style="
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
-  "
->
-  <table
-    role="presentation"
-    width="100%"
-    cellpadding="0"
-    cellspacing="0"
-    border="0"
-    style="
-      background-color: #f4f4f4;
-      margin: 0;
-      padding: 0;
-    "
-  >
+<body style="margin: 0; padding: 0; background-color: ${COLORS.bg};">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${COLORS.bg}; margin: 0; padding: 0;">
     <tr>
-      <td
-        align="center"
-        style="padding: 35px 15px;"
-      >
+      <td align="center" style="padding: 35px 15px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 640px; background-color: #ffffff;">
 
-        <table
-          role="presentation"
-          width="100%"
-          cellpadding="0"
-          cellspacing="0"
-          border="0"
-          style="
-            max-width: 900px;
-            background-color: #ffffff;
-          "
-        >
-
-          <!-- ========================= -->
           <!-- LOGO -->
-          <!-- ========================= -->
-
           <tr>
-            <td
-              align="center"
-              style="
-                padding: 55px 30px 45px;
-                background-color: #ffffff;
-              "
-            >
+            <td align="center" style="padding: 45px 40px 35px; background-color: #ffffff;">
               <img
                 src="${escapeHtml(data.logoUrl)}"
                 alt="JPL Medwin"
-                width="300"
-                style="
-                  display: block;
-                  width: 300px;
-                  max-width: 100%;
-                  height: auto;
-                  border: 0;
-                  outline: none;
-                  text-decoration: none;
-                "
+                width="220"
+                style="display: block; width: 220px; max-width: 100%; height: auto; border: 0; outline: none; text-decoration: none;"
               />
             </td>
           </tr>
 
-          <!-- ========================= -->
           <!-- ORDER HEADER -->
-          <!-- ========================= -->
-
           <tr>
-            <td
-              style="
-                padding: 0 70px;
-              "
-            >
-              <div
-                style="
-                  height: 3px;
-                  background-color: #222222;
-                  width: 100%;
-                "
-              ></div>
-
-              <table
-                role="presentation"
-                width="100%"
-                cellpadding="0"
-                cellspacing="0"
-                border="0"
-              >
+            <td style="padding: 0 40px;">
+              <div style="height: 3px; background-color: ${COLORS.ink}; width: 100%;"></div>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td
-                    style="
-                      padding: 18px 0;
-                      font-family: Georgia, 'Times New Roman', serif;
-                      font-size: 14px;
-                      letter-spacing: 3px;
-                      color: #333333;
-                    "
-                  >
+                  <td style="padding: 16px 0; font-family: ${FONT}; font-size: 12px; letter-spacing: 3px; color: #333333;">
                     ORDER UPDATE
                   </td>
-
-                  <td
-                    align="center"
-                    style="
-                      padding: 18px 10px;
-                      font-family: Georgia, 'Times New Roman', serif;
-                      font-size: 14px;
-                      letter-spacing: 2px;
-                      color: #777777;
-                      white-space: nowrap;
-                    "
-                  >
+                  <td align="center" style="padding: 16px 10px; font-family: ${FONT}; font-size: 12px; letter-spacing: 2px; color: #777777; white-space: nowrap;">
                     ${escapeHtml(data.orderDate)}
                   </td>
-
-                  <td
-                    align="right"
-                    style="
-                      padding: 18px 0;
-                      font-family: Georgia, 'Times New Roman', serif;
-                      font-size: 14px;
-                      letter-spacing: 2px;
-                      color: #333333;
-                      white-space: nowrap;
-                    "
-                  >
-                    Order ID
-                    ${escapeHtml(data.orderNumber)}
+                  <td align="right" style="padding: 16px 0; font-family: ${FONT}; font-size: 12px; letter-spacing: 2px; color: #333333; white-space: nowrap;">
+                    Order ID ${escapeHtml(data.orderNumber)}
                   </td>
                 </tr>
               </table>
-
-              <div
-                style="
-                  height: 1px;
-                  background-color: #222222;
-                  width: 100%;
-                "
-              ></div>
+              <div style="height: 1px; background-color: ${COLORS.ink}; width: 100%;"></div>
             </td>
           </tr>
 
-          <!-- ========================= -->
           <!-- STATUS -->
-          <!-- ========================= -->
-
           <tr>
-            <td
-              style="
-                padding: 55px 70px 25px;
-              "
-            >
-              <div
-                style="
-                  font-family: Georgia, 'Times New Roman', serif;
-                  font-size: 18px;
-                  line-height: 25px;
-                  letter-spacing: 5px;
-                  color: ${
-                    cancelled
-                      ? '#d62828'
-                      : '#e6007e'
-                  };
-                  font-weight: bold;
-                "
-              >
+            <td style="padding: 45px 40px 20px;">
+              <div style="font-family: ${FONT}; font-size: 14px; line-height: 20px; letter-spacing: 4px; color: ${cancelled ? COLORS.danger : COLORS.accentText}; font-weight: bold;">
                 ${escapeHtml(statusInfo.label)}
               </div>
-
-              <div
-                style="
-                  margin-top: 25px;
-                  font-family: Georgia, 'Times New Roman', serif;
-                  font-size: 46px;
-                  line-height: 54px;
-                  color: #222222;
-                  font-weight: bold;
-                "
-              >
+              <div style="margin-top: 18px; font-family: ${FONT}; font-size: 32px; line-height: 40px; color: ${COLORS.ink}; font-weight: bold;">
                 ${escapeHtml(statusInfo.title)}
               </div>
-
-              <div
-                style="
-                  margin-top: 22px;
-                  font-family: Georgia, 'Times New Roman', serif;
-                  font-size: 18px;
-                  line-height: 30px;
-                  color: #444444;
-                "
-              >
+              <div style="margin-top: 16px; font-family: ${FONT}; font-size: 16px; line-height: 26px; color: #444444;">
                 Dear ${escapeHtml(customerName)},<br /><br />
-
                 ${escapeHtml(statusInfo.message)}
               </div>
             </td>
           </tr>
 
-          <!-- ========================= -->
           <!-- PROGRESS -->
-          <!-- ========================= -->
-
           ${
             !cancelled
               ? `
                 <tr>
-                  <td
-                    style="
-                      padding: 0 70px;
-                    "
-                  >
-                    ${renderProgressTracker(
-                      data.status,
-                    )}
+                  <td style="padding: 0 40px;">
+                    ${renderProgressTracker(data.status)}
                   </td>
                 </tr>
               `
               : ''
           }
 
-          <!-- ========================= -->
-          <!-- ORDER PLACED -->
-          <!-- ========================= -->
-
+          <!-- ORDER META -->
           <tr>
-            <td
-              style="
-                padding: 25px 70px 0;
-              "
-            >
-              <table
-                role="presentation"
-                width="100%"
-                cellpadding="0"
-                cellspacing="0"
-                border="0"
-              >
+            <td style="padding: 20px 40px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 <tr>
-                  <td
-                    width="38%"
-                    valign="top"
-                    style="
-                      padding: 10px 0;
-                      font-family: Georgia, 'Times New Roman', serif;
-                      font-size: 14px;
-                      letter-spacing: 3px;
-                      color: #666666;
-                    "
-                  >
+                  <td width="38%" valign="top" style="padding: 9px 0; font-family: ${FONT}; font-size: 12px; letter-spacing: 2px; color: ${COLORS.muted};">
                     ORDER PLACED
                   </td>
-
-                  <td
-                    valign="top"
-                    style="
-                      padding: 10px 0;
-                      font-family: Georgia, 'Times New Roman', serif;
-                      font-size: 17px;
-                      color: #262626;
-                    "
-                  >
+                  <td valign="top" style="padding: 9px 0; font-family: ${FONT}; font-size: 15px; color: ${COLORS.body};">
                     ${escapeHtml(data.orderDate)}
                   </td>
                 </tr>
-
                 <tr>
-                  <td
-                    width="38%"
-                    valign="top"
-                    style="
-                      padding: 10px 0;
-                      font-family: Georgia, 'Times New Roman', serif;
-                      font-size: 14px;
-                      letter-spacing: 3px;
-                      color: #666666;
-                    "
-                  >
+                  <td width="38%" valign="top" style="padding: 9px 0; font-family: ${FONT}; font-size: 12px; letter-spacing: 2px; color: ${COLORS.muted};">
                     PAYMENT
                   </td>
-
-                  <td
-                    valign="top"
-                    style="
-                      padding: 10px 0;
-                      font-family: Georgia, 'Times New Roman', serif;
-                      font-size: 17px;
-                      line-height: 26px;
-                      color: #262626;
-                    "
-                  >
-                    ${escapeHtml(paymentText)}
+                  <td valign="top" style="padding: 9px 0; font-family: ${FONT}; font-size: 15px; line-height: 24px; color: ${COLORS.body};">
+                    ${paymentText}
                   </td>
                 </tr>
-
                 ${
                   data.estimatedDelivery
                     ? `
                       <tr>
-                        <td
-                          width="38%"
-                          valign="top"
-                          style="
-                            padding: 10px 0;
-                            font-family: Georgia, 'Times New Roman', serif;
-                            font-size: 14px;
-                            letter-spacing: 3px;
-                            color: #666666;
-                          "
-                        >
+                        <td width="38%" valign="top" style="padding: 9px 0; font-family: ${FONT}; font-size: 12px; letter-spacing: 2px; color: ${COLORS.muted};">
                           ESTIMATED DELIVERY
                         </td>
-
-                        <td
-                          valign="top"
-                          style="
-                            padding: 10px 0;
-                            font-family: Georgia, 'Times New Roman', serif;
-                            font-size: 17px;
-                            color: #262626;
-                          "
-                        >
-                          ${escapeHtml(
-                            data.estimatedDelivery,
-                          )}
+                        <td valign="top" style="padding: 9px 0; font-family: ${FONT}; font-size: 15px; color: ${COLORS.body};">
+                          ${escapeHtml(data.estimatedDelivery)}
                         </td>
                       </tr>
                     `
@@ -1106,31 +593,24 @@ export function buildCustomerOrderEmail(
             </td>
           </tr>
 
-          <!-- ========================= -->
           <!-- VIEW ORDER BUTTON -->
-          <!-- ========================= -->
-
           ${
             data.orderUrl
               ? `
                 <tr>
-                  <td
-                    align="center"
-                    style="
-                      padding: 35px 70px;
-                    "
-                  >
+                  <td align="center" style="padding: 30px 40px;">
                     <a
                       href="${escapeHtml(data.orderUrl)}"
                       style="
                         display: inline-block;
-                        background-color: #078caf;
+                        background-color: ${COLORS.accent};
                         color: #ffffff;
                         text-decoration: none;
-                        font-family: Georgia, 'Times New Roman', serif;
-                        font-size: 18px;
+                        font-family: ${FONT};
+                        font-size: 16px;
                         font-weight: bold;
-                        padding: 17px 48px;
+                        padding: 15px 42px;
+                        border-radius: 2px;
                       "
                     >
                       View your order
@@ -1141,126 +621,46 @@ export function buildCustomerOrderEmail(
               : ''
           }
 
-          <!-- ========================= -->
           <!-- ORDER DETAILS -->
-          <!-- ========================= -->
-
           <tr>
-            <td
-              style="
-                padding: 30px 70px 0;
-              "
-            >
-              <div
-                style="
-                  font-family: Georgia, 'Times New Roman', serif;
-                  font-size: 15px;
-                  letter-spacing: 3px;
-                  color: #666666;
-                  padding-bottom: 18px;
-                "
-              >
-                ORDER DETAILS —
-                ${escapeHtml(data.items.length)}
-                ITEMS
+            <td style="padding: 25px 40px 0;">
+              <div style="font-family: ${FONT}; font-size: 13px; letter-spacing: 2px; color: ${COLORS.muted}; padding-bottom: 16px;">
+                ORDER DETAILS &mdash; ${escapeHtml(data.items.length)} ITEM${data.items.length === 1 ? '' : 'S'}
               </div>
-
-              <table
-                role="presentation"
-                width="100%"
-                cellpadding="0"
-                cellspacing="0"
-                border="0"
-              >
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
                 ${renderItems(data.items)}
               </table>
             </td>
           </tr>
 
-          <!-- ========================= -->
           <!-- TOTALS -->
-          <!-- ========================= -->
-
           <tr>
-            <td
-              style="
-                padding: 20px 70px 30px;
-              "
-            >
+            <td style="padding: 18px 40px 28px;">
               ${renderSummary(data)}
             </td>
           </tr>
 
-          <!-- ========================= -->
           <!-- SHIPPING ADDRESS -->
-          <!-- ========================= -->
-
           <tr>
-            <td
-              style="
-                padding: 20px 70px 35px;
-              "
-            >
-              <div
-                style="
-                  font-family: Georgia, 'Times New Roman', serif;
-                  font-size: 15px;
-                  letter-spacing: 3px;
-                  color: #666666;
-                  margin-bottom: 18px;
-                "
-              >
+            <td style="padding: 18px 40px 32px;">
+              <div style="font-family: ${FONT}; font-size: 13px; letter-spacing: 2px; color: ${COLORS.muted}; margin-bottom: 16px;">
                 SHIPPING ADDRESS
               </div>
-
-              ${renderAddress(
-                data.shippingAddress,
-              )}
+              ${renderAddress(data.shippingAddress)}
             </td>
           </tr>
 
-          <!-- ========================= -->
           <!-- REWARDS -->
-          <!-- ========================= -->
-
           ${
-            data.earnedCoins !==
-            undefined
+            data.earnedCoins !== undefined && data.earnedCoins !== null
               ? `
                 <tr>
-                  <td
-                    style="
-                      padding: 20px 70px 35px;
-                    "
-                  >
-                    <div
-                      style="
-                        font-family: Georgia, 'Times New Roman', serif;
-                        font-size: 16px;
-                        letter-spacing: 4px;
-                        color: #e6007e;
-                        font-weight: bold;
-                        margin-bottom: 14px;
-                      "
-                    >
+                  <td style="padding: 18px 40px 32px;">
+                    <div style="font-family: ${FONT}; font-size: 14px; letter-spacing: 3px; color: ${COLORS.accentText}; font-weight: bold; margin-bottom: 12px;">
                       REWARDS
                     </div>
-
-                    <div
-                      style="
-                        font-family: Georgia, 'Times New Roman', serif;
-                        font-size: 17px;
-                        line-height: 27px;
-                        color: #333333;
-                      "
-                    >
-                      You’ve earned
-                      <strong>
-                        ${escapeHtml(
-                          data.earnedCoins,
-                        )}
-                      </strong>
-                      reward coins with this order.
+                    <div style="font-family: ${FONT}; font-size: 15px; line-height: 25px; color: #333333;">
+                      You've earned <strong>${escapeHtml(data.earnedCoins)}</strong> reward coins with this order.
                     </div>
                   </td>
                 </tr>
@@ -1268,76 +668,28 @@ export function buildCustomerOrderEmail(
               : ''
           }
 
-          <!-- ========================= -->
           <!-- SUPPORT -->
-          <!-- ========================= -->
-
           <tr>
-            <td
-              style="
-                padding: 20px 70px 45px;
-              "
-            >
-              <div
-                style="
-                  height: 1px;
-                  background-color: #222222;
-                  margin-bottom: 40px;
-                "
-              ></div>
-
+            <td style="padding: 18px 40px 40px;">
+              <div style="height: 1px; background-color: ${COLORS.ink}; margin-bottom: 36px;"></div>
               ${renderSupport(data)}
             </td>
           </tr>
 
-          <!-- ========================= -->
           <!-- FOOTER -->
-          <!-- ========================= -->
-
           <tr>
-            <td
-              align="center"
-              style="
-                padding: 0 70px 50px;
-              "
-            >
-              <div
-                style="
-                  height: 1px;
-                  background-color: #222222;
-                  margin-bottom: 30px;
-                "
-              ></div>
-
-              <div
-                style="
-                  font-family: Georgia, 'Times New Roman', serif;
-                  font-size: 14px;
-                  line-height: 23px;
-                  color: #777777;
-                  font-style: italic;
-                "
-              >
-                This is an auto-generated email —
-                please do not reply directly to it.
+            <td align="center" style="padding: 0 40px 45px;">
+              <div style="height: 1px; background-color: ${COLORS.ink}; margin-bottom: 26px;"></div>
+              <div style="font-family: ${FONT}; font-size: 13px; line-height: 21px; color: #777777; font-style: italic;">
+                This is an auto-generated email — please do not reply directly to it.
               </div>
-
-              <div
-                style="
-                  margin-top: 18px;
-                  font-family: Arial, Helvetica, sans-serif;
-                  font-size: 12px;
-                  color: #999999;
-                "
-              >
-                © ${new Date().getFullYear()}
-                JPL Markwin. All rights reserved.
+              <div style="margin-top: 16px; font-family: Arial, Helvetica, sans-serif; font-size: 11px; color: #999999;">
+                © ${new Date().getFullYear()} JPL Medwin. All rights reserved.
               </div>
             </td>
           </tr>
 
         </table>
-
       </td>
     </tr>
   </table>

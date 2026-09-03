@@ -4,6 +4,7 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 
 import { TOKENS } from '@/common/constants/tokens';
 
+import { CustomerOrderNotificationService } from '@/modules/notifications/customer-order-notification.service';
 import { OrderRepository } from '../../domain/repositories/order.repository';
 
 import { OrderItemRepository } from '../../domain/repositories/order-item.repository';
@@ -32,6 +33,7 @@ export class CancelOrderUseCase {
     private readonly ownershipService: OrderOwnershipService,
 
     private readonly refundCoinsUseCase: RefundCoinsUseCase,
+    private readonly customerOrderNotificationService: CustomerOrderNotificationService,
   ) {}
 
   async execute(input: {
@@ -143,6 +145,10 @@ export class CancelOrderUseCase {
         );
       }
     }
+    await this.customerOrderNotificationService.sendCustomerOrderNotification(
+  updated.id,
+  'CANCELLED',
+);
 
     const items = await this.orderItemRepo.findByOrderId(updated.id);
 

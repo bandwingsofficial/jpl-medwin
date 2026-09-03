@@ -40,7 +40,7 @@ export class CustomerOrderNotificationService {
   ) {
     this.logoUrl =
       this.configService.get<string>(
-        'ORDER_EMAIL_LOGO_URL',
+        'NEXT_PUBLIC_APP_URL_LOGO',
       ) ?? '';
 
     this.supportEmail =
@@ -68,6 +68,50 @@ export class CustomerOrderNotificationService {
         'CUSTOMER_ORDER_URL',
       ) ?? '';
   }
+
+  private async sendWhatsAppNotification(input: {
+  phone: string;
+  customerName: string;
+  orderNumber: string;
+  status: string;
+  grandTotal: number;
+}): Promise<void> {
+  const webhookUrl = this.configService.get<string>(
+    'TURBODEV_WHATSAPP_WEBHOOK_URL',
+  );
+
+  if (!webhookUrl) {
+    this.logger.warn(
+      'TurboDev WhatsApp webhook URL is not configured',
+    );
+    return;
+  }
+
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        phone: input.phone,
+        customerName: input.customerName,
+        orderNumber: input.orderNumber,
+        status: input.status,
+        grandTotal: input.grandTotal,
+      }),
+    });
+
+    this.logger.log(
+      `WhatsApp notification sent for ${input.orderNumber} (${input.status})`,
+    );
+  } catch (error) {
+    this.logger.error(
+      `WhatsApp notification failed for ${input.orderNumber}`,
+      error instanceof Error ? error.stack : String(error),
+    );
+  }
+}
 
   async sendCustomerOrderNotification(
     orderId: string,
@@ -108,6 +152,10 @@ export class CustomerOrderNotificationService {
       let customerEmail:
         | string
         | undefined;
+        
+        let customerWhatsApp:
+  | string
+  | undefined;
 
       if (order.userId) {
         const customer =
@@ -139,6 +187,12 @@ export class CustomerOrderNotificationService {
               (identity) =>
                 identity.type === 'EMAIL',
             )?.value;
+customerWhatsApp =
+  customer.profile?.whatsappNumber
+    ? `+91${customer.profile.whatsappNumber
+        .replace(/\D/g, '')
+        .replace(/^91/, '')}`
+    : undefined;
         }
       }
 
@@ -146,13 +200,13 @@ export class CustomerOrderNotificationService {
       // NO CUSTOMER EMAIL
       // =========================================
 
-      if (!customerEmail) {
-        this.logger.warn(
-          `Customer email not available for order ${order.orderNumber}`,
-        );
+    if (!customerEmail && !customerWhatsApp) {
+  this.logger.warn(
+    `Customer email and WhatsApp number not available for order ${order.orderNumber}`,
+  );
 
-        return;
-      }
+  return;
+}
 
       // =========================================
       // STATUS
@@ -337,7 +391,7 @@ export class CustomerOrderNotificationService {
 
         shippingAddress,
 
-       logoUrl: `${process.env.NEXT_PUBLIC_APP_URL_LOGO}/Logo/jpl_logo.png`,
+       logoUrl: this.logoUrl,
 
         supportEmail:
           this.supportEmail,
@@ -477,24 +531,50 @@ ${this.supportEmail}
 ${this.supportPhone}
       `.trim();
 
-      // =========================================
+          // =========================================
       // SEND CUSTOMER EMAIL
       // =========================================
 
-      await this.brevoService.sendEmail({
-        to: [
-          {
-            email: customerEmail,
-            name: customerName,
-          },
-        ],
+      if (customerEmail) {
+        try {
+          await this.brevoService.sendEmail({
+            to: [
+              {
+                email: customerEmail,
+                name: customerName,
+              },
+            ],
+            subject,
+            htmlContent,
+            textContent,
+          });
 
-        subject,
+          this.logger.log(
+            `Customer order email sent successfully for ${order.orderNumber} to ${customerEmail} (${orderStatus})`,
+          );
+        } catch (error) {
+          this.logger.error(
+            `Customer order email failed for order ${orderId}`,
+            error instanceof Error
+              ? error.stack
+              : String(error),
+          );
+        }
+      }
 
-        htmlContent,
+      // =========================================
+      // SEND CUSTOMER WHATSAPP
+      // =========================================
 
-        textContent,
-      });
+      if (customerWhatsApp) {
+        await this.sendWhatsAppNotification({
+          phone: customerWhatsApp,
+          customerName,
+          orderNumber: order.orderNumber,
+          status: orderStatus,
+          grandTotal: Number(order.grandTotal ?? 0),
+        });
+      }
 
       // =========================================
       // SUCCESS
