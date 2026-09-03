@@ -6,7 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { RedeemCard } from "@/features/coins/components/redeem-card";
 
 import { useRouter } from "next/navigation";
-
+import { useProfile } from "@/features/account/hooks/use-profile";
 import {
   ShieldCheck,
   Loader2,
@@ -56,6 +56,39 @@ export function CheckoutSummary({
   paymentMethod,
   gstNumber,
 }: CheckoutSummaryProps) {
+  const validateCustomerProfile = () => {
+  if (isProfileLoading) {
+    showError("Please wait while your profile is loading.");
+    return false;
+  }
+
+  if (!profile) {
+    showError("Please complete your profile before placing an order.");
+    return false;
+  }
+
+  if (!profile.name?.trim()) {
+    showError("Please add your name in your profile before placing an order.");
+    return false;
+  }
+
+  if (!profile.email?.trim()) {
+    showError("Please add your email address in your profile before placing an order.");
+    return false;
+  }
+
+  if (!profile.phoneNumber?.trim()) {
+    showError("Please add your phone number in your profile before placing an order.");
+    return false;
+  }
+
+  if (!profile.whatsappNumber?.trim()) {
+    showError("Please add your WhatsApp number in your profile before placing an order.");
+    return false;
+  }
+
+  return true;
+};
   /*
    |--------------------------------------------------------------------------
    | ROUTER
@@ -64,6 +97,9 @@ export function CheckoutSummary({
 
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { data: profileResponse, isLoading: isProfileLoading } = useProfile();
+
+const profile = profileResponse?.data;
 
   const [
     codSuccessOpen,
@@ -542,6 +578,17 @@ export function CheckoutSummary({
           "Invalid checkout session."
         );
 
+        return;
+      }
+
+
+      /*
+       |--------------------------------------------------------------------------
+       | CUSTOMER PROFILE VALIDATION
+       |--------------------------------------------------------------------------
+       */
+
+      if (!validateCustomerProfile()) {
         return;
       }
 

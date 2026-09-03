@@ -163,10 +163,20 @@ export function ProfileForm({
     e.preventDefault();
 
     // Indian GSTIN validation when provided
-    if (gstNumber && !/^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}[Zz][0-9A-Za-z]{1}$/.test(gstNumber.trim())) {
-      showError("Please enter a valid 15-character GSTIN (e.g. 29ABCDE1234F1Z5)");
-      return;
-    }
+  // Indian GSTIN validation when provided
+const normalizedGst = gstNumber.trim().toUpperCase();
+
+if (
+  normalizedGst &&
+  !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/.test(
+    normalizedGst
+  )
+) {
+  showError(
+    "Please enter a valid 15-character GSTIN (e.g. 29ABCDE1234F1Z5)"
+  );
+  return;
+}
 
     // WhatsApp number format validation when provided
     if (whatsappNumber && !/^(\+?\d{10,15})$/.test(whatsappNumber.replace(/\s+/g, ""))) {
@@ -185,8 +195,10 @@ export function ProfileForm({
       phoneNumber: phoneNumber.trim(),
       customerType: (customerType as CustomerType) || null,
       clinicHospitalName: clinicHospitalName.trim(),
-      whatsappNumber: whatsappNumber.trim(),
-      gstNumber: gstNumber.trim().toUpperCase(),
+     whatsappNumber: whatsappNumber.trim() || null,
+gstNumber: gstNumber.trim()
+  ? gstNumber.trim().toUpperCase()
+  : null,
       avatar,
     };
 
