@@ -45,7 +45,7 @@ export function HomeCollections() {
   return (
     <div
       className="
-        space-y-14
+        space-y-6
       "
     >
       {collections.map(
@@ -58,7 +58,7 @@ export function HomeCollections() {
               collection.id
             }
             className="
-              space-y-14
+              space-y-4
             "
           >
            <CollectionSection

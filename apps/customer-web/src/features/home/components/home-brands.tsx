@@ -196,9 +196,9 @@ export function HomeBrands() {
       /> 
  
       <div className="hidden overflow-hidden bg-white md:block"> 
-        <div className="px-10 py-3"> 
+        <div className="px-10 pt-3 pb-0"> 
           {/* Top Bar */} 
-          <div className="mb-5 flex items-center justify-between"> 
+          <div className="mb-2 flex items-center justify-between"> 
             <div className="border-l-[3px] border-[#0D9488] pl-4"> 
               <h2 className="text-[24px] font-bold leading-[1.25] tracking-normal md:text-[30px] xl:text-[34px]"> 
                 <span className="text-slate-900"> 
@@ -225,7 +225,7 @@ export function HomeBrands() {
  
           {/* Brand Marquee Row */} 
           <div className="flex flex-col justify-center"> 
-            <div className="relative overflow-hidden py-4 [mask-image:linear-gradient(to_right,transparent,white_10%,white_90%,transparent)]"> 
+            <div className="relative overflow-hidden pt-2 pb-0 [mask-image:linear-gradient(to_right,transparent,white_10%,white_90%,transparent)]"> 
               <div className="flex animate-marquee-left gap-6 py-1"> 
                 {[ 
                   ...priorityBrands, 
@@ -237,7 +237,7 @@ export function HomeBrands() {
                       href={`/brands/${brand.slug}`} 
                       className="shrink-0" 
                     > 
-                      <div className="box-border flex h-[105px] w-[105px] items-center justify-center rounded-3xl border border-solid border-slate-200 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-teal-500 hover:bg-white"> 
+                      <div className="box-border flex h-[120px] w-[120px] items-center justify-center rounded-3xl border border-solid border-slate-200 bg-white transition-all duration-300 hover:-translate-y-0.5 hover:border-teal-500 hover:bg-white"> 
                         {typeof brand.imageUrl === 'string' && 
                         brand.imageUrl.trim() !== '' ? ( 
                           <Image 

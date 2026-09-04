@@ -59,7 +59,7 @@ export const HomeProducts = () => {
   );
 
   return (
-    <section className="w-full px-4 py-5 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
+   <section className="w-full px-4 pt-5 pb-0 sm:px-6 lg:px-8 xl:px-10 2xl:px-12">
       {/* ================= HEADER ================= */}
 
       <div className="mb-6 grid gap-6 lg:grid-cols-[40%_60%] lg:items-center">

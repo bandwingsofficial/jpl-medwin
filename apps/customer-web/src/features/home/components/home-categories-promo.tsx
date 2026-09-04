@@ -64,7 +64,7 @@ export function HomeCategoriespromo() {
   };
 
   return (
-    <section className="w-full px-4 py-6 md:py-10 max-w-[1400px] mx-auto space-y-6">
+  <section className="w-full px-4 pt-6 pb-2 md:pt-10 md:pb-2 max-w-[1400px] mx-auto space-y-6">
       {/* SECTION HEADING */}
       <div className="ml-4">
     <div className="border-l-[3px] border-[#0D9488] pl-4">

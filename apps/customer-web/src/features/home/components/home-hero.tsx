@@ -72,6 +72,9 @@ export function HomeHero() {
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
   const isSwiping = useRef(false);
+// ADD THESE
+const mouseStartX = useRef<number | null>(null);
+const isMouseDragging = useRef(false);
 
   const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
     const touch = event.touches[0];
@@ -145,6 +148,54 @@ export function HomeHero() {
     }, 0);
   };
 
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  mouseStartX.current = event.clientX;
+  isMouseDragging.current = true;
+  isSwiping.current = false;
+
+  setIsPaused(true);
+  isPausedRef.current = true;
+};
+
+const handleMouseUp = (event: React.MouseEvent<HTMLDivElement>) => {
+  if (mouseStartX.current === null) return;
+
+  const deltaX = event.clientX - mouseStartX.current;
+
+  mouseStartX.current = null;
+  isMouseDragging.current = false;
+
+  setIsPaused(false);
+  isPausedRef.current = false;
+
+  if (
+    Math.abs(deltaX) < 50 ||
+    heroImages.length <= 1
+  ) {
+    return;
+  }
+
+  isSwiping.current = true;
+
+  if (deltaX < 0) {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === heroImages.length - 1
+        ? 0
+        : prevIndex + 1
+    );
+  } else {
+    setCurrentIndex((prevIndex) =>
+      prevIndex === 0
+        ? heroImages.length - 1
+        : prevIndex - 1
+    );
+  }
+
+  window.setTimeout(() => {
+    isSwiping.current = false;
+  }, 0);
+};
   /*
    |--------------------------------------------------------------------------
    | RESET INDEX
@@ -378,19 +429,21 @@ if (heroImages.length === 0) {
   "
 >
       <div
-  className="relative w-full touch-pan-y select-none md:touch-auto md:select-auto"
+  className="relative w-full touch-pan-y select-none md:cursor-grab md:active:cursor-grabbing"
   onTouchStart={handleTouchStart}
   onTouchEnd={handleTouchEnd}
+  onMouseDown={handleMouseDown}
+  onMouseUp={handleMouseUp}
   onMouseEnter={() => {
-  isPausedRef.current = true;
-  isPausedRef.current = true;
-setIsPaused(true);
-}}
-onMouseLeave={() => {
-  isPausedRef.current = false;
-  isPausedRef.current = false;
-setIsPaused(false);
-}}
+    isPausedRef.current = true;
+    setIsPaused(true);
+  }}
+  onMouseLeave={() => {
+    mouseStartX.current = null;
+    isMouseDragging.current = false;
+    isPausedRef.current = false;
+    setIsPaused(false);
+  }}
 >
         {hasDestination ? (
           <button
@@ -406,11 +459,13 @@ setIsPaused(false);
             "
           >
             <Image
-              src={currentImage.imageUrl}
-              alt={currentImage.id}
-              width={1920}
-              height={700}
-              priority
+  src={currentImage.imageUrl}
+  alt={currentImage.id}
+  width={1920}
+  height={700}
+  priority
+  draggable={false}
+  onDragStart={(e) => e.preventDefault()}
               className="
                 h-auto
                 w-full
@@ -424,12 +479,14 @@ setIsPaused(false);
             />
           </button>
         ) : (
-          <Image
-            src={currentImage.imageUrl}
-            alt={currentImage.id}
-            width={1920}
-            height={700}
-            priority
+         <Image
+  src={currentImage.imageUrl}
+  alt={currentImage.id}
+  width={1920}
+  height={700}
+  priority
+  draggable={false}
+  onDragStart={(e) => e.preventDefault()}
             className="
               h-auto
               w-full

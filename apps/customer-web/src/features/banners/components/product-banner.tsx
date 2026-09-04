@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import {
@@ -31,12 +31,23 @@ export function ProductBanner({
   const [currentIndex, setCurrentIndex] =
     useState(bannerIndex);
 
+  // ADD THESE
+  const isPausedRef = useRef(false);
+  const mouseStartX = useRef<number | null>(null);
+  const isMouseDragging = useRef(false);
+  const isSwiping = useRef(false);
+
+  // AUTO SLIDE
   useEffect(() => {
     if (images.length <= 1) {
       return;
     }
 
     const interval = setInterval(() => {
+      if (isPausedRef.current) {
+        return;
+      }
+
       setCurrentIndex((prevIndex) =>
         prevIndex === images.length - 1
           ? 0
@@ -65,7 +76,74 @@ export function ProductBanner({
     return null;
   }
 
+  // ADD THIS
+  const handleMouseDown = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    mouseStartX.current = event.clientX;
+    isMouseDragging.current = true;
+    isSwiping.current = false;
+
+    isPausedRef.current = true;
+  };
+
+  // ADD THIS
+  const handleMouseUp = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    if (mouseStartX.current === null) {
+      return;
+    }
+
+    const deltaX =
+      event.clientX - mouseStartX.current;
+
+    mouseStartX.current = null;
+    isMouseDragging.current = false;
+
+    isPausedRef.current = false;
+
+    if (
+      Math.abs(deltaX) < 50 ||
+      images.length <= 1
+    ) {
+      return;
+    }
+
+    isSwiping.current = true;
+
+    if (deltaX < 0) {
+      setCurrentIndex((prevIndex) =>
+        prevIndex === images.length - 1
+          ? 0
+          : prevIndex + 1
+      );
+    } else {
+      setCurrentIndex((prevIndex) =>
+        prevIndex === 0
+          ? images.length - 1
+          : prevIndex - 1
+      );
+    }
+
+    window.setTimeout(() => {
+      isSwiping.current = false;
+    }, 0);
+  };
+
+  // ADD THIS
+  const handleMouseLeave = () => {
+    mouseStartX.current = null;
+    isMouseDragging.current = false;
+
+    isPausedRef.current = false;
+  };
+
   const handleClick = () => {
+    if (isSwiping.current) {
+      return;
+    }
+
     navigateToBannerLink(banner, router);
   };
 
@@ -79,18 +157,42 @@ export function ProductBanner({
       width={1400}
       height={300}
       priority
-      className="block h-auto w-full"
+      draggable={false}
+      onDragStart={(event) =>
+        event.preventDefault()
+      }
+      className="block h-auto w-full select-none"
       sizes="100vw"
     />
   );
 
   return (
-    <section className="relative w-full">
+    <section
+      className="
+        relative
+        w-full
+        md:cursor-grab
+        md:active:cursor-grabbing
+      "
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onMouseEnter={() => {
+        isPausedRef.current = true;
+      }}
+      onMouseLeave={handleMouseLeave}
+    >
       {hasDestination ? (
         <button
           type="button"
           onClick={handleClick}
-          className="m-0 block w-full cursor-pointer p-0"
+          className="
+            m-0
+            block
+            w-full
+            cursor-pointer
+            select-none
+            p-0
+          "
         >
           {bannerImage}
         </button>
@@ -114,7 +216,9 @@ export function ProductBanner({
               key={image.id}
               type="button"
               aria-label={`Go to banner ${index + 1}`}
-              onClick={() => setCurrentIndex(index)}
+              onClick={() =>
+                setCurrentIndex(index)
+              }
               className={`
                 rounded-full
                 transition-all

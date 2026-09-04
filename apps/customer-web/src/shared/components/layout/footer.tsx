@@ -310,7 +310,7 @@ color:#374151;
 display:grid;
 grid-template-columns:1fr;
 gap:40px;
-padding:60px 40px 50px;
+padding:20px 40px 50px;
 max-width:1400px;
 margin:auto;
 }
@@ -321,7 +321,7 @@ margin:auto;
 
 grid-template-columns:1.6fr .9fr .9fr 1.3fr;
 
-gap:60px;
+gap:40px;
 
 }
 
