@@ -28,10 +28,8 @@ export function ProductBanner({
     isError,
   } = useProductBannerImages();
 
-  const [
-    currentIndex,
-    setCurrentIndex,
-  ] = useState(bannerIndex);
+  const [currentIndex, setCurrentIndex] =
+    useState(bannerIndex);
 
   useEffect(() => {
     if (images.length <= 1) {
@@ -51,8 +49,8 @@ export function ProductBanner({
 
   if (isLoading) {
     return (
-      <div className="mx-auto w-full max-w-6xl">
-        <div className="aspect-[1152/240] w-full animate-pulse bg-slate-100" />
+      <div className="w-full">
+        <div className="w-full animate-pulse bg-slate-100" />
       </div>
     );
   }
@@ -74,34 +72,30 @@ export function ProductBanner({
   const hasDestination =
     !!getBannerDestination(banner);
 
+  const bannerImage = (
+    <Image
+      src={banner.imageUrl}
+      alt={`Product Banner ${currentIndex + 1}`}
+      width={1400}
+      height={300}
+      priority
+      className="block h-auto w-full"
+      sizes="100vw"
+    />
+  );
+
   return (
-    <section className="relative mx-auto w-full max-w-6xl">
+    <section className="relative w-full">
       {hasDestination ? (
         <button
           type="button"
           onClick={handleClick}
-          className="block w-full cursor-pointer p-0 m-0"
+          className="m-0 block w-full cursor-pointer p-0"
         >
-          <Image
-            src={banner.imageUrl}
-            alt={`Product Banner ${currentIndex + 1}`}
-            width={1152}
-            height={240}
-            priority
-            className="block h-auto w-full"
-            sizes="100vw"
-          />
+          {bannerImage}
         </button>
       ) : (
-        <Image
-          src={banner.imageUrl}
-          alt={`Product Banner ${currentIndex + 1}`}
-          width={1152}
-          height={240}
-          priority
-          className="block h-auto w-full"
-          sizes="100vw"
-        />
+        bannerImage
       )}
 
       {images.length > 1 && (
@@ -120,9 +114,7 @@ export function ProductBanner({
               key={image.id}
               type="button"
               aria-label={`Go to banner ${index + 1}`}
-              onClick={() =>
-                setCurrentIndex(index)
-              }
+              onClick={() => setCurrentIndex(index)}
               className={`
                 rounded-full
                 transition-all

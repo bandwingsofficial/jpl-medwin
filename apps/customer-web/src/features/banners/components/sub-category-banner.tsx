@@ -3,15 +3,16 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 import {
   useSubCategoryBannerImages,
 } from "@/features/banners/hooks/use-sub-category-banner-images";
-
 import {
   navigateToBannerLink,
   getBannerDestination,
 } from "@/features/banners/utils/banner-navigation";
+import { Product } from "@/features/products/types/product.type";
 
 interface SubCategoryBannerProps {
   bannerIndex?: number;
@@ -21,6 +22,7 @@ export function SubCategoryBanner({
   bannerIndex = 0,
 }: SubCategoryBannerProps) {
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const {
     images,
@@ -31,151 +33,196 @@ export function SubCategoryBanner({
   const [
     currentIndex,
     setCurrentIndex,
-  ] = useState(bannerIndex);
+  ] = useState(
+    bannerIndex
+  );
 
   useEffect(() => {
-    if (images.length <= 1) {
+    if (
+      images.length <= 1
+    ) {
       return;
     }
 
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) =>
-        prevIndex === images.length - 1
-          ? 0
-          : prevIndex + 1
-      );
-    }, 5000);
+    const interval =
+      setInterval(() => {
+        setCurrentIndex(
+          (prevIndex) =>
+            prevIndex ===
+              images.length - 1
+              ? 0
+              : prevIndex + 1
+        );
+      }, 5000);
 
-    return () => clearInterval(interval);
+    return () =>
+      clearInterval(interval);
   }, [images.length]);
 
   if (isLoading) {
     return (
       <div
         className="
-          mx-auto
-          w-full
-          max-w-[1100px]
-          aspect-[1100/400]
+          h-[140px]
           animate-pulse
+          rounded-[20px]
           bg-slate-100
+
+          md:h-[220px]
         "
       />
     );
   }
 
-  if (isError || images.length === 0) {
+  if (isError) {
+    return null;
+  }
+
+  if (
+    images.length === 0
+  ) {
     return null;
   }
 
   const currentBanner =
     images[currentIndex];
 
-  if (
-    !currentBanner?.imageUrl
-  ) {
+  if (!currentBanner) {
     return null;
   }
 
   const handleClick = () => {
-    navigateToBannerLink(
-      currentBanner,
-      router
-    );
+    navigateToBannerLink(currentBanner, router);
   };
 
-  const hasDestination =
-    !!getBannerDestination(
-      currentBanner
-    );
-
-  const image = (
-    <Image
-      src={currentBanner.imageUrl}
-      alt={`Sub Category Banner ${
-        currentIndex + 1
-      }`}
-      width={1100}
-      height={400}
-      priority
-      className="
-        block
-        w-full
-        h-auto
-      "
-      sizes="
-        (max-width: 1100px) 100vw,
-        1100px
-      "
-    />
-  );
+  const hasDestination = !!getBannerDestination(currentBanner);
 
   return (
     <section
       className="
         relative
-        mx-auto
         w-full
-        max-w-[1100px]
+        overflow-hidden
+        rounded-[20px]
       "
     >
-      {hasDestination ? (
-        <button
-          type="button"
-          onClick={handleClick}
-          className="
-            block
-            w-full
-            p-0
-            m-0
-            border-0
-            bg-transparent
-            cursor-pointer
-          "
-        >
-          {image}
-        </button>
-      ) : (
-        image
-      )}
-
-      {images.length > 1 && (
-        <div
-          className="
-            absolute
-            bottom-4
-            left-1/2
-            flex
-            -translate-x-1/2
-            gap-2
-          "
-        >
-          {images.map(
-            (image, index) => (
-              <button
-                key={image.id}
-                type="button"
-                aria-label={`Go to banner ${
-                  index + 1
+      <div
+        className="
+          relative
+          w-full
+          max-w-5xl
+          mx-auto
+        "
+      >
+        {hasDestination ? (
+          <button
+            type="button"
+            onClick={handleClick}
+            className="
+              relative
+              block
+              w-full
+              overflow-hidden
+              rounded-[20px]
+              text-left
+              cursor-pointer
+            "
+          >
+            <Image
+              src={
+                currentBanner.imageUrl
+              }
+              alt={`Sub Category Banner ${currentIndex + 1
                 }`}
-                onClick={() =>
-                  setCurrentIndex(index)
-                }
-                className={`
-                  rounded-full
-                  transition-all
-                  duration-300
-                  ${
-                    currentIndex === index
+              width={1100}
+              height={400}
+              priority
+              className="
+                w-full
+                h-auto
+                object-cover
+                transition-all
+                duration-500
+              "
+              sizes="(max-width:768px) 100vw, 1100px"
+            />
+          </button>
+        ) : (
+          <div
+            className="
+              relative
+              block
+              w-full
+              overflow-hidden
+              rounded-[20px]
+              text-left
+            "
+          >
+            <Image
+              src={
+                currentBanner.imageUrl
+              }
+              alt={`Sub Category Banner ${currentIndex + 1
+                }`}
+              width={1100}
+              height={400}
+              priority
+              className="
+                w-full
+                h-auto
+                object-cover
+                transition-all
+                duration-500
+              "
+              sizes="(max-width:768px) 100vw, 1100px"
+            />
+          </div>
+        )}
+
+        <>
+          {/* Indicators */}
+
+          <div
+            className="
+                absolute
+                bottom-4
+                left-1/2
+                flex
+                -translate-x-1/2
+                gap-2
+              "
+          >
+            {images.map(
+              (
+                image,
+                index
+              ) => (
+                <button
+                  key={
+                    image.id
+                  }
+                  onClick={() =>
+                    setCurrentIndex(
+                      index
+                    )
+                  }
+                  className={`
+                      rounded-full
+                      transition-all
+                      duration-300
+
+                      ${currentIndex ===
+                      index
                       ? "h-3 w-10 bg-white"
                       : "h-3 w-3 bg-white/60"
-                  }
-                `}
-              />
-            )
-          )}
-        </div>
-      )}
+                    }
+                    `}
+                />
+              )
+            )}
+          </div>
+        </>
+      </div>
     </section>
   );
 }
