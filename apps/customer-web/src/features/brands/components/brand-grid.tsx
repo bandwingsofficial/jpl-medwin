@@ -14,6 +14,7 @@ interface Props {
 */
 
 const PRIORITY_BRANDS = [
+  "jpl",
   "gdc",
   "3m",
   "gc",

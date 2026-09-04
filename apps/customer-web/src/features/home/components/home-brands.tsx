@@ -7,6 +7,7 @@ import { ChevronRight, Globe2, ShieldCheck, Truck } from 'lucide-react';
 import { useBrands } from '@/features/brands/hooks/use-brands'; 
  
 const PRIORITY_BRANDS = [ 
+  'jpl',
   'gdc', 
   '3m', 
   'gc', 
@@ -20,6 +21,9 @@ const PRIORITY_BRANDS = [
 ]; 
  
 const PRIORITY_BRAND_ALIASES: Record<string, string[]> = { 
+   jpl: [ 
+    'jpl', 
+  ],
   gdc: [ 
     'gdc', 
   ], 
