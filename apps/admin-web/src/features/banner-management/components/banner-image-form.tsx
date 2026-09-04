@@ -93,41 +93,43 @@ export function BannerImageForm({
   // MAP BANNER TYPE TO DIMENSION RULE
   // ============================================================
 
-  const getRuleKey =
-    (
-      type: BannerType
-    ): BannerDimensionKey => {
-      switch (type) {
-        case "HOME_BANNER":
-          return "HOME_BANNER";
+ const getRuleKey = (
+  type: BannerType,
+  sortOrder: number
+): BannerDimensionKey => {
+  switch (type) {
+    case "HOME_BANNER":
+      return "HOME_BANNER";
 
-        case "CATEGORY_BANNER":
-          return "CATEGORY_BANNER_HORIZONTAL";
+    case "CATEGORY_BANNER":
+      // 3rd category banner image = VERTICAL
+      // Sort order is zero-based: 0, 1, 2...
+      return sortOrder === 2
+        ? "CATEGORY_BANNER_VERTICAL"
+        : "CATEGORY_BANNER_HORIZONTAL";
 
-        case "SUB_CATEGORY_BANNER":
-          return "SUB_CATEGORY_BANNER";
+    case "SUB_CATEGORY_BANNER":
+      return "SUB_CATEGORY_BANNER";
 
-        case "PROMOTIONAL_BANNER":
-          return "PROMOTIONAL_BANNER";
+    case "PROMOTIONAL_BANNER":
+      return "PROMOTIONAL_BANNER";
 
-        case "PRODUCT_BANNER":
-          return "PRODUCT_BANNER";
+    case "PRODUCT_BANNER":
+      return "PRODUCT_BANNER";
 
-        default:
-          return "PRODUCT_BANNER";
-      }
-    };
+    default:
+      return "PRODUCT_BANNER";
+  }
+};
 
-  const ruleKey =
-    getRuleKey(
-      bannerType
-    );
+ const ruleKey = getRuleKey(
+  bannerType,
+  sortOrder
+);
 
-  const dimensionRule =
-    BANNER_DIMENSIONS[
-      ruleKey
-    ];
-
+const dimensionRule =
+  BANNER_DIMENSIONS[ruleKey];
+  
   // ============================================================
   // FILE CHANGE
   // ============================================================

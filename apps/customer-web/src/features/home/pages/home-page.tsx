@@ -25,32 +25,32 @@ export default function HomePage() {
         <HomeStatsBar />
 
         {/* Brands */}
-        <section className="w-full pt-2">
+        <section className="w-full pt-0">
           <HomeBrands />
         </section>
 
         {/* Categories Promo */}
-        <section className="w-full pt-2">
+        <section className="w-full pt-0">
           <HomeCategoriespromo />
         </section>
 
         {/* Categories */}
-        <section className="w-full pt-2">
+        <section className="w-full pt-0">
           <HomeCategories />
         </section>
 
         {/* Collections */}
-        <section className="w-full pt-6">
+        <section className="w-full pt-1">
           <HomeCollections />
         </section>
 
         {/* Products */}
-        <section className="w-full pt-2">
+        <section className="w-full pt-0">
           <HomeProducts />
         </section>
 
         {/* CTA */}
-        <section className="w-full pt-6 pb-10">
+        <section className="w-full pt-6 pb-1">
           <HomeCta />
         </section>
       </main>
