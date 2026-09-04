@@ -69,7 +69,11 @@ export class ListCoinTransactionsUseCase {
       balanceBefore: transaction.balanceBefore,
       balanceAfter: transaction.balanceAfter,
       orderId: transaction.orderId,
-      paymentId: transaction.paymentId,
+
+orderNumber:
+  (transaction.metadata as any)?.orderNumber ?? null,
+
+paymentId: transaction.paymentId,
       redemptionId: transaction.redemptionId,
       description: transaction.description,
       metadata: transaction.metadata,

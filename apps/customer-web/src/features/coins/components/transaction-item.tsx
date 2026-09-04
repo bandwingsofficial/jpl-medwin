@@ -31,15 +31,19 @@ export function TransactionItem({
     >
       <div>
         <h4
-          className="
-            text-sm
-            font-semibold
-            text-black
-          "
-        >
-          {transaction.description}
-        </h4>
-
+  className="
+    text-sm 
+    font-semibold 
+    text-black
+  "
+>
+  {transaction.description.replace(
+    transaction.orderId ?? "",
+    transaction.orderNumber ??
+      (transaction.metadata?.orderNumber as string) ??
+      ""
+  )}
+</h4>
         <p
           className="
             mt-1

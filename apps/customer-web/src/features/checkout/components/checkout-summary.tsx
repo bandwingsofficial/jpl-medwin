@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { RedeemCard } from "@/features/coins/components/redeem-card";
-
+import { useWallet } from "@/features/coins/hooks/use-wallet";
 import { useRouter } from "next/navigation";
 import { useProfile } from "@/features/account/hooks/use-profile";
 import {
@@ -63,27 +63,27 @@ export function CheckoutSummary({
   }
 
   if (!profile) {
-    showError("Please complete your profile before placing an order.");
+    showError("Please add your name, email, whatsapp number and phone number in your profile before placing an order.");
     return false;
   }
 
   if (!profile.name?.trim()) {
-    showError("Please add your name in your profile before placing an order.");
+    showError("Please add your name, email, whatsapp number and phone number in your profile before placing an order.");
     return false;
   }
 
   if (!profile.email?.trim()) {
-    showError("Please add your email address in your profile before placing an order.");
+    showError("Please add your name, email, whatsapp number and phone number in your profile before placing an order.");
     return false;
   }
 
   if (!profile.phoneNumber?.trim()) {
-    showError("Please add your phone number in your profile before placing an order.");
+    showError("Please add your name, email, whatsapp number and phone number in your profile before placing an order.");
     return false;
   }
 
   if (!profile.whatsappNumber?.trim()) {
-    showError("Please add your WhatsApp number in your profile before placing an order.");
+    showError("Please add your name, email, whatsapp number and phone number in your profile before placing an order.");
     return false;
   }
 
@@ -101,6 +101,9 @@ export function CheckoutSummary({
 
 const profile = profileResponse?.data;
 
+const { data: walletResponse } = useWallet();
+
+const wallet = walletResponse?.data;
   const [
     codSuccessOpen,
     setCodSuccessOpen,
@@ -181,23 +184,37 @@ const profile = profileResponse?.data;
    */
 
   const grandTotal =
-    summary?.grandTotal || 0;
+  summary?.grandTotal || 0;
 
-  const COD_MAX_AMOUNT = 10_000;
+const COD_MAX_AMOUNT = 10_000;
 
-  const isCodAllowed =
-    grandTotal < COD_MAX_AMOUNT;
+const MAX_REDEMPTION_PERCENTAGE = 20;
+const COIN_VALUE = 1;
 
-  /*
-   |--------------------------------------------------------------------------
-   | REWARD DATA
-   |--------------------------------------------------------------------------
-   */
+const rewardDiscount =
+  summary?.rewardDiscount || 0;
 
-  const rewardDiscount =
-    summary?.rewardDiscount || 0;
+/*
+ |--------------------------------------------------------------------------
+ | STABLE REWARD REDEMPTION BASE
+ |--------------------------------------------------------------------------
+ |
+ | grandTotal becomes smaller after reward coins are applied.
+ | Adding rewardDiscount restores the original pre-reward amount.
+ |
+ | Example:
+ | Original total = ₹30
+ | Reward = ₹6
+ | Current grandTotal = ₹24
+ |
+ | ₹24 + ₹6 = ₹30
+ |
+ */
+const rewardCalculationAmount =
+  grandTotal + rewardDiscount;
 
-  /*
+const isCodAllowed =
+  grandTotal < COD_MAX_AMOUNT;  /*
    |--------------------------------------------------------------------------
    | CHECKOUT STATUS
    |--------------------------------------------------------------------------
@@ -839,10 +856,12 @@ setPaymentMethodModalOpen(true);
 
         {checkout?.id && (
           <RedeemCard
-            checkoutSessionId={
-              checkout.id
-            }
-            onValidated={() => {
+  checkoutSessionId={checkout.id}
+  orderAmount={rewardCalculationAmount}
+   walletBalance={wallet?.balance ?? 0}
+  maxRedemptionPercentage={MAX_REDEMPTION_PERCENTAGE}
+  coinValue={COIN_VALUE}
+  onValidated={() => {
               /*
                |--------------------------------------------------------------------------
                | BACKEND IS SOURCE OF TRUTH

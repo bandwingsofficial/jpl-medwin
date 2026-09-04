@@ -33,6 +33,7 @@ export type CoinTransactionType =
   | "REFUNDED";
 
 export interface WalletTransaction {
+  orderNumber: string | undefined;
   id: string;
 
   walletId: string;
