@@ -23,31 +23,49 @@ const START_DELAY = 5000;
 const COUNT_DURATION = 1300;
 
 function useCountUpOnce(target: number | null, started: boolean) {
-  const [display, setDisplay] = useState(0);
+  const [display, setDisplay] = useState(target ?? 0);
 
   useEffect(() => {
     if (!started || target === null) return;
-    let rafId: number;
-    let startTime: number | null = null;
 
-    const delayTimer = setTimeout(() => {
+    // Show the actual number immediately on first load
+    setDisplay(target);
+
+    const runCountAnimation = () => {
+      let startTime: number | null = null;
+      let rafId: number;
+
       const step = (timestamp: number) => {
         if (startTime === null) startTime = timestamp;
-        const p = Math.min((timestamp - startTime) / COUNT_DURATION, 1);
+
+        const p = Math.min(
+          (timestamp - startTime) / COUNT_DURATION,
+          1
+        );
+
         const eased = 1 - Math.pow(1 - p, 3);
+
         setDisplay(Math.floor(eased * target));
+
         if (p < 1) {
           rafId = requestAnimationFrame(step);
         } else {
           setDisplay(target);
         }
       };
+
       rafId = requestAnimationFrame(step);
-    }, START_DELAY);
+
+      return () => cancelAnimationFrame(rafId);
+    };
+
+    // Start counting again every 4 seconds
+    const interval = setInterval(() => {
+      runCountAnimation();
+    }, 4000);
 
     return () => {
-      clearTimeout(delayTimer);
-      if (rafId) cancelAnimationFrame(rafId);
+      clearInterval(interval);
     };
   }, [started, target]);
 

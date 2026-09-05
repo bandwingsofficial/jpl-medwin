@@ -203,7 +203,7 @@ const handleActionClick = (href: string) => {
                 )}
               </div>
 
-              <span className="mt-1 hidden font-medium sm:block">{label}</span>
+              <span className="mt-0 hidden font-medium sm:block">{label}</span>
             </button>
           )
         )}
@@ -225,7 +225,7 @@ const handleActionClick = (href: string) => {
   />
 </div>
 
-      <span className="mt-0.5 hidden max-w-[100px] truncate font-medium leading-none sm:block">
+      <span className="mt-0 hidden max-w-[100px] truncate font-medium leading-normal sm:block">
   {!mounted
     ? "Account"
     : isLoading
