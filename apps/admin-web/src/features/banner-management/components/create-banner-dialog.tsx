@@ -28,11 +28,14 @@ interface Props {
   onOpenChange: (
     open: boolean
   ) => void;
+
+  onCreated: () => void;
 }
 
 export function CreateBannerDialog({
   open,
   onOpenChange,
+  onCreated,
 }: Props) {
   const {
     createBanner,
@@ -50,7 +53,7 @@ export function CreateBannerDialog({
         priority: values.priority,
         images: values.images,
       });
-
+      onCreated();
       toast.success(
         "Banner created successfully"
       );

@@ -106,7 +106,11 @@ const navItems: NavigationItem[] = [
   },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  isCollapsed: boolean;
+}
+
+export function Sidebar({ isCollapsed }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -133,32 +137,78 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="flex h-screen w-64 shrink-0 flex-col overflow-hidden border-r border-slate-800/80 bg-[#0B0F19] shadow-2xl">
-     {/* LOGO / BRAND */}
-<div className="relative h-20 w-full shrink-0 overflow-hidden border-b border-slate-800/70">
+   <aside
+  className={cn(
+    "relative flex h-screen shrink-0 flex-col overflow-hidden border-r border-white/40 shadow-2xl transition-[width] duration-300 ease-in-out",
+    isCollapsed ? "w-20" : "w-64"
+  )}  style={{
+        background:
+          "linear-gradient(160deg, #ffffff 0%, #ffffff 10%, #f0fbf9 20%, #eaf8f2 30%, #f0faea 40%, #f7fbe9 50%, #fdf9ec 60%, #fdf3ec 70%, #f6eef9 80%, #f0eefb 90%, #ffffff 100%)",
+      }}
+    >
+      {/* soft color blobs for extra depth */}
+      <div
+        className="pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full opacity-20 blur-3xl"
+        style={{ background: "radial-gradient(circle, #2dd4bf, transparent 70%)" }}
+      />
+      <div
+        className="pointer-events-none absolute right-[-4rem] top-1/3 h-64 w-64 rounded-full opacity-15 blur-3xl"
+        style={{ background: "radial-gradient(circle, #a78bfa, transparent 70%)" }}
+      />
+      <div
+        className="pointer-events-none absolute -left-10 bottom-24 h-56 w-56 rounded-full opacity-15 blur-3xl"
+        style={{ background: "radial-gradient(circle, #facc15, transparent 70%)" }}
+      />
+      <div
+        className="pointer-events-none absolute right-[-3rem] bottom-[-3rem] h-56 w-56 rounded-full opacity-15 blur-3xl"
+        style={{ background: "radial-gradient(circle, #60a5fa, transparent 70%)" }}
+      />
+      <div
+        className="pointer-events-none absolute left-1/3 top-1/2 h-48 w-48 rounded-full opacity-10 blur-3xl"
+        style={{ background: "radial-gradient(circle, #4ade80, transparent 70%)" }}
+      />
+
+   {/* LOGO / BRAND */}
+<div
+  className={cn(
+    "relative z-10 flex h-20 w-full shrink-0 items-center justify-center overflow-hidden border-b border-slate-900/10 bg-white/50 backdrop-blur-sm transition-all duration-300",
+    isCollapsed ? "px-1" : "px-0"
+  )}
+>
   <Image
     src="/Logo/jpl_logo.png"
     alt="JPL Medwin Logo"
-    fill
-    sizes="256px"
-    className="object-cover"
+    width={260}
+    height={80}
     priority
+    className={cn(
+      "h-auto object-contain transition-transform duration-300",
+      isCollapsed
+        ? "w-14"
+        : "w-[240px]"
+    )}
   />
 </div>
-
       {/* ADMIN PANEL LABEL */}
-      <div className="shrink-0 px-5 pb-2 pt-5">
+      <div
+  className={cn(
+    "relative z-10 shrink-0 overflow-hidden transition-all duration-300",
+    isCollapsed
+      ? "h-0 px-0 py-0 opacity-0"
+      : "px-5 pb-2 pt-5 opacity-100"
+  )}
+>
         <div className="flex items-center gap-2">
-          <span className="h-1.5 w-1.5 rounded-full bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.8)]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.6)]" />
 
-          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500">
+          <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-600">
             Administration
           </span>
         </div>
       </div>
 
       {/* NAVIGATION */}
-      <div className="flex-1 overflow-y-auto px-3 pb-4 scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="relative z-10 flex-1 overflow-y-auto px-3 pb-4 scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <nav className="space-y-1">
           {navItems.map((item) => {
             const active = isRouteActive(item.href);
@@ -166,18 +216,21 @@ export function Sidebar() {
 
             return (
               <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "group relative flex items-center gap-3 rounded-xl px-3.5 py-3 text-[13px] font-medium transition-all duration-200",
-                  active
-                    ? "border border-teal-500/20 bg-teal-500/10 text-teal-300 shadow-sm shadow-black/20"
-                    : "border border-transparent text-slate-400 hover:bg-slate-800/70 hover:text-slate-100"
+  key={item.href}
+  href={item.href}
+  title={isCollapsed ? item.name : undefined}
+  className={cn(
+    "group relative flex items-center rounded-xl py-3 text-[13px] font-medium transition-all duration-200",
+    isCollapsed
+      ? "justify-center px-2"
+      : "gap-3 px-3.5", active
+                    ? "border border-teal-500/30 bg-white/80 text-teal-700 shadow-sm shadow-black/5 backdrop-blur-sm"
+                    : "border border-transparent text-slate-600 hover:border-white/60 hover:bg-white/60 hover:text-slate-900"
                 )}
               >
                 {/* ACTIVE INDICATOR */}
                 {active && (
-                  <span className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.7)]" />
+                  <span className="absolute left-0 top-1/2 h-7 w-[3px] -translate-y-1/2 rounded-r-full bg-teal-500 shadow-[0_0_10px_rgba(20,184,166,0.6)]" />
                 )}
 
                 {/* ICON */}
@@ -185,8 +238,8 @@ export function Sidebar() {
                   className={cn(
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-all duration-200",
                     active
-                      ? "bg-teal-400/10 text-teal-300"
-                      : "text-slate-500 group-hover:bg-slate-700/60 group-hover:text-slate-200"
+                      ? "bg-teal-400/20 text-teal-700"
+                      : "text-slate-500 group-hover:bg-white/80 group-hover:text-slate-800"
                   )}
                 >
                   <Icon
@@ -197,12 +250,21 @@ export function Sidebar() {
                 </div>
 
                 {/* LABEL */}
-                <span className="flex-1 truncate">{item.name}</span>
+                <span
+  className={cn(
+    "truncate transition-all duration-300",
+    isCollapsed
+      ? "w-0 flex-none overflow-hidden opacity-0"
+      : "flex-1 opacity-100"
+  )}
+>
+  {item.name}
+</span>
 
                 {/* ACTIVE DOT */}
-                {active && (
-                  <span className="h-1.5 w-1.5 rounded-full bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.8)]" />
-                )}
+                {active && !isCollapsed && (
+  <span className="h-1.5 w-1.5 rounded-full bg-teal-500 shadow-[0_0_8px_rgba(20,184,166,0.6)]" />
+)}
               </Link>
             );
           })}
@@ -210,38 +272,59 @@ export function Sidebar() {
       </div>
 
       {/* FOOTER */}
-      <div className="shrink-0 border-t border-slate-800/70 bg-[#0A0E17] p-3">
+      <div className="relative z-10 shrink-0 border-t border-slate-900/10 bg-white/50 p-3 backdrop-blur-sm">
         {/* ADMIN SESSION */}
-        <div className="mb-3 flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900/40 px-3 py-2.5">
-          <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-teal-500/10 text-teal-400">
+        <div
+  className={cn(
+    "mb-3 flex items-center rounded-xl border border-slate-900/10 bg-white/70 py-2.5 transition-all duration-300",
+    isCollapsed
+      ? "justify-center px-2"
+      : "gap-3 px-3"
+  )}
+  title={isCollapsed ? "Admin Session" : undefined}
+>
+          <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-teal-500/15 text-teal-700">
             <Users size={15} />
 
-            <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-[#0A0E17] bg-emerald-400" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" />
           </div>
 
-          <div className="min-w-0">
-            <p className="truncate text-xs font-semibold text-slate-200">
-              Admin Session
-            </p>
+         <div
+  className={cn(
+    "min-w-0 overflow-hidden transition-all duration-300",
+    isCollapsed
+      ? "w-0 opacity-0"
+      : "w-auto opacity-100"
+  )}
+>
+  <p className="truncate text-xs font-semibold text-slate-800">
+    Admin Session
+  </p>
 
-            <p className="mt-0.5 truncate text-[10px] text-slate-500">
-              Administrator Access
-            </p>
-          </div>
+  <p className="mt-0.5 truncate text-[10px] text-slate-500">
+    Administrator Access
+  </p>
+</div>
         </div>
 
         {/* LOGOUT BUTTON */}
-        <button
-          type="button"
-          onClick={handleLogout}
-          className="group flex w-full items-center justify-center gap-2.5 rounded-xl border border-slate-800 bg-slate-900/50 px-4 py-2.5 text-sm font-medium text-slate-300 transition-all duration-200 hover:border-rose-500/25 hover:bg-rose-500/10 hover:text-rose-400 active:scale-[0.98]"
-        >
+       <button
+  type="button"
+  onClick={handleLogout}
+  title={isCollapsed ? "Logout" : undefined}
+  className={cn(
+    "group flex w-full items-center rounded-xl border border-slate-900/10 bg-white/70 py-2.5 text-sm font-medium text-slate-700 transition-all duration-200 hover:border-rose-400/40 hover:bg-rose-50 hover:text-rose-500 active:scale-[0.98]",
+    isCollapsed
+      ? "justify-center px-2"
+      : "justify-center gap-2.5 px-4"
+  )}
+>
           <LogOut
             size={16}
             className="transition-transform duration-200 group-hover:-translate-x-0.5"
           />
 
-          <span>Logout</span>
+          {!isCollapsed && <span>Logout</span>}
         </button>
       </div>
     </aside>

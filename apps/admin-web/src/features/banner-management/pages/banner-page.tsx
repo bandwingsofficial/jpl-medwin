@@ -211,12 +211,10 @@ return (
       />
 
       <CreateBannerDialog
-        open={createOpen}
-        onOpenChange={
-          setCreateOpen
-        }
-        
-      />
+  open={createOpen}
+  onOpenChange={setCreateOpen}
+  onCreated={refresh}
+/>
 
       <EditBannerDialog
         open={editOpen}

@@ -12,6 +12,7 @@ import {
   TrendingUp,
   DollarSign,
   Package,
+  IndianRupee,
 } from "lucide-react";
 import { useCheckouts, useCheckoutDetails } from "../hooks/use-checkouts";
 import { CheckoutSessionSummary } from "../types/checkout.type";
@@ -247,7 +248,7 @@ export default function CheckoutPage() {
                 Potential Value
               </span>
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
-                <DollarSign size={16} />
+                <IndianRupee size={16} />
               </div>
             </div>
             <p className="mt-2 text-2xl font-extrabold text-gray-900">
