@@ -215,16 +215,15 @@ const handleActionClick = (href: string) => {
             onClick={handleProfileClick}
             className="group flex flex-col items-center text-[10px] text-slate-700 transition-all duration-300 hover:text-black sm:text-xs"
           >
-           <div className="relative flex h-8 w-8 items-center justify-center">
+           <div className="relative flex h-9 w-9 items-center justify-center">
   <Image
     src="/Logo/jpl-profile-icon.png"
     alt="Profile"
-    width={27}
-    height={27}
-    className="-translate-y-[2px] h-[27px] w-[27px] object-contain transition-transform duration-300 group-hover:scale-105"
+    width={29}
+    height={29}
+    className="translate-y-[3px] h-[29px] w-[29px] object-contain transition-transform duration-300 group-hover:scale-105"
   />
 </div>
-
       <span className="mt-0 hidden max-w-[100px] truncate font-medium leading-normal sm:block">
   {!mounted
     ? "Account"
