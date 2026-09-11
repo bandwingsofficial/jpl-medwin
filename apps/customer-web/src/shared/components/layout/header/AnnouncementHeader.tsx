@@ -44,16 +44,16 @@ export default function AnnouncementHeader() {
     <header className="jpl-announcement-header">
       <style>{`
         /* =========================================================
-           JPL MEDWIN — ANNOUNCEMENT BAR
-           New palette: deep navy base, warm gold accent.
-           Reads as premium/clinical — pairs with the teal nav
-           below as a deliberate two-tone brand system rather
-           than one repeated color.
+            JPL MEDWIN — ANNOUNCEMENT BAR
+            New palette: deep navy base, warm gold accent.
+            Reads as premium/clinical — pairs with the teal nav
+            below as a deliberate two-tone brand system rather
+            than one repeated color.
         ========================================================= */
 
         .jpl-announcement-header {
           width: 100%;
-          height: 36px;
+          height: 28px;
 
           position: relative;
           overflow: hidden;
@@ -71,7 +71,7 @@ export default function AnnouncementHeader() {
         }
 
         /* =========================================================
-           VIEWPORT
+            VIEWPORT
         ========================================================= */
 
         .jpl-announcement-viewport {
@@ -89,7 +89,7 @@ export default function AnnouncementHeader() {
         }
 
         /* =========================================================
-           SOFT EDGE MASK
+            SOFT EDGE MASK
         ========================================================= */
 
         .jpl-announcement-viewport::before,
@@ -131,7 +131,7 @@ export default function AnnouncementHeader() {
         }
 
         /* =========================================================
-           TRACK
+            TRACK
         ========================================================= */
 
         .jpl-announcement-track {
@@ -167,7 +167,7 @@ export default function AnnouncementHeader() {
         }
 
         /* =========================================================
-           GROUP
+            GROUP
         ========================================================= */
 
         .jpl-announcement-group {
@@ -179,17 +179,17 @@ export default function AnnouncementHeader() {
         }
 
         /* =========================================================
-           ITEM
+            ITEM
         ========================================================= */
 
         .jpl-announcement-item {
-          height: 38px;
+          height: 28px;
 
           display: flex;
 
           align-items: center;
 
-          padding: 0 38px;
+          padding: 0 32px;
 
           white-space: nowrap;
 
@@ -199,7 +199,7 @@ export default function AnnouncementHeader() {
         }
 
         /* =========================================================
-           VERTICAL DIVIDER
+            VERTICAL DIVIDER
         ========================================================= */
 
         .jpl-announcement-item:not(:last-child)::after {
@@ -215,13 +215,13 @@ export default function AnnouncementHeader() {
 
           width: 1px;
 
-          height: 20px;
+          height: 14px;
 
           background: rgba(212, 175, 55, 0.3);
         }
 
         /* =========================================================
-           LABEL
+            LABEL
         ========================================================= */
 
         .jpl-announcement-label {
@@ -229,13 +229,13 @@ export default function AnnouncementHeader() {
 
           align-items: center;
 
-          gap: 7px;
+          gap: 6px;
 
-          margin-right: 11px;
+          margin-right: 8px;
 
           color: #e8c468;
 
-          font-size: 12px;
+          font-size: 10px;
 
           font-weight: 900;
 
@@ -245,14 +245,14 @@ export default function AnnouncementHeader() {
         }
 
         /* =========================================================
-           GOLD DOT
+            GOLD DOT
         ========================================================= */
 
         .jpl-announcement-label::before {
           content: "";
 
-          width: 7px;
-          height: 7px;
+          width: 5px;
+          height: 5px;
 
           flex-shrink: 0;
 
@@ -262,17 +262,17 @@ export default function AnnouncementHeader() {
 
           box-shadow:
             0 0 0 2px rgba(212, 175, 55, 0.22),
-            0 0 6px rgba(212, 175, 55, 0.5);
+            0 0 5px rgba(212, 175, 55, 0.5);
         }
 
         /* =========================================================
-           MAIN TEXT
+            MAIN TEXT
         ========================================================= */
 
         .jpl-announcement-text {
           color: rgba(255, 255, 255, 0.86);
 
-          font-size: 12px;
+          font-size: 10px;
 
           font-weight: 650;
 
@@ -280,7 +280,7 @@ export default function AnnouncementHeader() {
         }
 
         /* =========================================================
-           CONTINUOUS LOOP
+            CONTINUOUS LOOP
         ========================================================= */
 
         @keyframes jplAnnouncementScroll {
@@ -294,37 +294,37 @@ export default function AnnouncementHeader() {
         }
 
         /* =========================================================
-           TABLET
+            TABLET
         ========================================================= */
 
         @media (max-width: 768px) {
           .jpl-announcement-header {
-            height: 39px;
+            height: 28px;
           }
 
           .jpl-announcement-item {
-            height: 39px;
+            height: 28px;
 
-            padding: 0 26px;
+            padding: 0 24px;
           }
 
           .jpl-announcement-label {
             font-size: 9px;
 
-            margin-right: 8px;
+            margin-right: 7px;
           }
 
           .jpl-announcement-text {
-            font-size: 11px;
+            font-size: 9px;
           }
 
           .jpl-announcement-label::before {
-            width: 6px;
-            height: 6px;
+            width: 4px;
+            height: 4px;
           }
 
           .jpl-announcement-item:not(:last-child)::after {
-            height: 17px;
+            height: 12px;
           }
 
           .jpl-announcement-viewport::before,
@@ -334,22 +334,22 @@ export default function AnnouncementHeader() {
         }
 
         /* =========================================================
-           MOBILE
+            MOBILE
         ========================================================= */
 
         @media (max-width: 480px) {
           .jpl-announcement-header {
-            height: 36px;
+            height: 26px;
           }
 
           .jpl-announcement-item {
-            height: 36px;
+            height: 26px;
 
-            padding: 0 19px;
+            padding: 0 16px;
           }
 
           .jpl-announcement-label {
-            font-size: 8px;
+            font-size: 8.5px;
 
             letter-spacing: 0.08em;
 
@@ -357,12 +357,12 @@ export default function AnnouncementHeader() {
           }
 
           .jpl-announcement-text {
-            font-size: 10px;
+            font-size: 8.5px;
           }
 
           .jpl-announcement-label::before {
-            width: 5px;
-            height: 5px;
+            width: 4px;
+            height: 4px;
           }
 
           .jpl-announcement-viewport::before,
@@ -372,7 +372,7 @@ export default function AnnouncementHeader() {
         }
 
         /* =========================================================
-           REDUCED MOTION
+            REDUCED MOTION
         ========================================================= */
 
         @media (prefers-reduced-motion: reduce) {
