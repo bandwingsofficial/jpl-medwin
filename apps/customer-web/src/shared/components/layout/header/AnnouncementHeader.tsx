@@ -53,7 +53,7 @@ export default function AnnouncementHeader() {
 
         .jpl-announcement-header {
           width: 100%;
-          height: 42px;
+          height: 36px;
 
           position: relative;
           overflow: hidden;
@@ -183,7 +183,7 @@ export default function AnnouncementHeader() {
         ========================================================= */
 
         .jpl-announcement-item {
-          height: 42px;
+          height: 38px;
 
           display: flex;
 
@@ -235,7 +235,7 @@ export default function AnnouncementHeader() {
 
           color: #e8c468;
 
-          font-size: 10px;
+          font-size: 12px;
 
           font-weight: 900;
 
@@ -272,7 +272,7 @@ export default function AnnouncementHeader() {
         .jpl-announcement-text {
           color: rgba(255, 255, 255, 0.86);
 
-          font-size: 12.5px;
+          font-size: 12px;
 
           font-weight: 650;
 
