@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
+import { adminLoginStart } from "@/infrastructure/api/auth.api";
+import { getDeviceId } from "../services/auth-ui.service";
 
 interface LoginFormState {
   email: string;
@@ -18,17 +20,60 @@ export function LoginForm() {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleNext = () => {
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
     if (!form.email.trim() || !form.password.trim()) {
       setError("Email and password are required");
       return;
     }
 
-    setError(null);
-    sessionStorage.setItem("admin_login", JSON.stringify(form));
-    router.push("/verify-otp");
+    try {
+      setLoading(true);
+      setError(null);
+
+      const res = await adminLoginStart({
+        email: form.email.trim(),
+        password: form.password,
+        deviceId: getDeviceId(),
+        deviceName: typeof navigator !== "undefined" ? navigator.platform || "Web Browser" : "Web Browser",
+        platform: "WEB",
+        userAgent: typeof navigator !== "undefined" ? navigator.userAgent : "",
+      });
+
+      const challengeId = res.challengeId || res.data?.challengeId;
+      const target = res.target || res.data?.target || form.email.trim();
+      const resendCooldown = res.resendCooldown || res.data?.resendCooldown || 60;
+      const expiresIn = res.expiresIn || res.data?.expiresIn || 300;
+
+      if (!challengeId) {
+        throw new Error(res.message || "Failed to initialize verification challenge");
+      }
+
+      // Store ONLY the opaque challenge identifier and masked target (NEVER password)
+      sessionStorage.setItem(
+        "admin_challenge",
+        JSON.stringify({
+          challengeId,
+          target,
+          resendCooldown,
+          expiresIn,
+        })
+      );
+
+      // Clean up any legacy credential storage
+      sessionStorage.removeItem("admin_login");
+
+      router.push("/verify-otp");
+    } catch (err: any) {
+      const apiMessage = err?.response?.data?.message || err?.message || "Invalid credentials";
+      setError(apiMessage);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,7 +94,7 @@ export function LoginForm() {
         {/* ===================================================== */}
         <div className="hidden md:block md:w-1/2 relative bg-slate-100">
           <img
-            src="Logo/login2.png" 
+            src="/Logo/login2.png" 
             alt="Medical Professional"
             className="w-full h-full object-cover"
           />
@@ -61,7 +106,7 @@ export function LoginForm() {
         {/* RIGHT — CLEAN & SIMPLE FORM PANEL */}
         {/* ===================================================== */}
         <div className="flex w-full md:w-1/2 flex-col justify-center px-8 py-10 lg:px-12 bg-white">
-          <div className="w-full max-w-sm mx-auto space-y-6">
+          <form onSubmit={handleSubmit} className="w-full max-w-sm mx-auto space-y-6">
             
             {/* Brand Identity Rendered Perfectly via Code - Centered horizontally */}
             <div className="flex flex-col items-center justify-center text-center space-y-2.5">
@@ -104,8 +149,10 @@ export function LoginForm() {
                   Email Address
                 </label>
                 <Input
+                  type="email"
                   placeholder="admin@example.com"
                   value={form.email}
+                  disabled={loading}
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, email: e.target.value }))
                   }
@@ -121,6 +168,7 @@ export function LoginForm() {
                   type="password"
                   placeholder="••••••••"
                   value={form.password}
+                  disabled={loading}
                   onChange={(e) =>
                     setForm((prev) => ({ ...prev, password: e.target.value }))
                   }
@@ -131,7 +179,8 @@ export function LoginForm() {
 
             {/* Submit Action */}
             <Button
-              onClick={handleNext}
+              type="submit"
+              loading={loading}
               className="
                 w-full h-11 rounded-lg
                 bg-gradient-to-r from-teal-600 to-blue-600
@@ -151,7 +200,7 @@ export function LoginForm() {
             <p className="text-center text-[9px] text-slate-400 tracking-wide font-mono font-medium pt-1">
               256-bit SSL · Session encrypted end-to-end
             </p>
-          </div>
+          </form>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import * as speakeasy from 'speakeasy';
+import * as crypto from 'crypto';
 
 import { AuthIdentity } from '../entities/auth-identity.entity';
 import { User } from '../entities/user.entity';
@@ -16,22 +17,13 @@ export class AuthDomainService {
   // =======================
 
   async verifyPassword(identity: AuthIdentity, password: string): Promise<void> {
-    console.log('\n🔐 [PASSWORD CHECK]');
-    console.log('➡️ Password provided:', !!password);
-    console.log('➡️ Has stored hash:', !!identity.passwordHash);
-
     identity.ensurePasswordExists();
 
     const isMatch = await bcrypt.compare(password, identity.passwordHash!);
 
-    console.log('➡️ Match result:', isMatch);
-
     if (!isMatch) {
-      console.log('❌ PASSWORD MISMATCH');
       throw new InvalidCredentialsException();
     }
-
-    console.log('✅ PASSWORD OK');
   }
 
   // =======================
@@ -39,11 +31,6 @@ export class AuthDomainService {
   // =======================
 
   verifyTotp(identity: AuthIdentity, code: string): void {
-    console.log('\n🔐 [TOTP CHECK]');
-    console.log('➡️ Code received:', code);
-    console.log('➡️ TOTP enabled:', identity.isTotpEnabled);
-    console.log('➡️ Has secret:', !!identity.totpSecret);
-
     identity.ensureTotpEnabled();
 
     const verified = speakeasy.totp.verify({
@@ -53,14 +40,9 @@ export class AuthDomainService {
       window: 1, // allows slight time drift
     });
 
-    console.log('➡️ TOTP result:', verified);
-
     if (!verified) {
-      console.log('❌ TOTP FAILED');
-      throw new InvalidTotpException(); // ✅ separate exception
+      throw new InvalidTotpException();
     }
-
-    console.log('✅ TOTP OK');
   }
 
   // =======================
@@ -68,17 +50,34 @@ export class AuthDomainService {
   // =======================
 
   ensureAdmin(user: User): void {
-    console.log('\n🔐 [ROLE CHECK]');
-    console.log('➡️ User role:', user.role);
-
     if (!user.isAdmin()) {
-      console.log('❌ NOT ADMIN');
       throw new ForbiddenRoleException({
         requiredRoles: [UserRole.ADMIN],
         currentRole: user.role,
       });
     }
+  }
 
-    console.log('✅ ADMIN OK');
+  // =======================
+  // 🔐 SECURE EMAIL OTP HELPERS
+  // =======================
+
+  generateSecureOtp(): string {
+    return crypto.randomInt(100000, 1000000).toString();
+  }
+
+  hashOtp(code: string): string {
+    return crypto.createHash('sha256').update(code.trim()).digest('hex');
+  }
+
+  verifyOtpHash(inputCode: string, storedHash: string): boolean {
+    if (!storedHash || !inputCode) return false;
+    const inputHash = this.hashOtp(inputCode);
+    if (inputHash.length !== storedHash.length) return false;
+
+    return crypto.timingSafeEqual(
+      Buffer.from(inputHash, 'hex'),
+      Buffer.from(storedHash, 'hex'),
+    );
   }
 }

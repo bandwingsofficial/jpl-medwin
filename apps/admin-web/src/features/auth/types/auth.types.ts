@@ -8,23 +8,95 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
-export interface LoginResponse {
-  message: string | undefined;
+export interface AdminLoginStartPayload {
+  email: string;
+  password: string;
+  deviceId?: string;
+  deviceName?: string;
+  platform?: "WEB";
+  ip?: string;
+  userAgent?: string;
+}
+
+export interface AdminLoginStartResponse {
   success: boolean;
-  data: {
-    message: string;
-    user: AdminUser;
-    token: AuthTokens;
+  message: string;
+  challengeId?: string;
+  target?: string;
+  expiresIn?: number;
+  resendCooldown?: number;
+  step?: "EMAIL_OTP";
+  data?: {
+    challengeId: string;
+    target: string;
+    expiresIn: number;
+    resendCooldown: number;
+    step: "EMAIL_OTP";
   };
 }
 
-export interface LoginPayload {
-  email: string;
-  password: string;
+export interface AdminVerifyEmailOtpPayload {
+  challengeId: string;
+  otp: string;
+}
+
+export interface AdminVerifyEmailOtpResponse {
+  success: boolean;
+  message: string;
+  challengeId?: string;
+  emailOtpVerified?: boolean;
+  step?: "TOTP";
+  data?: {
+    challengeId: string;
+    emailOtpVerified: boolean;
+    step: "TOTP";
+  };
+}
+
+export interface AdminResendEmailOtpPayload {
+  challengeId: string;
+}
+
+export interface AdminResendEmailOtpResponse {
+  success: boolean;
+  message: string;
+  challengeId?: string;
+  expiresIn?: number;
+  resendCooldown?: number;
+  data?: {
+    challengeId: string;
+    expiresIn: number;
+    resendCooldown: number;
+  };
+}
+
+export interface AdminVerifyTotpPayload {
+  challengeId: string;
   totpCode: string;
   deviceId: string;
-  deviceName: string;
-  platform: "WEB";
-  ip: string;
-  userAgent: string;
+  deviceName?: string;
+  platform?: "WEB";
+  ip?: string;
+  userAgent?: string;
+}
+
+export interface AdminVerifyTotpResponse {
+  success: boolean;
+  message: string;
+  user?: AdminUser;
+  session?: {
+    id: string;
+    deviceId: string;
+    deviceName?: string;
+    platform?: string;
+  };
+  data?: {
+    user: AdminUser;
+    session: {
+      id: string;
+      deviceId: string;
+      deviceName?: string;
+      platform?: string;
+    };
+  };
 }

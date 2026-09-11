@@ -13,14 +13,6 @@ export class AdminLoginDto {
   password!: string;
 
   // =======================
-  // 🔐 TOTP
-  // =======================
-
-  @IsString()
-  @Length(6, 6)
-  totpCode!: string;
-
-  // =======================
   // 📱 DEVICE
   // =======================
 

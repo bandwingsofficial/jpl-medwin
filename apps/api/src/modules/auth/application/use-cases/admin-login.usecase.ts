@@ -1,27 +1,24 @@
-import { Injectable, Inject, BadRequestException } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException, Logger } from '@nestjs/common';
 import * as crypto from 'crypto';
 
 import { AuthIdentityRepository } from '@/domain/repositories/auth-identity.repository';
 import { UserRepository } from '@/domain/repositories/user.repository';
-import { SessionRepository } from '@/domain/repositories/session.repository';
-
 import { AuthDomainService } from '@/domain/services/auth.domain.service';
-import { SessionDomainService } from '@/domain/services/session.domain.service';
-
-import { TokenPort } from '@/application/ports/token.port';
+import { AdminChallengeStore } from '@/infrastructure/redis/admin-challenge.store';
+import { NotificationPort } from '@/application/ports/notification.port';
 
 import { TOKENS } from '@/common/constants/tokens';
-
 import { AuthMethod } from '@/domain/enums/auth-method.enum';
-import { SessionType } from '@/domain/enums/session-type.enum';
+import { maskEmail } from '@/common/utils/mask.util';
 
 import { IdentityNotFoundException } from '@/domain/exceptions/auth/identity-not-found.exception';
 import { UserNotFoundException } from '@/domain/exceptions/user/user-not-found.exception';
-
-import { Session } from '@/domain/entities/session.entity';
+import { EmailOtpSendFailedException } from '@/domain/exceptions/admin/email-otp-send-failed.exception';
 
 @Injectable()
 export class AdminLoginUseCase {
+  private readonly logger = new Logger(AdminLoginUseCase.name);
+
   constructor(
     @Inject(TOKENS.AUTH_IDENTITY_REPO)
     private readonly identityRepo: AuthIdentityRepository,
@@ -29,21 +26,17 @@ export class AdminLoginUseCase {
     @Inject(TOKENS.USER_REPO)
     private readonly userRepo: UserRepository,
 
-    @Inject(TOKENS.SESSION_REPO)
-    private readonly sessionRepo: SessionRepository,
+    @Inject(TOKENS.NOTIFICATION_PORT)
+    private readonly notification: NotificationPort,
 
-    @Inject(TOKENS.TOKEN_PORT)
-    private readonly tokenPort: TokenPort,
-
+    private readonly adminChallengeStore: AdminChallengeStore,
     private readonly authService: AuthDomainService,
-    private readonly sessionService: SessionDomainService,
   ) {}
 
   async execute(dto: {
     email: string;
     password: string;
-    totpCode: string;
-    deviceId: string;
+    deviceId?: string;
     deviceName?: string;
     platform?: any;
     ip?: string;
@@ -52,9 +45,9 @@ export class AdminLoginUseCase {
     // =======================
     // 1. VALIDATE INPUT
     // =======================
-    if (!dto?.email || !dto?.password || !dto?.totpCode) {
+    if (!dto?.email || !dto?.password) {
       throw new BadRequestException({
-        message: 'email, password and totpCode are required',
+        message: 'email and password are required',
         errorCode: 'VALIDATION_ERROR',
       });
     }
@@ -100,82 +93,58 @@ export class AdminLoginUseCase {
     await this.authService.verifyPassword(identity, dto.password);
 
     // =======================
-    // 6. VERIFY TOTP
+    // 6. GENERATE EMAIL OTP & CHALLENGE
     // =======================
-    this.authService.verifyTotp(identity, dto.totpCode);
+    const challengeId = crypto.randomUUID();
+    const otpCode = this.authService.generateSecureOtp();
+    const otpHash = this.authService.hashOtp(otpCode);
+    const ttlSeconds = 300; // 5 minutes
+    const otpExpiresAt = Date.now() + ttlSeconds * 1000;
 
-    // =======================
-    // 7. DELETE OLD SESSION
-    // =======================
-    await this.sessionRepo.deleteByUserIdAndDeviceId(user.id, dto.deviceId);
-
-    // =======================
-    // 8. CREATE SESSION
-    // =======================
-    const sessionId = crypto.randomUUID();
-
-    const refreshToken = await this.tokenPort.generateRefreshToken({
+    const challengeData = {
+      challengeId,
       userId: user.id,
-      sessionId,
-      tokenVersion: user.tokenVersion,
-    });
-
-    const hashed = this.hash(refreshToken);
-
-    const session = await this.sessionRepo.create(
-      new Session(
-        sessionId,
-        user.id,
-        dto.deviceId,
-        hashed,
-        this.getExpiryDate(),
-        false,
-        undefined,
-        undefined,
-        dto.deviceName,
-        dto.platform,
-        SessionType.ADMIN,
-        dto.ip,
-        dto.userAgent,
-      ),
-    );
+      identityId: identity.id,
+      email: identity.value,
+      otpHash,
+      otpExpiresAt,
+      emailOtpVerified: false,
+      attempts: 0,
+      resendCount: 0,
+      lastSentAt: Date.now(),
+      deviceId: dto.deviceId || crypto.randomUUID(),
+      deviceName: dto.deviceName,
+      platform: dto.platform,
+      ip: dto.ip,
+      userAgent: dto.userAgent,
+    };
 
     // =======================
-    // 9. ACCESS TOKEN
+    // 7. SEND EMAIL VIA BREVO
     // =======================
-    const accessToken = await this.tokenPort.generateAccessToken({
-      userId: user.id,
-      sessionId: session.id,
-      tokenVersion: user.tokenVersion,
-      role: user.role,
-    });
+    const emailSubject = 'JPL Medwin Admin - Verification Code';
+    const emailBody = `Your Admin Panel verification code is ${otpCode}. This code expires in 5 minutes. If you did not attempt to sign in, please secure your account.`;
+
+    try {
+      await this.notification.sendEmail(identity.value, emailSubject, emailBody);
+    } catch (error) {
+      this.logger.error(`Failed to dispatch Admin Email OTP for user ${user.id}`);
+      throw new EmailOtpSendFailedException();
+    }
+
+    // Persist challenge after successful email delivery
+    await this.adminChallengeStore.createChallenge(challengeData, ttlSeconds);
 
     // =======================
-    // 10. RETURN (SAFE RESPONSE)
+    // 8. SAFE RESPONSE
     // =======================
     return {
-      user: {
-        id: user.id,
-        role: user.role,
-      },
-      session: {
-        id: session.id,
-        deviceId: session.deviceId,
-        deviceName: session.deviceName,
-        platform: session.platform,
-      },
-      accessToken,
-      refreshToken,
+      message: 'Verification code sent to your email',
+      challengeId,
+      target: maskEmail(identity.value),
+      expiresIn: ttlSeconds,
+      resendCooldown: 60,
+      step: 'EMAIL_OTP',
     };
-  }
-
-  private hash(value: string): string {
-    return crypto.createHash('sha256').update(value).digest('hex');
-  }
-
-  private getExpiryDate(): Date {
-    const d = new Date();
-    d.setDate(d.getDate() + 7);
-    return d;
   }
 }

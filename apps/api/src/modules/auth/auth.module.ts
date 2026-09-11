@@ -22,6 +22,10 @@ import { LogoutAllDevicesUseCase } from '@/application/use-cases/logout-all.usec
 import { GetActiveSessionsUseCase } from '@/application/use-cases/get-active-sessions.usecase';
 import { LogoutDeviceUseCase } from '@/application/use-cases/logout-device.usecase';
 import { AdminLoginUseCase } from '@/application/use-cases/admin-login.usecase';
+import { VerifyAdminEmailOtpUseCase } from '@/application/use-cases/verify-admin-email-otp.usecase';
+import { ResendAdminEmailOtpUseCase } from '@/application/use-cases/resend-admin-email-otp.usecase';
+import { VerifyAdminTotpUseCase } from '@/application/use-cases/verify-admin-totp.usecase';
+import { AdminChallengeStore } from '@/infrastructure/redis/admin-challenge.store';
 
 // =======================
 // DOMAIN SERVICES
@@ -88,6 +92,10 @@ import { NotificationAdapter } from './infrastructure/notification/notification.
     GetActiveSessionsUseCase,
     LogoutDeviceUseCase,
     AdminLoginUseCase,
+    VerifyAdminEmailOtpUseCase,
+    ResendAdminEmailOtpUseCase,
+    VerifyAdminTotpUseCase,
+    AdminChallengeStore,
 
     // =======================
     // DOMAIN SERVICES

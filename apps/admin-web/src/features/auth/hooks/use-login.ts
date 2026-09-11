@@ -1,20 +1,24 @@
 import { useMutation } from "@tanstack/react-query";
-import { adminLogin } from "@/infrastructure/api/auth.api";
+import { adminLoginStart } from "@/infrastructure/api/auth.api";
 import { useRouter } from "next/navigation";
 
-export const useLogin = () => {
+export const useAdminLoginStart = () => {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: adminLogin,
+    mutationFn: adminLoginStart,
 
     onSuccess: (res) => {
-      if (!res.success) throw new Error(res.message);
+      const challengeId = res.challengeId || res.data?.challengeId;
+      const target = res.target || res.data?.target;
 
-      // 👉 DO NOT store tokens
-      // backend already set cookies
-
-      router.push("/dashboard");
+      if (challengeId) {
+        sessionStorage.setItem(
+          "admin_challenge",
+          JSON.stringify({ challengeId, target })
+        );
+        router.push("/verify-otp");
+      }
     },
   });
 };
