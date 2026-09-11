@@ -310,7 +310,7 @@ export function ProductCard({ product }: ProductCardProps) {
     className="
       absolute
       right-2
-      top-2
+      bottom-2
       z-20
       flex
       items-center

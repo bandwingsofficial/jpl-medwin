@@ -183,7 +183,7 @@ export function CollectionMegaMenu({
                             className="
                               absolute
                               right-1
-                              top-1
+                              bottom-1
                               z-20
                               rounded-full
                               bg-red-500
