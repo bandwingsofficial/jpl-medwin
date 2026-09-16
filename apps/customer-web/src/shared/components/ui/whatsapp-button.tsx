@@ -1,15 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { usePathname } from "next/navigation";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useAuthModal } from "@/shared/context/auth-modal-context";
 
 export function WhatsappButton() {
   const pathname = usePathname();
   const { loginOpen } = useAuthModal();
-  const [isOpen, setIsOpen] = useState(false);
 
   // Hide when login modal is open
   if (loginOpen) {
@@ -36,43 +34,15 @@ export function WhatsappButton() {
         z-[9999]
         flex
         items-center
-        lg:bottom-24
+        lg:bottom-16
       "
     >
-      {/* Sliding/Collapsible Toggle Handle Tab */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        aria-label="Toggle WhatsApp tab"
-        className={`
-          flex
-          h-10
-          w-7
-          items-center
-          justify-center
-          rounded-l-xl
-          bg-[#25D366]
-          text-white
-          shadow-md
-          transition-all
-          duration-300
-          ease-in-out
-          focus:outline-none
-          active:scale-95
-          ${isOpen ? "translate-x-full opacity-0 pointer-events-none" : "translate-x-0 opacity-100"}
-        `}
-      >
-        <ChevronLeft className="h-4 w-4" />
-      </button>
-
       {/* Main WhatsApp Button */}
       <a
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        onClick={() => setIsOpen(false)}
-        className={`
-          absolute
-          right-0
+        className="
           flex
           h-14
           w-14
@@ -87,12 +57,13 @@ export function WhatsappButton() {
           ease-in-out
           hover:bg-[#20ba5a]
           focus:outline-none
-          ${isOpen ? "translate-x-0 scale-100" : "translate-x-full scale-90 pointer-events-none opacity-0"}
-        `}
+          lg:h-12
+          lg:w-12
+        "
         aria-label="Contact us on WhatsApp"
       >
         <svg
-          className="h-8 w-8"
+          className="h-8 w-8 lg:h-7 lg:w-7"
           fill="currentColor"
           viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
