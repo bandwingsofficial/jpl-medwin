@@ -6,7 +6,7 @@ import { productApi } from "@/features/products/api/product.api";
 
 interface UseProductsParams {
   limit?: number;
-
+categoryId?: string;
   search?: string;
 
   categorySlug?: string;

@@ -266,6 +266,7 @@ lg:max-h-[calc(100vh-9rem)]
 lg:min-h-0
 lg:gap-6
 lg:overflow-y-auto
+scrollbar-hide
 lg:pr-3
     lg:rounded-none
     lg:border-0
@@ -387,10 +388,10 @@ lg:pr-3
        
 
         {/* RELATED PRODUCTS */}
-
-        <RelatedProducts
+<RelatedProducts
   currentProductId={product.id}
-  categorySlug={product.category?.slug}
+  categoryId={product.category?.id}
+  brandId={product.brand?.id}
 />
       </div>
 
