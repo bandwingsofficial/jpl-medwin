@@ -535,7 +535,7 @@ export function ContactUsPage() {
               10:00 AM – 7:00 PM
             </div>
             <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: "#64748B", fontWeight: 300, lineHeight: 1.6 }}>
-              Monday through Saturday. Our specialists are available during all business hours.
+             Dental Experts Available During Business Hours | Monday to Saturday. 
             </p>
           </div>
         </div>
