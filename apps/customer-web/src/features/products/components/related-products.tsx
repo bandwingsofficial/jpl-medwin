@@ -7,7 +7,7 @@ import { ProductCard } from "./product-card";
 
 interface RelatedProductsProps {
   currentProductId: string;
-  categorySlug: string;
+  categorySlug?: string;
 }
 
 interface ProductPage {
@@ -24,6 +24,14 @@ export function RelatedProducts({
   currentProductId,
   categorySlug,
 }: RelatedProductsProps) {
+  // ------------------------------------------------------------
+  // No category -> no related products request
+  // ------------------------------------------------------------
+
+  if (!categorySlug) {
+    return null;
+  }
+
   const {
     data: categoryInfiniteData,
     isLoading,
@@ -48,7 +56,8 @@ export function RelatedProducts({
   /**
    * Extract products from the infinite-query pages.
    *
-   * Supports both:
+   * Supports:
+   *
    * {
    *   pages: [
    *     {
@@ -95,10 +104,6 @@ export function RelatedProducts({
 
   /**
    * Remove the currently opened product.
-   *
-   * Since the API request already uses the current
-   * product's categorySlug, every remaining product
-   * belongs to the same category context.
    */
   const relatedProducts = categoryProducts
     .filter((product) => {
@@ -110,8 +115,7 @@ export function RelatedProducts({
     .slice(0, 12);
 
   /**
-   * If there are no other products in this category,
-   * don't display an empty Related Products section.
+   * No other products in this category.
    */
   if (relatedProducts.length === 0) {
     return null;
