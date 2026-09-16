@@ -642,7 +642,7 @@ export function AboutUsPage() {
         style={{
           position: "relative",
           padding: "80px 24px 100px 24px",
-          backgroundImage: "linear-gradient(to right, rgba(11, 94, 105, 0.92) 25%, rgba(11, 94, 105, 0.8) 55%, rgba(11, 94, 105, 0.55) 100%), url('/Logo/about-bg1.jfif')",
+          backgroundImage: "linear-gradient(to right, rgba(11, 94, 105, 0.92) 25%, rgba(11, 94, 105, 0.8) 55%, rgba(11, 94, 105, 0.55) 100%), url('/Logo/aboutbg1.jpeg')",
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
