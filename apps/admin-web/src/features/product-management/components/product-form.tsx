@@ -504,6 +504,7 @@ export function ProductForm({
 
       const mappedVariants = activeVariants.map((variant: any, index: number) => ({
         id: variant.id,
+        sku: variant.sku || form.previewSku || undefined,
         name: String(variant.name || form.name).trim(),
         purchasePrice:
           variant.purchasePrice === ""

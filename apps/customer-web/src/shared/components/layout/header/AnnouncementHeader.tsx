@@ -13,7 +13,7 @@ const announcements = [
   },
   {
     label: "LAUNCH OFFER",
-    text: "Get 5% OFF on Orders ₹5,000+",
+    text: "Get 5% OFF On Orders ₹5,000+",
   },
 ];
 

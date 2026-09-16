@@ -126,70 +126,81 @@ export function normalizeVariantsForProductType(params: {
     : [];
 
   // ============================================================
-  // SIMPLE PRODUCT
-  // ============================================================
+// SIMPLE PRODUCT
+// ============================================================
 
-  if (productType === ProductType.SIMPLE) {
-    const incomingVariant = incoming[0];
+if (productType === ProductType.SIMPLE) {
+  const incomingVariant = incoming[0];
 
-    // ----------------------------------------------------------
-    // Excel contains SKU
-    // ----------------------------------------------------------
+  const existingDefault =
+    existingVariants.find(
+      (variant) => variant.id === product.defaultVariantId,
+    ) ?? existingVariants[0];
 
-    if (incomingVariant?.sku) {
-      return [
-        {
-          ...incomingVariant,
+  // ----------------------------------------------------------
+  // Incoming variant exists
+  // ----------------------------------------------------------
 
-          sku: incomingVariant.sku,
+  if (incomingVariant) {
+    return [
+      {
+        ...incomingVariant,
 
-          name: productName,
+        id: incomingVariant.id ?? existingDefault?.id,
 
-          isDeleted: false,
-        },
-      ];
-    }
+        sku: incomingVariant.sku || existingDefault?.sku,
 
-    // ----------------------------------------------------------
-    // No incoming variant -> preserve existing default variant
-    // ----------------------------------------------------------
+        name: productName,
 
-    const existingDefault =
-      existingVariants.find(
-        (variant) => variant.id === product.defaultVariantId,
-      ) ?? existingVariants[0];
+        // IMPORTANT:
+        // Use incoming quantity when supplied.
+        // Only preserve existing quantity when it is actually absent.
+        quantity:
+          incomingVariant.quantity !== undefined &&
+          incomingVariant.quantity !== null
+            ? incomingVariant.quantity
+            : existingDefault?.quantity ?? 0,
 
-    if (existingDefault) {
-      return [
-        {
-          id: existingDefault.id,
-
-          sku: existingDefault.sku,
-
-          name: productName,
-
-          purchasePrice: existingDefault.purchasePrice,
-          sellingPrice: existingDefault.sellingPrice,
-          mrp: existingDefault.mrp,
-          quantity: existingDefault.quantity,
-
-          attributes: existingDefault.attributes,
-
-          averageRating: existingDefault.averageRating,
-          reviewCount: existingDefault.reviewCount,
-
-          isWeighted: existingDefault.isWeighted,
-          warrantyMonths: existingDefault.warrantyMonths,
-
-          priorityOrder: existingDefault.priorityOrder,
-
-          isDeleted: false,
-        },
-      ];
-    }
-
-    return [];
+        isDeleted: false,
+      },
+    ];
   }
+
+  // ----------------------------------------------------------
+  // No incoming variant -> preserve existing default variant
+  // ----------------------------------------------------------
+
+  if (existingDefault) {
+    return [
+      {
+        id: existingDefault.id,
+
+        sku: existingDefault.sku,
+
+        name: productName,
+
+        purchasePrice: existingDefault.purchasePrice,
+        sellingPrice: existingDefault.sellingPrice,
+        mrp: existingDefault.mrp,
+        quantity: existingDefault.quantity,
+
+        attributes: existingDefault.attributes,
+
+        averageRating: existingDefault.averageRating,
+        reviewCount: existingDefault.reviewCount,
+
+        isWeighted: existingDefault.isWeighted,
+        warrantyMonths: existingDefault.warrantyMonths,
+
+        priorityOrder: existingDefault.priorityOrder,
+
+        isDeleted: false,
+      },
+    ];
+  }
+
+  return [];
+}
 
   // ============================================================
   // VARIABLE PRODUCT

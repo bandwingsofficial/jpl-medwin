@@ -92,7 +92,7 @@ export function ProductHeaderInfo({
   const averageRating =
     selectedVariant?.ratings?.average ||
     product.ratings?.average ||
-    4.5;
+    5;
 
   const ratingsCount =
     selectedVariant?.ratings?.count ||
@@ -225,13 +225,6 @@ export function ProductHeaderInfo({
     {averageRating.toFixed(1)}
   </span>
 </div>
-            <span className="text-gray-400">
-              •
-            </span>
-
-            <span className="text-gray-500">
-              {ratingsCount} Reviews
-            </span>
           </div>
         )}
       </div>
