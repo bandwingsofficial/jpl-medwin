@@ -41,10 +41,10 @@ export default function CollectionDetailsPage() {
       <CollectionProductsGrid products={products} />
 
       {/* RELATED PRODUCTS */}
-      <RelatedProducts
-        currentProductId={products[0]?.id ?? ""}
-        categorySlug={products[0]?.category?.slug}
-      />
+     <RelatedProducts
+  currentProductId={products[0]?.id ?? ""}
+  categoryId={products[0]?.category?.id}
+/>
     </div>
   );
 }
