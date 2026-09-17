@@ -267,13 +267,19 @@ switch (input.sortBy) {
   products.map(async (product) => {
     const mapped = ProductResponseMapper.map(product);
 
-    const s3Images =
-      await this.productS3ImageResolver.resolveProductImages(
-        product.name,
-      );
+    if (!mapped.images?.main || !mapped.images?.gallery?.length) {
+      const s3Images =
+        await this.productS3ImageResolver.resolveProductImages(
+          product.name,
+          product.id,
+          product.slug,
+        );
 
-    mapped.images.main = s3Images.mainImage;
-    mapped.images.gallery = s3Images.galleryImages;
+      mapped.images = {
+        main: mapped.images?.main || s3Images.mainImage,
+        gallery: mapped.images?.gallery?.length ? mapped.images.gallery : s3Images.galleryImages,
+      };
+    }
 
     mapped.variants?.forEach((variant: any) => {
       delete variant.createdAt;

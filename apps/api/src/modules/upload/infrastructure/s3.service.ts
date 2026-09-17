@@ -4,6 +4,7 @@ import {
   PutObjectCommand,
   DeleteObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
 } from '@aws-sdk/client-s3';
 
 @Injectable()
@@ -38,8 +39,8 @@ export class S3Service {
         Body: file.buffer,
         ContentType: file.mimetype,
 
-        // 🔥 optional but recommended
-        CacheControl: 'public, max-age=31536000', // 1 year cache
+        // 🔥 Prevents stale caching when images are overwritten
+        CacheControl: 'no-cache, no-store, must-revalidate',
       }),
     );
 
@@ -53,24 +54,42 @@ export class S3Service {
   // 🔍 OBJECT EXISTS
   // =======================
 
- async objectExists(key: string): Promise<boolean> {
+  async objectExists(key: string): Promise<boolean> {
+    try {
+      await this.s3.send(
+        new HeadObjectCommand({
+          Bucket: this.bucket,
+          Key: key,
+        }),
+      );
 
-  try {
-    await this.s3.send(
-      new HeadObjectCommand({
-        Bucket: this.bucket,
-        Key: key,
-      }),
-    );
+      console.log('✅ FOUND');
 
-    console.log("✅ FOUND");
-
-    return true;
-  } catch (error: any) {
-
-    return false; // <-- NEVER throw here
+      return true;
+    } catch (error: any) {
+      return false; // <-- NEVER throw here
+    }
   }
-}
+
+  // =======================
+  // 📋 LIST KEYS UNDER PREFIX
+  // =======================
+
+  async listKeys(prefix: string): Promise<string[]> {
+    try {
+      const response = await this.s3.send(
+        new ListObjectsV2Command({
+          Bucket: this.bucket,
+          Prefix: prefix,
+        }),
+      );
+
+      return (response.Contents || []).map((obj) => obj.Key!).filter(Boolean);
+    } catch (error) {
+      console.error('❌ S3 listKeys error:', error);
+      return [];
+    }
+  }
 
   // =======================
   // 🔗 PUBLIC URL
@@ -127,17 +146,59 @@ export class S3Service {
 }
 
   // =======================
+  // 📤 UPLOAD TO KEY (STABLE KEY OVERWRITE)
+  // =======================
+
+  async uploadToKey(
+    file: Express.Multer.File,
+    key: string,
+    cacheControl: string = 'no-cache, no-store, must-revalidate',
+  ): Promise<{ key: string; url: string }> {
+    await this.s3.send(
+      new PutObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+        CacheControl: cacheControl,
+      }),
+    );
+
+    return {
+      key,
+      url: this.getPublicUrl(key),
+    };
+  }
+
+  // =======================
   // 🧠 EXTRACT KEY FROM URL
   // =======================
 
-  private extractKeyFromUrl(fileUrl: string): string {
+  extractKeyFromUrl(fileUrl: string): string {
     try {
-      const url = new URL(fileUrl);
+      if (!fileUrl) return '';
+      const cleanUrl = fileUrl.trim().split('?')[0];
 
-      // works for BOTH:
-      // ✅ S3 URL
-      // ✅ CloudFront URL
-      return decodeURIComponent(url.pathname.replace(/^\/+/, ''));
+      if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
+        const url = new URL(cleanUrl);
+
+        // works for BOTH:
+        // ✅ Virtual-hosted S3 URL: https://bucket.s3.region.amazonaws.com/key
+        // ✅ Path-style S3 URL: https://s3.region.amazonaws.com/bucket/key
+        // ✅ CloudFront URL: https://cdn.example.com/key
+        let pathname = decodeURIComponent(url.pathname.replace(/^\/+/, ''));
+        if (this.bucket && pathname.startsWith(`${this.bucket}/`)) {
+          pathname = pathname.substring(this.bucket.length + 1);
+        }
+        return pathname;
+      }
+
+      // If it's already a relative S3 key path (e.g. products/123/abc.webp)
+      let key = decodeURIComponent(cleanUrl.replace(/^\/+/, ''));
+      if (this.bucket && key.startsWith(`${this.bucket}/`)) {
+        key = key.substring(this.bucket.length + 1);
+      }
+      return key;
     } catch {
       console.error('❌ Invalid file URL:', fileUrl);
       return '';

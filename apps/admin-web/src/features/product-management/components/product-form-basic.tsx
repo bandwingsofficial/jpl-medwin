@@ -120,22 +120,24 @@ export function ProductFormBasic({
         )
         .map((image: any) => {
 
-          // EXISTING IMAGE
+          // REPLACED OR NEW WITH FILE OBJECT
           if (
-            image?.url
+            image?.file instanceof File
           ) {
 
             return {
-              type: "existing",
+              type: image.url || image.id ? "existing-replaced" : "new",
 
               preview:
-                image.url,
+                URL.createObjectURL(
+                  image.file
+                ),
 
               image,
             };
           }
 
-          // NEW FILE
+          // RAW FILE DIRECTLY
           if (
             image instanceof File
           ) {
@@ -152,18 +154,16 @@ export function ProductFormBasic({
             };
           }
 
-          // NEW OBJECT FILE
+          // EXISTING SAVED IMAGE
           if (
-            image?.file instanceof File
+            image?.url
           ) {
 
             return {
-              type: "new",
+              type: "existing",
 
               preview:
-                URL.createObjectURL(
-                  image.file
-                ),
+                image.url,
 
               image,
             };
@@ -245,6 +245,40 @@ export function ProductFormBasic({
     };
 
   // =========================================
+  // REPLACE GALLERY IMAGE
+  // =========================================
+
+  const handleReplaceAdditionalImage = (
+    index: number,
+    file: File,
+  ) => {
+    const previews = [...imagePreviews];
+    const target = previews[index];
+    if (!target) return;
+
+    const updatedImages = [...(data.images || [])];
+    const targetIndex = updatedImages.findIndex(
+      (img: any) =>
+        img === target.image ||
+        (target.image?.id && img?.id === target.image.id) ||
+        (target.image?.url && img?.url === target.image.url)
+    );
+
+    if (targetIndex !== -1) {
+      const current = updatedImages[targetIndex];
+      if (current instanceof File) {
+        updatedImages[targetIndex] = file;
+      } else {
+        updatedImages[targetIndex] = {
+          ...current,
+          file,
+        };
+      }
+      onChange("images", updatedImages);
+    }
+  };
+
+  // =========================================
   // REMOVE GALLERY IMAGE
   // =========================================
 
@@ -266,17 +300,20 @@ export function ProductFormBasic({
       const updatedImages =
         [...data.images];
 
-      // EXISTING IMAGE
+      // EXISTING IMAGE (either unchanged or replaced)
       if (
-        target.type ===
-        "existing"
+        target.type === "existing" ||
+        target.type === "existing-replaced" ||
+        target.image?.url ||
+        target.image?.id
       ) {
 
         const existingIndex =
           updatedImages.findIndex(
             (img: any) =>
-              img?.url ===
-              target.image.url
+              img === target.image ||
+              (target.image?.id && img?.id === target.image.id) ||
+              (target.image?.url && img?.url === target.image.url)
           );
 
         if (
@@ -840,6 +877,35 @@ export function ProductFormBasic({
                           "
                         />
 
+                        <label
+                          className="
+                            absolute top-2 left-2
+                            bg-black/60 hover:bg-black/80
+                            text-white
+                            p-1.5 rounded-full
+                            opacity-0
+                            group-hover:opacity-100
+                            transition-all
+                            cursor-pointer
+                            shadow-lg
+                          "
+                          title="Replace image"
+                        >
+                          <UploadCloud className="h-3.5 w-3.5" />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                handleReplaceAdditionalImage(index, file);
+                              }
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
+
                         <button
                           type="button"
                           onClick={() =>
@@ -856,6 +922,7 @@ export function ProductFormBasic({
                             group-hover:opacity-100
                             transition-all
                           "
+                          title="Remove image"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>

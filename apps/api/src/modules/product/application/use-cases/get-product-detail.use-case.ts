@@ -143,18 +143,49 @@ console.log(productImages);
     // =======================
     // 🖼 PRODUCT IMAGES
     // =======================
-    const s3Images =
-  await this.productS3ImageResolver.resolveProductImages(product.name);
+    const activeProductImages = (productImages || []).filter((i) => !i?.deletedAt);
+    const dbMainImage = activeProductImages.find((i) => i?.type === 'MAIN')?.url ?? null;
+    const dbGallery = activeProductImages
+      .filter((i) => i?.type === 'GALLERY')
+      .sort((a, b) => (a?.sortOrder ?? 0) - (b?.sortOrder ?? 0))
+      .map((i) => i?.url)
+      .filter(Boolean);
 
-console.log("S3 Images:", s3Images);
+    let mainImage: string | null = dbMainImage;
+    let gallery: string[] = dbGallery;
 
-const mainImage = s3Images.mainImage;
+    let s3Images = { mainImage, galleryImages: gallery };
 
-const gallery = s3Images.galleryImages;
+    if (!mainImage || gallery.length === 0) {
+      const resolvedS3 = await this.productS3ImageResolver.resolveProductImages(
+        product.name,
+        product.id,
+        product.slug,
+      );
+      if (!mainImage) {
+        mainImage = resolvedS3.mainImage;
+      }
+      if (gallery.length === 0) {
+        gallery = resolvedS3.galleryImages;
+      }
+      s3Images = resolvedS3;
+    }
 
     // =======================
     // ✅ RESPONSE
     // =======================
+
+    const withTimestamp = (url: string | null | undefined, updatedAt?: any) => {
+      if (!url) return null;
+      const ts = updatedAt
+        ? new Date(updatedAt).getTime()
+        : product?.updatedAt
+          ? new Date(product.updatedAt).getTime()
+          : undefined;
+      if (!ts || isNaN(ts)) return url;
+      const cleanUrl = url.split('?')[0];
+      return `${cleanUrl}?t=${ts}`;
+    };
 
     return {
       id: product.id,
@@ -170,10 +201,10 @@ const gallery = s3Images.galleryImages;
       currency: product.currency,
 
       brand: {
-  id: product.brandId,
-  name: brand?.name ?? '',
-  slug: brand?.name ?? '',
-},
+        id: product.brandId,
+        name: brand?.name ?? '',
+        slug: brand?.name ?? '',
+      },
 
       category: {
         id: product.categoryId,
@@ -234,9 +265,9 @@ const gallery = s3Images.galleryImages;
           : null,
 
       images: {
-        main: mainImage,
+        main: withTimestamp(mainImage),
 
-        gallery,
+        gallery: (gallery || []).map((u) => withTimestamp(u)).filter(Boolean) as string[],
       },
 
       features: product.features ?? [],
@@ -262,13 +293,29 @@ const gallery = s3Images.galleryImages;
       updatedAt: product.updatedAt,
 variants: await Promise.all(
   safeVariants.map(async (v) => {
+    const vImages = variantImagesMap.get(v.id) || [];
+    const activeVImages = vImages.filter((i: any) => !i?.deletedAt);
+    const dbVMain = activeVImages.find((i: any) => i?.type === 'MAIN')?.url ?? null;
+    const dbVGallery = activeVImages
+      .filter((i: any) => i?.type === 'GALLERY')
+      .sort((a: any, b: any) => (a?.sortOrder ?? 0) - (b?.sortOrder ?? 0))
+      .map((i: any) => i?.url)
+      .filter(Boolean);
 
-    const s3Variant =
-      await this.productS3ImageResolver.resolveVariantImages(
-        product.name,
-        v.name,
-        s3Images,
-      );
+    let variantMainImage = dbVMain;
+    let variantGallery = dbVGallery;
+
+    if (!variantMainImage && (!variantGallery || variantGallery.length === 0)) {
+      const s3Variant =
+        await this.productS3ImageResolver.resolveVariantImages(
+          product.name,
+          v.name,
+          s3Images,
+          product.id,
+        );
+      variantMainImage = s3Variant.mainImage ?? mainImage;
+      variantGallery = s3Variant.galleryImages?.length ? s3Variant.galleryImages : gallery;
+    }
 
     return {
       id: v.id,
@@ -304,8 +351,8 @@ variants: await Promise.all(
       warrantyMonths: v.warrantyMonths ?? null,
 
       images: {
-        main: s3Variant.mainImage,
-        gallery: s3Variant.galleryImages,
+        main: withTimestamp(variantMainImage, v.updatedAt),
+        gallery: (variantGallery || []).map((u: string) => withTimestamp(u, v.updatedAt)).filter(Boolean) as string[],
       },
 
       createdAt: v.createdAt,

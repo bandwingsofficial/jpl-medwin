@@ -185,6 +185,41 @@ const buildProductFormData = (
         ? jsonPayload.faq
         : [],
 
+    mainImage:
+      mainImage instanceof File
+        ? undefined
+        : payload.mainImage !== undefined
+          ? payload.mainImage
+          : payload.existingMainImage || undefined,
+
+    images: (() => {
+      if (!Array.isArray(images)) return undefined;
+      let galleryFileCount = 0;
+      return images
+        .map((img: any, idx: number) => {
+          if (!img) return null;
+          const hasFile = img instanceof File || img?.file instanceof File;
+          const fileIndex = hasFile ? galleryFileCount++ : undefined;
+
+          if (img instanceof File) {
+            return {
+              fileIndex,
+              sortOrder: idx,
+            };
+          }
+
+          return {
+            id: img.id,
+            url: typeof img === 'string' ? img : img.url,
+            alt: img.alt,
+            sortOrder: typeof img.sortOrder === 'number' ? img.sortOrder : idx,
+            isDeleted: img.isDeleted === true || img.isDeleted === 'true',
+            fileIndex,
+          };
+        })
+        .filter(Boolean);
+    })(),
+
     variants:
       Array.isArray(
         jsonPayload.variants

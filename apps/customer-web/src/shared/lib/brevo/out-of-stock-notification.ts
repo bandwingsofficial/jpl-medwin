@@ -83,28 +83,12 @@ export async function sendOutOfStockNotification(
             ${payload.productName}
           </p>
 
-          <p>
-            <strong>Product ID:</strong>
-            ${payload.productId}
-          </p>
-
           ${
             payload.variantName
               ? `
                 <p>
                   <strong>Variant:</strong>
                   ${payload.variantName}
-                </p>
-              `
-              : ""
-          }
-
-          ${
-            payload.variantId
-              ? `
-                <p>
-                  <strong>Variant ID:</strong>
-                  ${payload.variantId}
                 </p>
               `
               : ""

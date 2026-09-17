@@ -24,14 +24,27 @@ export class ProductResponseMapper {
     // PRODUCT IMAGES
     // =========================
 
+    const withTimestamp = (url: string | null | undefined, updatedAt?: any) => {
+      if (!url) return null;
+      const ts = updatedAt
+        ? new Date(updatedAt).getTime()
+        : product?.updatedAt
+          ? new Date(product.updatedAt).getTime()
+          : undefined;
+      if (!ts || isNaN(ts)) return url;
+      const cleanUrl = url.split('?')[0];
+      return `${cleanUrl}?t=${ts}`;
+    };
+
     const activeImages = images.filter((i) => !i?.deletedAt);
 
-    const mainImage = activeImages.find((i) => i?.type === 'MAIN')?.url ?? null;
+    const mainImageObj = activeImages.find((i) => i?.type === 'MAIN');
+    const mainImage = mainImageObj ? withTimestamp(mainImageObj.url, mainImageObj.updatedAt) : null;
 
     const gallery = activeImages
       .filter((i) => i?.type === 'GALLERY')
       .sort((a, b) => (a?.sortOrder ?? 0) - (b?.sortOrder ?? 0))
-      .map((i) => i?.url)
+      .map((i) => withTimestamp(i?.url, i?.updatedAt))
       .filter(Boolean)
       .filter((url, index, self) => self.indexOf(url) === index);
 
@@ -180,15 +193,14 @@ export class ProductResponseMapper {
 
       variants: variants.map((v) => {
         const vImages = Array.isArray(v?.images) ? v.images : [];
-
         const activeVariantImages = vImages.filter((i) => !i?.deletedAt);
-
-        const variantMainImage = activeVariantImages.find((i) => i?.type === 'MAIN')?.url ?? null;
+        const vMainObj = activeVariantImages.find((i) => i?.type === 'MAIN');
+        const variantMainImage = vMainObj ? withTimestamp(vMainObj.url, vMainObj.updatedAt || v?.updatedAt) : null;
 
         const variantGallery = activeVariantImages
           .filter((i) => i?.type === 'GALLERY')
           .sort((a, b) => (a?.sortOrder ?? 0) - (b?.sortOrder ?? 0))
-          .map((i) => i?.url)
+          .map((i) => withTimestamp(i?.url, i?.updatedAt || v?.updatedAt))
           .filter(Boolean)
           .filter((url, index, self) => self.indexOf(url) === index);
 

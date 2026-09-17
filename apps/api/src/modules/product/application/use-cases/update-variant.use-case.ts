@@ -18,6 +18,7 @@ import { ProductImage } from '../../domain/entities/product-image.entity';
 
 import { ImageOwnerType } from '../../domain/enums/image-owner-type.enum';
 import { ImageType } from '../../domain/enums/image-type.enum';
+import { StockNotificationService } from '@/modules/stock-notification/stock-notification.service';
 
 @Injectable()
 export class UpdateVariantUseCase {
@@ -29,15 +30,19 @@ export class UpdateVariantUseCase {
 
     @Inject(TOKENS.PRODUCT_IMAGE_REPO)
     private readonly imageRepo: ProductImageRepository,
+
+    private readonly stockNotificationService: StockNotificationService,
   ) {}
 
   async execute(input: any) {
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const variant = await this.variantRepo.findById(input.id, true, tx);
 
       if (!variant) {
         throw new VariantNotFoundException({ variantId: input.id });
       }
+
+      const oldQuantity = variant.quantity;
 
       // =======================
       // ♻️ RESTORE
@@ -253,8 +258,33 @@ export class UpdateVariantUseCase {
         await this.imageRepo.setMainImageForVariant(variant.id, mainImageId, tx);
       }
 
-      return updated;
+      const isRestocked = oldQuantity <= 0 && (variant.quantity ?? 0) > 0;
+
+      return {
+        updated,
+        restockInfo: isRestocked
+          ? {
+              productId: variant.productId,
+              variantId: variant.id,
+              oldQuantity,
+              newQuantity: variant.quantity,
+            }
+          : null,
+      };
     });
+
+    if (result?.restockInfo) {
+      this.stockNotificationService
+        .handleRestock(result.restockInfo)
+        .catch((err) => {
+          console.error(
+            '[RESTOCK_NOTIFICATION_ERROR] Failed to dispatch restock notification for variant:',
+            err,
+          );
+        });
+    }
+
+    return result.updated;
   }
 
   // =======================

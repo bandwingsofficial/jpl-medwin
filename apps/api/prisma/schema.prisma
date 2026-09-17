@@ -554,7 +554,8 @@ model Product {
   cartItems CartItem[]
   wishlists Wishlist[]
   collectionProducts CollectionProduct[]
-    bannerImages  BannerImage[]
+  bannerImages  BannerImage[]
+  stockNotifications StockNotification[]
 
   // ================= CONSTRAINTS =================
   @@unique([slug, deletedAt])
@@ -616,6 +617,7 @@ warrantyMonths  Int?
   // 🔗 Relations
   images          ProductImage[]
   cartItems CartItem[]
+  stockNotifications StockNotification[]
 
   // ================= UNIQUE =================
   @@unique([productId, sku, deletedAt])
@@ -1829,3 +1831,36 @@ model ShippingConfiguration {
   @@index([isActive])
   @@map("shipping_configurations")
 }
+
+// =======================
+// STOCK NOTIFICATION
+// =======================
+
+enum StockNotificationStatus {
+  PENDING
+  NOTIFIED
+  CANCELLED
+}
+
+model StockNotification {
+  id             String                  @id @default(uuid())
+  productId      String
+  variantId      String?
+  email          String
+  whatsappNumber String
+  status         StockNotificationStatus @default(PENDING)
+  notifiedAt     DateTime?
+
+  product        Product                 @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variant        Variant?                @relation(fields: [variantId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  @@index([productId, status])
+  @@index([variantId, status])
+  @@index([email, status])
+  @@index([status])
+  @@index([createdAt])
+  @@map("stock_notifications")
+}

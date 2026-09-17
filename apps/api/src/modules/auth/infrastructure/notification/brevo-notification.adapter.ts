@@ -15,6 +15,9 @@ export class BrevoNotificationAdapter implements NotificationPort {
     const apiKey = process.env.BREVO_API_KEY;
     const senderEmail = process.env.BREVO_SENDER_EMAIL;
     const senderName = process.env.BREVO_SENDER_NAME;
+    this.logger.log(
+  `[OTP BREVO CONFIG] senderEmail=${senderEmail}, senderName=${senderName}`,
+);
 
     if (!apiKey) {
       throw new Error('BREVO_API_KEY is not configured');
@@ -49,9 +52,13 @@ export class BrevoNotificationAdapter implements NotificationPort {
     subject: string,
     body: string,
   ): Promise<void> {
-    const htmlContent = this.buildHtmlEmail(body);
+   const htmlContent = this.buildHtmlEmail(body);
 
-    try {
+this.logger.log(
+  `[OTP BREVO SEND] FROM=${this.senderEmail} TO=${email}`,
+);
+
+try {
       const response = await this.brevo.transactionalEmails.sendTransacEmail({
         sender: {
           email: this.senderEmail,

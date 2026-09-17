@@ -16,6 +16,7 @@ import { ProductGalleryService } from '../services/product-gallery.service';
 import { VariantSyncService } from '../services/variant-sync.service';
 import { ProductPriceService } from '../services/product-price.service';
 import { ProductValidationService } from '../services/product-validation.service';
+import { StockNotificationService } from '@/modules/stock-notification/stock-notification.service';
 
 @Injectable()
 export class UpdateProductUseCase {
@@ -36,6 +37,8 @@ export class UpdateProductUseCase {
     private readonly productPriceService: ProductPriceService,
 
     private readonly validationService: ProductValidationService,
+
+    private readonly stockNotificationService: StockNotificationService,
   ) {}
 
   async execute(input: any) {
@@ -85,7 +88,7 @@ export class UpdateProductUseCase {
     // ============================================================
     // 🚀 3. ATOMIC WRITE TRANSACTION
     // ============================================================
-    return this.prisma.$transaction(
+    const result = await this.prisma.$transaction(
       async (tx) => {
         const productChanged = this.updateProductBuilderService.update(product, input, newSlug);
 
@@ -106,42 +109,68 @@ export class UpdateProductUseCase {
         priorityOrder: variant.priorityOrder ?? index,
       }));
 
-     await this.variantSyncService.sync(
-  product,
-  normalizedVariants,
-  tx,
-  {
-    preserveExistingVariants:
-      input.preserveExistingVariants === true,
-  },
-);
+        let restockedVariants: any[] = [];
+        const syncResult = await this.variantSyncService.sync(
+          product,
+          normalizedVariants,
+          tx,
+          {
+            preserveExistingVariants:
+              input.preserveExistingVariants === true,
+          },
+        );
 
-      const activeVariants = await this.variantSyncService.getActiveVariants(product.id, tx);
+        if (Array.isArray(syncResult)) {
+          restockedVariants = syncResult;
+        }
 
-      if (activeVariants.length > 0) {
-        const defaultVariant =
-          activeVariants.find((variant) => variant.id === product.defaultVariantId) ||
-          activeVariants[0];
+        const activeVariants = await this.variantSyncService.getActiveVariants(product.id, tx);
 
-        product.defaultVariantId = defaultVariant.id;
+        if (activeVariants.length > 0) {
+          const defaultVariant =
+            activeVariants.find((variant) => variant.id === product.defaultVariantId) ||
+            activeVariants[0];
+
+          product.defaultVariantId = defaultVariant.id;
+        }
+
+        this.productPriceService.calculatePriceRange(product, activeVariants);
+
+        await this.productRepo.update(product, tx);
+
+        const updated = await this.productRepo.findFullById(product.id, tx);
+
+        if (!updated) {
+          throw new ProductNotFoundException({
+            productId: product.id,
+          });
+        }
+
+        return { updated, restockedVariants };
+      }, {
+        maxWait: 10000,
+        timeout: 20000,
+      });
+
+    // 🚀 4. DISPATCH RESTOCK NOTIFICATIONS ASYNCHRONOUSLY AFTER COMMIT
+    if (result?.restockedVariants?.length) {
+      for (const item of result.restockedVariants) {
+        this.stockNotificationService
+          .handleRestock({
+            productId: item.productId,
+            variantId: item.variantId,
+            newQuantity: item.newQuantity,
+            oldQuantity: item.oldQuantity,
+          })
+          .catch((err) => {
+            console.error(
+              '[RESTOCK_NOTIFICATION_ERROR] Failed to dispatch restock notification:',
+              err,
+            );
+          });
       }
+    }
 
-      this.productPriceService.calculatePriceRange(product, activeVariants);
-
-      await this.productRepo.update(product, tx);
-
-      const updated = await this.productRepo.findFullById(product.id, tx);
-
-      if (!updated) {
-        throw new ProductNotFoundException({
-          productId: product.id,
-        });
-      }
-
-      return updated;
-    }, {
-      maxWait: 10000,
-      timeout: 20000,
-    });
+    return result.updated;
   }
 }

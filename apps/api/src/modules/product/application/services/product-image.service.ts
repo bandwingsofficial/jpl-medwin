@@ -25,6 +25,7 @@ export class ProductImageService {
     input: {
       mainImage?: string;
       images?: {
+        id?: string;
         url: string;
         alt?: string;
         sortOrder?: number;
@@ -66,9 +67,10 @@ export class ProductImageService {
 
     // Gallery images
     for (const img of input.images ?? []) {
+      const imageId = img.id || crypto.randomUUID();
       await this.imageRepo.create(
         new ProductImage(
-          crypto.randomUUID(),
+          imageId,
 
           new ImageUrlVO(img.url).getValue(),
 

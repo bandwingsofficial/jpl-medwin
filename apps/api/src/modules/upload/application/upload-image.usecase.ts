@@ -11,13 +11,27 @@ export class UploadImageUseCase {
   // 📤 UPLOAD
   // =======================
 
-  async execute(file: Express.Multer.File, folder: string) {
+  async execute(
+    file: Express.Multer.File,
+    folder: string,
+    customKeyOrFilename?: string,
+  ) {
     if (!file) {
       throw new BadRequestException('File is required');
     }
 
-    // safer extension extraction
     const ext = this.getExtension(file);
+
+    if (customKeyOrFilename) {
+      if (customKeyOrFilename.includes('/')) {
+        return this.s3.uploadToKey(file, customKeyOrFilename);
+      }
+      const filename = customKeyOrFilename.includes('.')
+        ? customKeyOrFilename
+        : `${customKeyOrFilename}${ext}`;
+      return this.s3.uploadFile(file, folder, filename);
+    }
+
     const filename = `${uuid()}${ext}`;
 
     return this.s3.uploadFile(file, folder, filename);
@@ -36,7 +50,7 @@ export class UploadImageUseCase {
   // 🧠 HELPERS
   // =======================
 
-  private getExtension(file: Express.Multer.File): string {
+  getExtension(file: Express.Multer.File): string {
     // try from original name
     const ext = extname(file.originalname);
 

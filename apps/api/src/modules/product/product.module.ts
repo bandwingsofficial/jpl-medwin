@@ -25,6 +25,7 @@ import { CategoryModule } from '@/modules/category/category.module';
 import { BrandModule } from '@/modules/brand/brand.module';
 import { UploadModule } from '../upload/upload.module';
 import { CartModule } from '@/modules/cart/cart.module';
+import { StockNotificationModule } from '../stock-notification/stock-notification.module';
 
 // =======================
 // TOKENS
@@ -119,6 +120,7 @@ import { PrismaProductImageRepository } from './infrastructure/persistence/prism
     CategoryModule,
     BrandModule,
     UploadModule,
+    StockNotificationModule,
     forwardRef(() => CartModule),
   ],
 

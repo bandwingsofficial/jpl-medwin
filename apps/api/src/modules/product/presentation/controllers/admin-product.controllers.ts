@@ -13,6 +13,7 @@ import {
   UseGuards,
   BadRequestException,
   Res,
+  Inject,
 } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
@@ -62,6 +63,11 @@ import { ExportProductsByCreatedAtUseCase } from '../../application/use-cases/ex
 import { ProductSkuService } from '../../application/services/product-sku.service';
 import { PreviewSkuDto } from '../../application/dtos/preview-sku.dto';
 import { ProductType } from '../../domain/enums/product-type.enum';
+import { ImageType } from '../../domain/enums/image-type.enum';
+import { ProductImage } from '../../domain/entities/product-image.entity';
+import { TOKENS } from '@/common/constants/tokens';
+import { ProductImageRepository } from '../../domain/repositories/product-image.repository';
+import { ProductUploadService } from '../../application/services/product-upload.service';
 
 @Controller('admin/products')
 @UseGuards(JwtAuthGuard, RolesGuard)
@@ -89,6 +95,9 @@ export class AdminProductController {
     private readonly restoreVariantUseCase: RestoreVariantUseCase,
 
     private readonly productSkuService: ProductSkuService,
+    private readonly productUploadService: ProductUploadService,
+    @Inject(TOKENS.PRODUCT_IMAGE_REPO)
+    private readonly imageRepo: ProductImageRepository,
   ) {}
 
   // ================= SKU PREVIEW =================
@@ -910,34 +919,153 @@ catalogueFileSize: catalogueFileSizeUpdate,
       // 🖼 PRODUCT IMAGES
       // =======================
 
-      const mainImage = await uploadFile(files.mainImage?.[0]);
+      const cleanUrl = (u?: string | null) => (u ? u.trim().split('?')[0] : '');
 
-      if (mainImage) {
-        console.log('🔥 PRODUCT MAIN IMAGE UPLOADED:', mainImage);
+      let mainImage: string | null | undefined = undefined;
+      const allExistingImages: ProductImage[] = await this.imageRepo
+        .findByProduct(id, false)
+        .catch(() => []);
+      const existingMain = allExistingImages.find((img) => img.type === ImageType.MAIN);
+
+      const productSlug = existingProduct?.slug || dto.slug;
+      const productName = existingProduct?.name || dto.name;
+
+      if (files.mainImage?.[0]) {
+        // Overwrite existing main image at same key
+        const existingUrl = existingMain?.url || existingProduct?.images?.main;
+        const url = await this.productUploadService.uploadProductMainImage(
+          id,
+          files.mainImage[0],
+          existingUrl,
+          uploadedUrls,
+          productSlug,
+          productName,
+        );
+        mainImage = url;
+        console.log('🔥 PRODUCT MAIN IMAGE OVERWRITTEN / UPLOADED (STABLE KEY):', mainImage);
+      } else if (parsedData.mainImage !== undefined) {
+        mainImage = parsedData.mainImage;
       }
 
-      const galleryUrls = await uploadMany(files.images);
+      let productImages: any[] | undefined = undefined;
 
-      if (galleryUrls.length) {
-        console.log('🔥 NEW PRODUCT GALLERY IMAGES:', galleryUrls);
+      if (parsedData.images !== undefined || rawDto.imagesData !== undefined || files.images?.length) {
+        const rawImages =
+          parsedData.images !== undefined
+            ? Array.isArray(parsedData.images)
+              ? parsedData.images
+              : parseJson(parsedData.images, [])
+            : parseJson(rawDto.imagesData, []) ?? [];
+
+        const imageFiles = files.images || [];
+        const mappedFileIndices = new Set<number>();
+        productImages = [];
+
+        for (let i = 0; i < rawImages.length; i++) {
+          const imgItem = rawImages[i];
+          if (!imgItem) continue;
+
+          if (imgItem.isDeleted === true || imgItem.isDeleted === 'true') {
+            if (imgItem.id || imgItem.url) {
+              productImages.push({
+                ...imgItem,
+                url: cleanUrl(imgItem.url),
+                isDeleted: true,
+              });
+            }
+            continue;
+          }
+
+          const fileIdx = typeof imgItem.fileIndex === 'number' ? imgItem.fileIndex : undefined;
+          const associatedFile = fileIdx !== undefined ? imageFiles[fileIdx] : undefined;
+
+          if (associatedFile && fileIdx !== undefined) {
+            mappedFileIndices.add(fileIdx);
+
+            if (imgItem.url || imgItem.id) {
+              // 👉 EXISTING GALLERY IMAGE REPLACEMENT (OVERWRITE SAME KEY)
+              const existingMatch =
+                (imgItem.id ? allExistingImages.find((img) => img.id === imgItem.id) : undefined) ||
+                (imgItem.url
+                  ? allExistingImages.find((img) => cleanUrl(img.url) === cleanUrl(imgItem.url))
+                  : undefined);
+
+              const existingUrl = existingMatch?.url || imgItem.url;
+              const existingId = existingMatch?.id || imgItem.id || crypto.randomUUID();
+
+              const url = await this.productUploadService.uploadProductGalleryImage(
+                id,
+                existingId,
+                associatedFile,
+                existingUrl,
+                uploadedUrls,
+                productSlug,
+                productName,
+              );
+
+              productImages.push({
+                id: existingId,
+                url,
+                alt: imgItem.alt || dto.name,
+                sortOrder: typeof imgItem.sortOrder === 'number' ? imgItem.sortOrder : i,
+              });
+            } else {
+              // 👉 BRAND NEW GALLERY IMAGE
+              const newImageId = imgItem.id || crypto.randomUUID();
+              const url = await this.productUploadService.uploadProductGalleryImage(
+                id,
+                newImageId,
+                associatedFile,
+                undefined,
+                uploadedUrls,
+                productSlug,
+                productName,
+              );
+
+              productImages.push({
+                id: newImageId,
+                url,
+                alt: imgItem.alt || dto.name,
+                sortOrder: typeof imgItem.sortOrder === 'number' ? imgItem.sortOrder : i,
+              });
+            }
+          } else if (imgItem.url) {
+            // 👉 UNCHANGED EXISTING GALLERY IMAGE
+            productImages.push({
+              id: imgItem.id,
+              url: cleanUrl(imgItem.url),
+              alt: imgItem.alt,
+              sortOrder: typeof imgItem.sortOrder === 'number' ? imgItem.sortOrder : i,
+            });
+          }
+        }
+
+        // Handle any unmapped uploaded files (e.g. direct file additions without fileIndex)
+        for (let f = 0; f < imageFiles.length; f++) {
+          if (!mappedFileIndices.has(f)) {
+            const file = imageFiles[f];
+            const newImageId = crypto.randomUUID();
+            const url = await this.productUploadService.uploadProductGalleryImage(
+              id,
+              newImageId,
+              file,
+              undefined,
+              uploadedUrls,
+              productSlug,
+              productName,
+            );
+
+            productImages.push({
+              id: newImageId,
+              url,
+              alt: dto.name,
+              sortOrder: productImages.length,
+            });
+          }
+        }
+
+        console.log('🔥 FINAL PRODUCT GALLERY:', productImages);
       }
-
-      // 🔥 EXISTING PRODUCT IMAGES
-      const existingProductImages = parseJson(rawDto.imagesData, []) ?? [];
-
-      console.log('🔥 EXISTING PRODUCT IMAGES:', existingProductImages);
-
-      // 🔥 NEW PRODUCT GALLERY
-      const uploadedProductImages = galleryUrls.map((url, i) => ({
-        url,
-        alt: dto.name,
-        sortOrder: existingProductImages.length + i,
-      }));
-
-      // 🔥 FINAL PRODUCT GALLERY
-      const productImages = [...existingProductImages, ...uploadedProductImages];
-
-      console.log('🔥 FINAL PRODUCT GALLERY:', productImages);
 
       // =======================
       // 🔥 VARIANT FILE MAPPING

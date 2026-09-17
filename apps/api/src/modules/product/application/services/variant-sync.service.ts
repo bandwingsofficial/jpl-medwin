@@ -38,6 +38,13 @@ export class VariantSyncService {
   const preserveExistingVariants =
     options?.preserveExistingVariants ?? false;
 
+  const restockedVariants: Array<{
+    productId: string;
+    variantId: string;
+    oldQuantity: number;
+    newQuantity: number;
+  }> = [];
+
   // ============================================================
   // EXISTING VARIANTS (SINGLE QUERY)
   // ============================================================
@@ -196,6 +203,21 @@ if (existing) {
       // Update content
       // --------------------------------------------------------
 
+      const oldQuantity = existing.quantity;
+      const targetQuantity =
+        input.quantity !== undefined
+          ? new QuantityVO(input.quantity).getValue()
+          : existing.quantity;
+
+      if (oldQuantity <= 0 && targetQuantity > 0) {
+        restockedVariants.push({
+          productId: product.id,
+          variantId: existing.id,
+          oldQuantity,
+          newQuantity: targetQuantity,
+        });
+      }
+
       existing.updateDetails({
         name: input.name,
 
@@ -205,10 +227,7 @@ if (existing) {
 
         mrp: pricing.mrp,
 
-      quantity:
-  input.quantity !== undefined
-    ? new QuantityVO(input.quantity).getValue()
-    : existing.quantity,
+        quantity: targetQuantity,
         attributes:
           input.attributes !== undefined
             ? input.attributes
@@ -361,6 +380,16 @@ if (!sku) {
         tx,
       );
 
+    const initialQuantity = new QuantityVO(input.quantity ?? 0).getValue();
+    if (initialQuantity > 0) {
+      restockedVariants.push({
+        productId: product.id,
+        variantId: created.id,
+        oldQuantity: 0,
+        newQuantity: initialQuantity,
+      });
+    }
+
     await this.variantImageService.sync(
       created.id,
       created.name,
@@ -368,6 +397,8 @@ if (!sku) {
       tx,
     );
   }
+
+  return restockedVariants;
 }
 
   async getActiveVariants(productId: string, tx?: any) {

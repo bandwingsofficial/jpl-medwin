@@ -217,14 +217,19 @@ constructor(
   products.map(async (product) => {
     const mapped = ProductResponseMapper.map(product);
 
-    const s3Images =
-      await this.productS3ImageResolver.resolveProductImages(
-        product.name,
-      );
-   mapped.images = {
-  main: s3Images.mainImage,
-  gallery: s3Images.galleryImages,
-};
+    if (!mapped.images?.main || !mapped.images?.gallery?.length) {
+      const s3Images =
+        await this.productS3ImageResolver.resolveProductImages(
+          product.name,
+          product.id,
+          product.slug,
+        );
+
+      mapped.images = {
+        main: mapped.images?.main || s3Images.mainImage,
+        gallery: mapped.images?.gallery?.length ? mapped.images.gallery : s3Images.galleryImages,
+      };
+    }
 
     if (input.includeVariants === false) {
       mapped.variants = [];

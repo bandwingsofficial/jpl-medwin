@@ -26,6 +26,8 @@ export class ProductGalleryService {
     input: any,
     tx?: any,
   ) {
+    const cleanUrl = (u?: string | null) => (u ? u.trim().split('?')[0] : '');
+
     // ============================================================
     // 🔍 1. FETCH ALL EXISTING PRODUCT IMAGES IN ONE QUERY
     // ============================================================
@@ -47,10 +49,12 @@ export class ProductGalleryService {
       }
       // CREATE / REPLACE MAIN
       else if (typeof input.mainImage === 'string' && input.mainImage.trim()) {
-        const url = new ImageUrlVO(input.mainImage).getValue();
+        const rawUrl = new ImageUrlVO(input.mainImage).getValue();
+        const url = cleanUrl(rawUrl);
 
         if (currentMain) {
-          if (currentMain.url !== url) {
+          const currentCleanUrl = cleanUrl(currentMain.url);
+          if (currentCleanUrl !== url) {
             currentMain.url = url;
             await this.imageRepo.update(currentMain, tx);
           }
@@ -78,62 +82,77 @@ export class ProductGalleryService {
       return;
     }
 
-    // Deduplicate in-memory
+    // Deduplicate in-memory by ID first, then clean URL
+    const seenIds = new Set<string>();
     const seenUrls = new Set<string>();
     const uniqueGallery: ProductImage[] = [];
 
     for (const image of existingGallery) {
-      if (seenUrls.has(image.url)) {
+      const cUrl = cleanUrl(image.url);
+      if (seenIds.has(image.id) || (cUrl && seenUrls.has(cUrl))) {
         await this.imageRepo.softDelete(image.id, tx);
       } else {
-        seenUrls.add(image.url);
+        seenIds.add(image.id);
+        if (cUrl) seenUrls.add(cUrl);
         uniqueGallery.push(image);
       }
     }
 
-    const existingMap = new Map(uniqueGallery.map((img) => [img.url, img]));
-    const importedUrls = new Set<string>();
+    const existingById = new Map(uniqueGallery.map((img) => [img.id, img]));
+    const existingByUrl = new Map(uniqueGallery.map((img) => [cleanUrl(img.url), img]));
+    const retainedImageIds = new Set<string>();
 
     for (let i = 0; i < input.images.length; i++) {
       const img = input.images[i];
-      if (!img || typeof img.url !== 'string' || !img.url.trim()) {
+      if (!img || img.isDeleted === true || img.isDeleted === 'true') {
         continue;
       }
 
-      const url = new ImageUrlVO(img.url).getValue();
-      importedUrls.add(url);
+      if (typeof img.url !== 'string' || !img.url.trim()) {
+        continue;
+      }
 
-      const existing = existingMap.get(url);
+      const rawUrl = new ImageUrlVO(img.url).getValue();
+      const url = cleanUrl(rawUrl);
+      const existing = (img.id ? existingById.get(img.id) : undefined) || (url ? existingByUrl.get(url) : undefined);
 
       if (existing) {
+        retainedImageIds.add(existing.id);
         const alt = img.alt;
-        if (existing.alt !== alt || existing.sortOrder !== i) {
+        const targetSortOrder = typeof img.sortOrder === 'number' ? img.sortOrder : i;
+
+        if (existing.alt !== alt || existing.sortOrder !== targetSortOrder || cleanUrl(existing.url) !== url) {
+          if (cleanUrl(existing.url) !== url) {
+            existing.url = url;
+          }
           existing.updateDetails({
             alt,
-            sortOrder: i,
+            sortOrder: targetSortOrder,
           });
           await this.imageRepo.update(existing, tx);
         }
       } else {
-        await this.imageRepo.create(
+        const newImageId = img.id || crypto.randomUUID();
+        const created = await this.imageRepo.create(
           new ProductImage(
-            crypto.randomUUID(),
+            newImageId,
             url,
             ImageType.GALLERY,
             ImageOwnerType.PRODUCT,
             product.id,
             undefined,
             img.alt,
-            i,
+            typeof img.sortOrder === 'number' ? img.sortOrder : i,
           ),
           tx,
         );
+        retainedImageIds.add(created.id);
       }
     }
 
     // Delete removed images
     for (const image of uniqueGallery) {
-      if (!importedUrls.has(image.url)) {
+      if (!retainedImageIds.has(image.id)) {
         await this.imageRepo.softDelete(image.id, tx);
       }
     }

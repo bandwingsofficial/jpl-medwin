@@ -1,19 +1,19 @@
-import {
+﻿import {
   NextRequest,
   NextResponse,
 } from "next/server";
 
-import {
-  sendOutOfStockNotification,
-} from "@/shared/lib/brevo/out-of-stock-notification";
-
 interface OutOfStockNotificationRequest {
+  email: string;
   phoneNumber: string;
-  productName: string;
   productId: string;
   variantId?: string;
+  productName?: string;
   variantName?: string;
 }
+
+const EMAIL_REGEX =
+  /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const PHONE_REGEX =
   /^[0-9+\-\s()]{7,20}$/;
@@ -26,23 +26,22 @@ export async function POST(
       (await request.json()) as OutOfStockNotificationRequest;
 
     const {
+      email,
       phoneNumber,
-      productName,
       productId,
       variantId,
-      variantName,
     } = body;
 
     if (
+      !email?.trim() ||
       !phoneNumber?.trim() ||
-      !productName?.trim() ||
       !productId?.trim()
     ) {
       return NextResponse.json(
         {
           success: false,
           message:
-            "Required fields are missing",
+            "Email, WhatsApp number, and Product are required",
         },
         {
           status: 400,
@@ -50,19 +49,19 @@ export async function POST(
       );
     }
 
-    const normalizedPhoneNumber =
+    const normalizedEmail =
+      email.trim().toLowerCase();
+    const normalizedPhone =
       phoneNumber.trim();
 
     if (
-      !PHONE_REGEX.test(
-        normalizedPhoneNumber,
-      )
+      !EMAIL_REGEX.test(normalizedEmail)
     ) {
       return NextResponse.json(
         {
           success: false,
           message:
-            "Please enter a valid phone number",
+            "Please enter a valid email address",
         },
         {
           status: 400,
@@ -70,24 +69,70 @@ export async function POST(
       );
     }
 
-    await sendOutOfStockNotification({
-      phoneNumber:
-        normalizedPhoneNumber,
+    if (
+      !PHONE_REGEX.test(normalizedPhone)
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            "Please enter a valid WhatsApp / phone number",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
 
-      productName,
+    const apiUrl =
+      process.env.NEXT_PUBLIC_API_URL ||
+      "http://localhost:4000";
 
-      productId,
+    const backendResponse = await fetch(
+      `${apiUrl}/stock-notifications/subscribe`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type":
+            "application/json",
+        },
+        body: JSON.stringify({
+          email: normalizedEmail,
+          whatsappNumber: normalizedPhone,
+          productId: productId.trim(),
+          ...(variantId?.trim()
+            ? {
+                variantId:
+                  variantId.trim(),
+              }
+            : {}),
+        }),
+      },
+    );
 
-      variantId,
+    const responseData =
+      await backendResponse.json();
 
-      variantName,
-    });
+    if (!backendResponse.ok) {
+      return NextResponse.json(
+        {
+          success: false,
+          message:
+            responseData.message ||
+            "Failed to register notification request",
+        },
+        {
+          status: backendResponse.status,
+        },
+      );
+    }
 
     return NextResponse.json(
       {
         success: true,
         message:
-          "Notification request sent successfully",
+          responseData.message ||
+          "You are on the notification list! We'll email you when it's back in stock.",
       },
       {
         status: 200,
@@ -95,7 +140,7 @@ export async function POST(
     );
   } catch (error) {
     console.error(
-      "OUT OF STOCK NOTIFICATION ERROR:",
+      "OUT OF STOCK NOTIFICATION ROUTE ERROR:",
       error,
     );
 
@@ -105,7 +150,7 @@ export async function POST(
         message:
           error instanceof Error
             ? error.message
-            : "Failed to send notification request",
+            : "Failed to submit notification request",
       },
       {
         status: 500,
