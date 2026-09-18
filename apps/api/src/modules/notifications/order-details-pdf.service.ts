@@ -537,7 +537,6 @@ export class OrderDetailsPdfService {
         ['Payment Status', order?.paymentStatus],
         ['Payment Method', order?.paymentMethod ?? metadata?.paymentMethod],
         ['GST Number', order?.gstNumber ?? order?.notes?.gstNumber],
-        ['Order ID', order?.id],
         ['Updated At', formatDate(order?.updatedAt)],
       ]);
 
@@ -630,28 +629,6 @@ export class OrderDetailsPdfService {
         ],
         grandTotal,
       );
-
-      // ===================================================================
-      // NOTES & METADATA  (only rendered when data exists)
-      // ===================================================================
-      const notesEntries =
-        order?.notes && typeof order.notes === 'object'
-          ? Object.entries(order.notes)
-          : [];
-      if (notesEntries.length) {
-        sectionHeader('Order Notes');
-        inlineList(notesEntries as [string, unknown][]);
-        doc.y += 6;
-      }
-
-      const metadataEntries =
-        metadata && typeof metadata === 'object' ? Object.entries(metadata) : [];
-      if (metadataEntries.length) {
-        sectionHeader('Order Metadata');
-        inlineList(metadataEntries as [string, unknown][]);
-        doc.y += 6;
-      }
-
       // ===================================================================
       // STATUS DETAILS (only rendered when relevant data exists)
       // ===================================================================

@@ -252,21 +252,24 @@ console.log("🔥 ORDER STEP 2 - ADDRESSES VALIDATED");
 // 🔢 GENERATE ORDER NUMBER
 // =======================
 
+// =======================
+// 🔢 GENERATE ORDER NUMBER
+// =======================
+
 let sequence = 1;
 
-let orderNumber = this.orderNumberService.generate(
-  'JPL-WEB',
-  sequence,
-);
+let orderNumber = this.orderNumberService.generate(sequence);
 
 while (await this.orderRepo.existsByOrderNumber(orderNumber)) {
   sequence++;
 
-  orderNumber = this.orderNumberService.generate(
-    'JPL-WEB',
-    sequence,
-  );
+  orderNumber = this.orderNumberService.generate(sequence);
 }
+
+console.log(
+  '🔥 ORDER STEP 3 - ORDER NUMBER:',
+  orderNumber,
+);
 
 console.log(
   "🔥 ORDER STEP 3 - ORDER NUMBER:",

@@ -5,43 +5,18 @@ import { Injectable } from '@nestjs/common';
 @Injectable()
 export class OrderNumberService {
   // =======================
-  // 🔢 GENERATE
+  // 🔢 GENERATE ORDER NUMBER
+  // Fixed:
+  // JPL-WO-012926
+  //
+  // Changing:
+  // 00001, 00002, 00003...
   // =======================
 
-  generate(prefix = 'JPL-WEB', sequence = 1): string {
-    const now = new Date();
+  generate(sequence: number): string {
+    const sequentialNumber = String(sequence).padStart(5, '0');
 
-    // =======================
-    // 📅 DATE
-    // =======================
-
-    const yyyy = now.getFullYear();
-
-    const mm = String(now.getMonth() + 1).padStart(2, '0');
-
-    const dd = String(now.getDate()).padStart(2, '0');
-
-    // =======================
-    // ⏰ TIME
-    // =======================
-
-    const hh = String(now.getHours()).padStart(2, '0');
-
-    const min = String(now.getMinutes()).padStart(2, '0');
-
-    const ss = String(now.getSeconds()).padStart(2, '0');
-
-    // =======================
-    // 🔢 SEQUENTIAL NUMBER
-    // =======================
-
-    const sequentialNumber = String(sequence).padStart(3, '0');
-
-    // =======================
-    // 🚀 RESULT
-    // =======================
-
-   return `JPL-WEB-${sequentialNumber}`;
+    return `JPL-WO-012926-${sequentialNumber}`;
   }
 
   // =======================
@@ -49,22 +24,29 @@ export class OrderNumberService {
   // =======================
 
   isValid(orderNumber: string): boolean {
-    const regex = /^JPL-WEB-\d{3,}$/;
+    const regex = /^JPL-WO-012926-\d{5}$/;
 
     return regex.test(orderNumber);
   }
 
   // =======================
-  // 📅 EXTRACT DATE
+  // 🔢 EXTRACT SEQUENCE
   // =======================
 
-  extractDate(orderNumber: string): string | null {
-    const parts = orderNumber.split('-');
-
-    if (parts.length < 3) {
+  extractSequence(orderNumber: string): number | null {
+    if (!this.isValid(orderNumber)) {
       return null;
     }
 
-    return parts[1];
+    const parts = orderNumber.split('-');
+    const sequencePart = parts[3];
+
+    if (!sequencePart) {
+      return null;
+    }
+
+    const sequence = Number(sequencePart);
+
+    return Number.isNaN(sequence) ? null : sequence;
   }
 }

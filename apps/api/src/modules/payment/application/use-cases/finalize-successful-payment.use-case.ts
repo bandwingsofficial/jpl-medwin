@@ -229,15 +229,24 @@ return {
     });
 
     // ==========================================
-    // 6. GENERATE UNIQUE ORDER NUMBER
-    // ==========================================
-    let sequence = 1;
-let orderNumber = this.orderNumberService.generate('JPL-WEB', sequence);
+// 6. GENERATE UNIQUE ORDER NUMBER
+// Format: JPL-WO-012926-00001
+// ==========================================
+
+let sequence = 1;
+
+let orderNumber = this.orderNumberService.generate(sequence);
 
 while (await this.orderRepo.existsByOrderNumber(orderNumber)) {
   sequence++;
-  orderNumber = this.orderNumberService.generate('JPL-WEB', sequence);
+
+  orderNumber = this.orderNumberService.generate(sequence);
 }
+
+console.log(
+  '🔥 PAYMENT - ORDER NUMBER:',
+  orderNumber,
+);
 
     // ==========================================
     // 7. SNAPSHOTS & REWARDS
